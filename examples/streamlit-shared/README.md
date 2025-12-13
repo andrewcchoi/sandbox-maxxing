@@ -17,12 +17,12 @@ Quick visual validation that your Claude Code sandbox is working correctly. Test
 
 1. Install dependencies:
    ```bash
-   pip install -r examples/basic-streamlit/requirements.txt
+   pip install -r requirements.txt
    ```
 
 2. Run the app:
    ```bash
-   streamlit run examples/basic-streamlit/app.py
+   streamlit run app.py
    ```
 
 3. Open your browser to the URL shown (typically `http://localhost:8501`)
@@ -50,5 +50,9 @@ Quick visual validation that your Claude Code sandbox is working correctly. Test
 
 Once both tests pass:
 - ✨ Your sandbox setup is working!
-- 📚 Explore the full demo app: `examples/demo-app/`
+- 📚 Explore the full demo apps:
+  - Shared: `examples/demo-app-shared/`
+  - Basic mode: `examples/demo-app-sandbox-basic/`
+  - Advanced mode: `examples/demo-app-sandbox-advanced/`
+  - Pro mode: `examples/demo-app-sandbox-pro/`
 - 📖 Read the development guide: `docs/DEVELOPMENT.md`

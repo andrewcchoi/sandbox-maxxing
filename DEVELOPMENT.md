@@ -91,8 +91,12 @@ windows-sandbox/
 │
 ├── examples/                   # Demo applications
 │   ├── docker-compose.yml      # Services for examples ONLY
-│   ├── basic-streamlit/        # Quick validation
-│   └── demo-app/               # Full-stack demo
+│   ├── streamlit-shared/       # Quick validation (shared services)
+│   ├── streamlit-sandbox-basic/ # Self-contained Streamlit
+│   ├── demo-app-shared/        # Full-stack demo (shared services)
+│   ├── demo-app-sandbox-basic/  # Full-stack demo (Basic mode)
+│   ├── demo-app-sandbox-advanced/ # Full-stack demo (Advanced mode)
+│   └── demo-app-sandbox-pro/   # Full-stack demo (Pro mode)
 │
 └── docs/                       # Documentation
 ```
@@ -151,8 +155,8 @@ uv pip install -r requirements.txt
 streamlit run app.py
 # Open browser to http://localhost:8501
 
-# Test full demo app
-cd ../demo-app/backend
+# Test full demo app (shared services)
+cd ../demo-app-shared/backend
 uv pip install -r requirements.txt
 alembic upgrade head
 uvicorn app.main:app --reload

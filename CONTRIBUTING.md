@@ -88,15 +88,15 @@ After modifying templates:
 
 The `examples/` directory contains working applications that validate the plugin:
 
-#### Basic Streamlit Example
-Location: `examples/basic-streamlit/`
-
-Quick validation app for testing service connectivity.
+#### Streamlit Examples
+- **Shared**: `examples/streamlit-shared/` - Quick validation app for testing service connectivity
+- **Basic Mode**: `examples/streamlit-sandbox-basic/` - Self-contained DevContainer
 
 #### Demo Blog Application
-Location: `examples/demo-app/`
-
-Full-stack application demonstrating production patterns.
+- **Shared**: `examples/demo-app-shared/` - Full-stack application code
+- **Basic Mode**: `examples/demo-app-sandbox-basic/` - Minimal DevContainer configuration
+- **Advanced Mode**: `examples/demo-app-sandbox-advanced/` - Balanced DevContainer with customization
+- **Pro Mode**: `examples/demo-app-sandbox-pro/` - Production-ready DevContainer with comprehensive tooling
 
 When modifying examples:
 1. Make your changes
