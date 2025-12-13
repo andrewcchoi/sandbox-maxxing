@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [],
+    "ask": [],
+    "deny": [],
+    "defaultMode": "default"
+  },
+  "model": "opusplan",
+  "alwaysThinkingEnabled": true,
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "CLAUDE_CODE_USE_FOUNDRY": "1",
+    "ANTHROPIC_FOUNDRY_API_KEY": "your_api_key_here",
+    "ANTHROPIC_FOUNDRY_RESOURCE": "your_resource_name_here",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-5"
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "excludedCommands": ["docker"],
+    "network": {
+      "allowUnixSockets": [
+        "/var/run/docker.sock"
+      ],
+      "allowLocalBinding": true
+    }
+  }
+}

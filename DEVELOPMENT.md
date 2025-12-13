@@ -404,7 +404,7 @@ To add a service (e.g., MongoDB):
      ports:
        - "27017:27017"
      networks:
-       - sandbox-plugin-network
+       - windows-sandbox-network
    ```
 
 2. Update environment variables in `.devcontainer/devcontainer.json`
