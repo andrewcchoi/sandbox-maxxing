@@ -35,7 +35,7 @@ Initial stable release of Claude Code Sandbox plugin.
 ## Installation
 
 ```bash
-claude plugins add https://github.com/youruser/claude-code-sandbox
+claude plugins add https://github.com/andrewcchoi/windows-sandbox
 ```
 
 ## Quick Start

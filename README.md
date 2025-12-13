@@ -16,7 +16,7 @@ Interactive assistant for setting up, troubleshooting, and securing Claude Code 
 
 ```bash
 # Install the plugin
-claude plugins add https://github.com/youruser/claude-code-sandbox
+claude plugins add https://github.com/andrewcchoi/windows-sandbox
 
 # Verify installation
 claude plugins list
@@ -26,19 +26,19 @@ claude plugins list
 
 ```bash
 # Start interactive setup wizard
-/sandbox:setup
+/windows-sandbox:setup
 
 # Quick setup with auto-detection (Basic mode)
-/sandbox:setup --basic
+/windows-sandbox:setup --basic
 
 # Step-by-step with detailed guidance (Pro mode)
-/sandbox:setup --pro
+/windows-sandbox:setup --pro
 
 # Troubleshoot existing sandbox
-/sandbox:troubleshoot
+/windows-sandbox:troubleshoot
 
 # Security audit
-/sandbox:audit
+/windows-sandbox:audit
 ```
 
 ## Experience Tiers
@@ -53,7 +53,7 @@ claude plugins list
 
 **Example**:
 ```
-You: /sandbox:setup --basic
+You: /windows-sandbox:setup --basic
 Claude: I detected a Python project with FastAPI. Setting up with PostgreSQL and Redis...
 [Generates all files]
 Claude: Done! Run 'docker compose up -d' to start.
@@ -69,7 +69,7 @@ Claude: Done! Run 'docker compose up -d' to start.
 
 **Example**:
 ```
-You: /sandbox:setup --advanced
+You: /windows-sandbox:setup --advanced
 Claude: What database do you need?
   • PostgreSQL (recommended for relational data)
   • MySQL (alternative relational)
@@ -93,7 +93,7 @@ Claude: Firewall mode?
 
 **Example**:
 ```
-You: /sandbox:setup --pro
+You: /windows-sandbox:setup --pro
 Claude: Let's configure your DevContainer step by step.
 
 **Step 1: Network Configuration**
@@ -109,12 +109,12 @@ What network name would you like? [my-project-network]
 
 | Command | Description | Skill |
 |---------|-------------|-------|
-| `/sandbox:setup` | Interactive setup wizard with mode selection | `sandbox-setup` |
-| `/sandbox:setup --basic` | Quick automatic setup | `sandbox-setup` |
-| `/sandbox:setup --advanced` | Semi-autonomous with key choices | `sandbox-setup` |
-| `/sandbox:setup --pro` | Step-by-step with detailed guidance | `sandbox-setup` |
-| `/sandbox:troubleshoot` | Diagnose and fix sandbox issues | `sandbox-troubleshoot` |
-| `/sandbox:audit` | Security audit and recommendations | `sandbox-security` |
+| `/windows-sandbox:setup` | Interactive setup wizard with mode selection | `sandbox-setup` |
+| `/windows-sandbox:setup --basic` | Quick automatic setup | `sandbox-setup` |
+| `/windows-sandbox:setup --advanced` | Semi-autonomous with key choices | `sandbox-setup` |
+| `/windows-sandbox:setup --pro` | Step-by-step with detailed guidance | `sandbox-setup` |
+| `/windows-sandbox:troubleshoot` | Diagnose and fix sandbox issues | `sandbox-troubleshoot` |
+| `/windows-sandbox:audit` | Security audit and recommendations | `sandbox-security` |
 
 ## Auto-Detection
 
@@ -201,7 +201,7 @@ The troubleshooter handles:
 ### Example Troubleshooting Session
 
 ```
-You: /sandbox:troubleshoot
+You: /windows-sandbox:troubleshoot
 Claude: What issue are you experiencing?
 You: Can't connect to PostgreSQL
 Claude: Let me diagnose...
@@ -306,8 +306,8 @@ The plugin includes comprehensive reference documentation:
 
 ```bash
 # Clone the repository
-git clone https://github.com/youruser/claude-code-sandbox
-cd claude-code-sandbox
+git clone https://github.com/andrewcchoi/windows-sandbox
+cd windows-sandbox
 
 # Install locally
 claude plugins add .
@@ -316,7 +316,7 @@ claude plugins add .
 ### Plugin Structure
 
 ```
-claude-code-sandbox/
+windows-sandbox/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin manifest
 ├── skills/
@@ -339,7 +339,7 @@ claude-code-sandbox/
 ### Example 1: Quick Python Setup
 
 ```
-You: /sandbox:setup --basic
+You: /windows-sandbox:setup --basic
 Claude: I detected a Python project. Setting up with:
         - Python 3.12 with uv
         - PostgreSQL database
@@ -361,7 +361,7 @@ Claude: I detected a Python project. Setting up with:
 ### Example 2: Node.js with Customization
 
 ```
-You: /sandbox:setup --advanced
+You: /windows-sandbox:setup --advanced
 Claude: What's your primary language?
 You: Node.js
 Claude: What database do you need?
@@ -376,7 +376,7 @@ Claude: Generating optimized configuration for Node.js + MongoDB + Redis...
 ### Example 3: Security Audit
 
 ```
-You: /sandbox:audit
+You: /windows-sandbox:audit
 Claude: Running security audit...
 
         # Security Audit Report
@@ -402,6 +402,123 @@ Claude: Running security audit...
         Would you like me to help fix these issues?
 ```
 
+## Example Applications
+
+The plugin includes working example applications in the `examples/` directory that demonstrate real-world usage patterns and serve as validation tests.
+
+### Basic Streamlit App (Quick Validation)
+
+**Location**: `examples/basic-streamlit/`
+
+A minimal Streamlit application for quickly validating that your devcontainer is working correctly.
+
+**Features**:
+- PostgreSQL connection test with visual feedback
+- Redis connection test with visual feedback
+- Simple one-button testing interface
+- Perfect for quick environment validation
+
+**Usage**:
+```bash
+cd examples/basic-streamlit
+uv pip install -r requirements.txt
+streamlit run app.py
+```
+
+**When to use**: After setting up a new devcontainer, run this app to verify that services are accessible.
+
+### Demo Blog Application (Full-Stack Showcase)
+
+**Location**: `examples/demo-app/`
+
+A complete full-stack blogging platform demonstrating production-ready patterns and best practices.
+
+**Tech Stack**:
+- **Backend**: FastAPI + SQLAlchemy + Alembic migrations
+- **Frontend**: React + Vite + Axios
+- **Database**: PostgreSQL with proper indexing
+- **Cache**: Redis with TTL-based caching and view counters
+- **Testing**: Pytest (backend) + Jest + React Testing Library (frontend)
+
+**Features Demonstrated**:
+- Complete CRUD API with RESTful endpoints
+- Database migrations with Alembic
+- Redis caching patterns (content caching + counters)
+- Async database operations
+- Comprehensive test coverage (28+ tests)
+- Error handling and validation
+- Modern React patterns (hooks, component composition)
+
+**Backend API**:
+```bash
+cd examples/demo-app/backend
+uv pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Access API docs at http://localhost:8000/docs
+
+**Frontend Application**:
+```bash
+cd examples/demo-app/frontend
+npm install
+npm run dev
+```
+
+Access app at http://localhost:5173
+
+**Running Tests**:
+
+From the `examples/demo-app` directory:
+
+```bash
+# All tests
+./run-tests.sh             # Linux/Mac
+.\run-tests.ps1            # Windows
+
+# With coverage reports
+./run-tests.sh --coverage
+.\run-tests.ps1 -Coverage
+
+# Backend only
+./run-tests.sh --backend-only
+
+# Frontend only
+./run-tests.sh --frontend-only
+```
+
+**Test Coverage**:
+- **Backend**: 8 tests covering API endpoints and Redis caching logic
+- **Frontend**: 20+ tests covering all components, user interactions, and edge cases
+
+**What You'll Learn**:
+- How to structure a full-stack application in a devcontainer
+- Redis caching patterns for performance optimization
+- Database migration workflows with Alembic
+- Testing strategies for both backend and frontend
+- Service orchestration with Docker Compose
+
+### Dogfooding Approach
+
+This plugin uses itself for development! The `.devcontainer/` configuration in this repository was generated using the plugin's templates, demonstrating real-world usage and ensuring quality through "eating our own dog food."
+
+To explore the devcontainer setup:
+```bash
+# Open in VS Code
+code .
+
+# Reopen in container
+# Press F1 → Dev Containers: Reopen in Container
+
+# Validate services
+cd examples/basic-streamlit
+uv pip install -r requirements.txt
+streamlit run app.py
+```
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for complete development guide.
+
 ## Contributing
 
 Contributions welcome! Please:
@@ -416,7 +533,7 @@ MIT License - See LICENSE file for details
 
 ## Support
 
-- **Issues**: https://github.com/youruser/claude-code-sandbox/issues
+- **Issues**: https://github.com/andrewcchoi/windows-sandbox/issues
 - **Documentation**: See `skills/*/references/` directories
 - **Claude Code Docs**: https://claude.ai/code
 

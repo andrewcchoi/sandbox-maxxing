@@ -1,5 +1,5 @@
 {
-  "name": "claude-code-sandbox-dev",
+  "name": "windows-sandbox-dev",
   "description": "Local development marketplace for Claude Code Sandbox plugin",
   "owner": {
     "name": "Claude Code Sandbox Team",
@@ -7,7 +7,7 @@
   },
   "plugins": [
     {
-      "name": "claude-code-sandbox",
+      "name": "windows-sandbox",
       "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments",
       "version": "1.0.0",
       "source": "../",
