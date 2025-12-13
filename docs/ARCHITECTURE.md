@@ -7,14 +7,14 @@ The Claude Code Sandbox plugin uses a skills-based architecture with three main 
 ## Components
 
 ### 1. Skills
-- `sandbox-setup` - Interactive setup wizard
-- `sandbox-troubleshoot` - Diagnostic assistant
-- `sandbox-security` - Security auditor
+- `windows-sandbox-setup` - Interactive setup wizard
+- `windows-sandbox-troubleshoot` - Diagnostic assistant
+- `windows-sandbox-security` - Security auditor
 
 ### 2. Commands
-- `/sandbox:setup` - Invokes setup skill
-- `/sandbox:troubleshoot` - Invokes troubleshoot skill
-- `/sandbox:audit` - Invokes security skill
+- `/windows-sandbox:setup` - Invokes setup skill
+- `/windows-sandbox:troubleshoot` - Invokes troubleshoot skill
+- `/windows-sandbox:audit` - Invokes security skill
 
 ### 3. Templates
 - `base/` - Flexible templates for Basic/Advanced modes

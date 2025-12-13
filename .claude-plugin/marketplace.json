@@ -1,8 +1,8 @@
 {
   "name": "windows-sandbox-dev",
-  "description": "Local development marketplace for Claude Code Sandbox plugin",
+  "description": "Local development marketplace for Windows Sandbox plugin",
   "owner": {
-    "name": "Claude Code Sandbox Team",
+    "name": "Windows Sandbox Team",
     "email": "dev@example.com"
   },
   "plugins": [
@@ -10,9 +10,9 @@
       "name": "windows-sandbox",
       "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments",
       "version": "1.0.0",
-      "source": "../",
+      "source": "./plugin.json",
       "author": {
-        "name": "Claude Code Sandbox Team"
+        "name": "Andrew C. Choi"
       }
     }
   ]

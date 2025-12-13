@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments",
   "author": {
-    "name": "Claude Code Sandbox Team"
+    "name": "Windows Sandbox Team"
   },
   "homepage": "https://github.com/andrewcchoi/windows-sandbox",
   "repository": "https://github.com/andrewcchoi/windows-sandbox",
