@@ -1,0 +1,20 @@
+{
+  "name": "claude-code-sandbox",
+  "version": "1.0.0",
+  "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments",
+  "author": {
+    "name": "Claude Code Sandbox Team"
+  },
+  "homepage": "https://github.com/youruser/claude-code-sandbox",
+  "repository": "https://github.com/youruser/claude-code-sandbox",
+  "license": "MIT",
+  "keywords": [
+    "docker",
+    "devcontainer",
+    "sandbox",
+    "security",
+    "setup",
+    "firewall",
+    "claude-code"
+  ]
+}
