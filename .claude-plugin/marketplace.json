@@ -10,7 +10,7 @@
       "name": "windows-sandbox",
       "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments",
       "version": "1.0.0",
-      "source": "./plugin.json",
+      "source": "./",
       "author": {
         "name": "Andrew C. Choi"
       }
