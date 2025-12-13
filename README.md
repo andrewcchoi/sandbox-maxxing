@@ -501,31 +501,44 @@ From the `examples/demo-app` directory:
 
 ### Dogfooding Approach
 
-This plugin uses itself for development! The `.devcontainer/` configuration in this repository was generated using the plugin's templates, demonstrating real-world usage and ensuring quality through "eating our own dog food."
+This plugin uses itself for development! The `.devcontainer/` configuration was generated using the plugin's **Basic mode**, which correctly detected this as a documentation/template repository and created a minimal development environment.
 
-To explore the devcontainer setup:
+**What the plugin detected:**
+- Primary content: Markdown files (skills, documentation, commands)
+- Languages: Python 3.12 + Node.js 20 (for examples and templates)
+- Services needed: None (no database/cache in plugin code itself)
+
+**What was generated:**
+- Lightweight devcontainer with Python + Node.js runtimes
+- VS Code extensions for markdown and code editing
+- No PostgreSQL or Redis (not needed for plugin development)
+- Examples have separate `docker-compose.yml` for optional testing
+
+**Quick Start:**
 ```bash
 # Open in VS Code
 code .
 
-# Reopen in container
-# Press F1 → Dev Containers: Reopen in Container
+# Reopen in container (F1 → Dev Containers: Reopen in Container)
+# Container builds in ~2 minutes, ready to edit plugin files immediately
 
-# Validate services
-cd examples/basic-streamlit
+# Optional: Test examples (requires services)
+cd examples
+docker compose up -d                    # Start PostgreSQL + Redis
+cd basic-streamlit
 uv pip install -r requirements.txt
 streamlit run app.py
 ```
+
+This demonstrates the plugin's intelligent detection - it generates **only what you need**, not a one-size-fits-all template.
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for complete development guide.
 
 ## Contributing
 
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Test your changes locally
-4. Submit a pull request
+**Note**: I am not actively accepting pull requests or feature requests for this project. However, you are more than welcome to fork this repository and make your own improvements! Feel free to adapt it to your needs.
+
+This project was created with [Claude](https://claude.ai) using the [Superpowers](https://github.com/obra/superpowers) plugin.
 
 ## License
 

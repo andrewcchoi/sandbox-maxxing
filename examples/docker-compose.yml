@@ -1,0 +1,69 @@
+# Docker Compose for Windows Sandbox Plugin Examples
+#
+# This file provides PostgreSQL and Redis services for testing example applications.
+# It is separate from the devcontainer to keep plugin development lightweight.
+#
+# IMPORTANT: Run this on your HOST machine, NOT inside the devcontainer/sandbox.
+# Example applications (demo-app, basic-streamlit) run on the HOST and connect to these services.
+#
+# Setup (run on HOST machine):
+#   cd examples
+#   docker compose up -d        # Start services
+#   docker compose ps           # Check status
+#   docker compose down         # Stop services
+#
+# Services are accessible from:
+#   - Host machine: localhost:5432 (PostgreSQL), localhost:6379 (Redis)
+#   - Devcontainer: postgres:5432, redis:6379 (via Docker network)
+#
+# Test connectivity from HOST:
+#   psql -h localhost -U sandbox_user -d sandbox_dev
+#   redis-cli -h localhost ping
+#
+# Test connectivity from devcontainer (if needed):
+#   psql -h postgres -U sandbox_user -d sandbox_dev
+#   redis-cli -h redis ping
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: windows-sandbox-postgres
+    environment:
+      POSTGRES_DB: sandbox_dev
+      POSTGRES_USER: sandbox_user
+      POSTGRES_PASSWORD: devpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sandbox_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - examples-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: windows-sandbox-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - examples-network
+
+networks:
+  examples-network:
+    name: windows-sandbox-examples
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: windows-sandbox-postgres-data

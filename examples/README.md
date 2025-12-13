@@ -2,6 +2,30 @@
 
 Two example applications demonstrating the Claude Code Sandbox plugin's capabilities.
 
+## Prerequisites
+
+The examples require PostgreSQL and Redis services. Start them using the provided docker-compose file:
+
+```bash
+# From the examples/ directory
+cd examples
+docker compose up -d
+
+# Verify services are running
+docker compose ps
+
+# View logs if needed
+docker compose logs postgres
+docker compose logs redis
+
+# Stop services when done
+docker compose down
+```
+
+**Service URLs:**
+- PostgreSQL: `postgresql://sandbox_user:devpassword@localhost:5432/sandbox_dev`
+- Redis: `redis://localhost:6379`
+
 ## Learning Path
 
 ### 1. Start Here: Basic Streamlit Demo
@@ -82,3 +106,9 @@ examples/
 - ✅ Explore full demo for production patterns
 - 📖 Read `docs/DEVELOPMENT.md` for contribution guidelines
 - 🔒 Check `docs/SECURITY.md` for security best practices
+
+## About
+
+**Note**: I am not actively accepting pull requests or feature requests for this project. However, you are more than welcome to fork this repository and make your own improvements!
+
+This project was created with [Claude](https://claude.ai) using the [Superpowers](https://github.com/obra/superpowers) plugin.
