@@ -1,0 +1,78 @@
+{
+  "name": "demo-app-sandbox-advanced",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Python Development (curated for Advanced mode)
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+
+        // JavaScript/TypeScript Development
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+
+        // Database Tools
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+
+        // Docker & DevContainers
+        "ms-azuretools.vscode-docker",
+
+        // Git Integration
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false,
+        "python.formatting.provider": "black",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit"
+        },
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      }
+    }
+  },
+  "postStartCommand": ".devcontainer/init-firewall.sh",
+  "postCreateCommand": "cd backend && pip install -r requirements.txt && cd ../frontend && npm install",
+  "forwardPorts": [8000, 5173, 5432, 6379],
+  "portsAttributes": {
+    "8000": {
+      "label": "FastAPI Backend",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite Frontend",
+      "onAutoForward": "openBrowser"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "upgradePackages": false
+    }
+  }
+}
