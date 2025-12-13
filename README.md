@@ -31,6 +31,9 @@ claude plugins list
 # Quick setup with auto-detection (Basic mode)
 /windows-sandbox:setup --basic
 
+# Semi-autonomous with key choices (Advanced mode)
+/windows-sandbox:setup --advanced
+
 # Step-by-step with detailed guidance (Pro mode)
 /windows-sandbox:setup --pro
 
