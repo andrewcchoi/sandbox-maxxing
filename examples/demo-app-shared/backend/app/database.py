@@ -7,8 +7,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base
 
-# Database URL from environment
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://sandbox_user:devpassword@postgres:5432/sandbox_dev")
+# Database URL from environment - Build from individual env vars (allows override of each component)
+POSTGRES_USER = os.getenv("POSTGRES_USER", "sandbox_user")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "devpassword")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "postgres")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "sandbox_dev")
+DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
 
 # Create engine
 engine = create_engine(DATABASE_URL, echo=False)

@@ -17,15 +17,15 @@ RUN groupadd -g 1000 node && \
     useradd -m -u 1000 -g 1000 -s /bin/bash node && \
     echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install Python development tools
+# Install Python development tools - UV with pip fallback for SSL/proxy issues
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir \
-    uv \
-    poetry \
-    black \
-    pytest \
-    ruff \
-    ipython
+    if pip install --no-cache-dir uv 2>/dev/null; then \
+      echo "UV installed successfully, using uv for packages..." && \
+      uv pip install --system poetry black pytest ruff ipython; \
+    else \
+      echo "UV installation failed (SSL/proxy?), using pip fallback..." && \
+      pip install --no-cache-dir poetry black pytest ruff ipython; \
+    fi
 
 # Set Python environment variables
 ENV UV_COMPILE_BYTECODE=1 \

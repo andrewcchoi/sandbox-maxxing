@@ -48,6 +48,8 @@ claude plugins list
 /sandbox:audit
 ```
 
+> **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues).
+
 ## Four-Mode System
 
 See [MODES.md](docs/MODES.md) for comprehensive comparison guide.
