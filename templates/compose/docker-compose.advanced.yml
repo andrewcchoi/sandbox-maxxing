@@ -1,0 +1,188 @@
+# ============================================================================
+# ADVANCED TIER - Docker Compose Template
+# ============================================================================
+# Production-like configuration with security hardening and resource limits
+# Includes: postgres, redis with optional mysql/mongodb (commented out)
+# Features: resource limits, security options, healthchecks, named volumes
+# ============================================================================
+
+services:
+  postgres:
+    image: postgres:16-bookworm
+    container_name: {{PROJECT_NAME}}-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-{{DB_NAME}}}
+      POSTGRES_USER: ${POSTGRES_USER:-{{DB_USER}}}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-{{DB_USER}}} -d ${POSTGRES_DB:-{{DB_NAME}}}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - default
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  redis:
+    image: redis:7-alpine
+    container_name: {{PROJECT_NAME}}-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-devpassword}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - default
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # ============================================================================
+  # OPTIONAL SERVICES (uncomment to enable)
+  # ============================================================================
+
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: {{PROJECT_NAME}}-mysql
+  #   restart: unless-stopped
+  #   environment:
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE:-{{DB_NAME}}}
+  #     MYSQL_USER: ${MYSQL_USER:-{{DB_USER}}}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD:-devpassword}
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+  #     MYSQL_CHARSET: utf8mb4
+  #     MYSQL_COLLATION: utf8mb4_unicode_ci
+  #   ports:
+  #     - "${MYSQL_PORT:-3306}:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #     - ./mysql-init:/docker-entrypoint-initdb.d:ro
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 30s
+  #   networks:
+  #     - default
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   cap_drop:
+  #     - ALL
+  #   cap_add:
+  #     - CHOWN
+  #     - SETUID
+  #     - SETGID
+  #     - DAC_OVERRIDE
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '2'
+  #         memory: 2G
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 512M
+
+  # mongodb:
+  #   image: mongo:7
+  #   container_name: {{PROJECT_NAME}}-mongodb
+  #   restart: unless-stopped
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-devpassword}
+  #     MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-{{DB_NAME}}}
+  #   ports:
+  #     - "${MONGO_PORT:-27017}:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #     - mongodb_config:/data/configdb
+  #     - ./mongo-init:/docker-entrypoint-initdb.d:ro
+  #   healthcheck:
+  #     test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 30s
+  #   networks:
+  #     - default
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   cap_drop:
+  #     - ALL
+  #   cap_add:
+  #     - CHOWN
+  #     - SETUID
+  #     - SETGID
+  #     - FOWNER
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '2'
+  #         memory: 2G
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 512M
+
+volumes:
+  postgres_data:
+    driver: local
+    name: {{PROJECT_NAME}}_postgres_data
+  redis_data:
+    driver: local
+    name: {{PROJECT_NAME}}_redis_data
+  # Uncomment if using optional services:
+  # mysql_data:
+  #   driver: local
+  #   name: {{PROJECT_NAME}}_mysql_data
+  # mongodb_data:
+  #   driver: local
+  #   name: {{PROJECT_NAME}}_mongodb_data
+  # mongodb_config:
+  #   driver: local
+  #   name: {{PROJECT_NAME}}_mongodb_config
+
+networks:
+  default:
+    name: {{NETWORK_NAME}}
+    driver: bridge

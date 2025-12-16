@@ -3,9 +3,9 @@
 
 FROM python:3.12-slim-bookworm
 
-# Install Node.js 20 and system dependencies
+# Install Node.js 20 and system dependencies (minimal for Basic tier)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git curl sudo iptables ipset dnsutils ca-certificates gnupg \
+    git curl ca-certificates gnupg \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
@@ -14,8 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Create non-root user
 RUN groupadd --gid 1000 node \
-    && useradd --uid 1000 --gid node --shell /bin/bash --create-home node \
-    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/iptables, /usr/sbin/ipset, /usr/sbin/ip6tables" >> /etc/sudoers
+    && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 COPY .devcontainer/init-firewall.sh /usr/local/bin/init-firewall.sh
 RUN chmod +x /usr/local/bin/init-firewall.sh

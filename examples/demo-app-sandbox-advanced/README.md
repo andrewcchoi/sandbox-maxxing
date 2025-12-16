@@ -2,17 +2,17 @@
 
 This is a **self-contained** example demonstrating the Claude Code Sandbox DevContainer setup in **Advanced mode**. It includes a full-stack blog application with Python FastAPI backend and React frontend, configured with enhanced customization options.
 
-## What is Advanced Mode?
+## What is Advanced Tier?
 
-Advanced mode is designed for developers who want:
+Advanced tier is designed for developers who want:
 - **Balanced configuration** with 5-7 interactive prompts
-- **Customizable settings** for firewall, extensions, and build args
-- **Curated VS Code extensions** for productivity
+- **Strict firewall** with customizable allowlist (whitelist-based network access)
+- **Curated VS Code extensions** for productivity (10+ extensions)
 - **Configurable Dockerfile** with build arguments
-- **User-controlled firewall** (strict, permissive, or disabled)
+- **Resource limits** for containers
 - **Enhanced developer experience** with additional tools
 
-This example shows what the `windows-sandbox` plugin generates when run in Advanced mode on a full-stack application.
+This example shows what the `windows-sandbox` plugin generates when run in Advanced tier on a full-stack application.
 
 ## Features
 
@@ -29,11 +29,12 @@ This example shows what the `windows-sandbox` plugin generates when run in Advan
   - View counter with Redis caching
   - Component tests with React Testing Library
 
-### DevContainer Features (Advanced Mode)
+### DevContainer Features (Advanced Tier)
 - **Configurable stack**: Python 3.12 + Node.js 20 (customizable via build args)
 - **Database services**: PostgreSQL 15 + Redis 7 with persistence
-- **Network security**: User-configurable firewall (strict by default)
-- **Curated extensions**: Python, Pylance, Black, ESLint, Prettier, SQLTools, GitLens, Docker
+- **Network security**: Strict firewall with customizable allowlist (whitelist-based)
+- **Curated extensions**: Python, Pylance, Black, ESLint, Prettier, SQLTools, GitLens, Docker (10+ extensions)
+- **Resource limits**: CPU and memory limits configured for containers
 - **Port forwarding**: Backend (8000), Frontend (5173), PostgreSQL (5432), Redis (6379) with labels
 - **Development tools**: Black, Pylint, pytest, IPython, build-essential
 - **Shell enhancements**: Zsh with Oh My Zsh (optional feature)
@@ -134,11 +135,11 @@ frontend/
 └── vite.config.js
 ```
 
-## DevContainer Configuration (Advanced Mode)
+## DevContainer Configuration (Advanced Tier)
 
 ### What the Plugin Generated
 
-**devcontainer.json** (Advanced Mode):
+**devcontainer.json** (Advanced Tier):
 - Curated VS Code extensions for full-stack development
 - Code formatting on save (Black for Python, Prettier for JS)
 - Port attributes with labels and auto-forward behaviors
@@ -147,16 +148,17 @@ frontend/
 - Docker extension for container management
 - Optional Dev Container features (Zsh/Oh My Zsh)
 
-**Dockerfile** (Advanced Mode):
+**Dockerfile** (Advanced Tier):
 - Configurable Python and Node.js versions via build args
 - Additional development tools (build-essential, vim, nano, less)
 - Pre-installed Python tools (black, pylint, pytest, ipython)
 - Enhanced shell prompt
 - Environment variables for development
 
-**docker-compose.yml** (Advanced Mode):
+**docker-compose.yml** (Advanced Tier):
 - Build args for version customization
-- Environment variables with defaults (FIREWALL_MODE, DATABASE_URL)
+- Environment variables with defaults (FIREWALL_MODE=strict, DATABASE_URL)
+- Resource limits (CPU and memory) for containers
 - Configurable database credentials via environment
 - Persistent volumes for PostgreSQL and Redis
 - Optional port exposure for external tools
@@ -164,11 +166,11 @@ frontend/
 - Restart policies for development
 
 **init-firewall.sh**:
-- Configurable via FIREWALL_MODE environment variable
-- Strict mode: Whitelist-only (default)
-- Permissive mode: Audit logging only
-- Disabled mode: No firewall restrictions
-- Pre-configured allowed domains (customizable)
+- Strict mode by default (whitelist-only)
+- Customizable allowlist with category markers
+- Pre-configured allowed domains (GitHub, npm, PyPI, AI providers, VS Code)
+- Easy to add project-specific domains
+- Domain verification on startup
 
 ## Customization Options
 
@@ -278,9 +280,9 @@ Edit `.devcontainer/devcontainer.json`:
 }
 ```
 
-## What Makes This "Advanced Mode"
+## What Makes This "Advanced Tier"
 
-According to the plan, Advanced mode is characterized by:
+According to the plan, Advanced tier is characterized by:
 
 1. **More Interactive Setup (5-7 questions)**
    - Firewall mode selection
@@ -307,10 +309,11 @@ According to the plan, Advanced mode is characterized by:
    - Git enhancement (GitLens)
    - Docker management
 
-5. **User-Controlled Firewall**
-   - Not hardcoded to strict
-   - Three modes: strict, permissive, disabled
-   - Easy customization via environment
+5. **Strict Firewall with Customizable Allowlist**
+   - Whitelist-based network access control
+   - Category-based domain organization
+   - Easy to add project-specific domains
+   - Domain verification on startup
 
 6. **Balanced Approach**
    - More than Basic (flexible)
@@ -318,20 +321,19 @@ According to the plan, Advanced mode is characterized by:
    - Production-ready patterns
    - Development-friendly defaults
 
-## Comparing Modes
+## Comparing Tiers
 
-| Feature | Basic Mode | Advanced Mode | Pro Mode |
-|---------|-----------|---------------|----------|
-| Questions asked | 1-2 | 5-7 | 10-15+ |
-| Configuration style | Auto-detected | Customizable | Fully explicit |
-| Dockerfile | Flexible | Configurable | Technology-optimized |
-| VS Code extensions | Essential (2) | Curated (10+) | Comprehensive (20+) |
-| Firewall | Strict default | User choice | Fully documented |
-| Build args | None | Python/Node versions | All dependencies |
-| Port attributes | None | Labels & behaviors | Full configuration |
-| Dev tools | None | Black, Pylint, IPython | All tools + linters |
-| Database options | Hardcoded | Environment vars | Full customization |
-| Best for | Quick start | Balanced | Production-ready |
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
+| Questions asked | 1-2 | 3-5 | 5-7 | 10-15+ |
+| Configuration style | Auto-detected | Platform-specific | Customizable | Fully explicit |
+| Dockerfile | Sandbox template/official image | Platform template | Configurable | Technology-optimized |
+| VS Code extensions | Essential (2) | Basic (5) | Curated (10+) | Comprehensive (20+) |
+| Firewall | None | Permissive | Strict | Configurable |
+| Services | Essential only | + Message queue | + Resource limits | All available |
+| Build args | None | Python/Node versions | More options | All dependencies |
+| Resource limits | None | None | Yes | Yes (configurable) |
+| Best for | Quick start | Learning | Production dev | Full control |
 
 ## Troubleshooting
 
@@ -438,8 +440,9 @@ alembic init migrations
 ## Related Examples
 
 - `examples/demo-app-shared/` - Uses shared Docker Compose services
-- `examples/demo-app-sandbox-basic/` - Basic mode (minimal configuration)
-- `examples/demo-app-sandbox-pro/` - Pro mode (comprehensive configuration)
+- `examples/demo-app-sandbox-basic/` - Basic tier (no firewall, minimal config)
+- `examples/demo-app-sandbox-intermediate/` - Intermediate tier (permissive firewall, message queue)
+- `examples/demo-app-sandbox-yolo/` - YOLO tier (full customization)
 - `examples/streamlit-sandbox-basic/` - Simpler Python-only app
 
 ## Learn More

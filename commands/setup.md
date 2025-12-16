@@ -1,12 +1,49 @@
 ---
-description: Set up a new Claude Code Docker sandbox environment interactively
+description: Set up a new Claude Code Docker sandbox environment - routes to tier-specific setup
 ---
 
-Use and follow the sandbox-setup skill exactly as written.
+# Sandbox Setup Router
 
-Check for command-line flags:
-- `--basic` → Skip mode selection, use Basic mode
-- `--advanced` → Skip mode selection, use Advanced mode
-- `--pro` → Skip mode selection, use Pro mode
+This command helps you choose the right setup tier for your needs.
 
-If no flags provided, ask the user which mode they prefer.
+## Quick Selection
+
+Use flags to skip tier selection:
+- `--basic` → Fastest setup, sandbox templates, no firewall
+- `--intermediate` → Standard Dockerfile, permissive firewall
+- `--advanced` → Customizable, strict firewall with allowlist
+- `--yolo` → Full control, no restrictions
+
+## If No Flag Provided
+
+Ask the user:
+
+"Which setup tier do you prefer?
+
+**Basic** - Fastest setup
+- Uses sandbox templates or official images
+- No firewall (relies on sandbox isolation)
+- Minimal questions (1-2)
+
+**Intermediate** - Standard setup
+- Standard Dockerfile
+- Permissive firewall (no restrictions)
+- Common service options (4-6 questions)
+
+**Advanced** - Secure setup (recommended for teams)
+- Customizable templates
+- Strict firewall with configurable allowlist
+- Security guidance (7-10 questions)
+
+**YOLO** - Full control
+- Any images (unofficial allowed)
+- Optional firewall
+- All options available (extensive questions)"
+
+## Route to Tier Skill
+
+Based on selection, invoke the appropriate skill using the Skill tool:
+- Basic → Use sandbox-setup-basic skill
+- Intermediate → Use sandbox-setup-intermediate skill
+- Advanced → Use sandbox-setup-advanced skill
+- YOLO → Use sandbox-setup-yolo skill

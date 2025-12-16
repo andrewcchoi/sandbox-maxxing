@@ -1,0 +1,45 @@
+# Redis 7 Development Environment
+FROM redis:7-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    git \
+    vim \
+    curl \
+    wget \
+    sudo \
+    bash \
+    build-base \
+    ca-certificates
+
+# Create non-root user with sudo access
+RUN addgroup -g 1000 node && \
+    adduser -D -u 1000 -G node -s /bin/bash node && \
+    echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Install Redis tools and utilities
+RUN apk add --no-cache \
+    redis-cli \
+    python3 \
+    py3-pip && \
+    pip3 install --no-cache-dir redis redis-cli
+
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | sh
+
+# Set Redis environment variables
+ENV REDIS_PORT=6379 \
+    REDIS_HOST=localhost
+
+# Create Redis data directory with proper permissions
+RUN mkdir -p /data && \
+    chown -R node:node /data
+
+# Set working directory
+WORKDIR /workspace
+
+# Switch to non-root user
+USER node
+
+# Default command
+CMD ["/bin/bash"]

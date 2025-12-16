@@ -36,6 +36,15 @@ services:
       - demo-advanced-network
     # Restart policy for development
     restart: unless-stopped
+    # Resource limits (Advanced tier)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
 
   postgres:
     image: postgres:15-alpine

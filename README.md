@@ -1,14 +1,15 @@
 # Claude Code Sandbox Plugin
 
-Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments.
+Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments with a four-tier system (Basic, Intermediate, Advanced, YOLO).
 
 ## Features
 
-- **🚀 Interactive Setup Wizard** - Set up Docker sandbox environments with tiered experience (Basic/Advanced/Pro)
+- **🚀 Four-Tier Setup System** - Choose your experience level: Basic (quick auto), Intermediate (balanced), Advanced (secure minimal), or YOLO (full control)
+- **📊 Data-Driven Templates** - Configurations generated from curated registries of official Docker images and allowable domains
 - **🔧 Troubleshooting Assistant** - Diagnose and fix common sandbox issues automatically
 - **🔒 Security Auditor** - Review and harden sandbox configurations against best practices
-- **📦 Template Library** - Pre-configured templates for Python, Node.js, and full-stack projects
-- **🛡️ Firewall Management** - Secure network configurations with strict/permissive modes
+- **🛡️ Smart Firewall Management** - Tier-specific domain whitelists with 30-100+ curated domains
+- **🎯 Intelligent Detection** - Auto-detects project type and suggests appropriate tier
 
 ## Quick Start
 
@@ -25,99 +26,147 @@ claude plugins list
 ### Basic Usage
 
 ```bash
-# Start interactive setup wizard
-/windows-sandbox:setup
+# Quick setup with auto-detection (Basic tier)
+/sandbox:setup-basic
 
-# Quick setup with auto-detection (Basic mode)
-/windows-sandbox:setup --basic
+# Balanced control and convenience (Intermediate tier)
+/sandbox:setup-intermediate
 
-# Semi-autonomous with key choices (Advanced mode)
-/windows-sandbox:setup --advanced
+# Security-focused minimal setup (Advanced tier)
+/sandbox:setup-advanced
 
-# Step-by-step with detailed guidance (Pro mode)
-/windows-sandbox:setup --pro
+# Full customization and control (YOLO tier)
+/sandbox:setup-yolo
 
 # Troubleshoot existing sandbox
-/windows-sandbox:troubleshoot
+/sandbox:troubleshoot
 
 # Security audit
-/windows-sandbox:audit
+/sandbox:audit
 ```
 
-## Experience Tiers
+## Four-Tier System
 
-### Basic Mode (Quick & Automatic)
-**Best for**: Beginners, rapid prototyping
+See [TIERS.md](docs/TIERS.md) for comprehensive comparison guide.
 
-- Auto-detects project type
-- Uses sensible defaults
-- Minimal questions (1-2)
-- Generates all configs in one shot
+### Basic Tier - Zero Configuration
+
+**Best for**: Beginners, rapid prototyping, learning projects
+
+**Key Features**:
+- Auto-detects project type (2-3 questions max)
+- Sensible defaults (PostgreSQL + Redis, strict firewall)
+- Base images: `docker/sandbox-templates:latest` or `claude-code`
+- Firewall: 40-50 essential domains
+- VS Code: 5-8 essential extensions
+- Ready in 1-2 minutes
 
 **Example**:
 ```
-You: /windows-sandbox:setup --basic
-Claude: I detected a Python project with FastAPI. Setting up with PostgreSQL and Redis...
-[Generates all files]
-Claude: Done! Run 'docker compose up -d' to start.
+You: /sandbox:setup-basic
+Claude: I detected a Python FastAPI project. Setting up with:
+        - Base: docker/sandbox-templates:claude-code
+        - Database: PostgreSQL 16
+        - Cache: Redis 7
+        - Firewall: Strict (essential domains only)
+        Generating configs... Done!
 ```
 
-### Advanced Mode (Semi-Autonomous)
-**Best for**: Regular users who want control
+### Intermediate Tier - Balanced Control
 
-- Asks key decisions (5-7 questions)
-- Explains trade-offs briefly
-- One flexible Dockerfile
-- Configuration summaries
+**Best for**: Regular development, team projects, customization needs
+
+**Key Features**:
+- Some customization (5-8 questions)
+- Build args for version flexibility
+- Base images: Official images (`python:3.12-slim`, `node:20-bookworm-slim`)
+- Firewall: 100+ domains (includes cloud platforms)
+- VS Code: 10-15 curated extensions
+- Ready in 3-5 minutes
 
 **Example**:
 ```
-You: /windows-sandbox:setup --advanced
-Claude: What database do you need?
-  • PostgreSQL (recommended for relational data)
-  • MySQL (alternative relational)
-  • MongoDB (document store)
-  • None
-You: PostgreSQL
-Claude: Firewall mode?
-  • Strict (blocks all except whitelisted - recommended)
-  • Permissive (allows all - convenient for development)
+You: /sandbox:setup-intermediate
+Claude: What's your primary language?
+        • Python • Node.js • Ruby • Go • PHP
+You: Python
+Claude: Python version?
+        • 3.13 (latest) • 3.12 (stable, recommended) • 3.11 (LTS)
+You: 3.12
+Claude: What database?
+        • PostgreSQL • MySQL • MongoDB • None
 ...
 ```
 
-### Pro Mode (Step-by-Step with Guidance)
-**Best for**: Learning, production setups
+### Advanced Tier - Security-First Minimal
 
-- Detailed 10-15+ questions
-- Explains every choice
-- Separate optimized Dockerfiles
-- Security best practices
-- Full educational experience
+**Best for**: Security-conscious development, production prep, compliance
+
+**Key Features**:
+- Detailed configuration (10-15 questions)
+- Multi-stage optimized Dockerfiles
+- Base images: Security-hardened official images
+- Firewall: 30-40 minimal domains (explicit additions required)
+- VS Code: 20+ comprehensive extensions (including security scanners)
+- Ready in 8-12 minutes
 
 **Example**:
 ```
-You: /windows-sandbox:setup --pro
-Claude: Let's configure your DevContainer step by step.
+You: /sandbox:setup-advanced
+Claude: This mode creates security-hardened configurations.
 
-**Step 1: Network Configuration**
-The network name must match between devcontainer.json and docker-compose.yml.
-This allows your container to communicate with services like PostgreSQL.
+        **Step 1: Base Configuration**
+        Project name? [my-project]
 
-Recommended: <project>-network
-What network name would you like? [my-project-network]
+        **Step 2: Base Image Selection**
+        For security, we'll use hardened official images with:
+        - Minimal system packages
+        - Security updates
+        - Non-root user
+        - Small attack surface
+...
+```
+
+### YOLO Tier - Maximum Flexibility
+
+**Best for**: Experts, experimental setups, custom requirements
+
+**Key Features**:
+- Full customization (15-20+ questions)
+- Any base image (including nightly/experimental)
+- Base images: Any including `docker/sandbox-templates:nightly`, custom registries
+- Firewall: Optional (can disable entirely) or fully custom
+- VS Code: Complete control
+- Ready in 15-30 minutes (depends on choices)
+
+**Example**:
+```
+You: /sandbox:setup-yolo
+Claude: YOLO mode - You're in control!
+
+        ⚠️  Warning: Maximum flexibility, minimal safety rails.
+
+        Base image source?
+        • Official Docker (python, node, etc.)
+        • Docker sandbox-templates (latest, claude-code, nightly)
+        • Custom registry (specify full path)
+
+You: sandbox-templates
+Claude: sandbox-templates tag?
+        • latest • claude-code • nightly • cagent • Custom
 ...
 ```
 
 ## Slash Commands
 
-| Command | Description | Skill |
-|---------|-------------|-------|
-| `/windows-sandbox:setup` | Interactive setup wizard with mode selection | `sandbox-setup` |
-| `/windows-sandbox:setup --basic` | Quick automatic setup | `sandbox-setup` |
-| `/windows-sandbox:setup --advanced` | Semi-autonomous with key choices | `sandbox-setup` |
-| `/windows-sandbox:setup --pro` | Step-by-step with detailed guidance | `sandbox-setup` |
-| `/windows-sandbox:troubleshoot` | Diagnose and fix sandbox issues | `sandbox-troubleshoot` |
-| `/windows-sandbox:audit` | Security audit and recommendations | `sandbox-security` |
+| Command | Description | Tier |
+|---------|-------------|------|
+| `/sandbox:setup-basic` | Quick automatic setup with auto-detection | Basic |
+| `/sandbox:setup-intermediate` | Balanced control and convenience | Intermediate |
+| `/sandbox:setup-advanced` | Security-focused minimal setup | Advanced |
+| `/sandbox:setup-yolo` | Full customization and control | YOLO |
+| `/sandbox:troubleshoot` | Diagnose and fix sandbox issues | All |
+| `/sandbox:audit` | Security audit and recommendations | All |
 
 ## Auto-Detection
 
@@ -131,10 +180,11 @@ The plugin automatically activates when you:
 ```
 You: I need to set up a Docker development environment for my Python project
 Claude: [Automatically uses sandbox-setup skill]
-      What setup experience would you prefer?
-      • Basic (Quick & automatic)
-      • Advanced (Some customization)
-      • Pro (Full control with guidance)
+      What tier would you like?
+      • Basic (Zero config, 1-2 min)
+      • Intermediate (Balanced, 3-5 min)
+      • Advanced (Secure minimal, 8-12 min)
+      • YOLO (Full control, 15-30 min)
 ```
 
 ## Project Templates
@@ -204,7 +254,7 @@ The troubleshooter handles:
 ### Example Troubleshooting Session
 
 ```
-You: /windows-sandbox:troubleshoot
+You: /sandbox:troubleshoot
 Claude: What issue are you experiencing?
 You: Can't connect to PostgreSQL
 Claude: Let me diagnose...
@@ -321,37 +371,55 @@ claude plugins add .
 ```
 windows-sandbox/
 ├── .claude-plugin/
-│   └── plugin.json              # Plugin manifest
+│   ├── plugin.json              # Plugin manifest
+│   └── marketplace.json         # Marketplace configuration
+├── data/                        # Data-driven configuration
+│   ├── sandbox-templates.json   # Official Docker sandbox images
+│   ├── official-images.json     # Docker Hub official images registry
+│   └── allowable-domains.json   # Firewall domain whitelists
 ├── skills/
-│   ├── sandbox-setup/           # Interactive setup wizard
-│   ├── sandbox-troubleshoot/    # Troubleshooting assistant
-│   └── sandbox-security/        # Security auditor
+│   ├── windows-sandbox-setup/   # Four-tier setup wizard
+│   ├── windows-sandbox-troubleshoot/  # Troubleshooting assistant
+│   └── windows-sandbox-security/      # Security auditor
 ├── commands/
-│   ├── setup.md                 # /sandbox:setup command
-│   ├── troubleshoot.md          # /sandbox:troubleshoot command
-│   └── audit.md                 # /sandbox:audit command
-└── templates/
-    ├── base/                    # Flexible templates
-    ├── python/                  # Python-specific
-    ├── node/                    # Node.js-specific
-    └── fullstack/               # Full-stack templates
+│   ├── setup-basic.md           # /sandbox:setup-basic
+│   ├── setup-intermediate.md    # /sandbox:setup-intermediate
+│   ├── setup-advanced.md        # /sandbox:setup-advanced
+│   ├── setup-yolo.md            # /sandbox:setup-yolo
+│   ├── troubleshoot.md          # /sandbox:troubleshoot
+│   └── audit.md                 # /sandbox:audit
+├── templates/
+│   ├── master/                  # Master templates with section markers
+│   │   ├── devcontainer.json.master
+│   │   ├── Dockerfile.master
+│   │   ├── docker-compose.master.yml
+│   │   └── init-firewall.master.sh
+│   ├── compose/                 # Service-specific docker-compose sections
+│   ├── dockerfiles/            # Language-specific Dockerfile sections
+│   ├── firewall/               # Tier-specific firewall configs
+│   └── legacy/                 # Deprecated monolithic templates
+└── examples/                    # Working example applications
+    ├── streamlit-sandbox-basic/
+    ├── demo-app-sandbox-basic/
+    ├── demo-app-sandbox-intermediate/
+    └── demo-app-sandbox-advanced/
 ```
 
 ## Examples
 
-### Example 1: Quick Python Setup
+### Example 1: Quick Python Setup (Basic Tier)
 
 ```
-You: /windows-sandbox:setup --basic
-Claude: I detected a Python project. Setting up with:
-        - Python 3.12 with uv
-        - PostgreSQL database
-        - Redis cache
-        - Strict firewall mode
+You: /sandbox:setup-basic
+Claude: I detected a Python FastAPI project. Setting up with:
+        - Base: docker/sandbox-templates:claude-code
+        - Database: PostgreSQL 16
+        - Cache: Redis 7
+        - Firewall: Strict (40 essential domains)
 
         Generating configurations...
         ✅ Created .devcontainer/devcontainer.json
-        ✅ Created .devcontainer/Dockerfile
+        ✅ Created .devcontainer/Dockerfile  
         ✅ Created .devcontainer/init-firewall.sh
         ✅ Created docker-compose.yml
 
@@ -361,25 +429,32 @@ Claude: I detected a Python project. Setting up with:
         3. Reopen in Container
 ```
 
-### Example 2: Node.js with Customization
+### Example 2: Node.js with Customization (Intermediate Tier)
 
 ```
-You: /windows-sandbox:setup --advanced
+You: /sandbox:setup-intermediate
 Claude: What's your primary language?
 You: Node.js
+Claude: Node.js version?
+        • 22 (latest) • 20 (LTS, recommended) • 18 (maintenance)
+You: 20
 Claude: What database do you need?
 You: MongoDB
-Claude: Need caching?
-You: Yes, Redis
-Claude: Firewall security level?
-You: Strict
-Claude: Generating optimized configuration for Node.js + MongoDB + Redis...
+Claude: MongoDB version? [7]
+You: 7
+Claude: Need Redis cache? [Y/n]
+You: Yes
+Claude: Firewall mode?
+        • Strict (essential domains)
+        • Expanded (includes cloud platforms)
+You: Expanded
+Claude: Generating configuration for Node.js 20 + MongoDB 7 + Redis...
 ```
 
 ### Example 3: Security Audit
 
 ```
-You: /windows-sandbox:audit
+You: /sandbox:audit
 Claude: Running security audit...
 
         # Security Audit Report
@@ -586,6 +661,18 @@ MIT License - See LICENSE file for details
 - **Claude Code Docs**: https://claude.ai/code
 
 ## Changelog
+
+### v2.0.0 (2025-12-16)
+- **Major Release**: Four-tier system (Basic, Intermediate, Advanced, YOLO)
+- Data-driven configuration with JSON registries
+  - `sandbox-templates.json`: Official Docker sandbox images
+  - `official-images.json`: Docker Hub official images
+  - `allowable-domains.json`: Tier-specific firewall whitelists
+- Modular template system with section markers
+- Enhanced firewall with tier-specific domain sets (30-100+ domains)
+- Updated slash commands: `/sandbox:setup-basic`, `/sandbox:setup-intermediate`, etc.
+- Comprehensive tier comparison guide (TIERS.md)
+- Migration from Basic/Advanced/Pro to new four-tier system
 
 ### v1.0.0 (2025-01-XX)
 - Initial release

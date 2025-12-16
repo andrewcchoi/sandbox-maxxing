@@ -1,12 +1,12 @@
 # Examples
 
-Example applications demonstrating the Claude Code Sandbox plugin's capabilities across three experience tiers: **Basic**, **Advanced**, and **Pro** modes.
+Example applications demonstrating the Claude Code Sandbox plugin's capabilities across four experience tiers: **Basic**, **Intermediate**, **Advanced**, and **YOLO** tiers.
 
 ## Overview
 
 This directory contains:
 - **Shared application code** - Reusable backend and frontend implementations
-- **Sandbox examples** - Self-contained DevContainer configurations demonstrating each mode
+- **Sandbox examples** - Self-contained DevContainer configurations demonstrating each tier
 - **Two application stacks** - Full-stack demo app (Python + Node.js) and Streamlit (Python-only)
 
 ## Quick Start Guide
@@ -15,12 +15,14 @@ This directory contains:
 
 1. **Start with Streamlit Basic** - Fastest way to validate your setup (< 1 minute)
 2. **Try Demo App Basic** - Full-stack application with minimal configuration
-3. **Explore Advanced/Pro** - More features and production-ready patterns
+3. **Explore Intermediate** - Add message queue and permissive firewall
+4. **Try Advanced/YOLO** - More features and production-ready patterns
 
 ### For Production Projects
 
-1. **Demo App Advanced** - Balanced configuration for team development
-2. **Demo App Pro** - Comprehensive setup with all tooling and optimizations
+1. **Demo App Intermediate** - Learning and experimentation with additional services
+2. **Demo App Advanced** - Balanced configuration with strict security for team development
+3. **Demo App YOLO** - Comprehensive setup with all tooling and maximum customization
 
 ## Examples Structure
 
@@ -30,12 +32,13 @@ examples/
 ├── docker-compose.yml               # Shared PostgreSQL + Redis services
 │
 ├── streamlit-shared/                # Shared Streamlit application code
-├── streamlit-sandbox-basic/         # Streamlit with Basic mode DevContainer
+├── streamlit-sandbox-basic/         # Streamlit with Basic tier DevContainer
 │
 ├── demo-app-shared/                 # Shared full-stack application code
-├── demo-app-sandbox-basic/          # Demo app with Basic mode DevContainer
-├── demo-app-sandbox-advanced/       # Demo app with Advanced mode DevContainer
-└── demo-app-sandbox-pro/            # Demo app with Pro mode DevContainer
+├── demo-app-sandbox-basic/          # Demo app with Basic tier DevContainer
+├── demo-app-sandbox-intermediate/   # Demo app with Intermediate tier DevContainer
+├── demo-app-sandbox-advanced/       # Demo app with Advanced tier DevContainer
+└── demo-app-sandbox-yolo/           # Demo app with YOLO tier DevContainer
 ```
 
 ## Application Examples
@@ -49,7 +52,7 @@ examples/
 - Perfect for quick validation
 
 **Sandbox Examples**:
-- `streamlit-sandbox-basic/` - Basic mode configuration
+- `streamlit-sandbox-basic/` - Basic tier configuration
 
 ### 2. Demo Blog App (Full-stack Python + Node.js)
 
@@ -68,23 +71,24 @@ examples/
 - Component tests with React Testing Library
 
 **Sandbox Examples**:
-- `demo-app-sandbox-basic/` - Basic mode (quick start)
-- `demo-app-sandbox-advanced/` - Advanced mode (balanced)
-- `demo-app-sandbox-pro/` - Pro mode (production-ready)
+- `demo-app-sandbox-basic/` - Basic tier (quick start, no firewall)
+- `demo-app-sandbox-intermediate/` - Intermediate tier (permissive firewall, message queue)
+- `demo-app-sandbox-advanced/` - Advanced tier (strict firewall, balanced)
+- `demo-app-sandbox-yolo/` - YOLO tier (full customization)
 
-## DevContainer Modes Explained
+## DevContainer Tiers Explained
 
-### Basic Mode - Quick Start
+### Basic Tier - Quick Start
 
-**Best for**: Prototypes, learning, solo developers
+**Best for**: Prototypes, first-time users, solo developers
 
 **Characteristics**:
 - 1-2 configuration questions
 - Auto-detected stack and dependencies
 - Sensible defaults applied automatically
-- Strict firewall by default
-- Essential VS Code extensions (2-3)
-- Flexible Dockerfile
+- No firewall (relies on Windows Sandbox hypervisor isolation)
+- Essential VS Code extensions (2)
+- Sandbox template or official Docker image
 - Minimal configuration files
 
 **Setup time**: < 1 minute
@@ -92,32 +96,53 @@ examples/
 
 **Examples**: `streamlit-sandbox-basic/`, `demo-app-sandbox-basic/`
 
-### Advanced Mode - Balanced
+### Intermediate Tier - Learning & Experimentation
 
-**Best for**: Small teams, active development, customization needs
+**Best for**: Learning, experimentation, small projects
+
+**Characteristics**:
+- 3-5 configuration questions
+- Platform-specific templates (Python, Node.js, etc.)
+- Permissive firewall (no restrictions, audit logging)
+- Additional services (message queues like RabbitMQ)
+- More VS Code extensions (5)
+- Build arguments for version customization
+- Enhanced configuration options
+
+**Setup time**: 2 minutes
+**Build time**: 2-3 minutes
+
+**Example**: `demo-app-sandbox-intermediate/`
+
+### Advanced Tier - Production Development
+
+**Best for**: Small teams, active development, production-ready projects
 
 **Characteristics**:
 - 5-7 configuration questions
-- Customizable options (firewall, versions, extensions)
+- Strict firewall with customizable allowlist
 - Curated VS Code extensions (10+)
 - Configurable Dockerfile with build args
+- Resource limits for containers
 - Environment variable overrides
 - Enhanced developer experience
 
-**Setup time**: 2-3 minutes
+**Setup time**: 3-4 minutes
 **Build time**: 3-4 minutes
 
 **Example**: `demo-app-sandbox-advanced/`
 
-### Pro Mode - Production-Ready
+### YOLO Tier - Maximum Customization
 
-**Best for**: Large teams, production projects, comprehensive tooling
+**Best for**: Large teams, production projects, comprehensive tooling, full control
 
 **Characteristics**:
 - 10-15+ configuration questions
 - Fully explicit configuration (no hidden defaults)
+- Optional firewall (configurable: strict, permissive, or disabled)
 - Comprehensive VS Code extensions (20+)
 - Multi-stage optimized Dockerfile
+- All available services and tools
 - Production-ready patterns and best practices
 - Complete observability and debugging tools
 - Resource limits and security hardening
@@ -126,38 +151,41 @@ examples/
 **Setup time**: 5-10 minutes
 **Build time**: 5-7 minutes (with BuildKit)
 
-**Example**: `demo-app-sandbox-pro/`
+**Example**: `demo-app-sandbox-yolo/`
 
 ## Comparison Matrix
 
-| Feature | Basic | Advanced | Pro |
-|---------|-------|----------|-----|
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
 | **Setup** |
-| Questions | 1-2 | 5-7 | 10-15+ |
-| Config files | 4 | 4 | 7 |
-| Setup time | <1 min | 2-3 min | 5-10 min |
+| Questions | 1-2 | 3-5 | 5-7 | 10-15+ |
+| Config files | 4 | 4 | 4 | 7 |
+| Setup time | <1 min | 2 min | 3-4 min | 5-10 min |
 | **Dockerfile** |
-| Build stages | 1 | 1 | 7 (multi-stage) |
-| Build args | 0 | 2 | 5+ |
-| Dev tools | Basic | Moderate | Comprehensive |
+| Build stages | 1 | 1 | 1 | 7 (multi-stage) |
+| Build args | 0 | 2 | 2 | 5+ |
+| Dev tools | Minimal | Basic | Moderate | Comprehensive |
 | **VS Code** |
-| Extensions | 2 | 10 | 20+ |
-| Pre-config | Minimal | Curated | Complete |
-| Format on save | No | Yes | Yes + linting |
+| Extensions | 2 | 5 | 10+ | 20+ |
+| Pre-config | Minimal | Basic | Curated | Complete |
+| Format on save | No | No | Yes | Yes + linting |
 | **Development** |
-| Firewall | Strict (default) | User choice | Configurable |
-| Dev dependencies | No | Some | Complete |
-| Debugging tools | No | Some | Full suite |
-| Testing tools | pytest, jest | + coverage | + profiling |
+| Firewall | None | Permissive | Strict | Configurable |
+| Dev dependencies | No | No | Some | Complete |
+| Debugging tools | No | No | Some | Full suite |
+| Testing tools | pytest, jest | pytest, jest | + coverage | + profiling |
+| **Services** |
+| Essential | PostgreSQL, Redis | PostgreSQL, Redis | PostgreSQL, Redis | PostgreSQL, Redis |
+| Additional | None | RabbitMQ | None | All (optional) |
 | **Production** |
-| Resource limits | No | No | Yes |
-| Health checks | Basic | Standard | Comprehensive |
-| Security hardening | Partial | Partial | Full |
-| Monitoring hooks | No | No | Yes |
+| Resource limits | No | No | Yes | Yes (configurable) |
+| Health checks | Basic | Standard | Standard | Comprehensive |
+| Security hardening | Minimal | Partial | Good | Full |
+| Monitoring hooks | No | No | No | Yes |
 | **Best For** |
-| Use case | Prototypes | Development | Production |
-| Team size | Solo | Small | Large |
-| Project phase | Early | Active dev | Production |
+| Use case | Prototypes | Learning | Production dev | Full control |
+| Team size | Solo | Solo/Small | Small | Large |
+| Project phase | Early | Learning | Active dev | Production |
 
 ## Getting Started
 
@@ -225,7 +253,7 @@ code examples/demo-app-sandbox-basic
 
 ### Path 3: Production Patterns (30 minutes)
 
-1. Open `demo-app-sandbox-advanced/` or `demo-app-sandbox-pro/`
+1. Open `demo-app-sandbox-advanced/` or `demo-app-sandbox-yolo/`
 2. Reopen in Container
 3. Explore comprehensive tooling and configurations
 4. Run tests: `./run-tests.sh`
@@ -253,19 +281,27 @@ npm test
 
 ## Customization
 
-### Basic Mode
-- Edit firewall domains in `.devcontainer/init-firewall.sh`
-- Change ports in `devcontainer.json`
+### Basic Tier
 - Add VS Code extensions
+- Change ports in `devcontainer.json`
+- Upgrade to higher tier for more features
 
-### Advanced Mode
+### Intermediate Tier
 - Set Python/Node.js versions via build args
-- Configure firewall mode (strict/permissive/disabled)
+- Add more services to `docker-compose.yml`
+- Customize VS Code extensions
+- Firewall is permissive by default (no restrictions)
+
+### Advanced Tier
+- Set Python/Node.js versions via build args
+- Configure resource limits
+- Customize strict firewall allowlist
 - Customize VS Code settings and extensions
 - Override environment variables
 
-### Pro Mode
+### YOLO Tier
 - Full environment variable configuration via `.env`
+- Optional firewall (strict/permissive/disabled)
 - Resource limits and reservations
 - Security hardening options
 - Optional admin tools (pgAdmin, Redis Commander)
@@ -328,33 +364,43 @@ sudo /usr/local/bin/init-firewall.sh
 
 ### Sandbox Examples (With DevContainer)
 
-**streamlit-sandbox-basic/**: Self-contained Streamlit with Basic mode
+**streamlit-sandbox-basic/**: Self-contained Streamlit with Basic tier
 - Python-only stack
 - Embedded PostgreSQL and Redis
 - Quickest way to validate sandbox setup
 
-**demo-app-sandbox-basic/**: Full-stack with Basic mode
+**demo-app-sandbox-basic/**: Full-stack with Basic tier
 - Auto-detected Python + Node.js
 - Minimal configuration
+- No firewall (hypervisor isolation)
 - Perfect for quick start
 
-**demo-app-sandbox-advanced/**: Full-stack with Advanced mode
+**demo-app-sandbox-intermediate/**: Full-stack with Intermediate tier
+- Platform-specific templates
+- Permissive firewall
+- Message queue (RabbitMQ)
+- Learning and experimentation
+
+**demo-app-sandbox-advanced/**: Full-stack with Advanced tier
 - Customizable versions and settings
-- Curated tooling
+- Strict firewall with allowlist
+- Resource limits
 - Balanced for team development
 
-**demo-app-sandbox-pro/**: Full-stack with Pro mode
+**demo-app-sandbox-yolo/**: Full-stack with YOLO tier
 - Multi-stage optimized build
+- Optional firewall (configurable)
 - Comprehensive tooling (20+ extensions)
 - Production-ready patterns
 - Complete observability
 
 ## Next Steps
 
-- ✅ Try Basic mode for quick start
-- ✅ Explore Advanced mode for balanced development
-- ✅ Study Pro mode for production patterns
-- 📖 Read mode-specific READMEs for detailed guides
+- ✅ Try Basic tier for quick start
+- ✅ Explore Intermediate tier for learning with additional services
+- ✅ Use Advanced tier for production development with strict security
+- ✅ Try YOLO tier for maximum customization
+- 📖 Read tier-specific READMEs for detailed guides
 - 🔒 Review `docs/SECURITY.md` for security best practices
 - 🚀 Customize examples for your project needs
 

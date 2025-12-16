@@ -1,0 +1,51 @@
+# PostgreSQL 16 Development Environment
+FROM postgres:16-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    vim \
+    curl \
+    wget \
+    sudo \
+    build-essential \
+    postgresql-client-16 \
+    postgresql-contrib-16 \
+    libpq-dev \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user with sudo access
+RUN groupadd -g 1000 node && \
+    useradd -m -u 1000 -g 1000 -s /bin/bash node && \
+    echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Add node user to postgres group for database access
+RUN usermod -aG postgres node
+
+# Install PostgreSQL development tools
+RUN apt-get update && apt-get install -y \
+    postgresql-server-dev-16 \
+    pgcli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | sh
+
+# Set PostgreSQL environment variables
+ENV PGDATA=/var/lib/postgresql/data \
+    POSTGRES_HOST_AUTH_METHOD=trust \
+    PATH=$PATH:/usr/lib/postgresql/16/bin
+
+# Create directories for PostgreSQL with proper permissions
+RUN mkdir -p /var/lib/postgresql/data && \
+    chown -R postgres:postgres /var/lib/postgresql
+
+# Set working directory
+WORKDIR /workspace
+
+# Switch to non-root user
+USER node
+
+# Default command
+CMD ["/bin/bash"]

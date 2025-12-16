@@ -8,8 +8,8 @@
   "plugins": [
     {
       "name": "windows-sandbox",
-      "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments",
-      "version": "1.0.0",
+      "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments with four-tier system (Basic, Intermediate, Advanced, YOLO)",
+      "version": "2.0.0",
       "source": "./",
       "author": {
         "name": "Andrew C. Choi"

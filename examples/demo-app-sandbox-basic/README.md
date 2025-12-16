@@ -2,16 +2,16 @@
 
 This is a **self-contained** example demonstrating the Claude Code Sandbox DevContainer setup in **Basic mode**. It includes a full-stack blog application with Python FastAPI backend and React frontend.
 
-## What is Basic Mode?
+## What is Basic Tier?
 
-Basic mode is designed for developers who want:
-- **Quick setup** with minimal configuration questions (1-2 prompts)
+Basic tier is designed for developers who want:
+- **Quick setup** with minimal configuration (using sandbox templates or official images)
+- **No firewall** - relies on hypervisor-level Windows Sandbox isolation
 - **Sensible defaults** automatically applied
 - **Auto-detection** of project type and dependencies
-- **Strict firewall** by default for security
-- **Flexible Dockerfile** that works with any Python/Node.js project
+- **Minimal configuration files** for fastest setup
 
-This example shows what the `windows-sandbox` plugin generates when run in Basic mode on a full-stack application.
+This example shows what the `windows-sandbox` plugin generates when run in Basic tier on a full-stack application.
 
 ## Features
 
@@ -28,11 +28,11 @@ This example shows what the `windows-sandbox` plugin generates when run in Basic
   - View counter with Redis caching
   - Component tests with React Testing Library
 
-### DevContainer Features (Basic Mode)
+### DevContainer Features (Basic Tier)
 - **Auto-detected stack**: Python 3.12 + Node.js 20
 - **Database services**: PostgreSQL 15 + Redis 7
-- **Network security**: Strict firewall (whitelist-only internet access)
-- **VS Code extensions**: Python and ESLint
+- **Network security**: No firewall (relies on Windows Sandbox hypervisor isolation)
+- **VS Code extensions**: Python and ESLint (minimal set)
 - **Port forwarding**: Backend (8000), Frontend (5173), PostgreSQL (5432), Redis (6379)
 
 ## Quick Start
@@ -131,7 +131,7 @@ frontend/
 └── vite.config.js
 ```
 
-## DevContainer Configuration (Basic Mode)
+## DevContainer Configuration (Basic Tier)
 
 ### What the Plugin Generated
 
@@ -139,63 +139,44 @@ frontend/
 - Minimal configuration with sensible defaults
 - Auto-detected Python + Node.js stack
 - Essential VS Code extensions (Python, ESLint)
-- Firewall initialization on container start
-- Dependency installation commands
+- Simple post-create command for dependency installation
+- No firewall initialization (Basic tier relies on sandbox isolation)
 
 **Dockerfile**:
 - Flexible base image: `python:3.12-slim-bookworm`
 - Node.js 20 installation
 - Minimal system dependencies
 - Non-root user (`node`) for security
-- Firewall tools (iptables, ipset)
+- No firewall tools (keeping it simple)
 
 **docker-compose.yml**:
-- App container with required capabilities
+- App container with minimal configuration
 - PostgreSQL 15 with health checks
 - Redis 7 with health checks
 - Isolated network for services
 - Persistent volumes for data
+- No NET_ADMIN/NET_RAW capabilities (not needed without firewall)
 
 **init-firewall.sh**:
-- Strict mode by default (whitelist-only)
-- Pre-configured allowed domains:
-  - GitHub, GitLab, Bitbucket
-  - npm, PyPI, RubyGems, Crates.io
-  - AI providers (Anthropic, OpenAI)
-  - VS Code marketplace
-- Easy customization by editing ALLOWED_DOMAINS array
+- No firewall configured (Basic tier)
+- Outputs informational message about security model
+- Relies on Windows Sandbox hypervisor-level isolation
+- Ephemeral environment provides security
 
 ## Customization
 
-### Allow Additional Domains
+### Upgrade to Higher Tier
 
-Edit `.devcontainer/init-firewall.sh`:
-```bash
-ALLOWED_DOMAINS=(
-  # ... existing domains ...
-  "api.yourproject.com"
-  "cdn.example.com"
-)
-```
+If you need network-level security controls:
 
-Then rebuild the container.
+**Intermediate Tier**: Add permissive firewall (no restrictions, but audit logging)
+- Copy configuration from `demo-app-sandbox-intermediate/`
 
-### Switch to Permissive Mode
+**Advanced Tier**: Add strict firewall with customizable allowlist
+- Copy configuration from `demo-app-sandbox-advanced/`
 
-Edit `.devcontainer/devcontainer.json`:
-```json
-{
-  "containerEnv": {
-    "FIREWALL_MODE": "permissive"
-  }
-}
-```
-
-Or edit `docker-compose.yml`:
-```yaml
-environment:
-  - FIREWALL_MODE=permissive
-```
+**YOLO Tier**: Full customization with optional firewall
+- Copy configuration from `demo-app-sandbox-yolo/`
 
 ### Add VS Code Extensions
 
@@ -223,14 +204,17 @@ If you see database connection errors:
 docker-compose logs postgres
 ```
 
-### Firewall Blocking Needed Sites
+### Network Access Issues
+Basic tier has no firewall restrictions. If you experience network issues:
 ```bash
-# Check firewall logs
-sudo iptables -L -v
+# Check DNS resolution
+nslookup example.com
 
-# Temporarily disable firewall
-export FIREWALL_MODE=permissive
-sudo /usr/local/bin/init-firewall.sh
+# Check network connectivity
+ping 8.8.8.8
+
+# View network configuration
+ip addr show
 ```
 
 ### Port Already in Use
@@ -242,22 +226,24 @@ docker-compose down
 "forwardPorts": [8001, 5174, 5433, 6380]
 ```
 
-## Comparing to Other Modes
+## Comparing to Other Tiers
 
-| Feature | Basic Mode | Advanced Mode | Pro Mode |
-|---------|-----------|---------------|----------|
-| Questions asked | 1-2 | 5-7 | 10-15+ |
-| Configuration style | Auto-detected | Customizable | Fully explicit |
-| Dockerfile | Flexible | Configurable | Technology-optimized |
-| VS Code extensions | Essential | Curated | Comprehensive |
-| Firewall | Strict default | User choice | Fully documented |
-| Best for | Quick start | Balanced | Production-ready |
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
+| Questions asked | 1-2 | 3-5 | 5-7 | 10-15+ |
+| Configuration style | Auto-detected | Platform-specific | Customizable | Fully explicit |
+| Dockerfile | Sandbox template/official image | Platform template | Configurable | Technology-optimized |
+| VS Code extensions | Essential (2) | Basic (5) | Curated (10+) | Comprehensive (20+) |
+| Firewall | None | Permissive | Strict | Configurable |
+| Services | Essential only | + Message queue | + Resource limits | All available |
+| Best for | Quick start | Learning | Production dev | Full control |
 
 ## Related Examples
 
 - `examples/demo-app-shared/` - Uses shared Docker Compose services
-- `examples/demo-app-sandbox-advanced/` - Advanced mode configuration
-- `examples/demo-app-sandbox-pro/` - Pro mode with all optimizations
+- `examples/demo-app-sandbox-intermediate/` - Intermediate tier with permissive firewall
+- `examples/demo-app-sandbox-advanced/` - Advanced tier with strict firewall
+- `examples/demo-app-sandbox-yolo/` - YOLO tier with full customization
 - `examples/streamlit-sandbox-basic/` - Simpler Python-only app
 
 ## Learn More

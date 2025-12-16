@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Official Docker images registry",
+  "metadata": {
+    "hub_search_url": "https://hub.docker.com/search?type=image&badges=official&operating_system=linux&q=",
+    "last_updated": "2025-12-16"
+  },
+  "images": {
+    "python": {
+      "registry": "docker.io",
+      "repository": "python",
+      "hub_url": "https://hub.docker.com/_/python",
+      "recommended_tags": [
+        "3.12-slim-bookworm",
+        "3.11-slim-bookworm",
+        "3.12-bookworm",
+        "3.13-slim-bookworm"
+      ],
+      "default_tag": "3.12-slim-bookworm",
+      "pull_command": "docker pull python:3.12-slim-bookworm",
+      "notes": "Use slim variants for smaller images. Python 3.12+ recommended."
+    },
+    "node": {
+      "registry": "docker.io",
+      "repository": "node",
+      "hub_url": "https://hub.docker.com/_/node",
+      "recommended_tags": [
+        "20-bookworm-slim",
+        "22-bookworm-slim",
+        "20-bookworm",
+        "22-bookworm"
+      ],
+      "default_tag": "20-bookworm-slim",
+      "pull_command": "docker pull node:20-bookworm-slim",
+      "notes": "LTS versions recommended. Node 20 (LTS until 2026), Node 22 (LTS starting 2024)."
+    },
+    "ruby": {
+      "registry": "docker.io",
+      "repository": "ruby",
+      "hub_url": "https://hub.docker.com/_/ruby",
+      "recommended_tags": [
+        "3.3-slim-bookworm",
+        "3.2-slim-bookworm",
+        "3.1-slim-bookworm"
+      ],
+      "default_tag": "3.3-slim-bookworm",
+      "pull_command": "docker pull ruby:3.3-slim-bookworm",
+      "notes": "Ruby 3.3 is the latest stable version."
+    },
+    "php": {
+      "registry": "docker.io",
+      "repository": "php",
+      "hub_url": "https://hub.docker.com/_/php",
+      "recommended_tags": [
+        "8.4-fpm-bookworm",
+        "8.3-fpm-bookworm",
+        "8.4-cli-bookworm",
+        "8.3-cli-bookworm"
+      ],
+      "default_tag": "8.4-fpm-bookworm",
+      "pull_command": "docker pull php:8.4-fpm-bookworm",
+      "notes": "Use FPM for web servers, CLI for command-line apps. PHP 8.4 is latest."
+    },
+    "openjdk": {
+      "registry": "docker.io",
+      "repository": "openjdk",
+      "hub_url": "https://hub.docker.com/_/openjdk",
+      "recommended_tags": [
+        "21-slim-bookworm",
+        "17-slim-bookworm",
+        "21-bookworm"
+      ],
+      "default_tag": "21-slim-bookworm",
+      "pull_command": "docker pull openjdk:21-slim-bookworm",
+      "notes": "Also consider eclipse-temurin for production. Java 21 is LTS."
+    },
+    "golang": {
+      "registry": "docker.io",
+      "repository": "golang",
+      "hub_url": "https://hub.docker.com/_/golang",
+      "recommended_tags": [
+        "1.22-bookworm",
+        "1.21-bookworm",
+        "1.23-bookworm"
+      ],
+      "default_tag": "1.22-bookworm",
+      "pull_command": "docker pull golang:1.22-bookworm",
+      "notes": "Go 1.22+ has improved performance and security."
+    },
+    "rust": {
+      "registry": "docker.io",
+      "repository": "rust",
+      "hub_url": "https://hub.docker.com/_/rust",
+      "recommended_tags": [
+        "1.75-slim-bookworm",
+        "1.75-bookworm",
+        "1.76-slim-bookworm"
+      ],
+      "default_tag": "1.75-slim-bookworm",
+      "pull_command": "docker pull rust:1.75-slim-bookworm",
+      "notes": "Rust updates every 6 weeks. Use slim for smaller images."
+    },
+    "gcc": {
+      "registry": "docker.io",
+      "repository": "gcc",
+      "hub_url": "https://hub.docker.com/_/gcc",
+      "recommended_tags": [
+        "13-bookworm",
+        "12-bookworm",
+        "14-bookworm"
+      ],
+      "default_tag": "13-bookworm",
+      "pull_command": "docker pull gcc:13-bookworm",
+      "notes": "For C/C++ development with GCC. GCC 13 is widely supported."
+    },
+    "postgres": {
+      "registry": "docker.io",
+      "repository": "postgres",
+      "hub_url": "https://hub.docker.com/_/postgres",
+      "recommended_tags": [
+        "16-bookworm",
+        "15-bookworm",
+        "16-alpine",
+        "15-alpine"
+      ],
+      "default_tag": "16-bookworm",
+      "pull_command": "docker pull postgres:16-bookworm",
+      "notes": "PostgreSQL 16 is latest major version. Alpine for smaller images."
+    },
+    "redis": {
+      "registry": "docker.io",
+      "repository": "redis",
+      "hub_url": "https://hub.docker.com/_/redis",
+      "recommended_tags": [
+        "7-alpine",
+        "7-bookworm",
+        "6-alpine"
+      ],
+      "default_tag": "7-alpine",
+      "pull_command": "docker pull redis:7-alpine",
+      "notes": "Redis 7 adds many features. Alpine recommended for size."
+    },
+    "mysql": {
+      "registry": "docker.io",
+      "repository": "mysql",
+      "hub_url": "https://hub.docker.com/_/mysql",
+      "recommended_tags": [
+        "8.0",
+        "8.0-debian",
+        "8.4"
+      ],
+      "default_tag": "8.0",
+      "pull_command": "docker pull mysql:8.0",
+      "notes": "MySQL 8.0 is current LTS. Consider MariaDB as alternative."
+    },
+    "mongo": {
+      "registry": "docker.io",
+      "repository": "mongo",
+      "hub_url": "https://hub.docker.com/_/mongo",
+      "recommended_tags": [
+        "7",
+        "6",
+        "7-jammy"
+      ],
+      "default_tag": "7",
+      "pull_command": "docker pull mongo:7",
+      "notes": "MongoDB 7 is latest major version."
+    },
+    "nginx": {
+      "registry": "docker.io",
+      "repository": "nginx",
+      "hub_url": "https://hub.docker.com/_/nginx",
+      "recommended_tags": [
+        "1.25-bookworm",
+        "1.25-alpine",
+        "1.26-bookworm"
+      ],
+      "default_tag": "1.25-bookworm",
+      "pull_command": "docker pull nginx:1.25-bookworm",
+      "notes": "Nginx 1.25+ has HTTP/3 support."
+    },
+    "rabbitmq": {
+      "registry": "docker.io",
+      "repository": "rabbitmq",
+      "hub_url": "https://hub.docker.com/_/rabbitmq",
+      "recommended_tags": [
+        "3.13-management",
+        "3.12-management",
+        "3.13-alpine"
+      ],
+      "default_tag": "3.13-management",
+      "pull_command": "docker pull rabbitmq:3.13-management",
+      "notes": "Use -management tag for web UI."
+    }
+  }
+}

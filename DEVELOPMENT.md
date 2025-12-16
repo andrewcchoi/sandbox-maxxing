@@ -18,8 +18,8 @@ This plugin uses itself for development (dogfooding approach). The devcontainer 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/andrewcchoi/windows-sandbox
-   cd windows-sandbox
+   git clone https://github.com/andrewcchoi/sandbox
+   cd sandbox
    ```
 
 2. Open in VS Code:
@@ -37,12 +37,12 @@ This plugin uses itself for development (dogfooding approach). The devcontainer 
 
 ```bash
 # Clone repository
-git clone https://github.com/andrewcchoi/windows-sandbox
-cd windows-sandbox
+git clone https://github.com/andrewcchoi/sandbox
+cd sandbox
 
 # Build and run container
-docker build -f .devcontainer/Dockerfile -t windows-sandbox-dev .
-docker run -it -v $(pwd):/workspace windows-sandbox-dev bash
+docker build -f .devcontainer/Dockerfile -t sandbox-dev .
+docker run -it -v $(pwd):/workspace sandbox-dev bash
 
 # Now you can edit files with your favorite editor
 ```
@@ -68,16 +68,16 @@ The devcontainer is **intentionally minimal** for plugin development:
 ## Project Structure
 
 ```
-windows-sandbox/
+sandbox/
 ├── .devcontainer/              # Generated using plugin Basic mode
 │   ├── devcontainer.json       # VS Code configuration
 │   ├── Dockerfile              # Python + Node.js only
 │   └── init-firewall.sh        # Disabled (not needed)
 │
 ├── skills/                     # Plugin skills (main work here)
-│   ├── windows-sandbox-setup/
-│   ├── windows-sandbox-troubleshoot/
-│   └── windows-sandbox-security/
+│   ├── sandbox-setup-advanced/
+│   ├── sandbox-troubleshoot/
+│   └── sandbox-security/
 │
 ├── commands/                   # Slash commands
 │   ├── setup.md
@@ -109,7 +109,7 @@ Most development work doesn't require services:
 
 ```bash
 # Edit plugin skills
-code skills/windows-sandbox-setup/SKILL.md
+code skills/sandbox-setup-advanced/SKILL.md
 
 # Edit templates
 code templates/python/devcontainer.json
@@ -132,9 +132,9 @@ claude plugins list
 
 # Test slash commands
 claude
-> /windows-sandbox:setup --basic
-> /windows-sandbox:troubleshoot
-> /windows-sandbox:audit
+> /sandbox:setup --basic
+> /sandbox:troubleshoot
+> /sandbox:audit
 ```
 
 ### 3. Running Example Applications (Optional)
@@ -180,7 +180,7 @@ cd /tmp/test-project
 
 # Use the plugin to generate configs
 claude
-> /windows-sandbox:setup --basic
+> /sandbox:setup --basic
 
 # Verify generated files
 ls -la .devcontainer/
@@ -218,7 +218,7 @@ The `.devcontainer/` in this repository was created using the plugin itself:
 
 ```bash
 # What was run (hypothetically, during setup)
-/windows-sandbox:setup --basic
+/sandbox:setup --basic
 
 # Plugin detection output:
 # ✓ Scanning repository...
@@ -252,7 +252,7 @@ When plugin templates change, regenerate the devcontainer to stay current:
 mv .devcontainer .devcontainer.backup
 
 # 2. Regenerate using latest plugin
-/windows-sandbox:setup --basic
+/sandbox:setup --basic
 
 # 3. Review changes
 diff -r .devcontainer.backup .devcontainer
@@ -272,7 +272,7 @@ git commit -m "chore: regenerate devcontainer with latest plugin version"
 
 ```bash
 # Rebuild without cache
-docker build --no-cache -f .devcontainer/Dockerfile -t windows-sandbox-dev .
+docker build --no-cache -f .devcontainer/Dockerfile -t sandbox-dev .
 
 # Or in VS Code
 # F1 → Dev Containers: Rebuild Container Without Cache
@@ -319,7 +319,7 @@ lsof -i :6379
 
 ```bash
 # Reinstall plugin
-claude plugins remove windows-sandbox
+claude plugins remove sandbox
 claude plugins add .
 
 # Verify installation
@@ -346,7 +346,7 @@ The devcontainer sets minimal environment variables:
 
 1. **Keep the devcontainer minimal** - Don't add services unless the plugin itself needs them
 2. **Use examples/docker-compose.yml** - Keep example services separate
-3. **Test with the plugin** - Use `/windows-sandbox:setup` to validate changes
+3. **Test with the plugin** - Use `/sandbox:setup` to validate changes
 4. **Document changes** - Update this file when modifying the development workflow
 5. **Regenerate periodically** - Keep the devcontainer in sync with plugin templates
 
@@ -359,7 +359,7 @@ The devcontainer sets minimal environment variables:
 
 ## Getting Help
 
-- **Issues**: https://github.com/andrewcchoi/windows-sandbox/issues
+- **Issues**: https://github.com/andrewcchoi/sandbox/issues
 - **Documentation**: See `skills/*/references/` directories
 - **Claude Code**: https://claude.ai/code
-- **Plugin Development**: Use `/windows-sandbox:troubleshoot` for debugging
+- **Plugin Development**: Use `/sandbox:troubleshoot` for debugging
