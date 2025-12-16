@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: {{DB_NAME}}
       POSTGRES_USER: {{DB_USER}}
-      POSTGRES_PASSWORD: devpassword
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
     ports:
       - "5432:5432"
     volumes:

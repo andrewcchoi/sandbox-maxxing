@@ -9,7 +9,7 @@ services:
     volumes:
       - .:/workspace:cached
     environment:
-      - DATABASE_URL=postgresql://sandbox_user:devpassword@postgres:5432/sandbox_dev
+      - DATABASE_URL=${DATABASE_URL:-postgresql://${POSTGRES_USER:-sandbox_user}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-sandbox_dev}}
       - REDIS_URL=redis://redis:6379
       - FIREWALL_MODE=strict
     cap_add:
@@ -26,13 +26,13 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: sandbox_user
-      POSTGRES_PASSWORD: devpassword
-      POSTGRES_DB: sandbox_dev
+      POSTGRES_USER: ${POSTGRES_USER:-sandbox_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-sandbox_dev}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sandbox_user -d sandbox_dev"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sandbox_user} -d ${POSTGRES_DB:-sandbox_dev}"]
       interval: 5s
       timeout: 5s
       retries: 5
