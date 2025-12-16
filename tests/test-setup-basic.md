@@ -9,7 +9,7 @@
 
 ### 1. Install Plugin Locally
 ```bash
-cd D:\!wip\plugins-sandbox\claude-code-sandbox-plugin
+cd D:\!wip\plugins-sandbox\windows-sandbox
 claude plugins add .
 ```
 

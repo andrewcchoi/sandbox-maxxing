@@ -16,7 +16,7 @@ echo "print('test')" > main.py
 
 # 3. Run setup
 claude
-/sandbox:setup --basic
+/sandbox:basic
 
 # 4. Verify
 ls .devcontainer/
@@ -26,8 +26,9 @@ docker compose up -d
 ## Test Coverage
 
 - ✅ Basic mode setup
+- ✅ Intermediate mode setup
 - ✅ Advanced mode setup
-- ✅ Pro mode setup
+- ✅ YOLO mode setup
 - ✅ Troubleshooting diagnostics
 - ✅ Security auditing
 - ✅ Template generation

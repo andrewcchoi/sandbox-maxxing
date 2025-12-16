@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide explains how to develop the Windows Sandbox Plugin using the minimal devcontainer setup.
+This guide explains how to develop the Sandbox Plugin using the minimal devcontainer setup.
 
 ## Overview
 
@@ -41,8 +41,8 @@ git clone https://github.com/andrewcchoi/windows-sandbox
 cd windows-sandbox
 
 # Build and run container
-docker build -f .devcontainer/Dockerfile -t windows-sandbox-dev .
-docker run -it -v $(pwd):/workspace windows-sandbox-dev bash
+docker build -f .devcontainer/Dockerfile -t sandbox-dev .
+docker run -it -v $(pwd):/workspace sandbox-dev bash
 
 # Now you can edit files with your favorite editor
 ```
@@ -68,16 +68,16 @@ The devcontainer is **intentionally minimal** for plugin development:
 ## Project Structure
 
 ```
-windows-sandbox/
+sandbox/
 ├── .devcontainer/              # Generated using plugin Basic mode
 │   ├── devcontainer.json       # VS Code configuration
 │   ├── Dockerfile              # Python + Node.js only
 │   └── init-firewall.sh        # Disabled (not needed)
 │
 ├── skills/                     # Plugin skills (main work here)
-│   ├── windows-sandbox-setup/
-│   ├── windows-sandbox-troubleshoot/
-│   └── windows-sandbox-security/
+│   ├── sandbox-setup-advanced/
+│   ├── sandbox-troubleshoot/
+│   └── sandbox-security/
 │
 ├── commands/                   # Slash commands
 │   ├── setup.md
@@ -96,7 +96,7 @@ windows-sandbox/
 │   ├── demo-app-shared/        # Full-stack demo (shared services)
 │   ├── demo-app-sandbox-basic/  # Full-stack demo (Basic mode)
 │   ├── demo-app-sandbox-advanced/ # Full-stack demo (Advanced mode)
-│   └── demo-app-sandbox-pro/   # Full-stack demo (Pro mode)
+│   └── demo-app-sandbox-yolo/   # Full-stack demo (YOLO mode)
 │
 └── docs/                       # Documentation
 ```
@@ -109,7 +109,7 @@ Most development work doesn't require services:
 
 ```bash
 # Edit plugin skills
-code skills/windows-sandbox-setup/SKILL.md
+code skills/sandbox-setup-advanced/SKILL.md
 
 # Edit templates
 code templates/python/devcontainer.json
@@ -132,9 +132,9 @@ claude plugins list
 
 # Test slash commands
 claude
-> /windows-sandbox:setup --basic
-> /windows-sandbox:troubleshoot
-> /windows-sandbox:audit
+> /sandbox:setup --basic
+> /sandbox:troubleshoot
+> /sandbox:audit
 ```
 
 ### 3. Running Example Applications (Optional)
@@ -180,7 +180,7 @@ cd /tmp/test-project
 
 # Use the plugin to generate configs
 claude
-> /windows-sandbox:setup --basic
+> /sandbox:setup --basic
 
 # Verify generated files
 ls -la .devcontainer/
@@ -218,7 +218,7 @@ The `.devcontainer/` in this repository was created using the plugin itself:
 
 ```bash
 # What was run (hypothetically, during setup)
-/windows-sandbox:setup --basic
+/sandbox:basic
 
 # Plugin detection output:
 # ✓ Scanning repository...
@@ -252,7 +252,7 @@ When plugin templates change, regenerate the devcontainer to stay current:
 mv .devcontainer .devcontainer.backup
 
 # 2. Regenerate using latest plugin
-/windows-sandbox:setup --basic
+/sandbox:basic
 
 # 3. Review changes
 diff -r .devcontainer.backup .devcontainer
@@ -272,7 +272,7 @@ git commit -m "chore: regenerate devcontainer with latest plugin version"
 
 ```bash
 # Rebuild without cache
-docker build --no-cache -f .devcontainer/Dockerfile -t windows-sandbox-dev .
+docker build --no-cache -f .devcontainer/Dockerfile -t sandbox-dev .
 
 # Or in VS Code
 # F1 → Dev Containers: Rebuild Container Without Cache
@@ -333,12 +333,12 @@ cat .claude-plugin/plugin.json | jq .
 
 The devcontainer sets minimal environment variables:
 
-| Variable | Value | Purpose |
-|----------|-------|---------|
-| `NPM_CONFIG_PREFIX` | `/usr/local/share/npm-global` | Global npm packages location |
-| `UV_COMPILE_BYTECODE` | `1` | Speed up Python imports |
-| `UV_LINK_MODE` | `copy` | Ensure dependencies are copied |
-| `PATH` | Includes npm global and uv bins | Tool availability |
+| Variable              | Value                           | Purpose                        |
+| --------------------- | ------------------------------- | ------------------------------ |
+| `NPM_CONFIG_PREFIX`   | `/usr/local/share/npm-global`   | Global npm packages location   |
+| `UV_COMPILE_BYTECODE` | `1`                             | Speed up Python imports        |
+| `UV_LINK_MODE`        | `copy`                          | Ensure dependencies are copied |
+| `PATH`                | Includes npm global and uv bins | Tool availability              |
 
 **No database variables** - these are only needed when running examples, set in `examples/docker-compose.yml`.
 
@@ -346,7 +346,7 @@ The devcontainer sets minimal environment variables:
 
 1. **Keep the devcontainer minimal** - Don't add services unless the plugin itself needs them
 2. **Use examples/docker-compose.yml** - Keep example services separate
-3. **Test with the plugin** - Use `/windows-sandbox:setup` to validate changes
+3. **Test with the plugin** - Use `/sandbox:basic` to validate changes
 4. **Document changes** - Update this file when modifying the development workflow
 5. **Regenerate periodically** - Keep the devcontainer in sync with plugin templates
 
@@ -362,4 +362,4 @@ The devcontainer sets minimal environment variables:
 - **Issues**: https://github.com/andrewcchoi/windows-sandbox/issues
 - **Documentation**: See `skills/*/references/` directories
 - **Claude Code**: https://claude.ai/code
-- **Plugin Development**: Use `/windows-sandbox:troubleshoot` for debugging
+- **Plugin Development**: Use `/sandbox:troubleshoot` for debugging

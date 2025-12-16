@@ -1,0 +1,46 @@
+# Python 3.12 Development Environment
+FROM python:3.12-slim-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    vim \
+    curl \
+    wget \
+    sudo \
+    build-essential \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user with sudo access
+RUN groupadd -g 1000 node && \
+    useradd -m -u 1000 -g 1000 -s /bin/bash node && \
+    echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Install Python development tools
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+    uv \
+    poetry \
+    black \
+    pytest \
+    ruff \
+    ipython
+
+# Set Python environment variables
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | sh
+
+# Set working directory
+WORKDIR /workspace
+
+# Switch to non-root user
+USER node
+
+# Default command
+CMD ["/bin/bash"]

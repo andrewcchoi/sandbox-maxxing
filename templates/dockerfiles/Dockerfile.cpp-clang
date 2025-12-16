@@ -1,0 +1,52 @@
+# C++ Development Environment (Clang)
+FROM debian:bookworm-slim
+
+# Install system dependencies and Clang
+RUN apt-get update && apt-get install -y \
+    git \
+    vim \
+    curl \
+    wget \
+    sudo \
+    build-essential \
+    clang \
+    clang-format \
+    clang-tidy \
+    lldb \
+    cmake \
+    make \
+    ninja-build \
+    libc++-dev \
+    libc++abi-dev \
+    valgrind \
+    cppcheck \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user with sudo access
+RUN groupadd -g 1000 node && \
+    useradd -m -u 1000 -g 1000 -s /bin/bash node && \
+    echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Install vcpkg (C++ package manager)
+RUN git clone https://github.com/microsoft/vcpkg.git /opt/vcpkg && \
+    /opt/vcpkg/bootstrap-vcpkg.sh && \
+    ln -s /opt/vcpkg/vcpkg /usr/local/bin/vcpkg && \
+    chown -R node:node /opt/vcpkg
+
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | sh
+
+# Set C++ environment variables for Clang
+ENV CXX=clang++ \
+    CC=clang \
+    VCPKG_ROOT=/opt/vcpkg
+
+# Set working directory
+WORKDIR /workspace
+
+# Switch to non-root user
+USER node
+
+# Default command
+CMD ["/bin/bash"]

@@ -8,8 +8,9 @@ Initial stable release of Claude Code Sandbox plugin.
 
 ### Interactive Setup Wizard
 - **Basic Mode**: Auto-detection with sensible defaults
+- **Intermediate Mode**: Balanced control and convenience
 - **Advanced Mode**: Customization with guided choices
-- **Pro Mode**: Step-by-step with detailed education
+- **YOLO Mode**: Step-by-step with full control
 
 ### Troubleshooting Assistant
 - Diagnoses container, network, and service issues
@@ -43,7 +44,7 @@ claude plugins add https://github.com/andrewcchoi/windows-sandbox
 ```bash
 cd your-project
 claude
-/sandbox:setup --basic
+/sandbox:basic
 ```
 
 ## Breaking Changes
@@ -56,7 +57,7 @@ None currently.
 
 ## Contributors
 
-- Claude Code Sandbox Team
+- Sandbox Team
 
 ## What's Next
 

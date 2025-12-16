@@ -1,0 +1,48 @@
+# Rust 1.75 Development Environment
+FROM rust:1.75-slim-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    vim \
+    curl \
+    wget \
+    sudo \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user with sudo access
+RUN groupadd -g 1000 node && \
+    useradd -m -u 1000 -g 1000 -s /bin/bash node && \
+    echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Install Rust components and tools
+RUN rustup component add rustfmt clippy rust-src && \
+    cargo install cargo-edit cargo-watch cargo-outdated
+
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | sh
+
+# Set Rust environment variables
+ENV CARGO_HOME=/home/node/.cargo \
+    RUSTUP_HOME=/home/node/.rustup \
+    PATH=/home/node/.cargo/bin:$PATH
+
+# Copy cargo configuration to user directory
+RUN mkdir -p /home/node/.cargo && \
+    cp -r /usr/local/cargo/* /home/node/.cargo/ 2>/dev/null || true && \
+    mkdir -p /home/node/.rustup && \
+    cp -r /usr/local/rustup/* /home/node/.rustup/ 2>/dev/null || true && \
+    chown -R node:node /home/node/.cargo /home/node/.rustup
+
+# Set working directory
+WORKDIR /workspace
+
+# Switch to non-root user
+USER node
+
+# Default command
+CMD ["/bin/bash"]

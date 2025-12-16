@@ -1,4 +1,4 @@
-# Docker Compose for Windows Sandbox Plugin Examples
+# Docker Compose for Sandbox Plugin Examples
 #
 # This file provides PostgreSQL and Redis services for testing example applications.
 # It is separate from the devcontainer to keep plugin development lightweight.
@@ -29,7 +29,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: windows-sandbox-postgres
+    container_name: sandbox-postgres
     environment:
       POSTGRES_DB: sandbox_dev
       POSTGRES_USER: sandbox_user
@@ -48,7 +48,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: windows-sandbox-redis
+    container_name: sandbox-redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -61,9 +61,9 @@ services:
 
 networks:
   examples-network:
-    name: windows-sandbox-examples
+    name: sandbox-examples
     driver: bridge
 
 volumes:
   postgres_data:
-    name: windows-sandbox-postgres-data
+    name: sandbox-postgres-data

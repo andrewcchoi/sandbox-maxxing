@@ -1,0 +1,41 @@
+# Node.js 20 Development Environment
+FROM node:20-bookworm-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    vim \
+    curl \
+    wget \
+    sudo \
+    build-essential \
+    python3 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user with sudo access
+RUN groupadd -g 1000 node || true && \
+    useradd -m -u 1000 -g 1000 -s /bin/bash node || true && \
+    echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Install Node.js package managers and tools
+RUN npm install -g \
+    yarn \
+    pnpm \
+    typescript \
+    ts-node \
+    eslint \
+    prettier \
+    nodemon
+
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | sh
+
+# Set working directory
+WORKDIR /workspace
+
+# Switch to non-root user
+USER node
+
+# Default command
+CMD ["/bin/bash"]
