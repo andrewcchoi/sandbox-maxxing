@@ -21,6 +21,38 @@ This guide helps you choose the right sandbox mode for your project and understa
 | **Learning Curve** | Easy | Easy-Moderate | Moderate-Hard | Expert |
 | **Maintenance** | Low | Low-Medium | Medium-High | High |
 
+### MCP Server Configuration
+
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
+| MCP Servers | 2 | 5 | 8 | 11+ |
+| filesystem | ✓ | ✓ | ✓ | ✓ |
+| memory | ✓ | ✓ | ✓ | ✓ |
+| sqlite | - | ✓ | ✓ | ✓ |
+| fetch | - | ✓ | ✓ | ✓ |
+| github | - | ✓ | ✓ | ✓ |
+| postgres | - | - | ✓ | ✓ |
+| docker | - | - | ✓ | ✓ |
+| brave-search | - | - | ✓ | ✓ |
+| puppeteer | - | - | - | ✓ |
+| slack | - | - | - | ✓ |
+| google-drive | - | - | - | ✓ |
+
+See [MCP Configuration Guide](MCP.md) for details.
+
+### VS Code Extensions
+
+| Category | Basic | Intermediate | Advanced | YOLO |
+|----------|-------|--------------|----------|------|
+| Essential | 3 | 5 | 7 | 7 |
+| Language | 2+ | 4+ | 4+ | 6+ |
+| Themes | 1 | 3 | 5 | 9 |
+| Productivity | 0 | 2 | 4 | 4 |
+| Fun | 1 | 3 | 4 | 7 |
+| **Total** | **6-8** | **15-20** | **22-28** | **35+** |
+
+See [Extensions Reference](EXTENSIONS.md) for details.
+
 ## Mode Details
 
 ### Basic Mode - Zero Configuration Development
