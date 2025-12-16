@@ -34,7 +34,7 @@ services:
 
     environment:
       # Database Configuration
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-sandbox_user}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-sandbox_dev}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://${POSTGRES_USER:-sandbox_user}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-sandbox_dev}}
       - DATABASE_POOL_SIZE=${DATABASE_POOL_SIZE:-10}
       - DATABASE_MAX_OVERFLOW=${DATABASE_MAX_OVERFLOW:-20}
 

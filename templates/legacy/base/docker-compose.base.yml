@@ -6,7 +6,7 @@ services:
   #   environment:
   #     POSTGRES_DB: {{DB_NAME}}
   #     POSTGRES_USER: {{DB_USER}}
-  #     POSTGRES_PASSWORD: devpassword
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
   #   ports:
   #     - "5432:5432"
   #   volumes:
@@ -24,8 +24,8 @@ services:
   #   environment:
   #     MYSQL_DATABASE: {{DB_NAME}}
   #     MYSQL_USER: {{DB_USER}}
-  #     MYSQL_PASSWORD: devpassword
-  #     MYSQL_ROOT_PASSWORD: rootpassword
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD:-devpassword}
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
   #   ports:
   #     - "3306:3306"
   #   volumes:
@@ -36,8 +36,8 @@ services:
   #   image: mongo:7
   #   container_name: {{PROJECT_NAME}}-mongodb
   #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: admin
-  #     MONGO_INITDB_ROOT_PASSWORD: devpassword
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-devpassword}
   #   ports:
   #     - "27017:27017"
   #   volumes:
