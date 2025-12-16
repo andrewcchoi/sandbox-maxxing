@@ -1,12 +1,13 @@
-# Generated using windows-sandbox plugin Basic mode
-# Minimal development container for plugin development (no services)
-# For testing examples, use examples/docker-compose.yml separately
+# Generated using sandbox plugin Intermediate tier
+# Development container for plugin development with services
+# Includes PostgreSQL, Redis, RabbitMQ for testing examples
 
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
-# Install minimal system packages
+# Install system packages including iptables for firewall
 RUN apt-get update && apt-get install -y --no-install-recommends \
   git vim nano less procps sudo curl ca-certificates \
+  iptables ipset \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js

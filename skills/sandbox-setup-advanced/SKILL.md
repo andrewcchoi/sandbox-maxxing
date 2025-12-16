@@ -21,7 +21,7 @@ Use this skill when:
 Do NOT use this skill when:
 - User wants quickest setup (use `sandbox-setup-basic` instead)
 - User wants maximum automation (use `sandbox-setup-basic` instead)
-- User needs full control and step-by-step guidance (use `sandbox-setup-pro` instead)
+- User needs full control and step-by-step guidance (use `sandbox-setup-yolo` instead)
 - User is troubleshooting an existing sandbox (use `sandbox-troubleshoot` instead)
 - User wants to audit security of existing setup (use `sandbox-security` instead)
 
@@ -274,7 +274,7 @@ For detailed information, refer to embedded documentation in `references/`:
 - **After setup**: Suggest running `/sandbox:audit` for comprehensive security review
 - **During errors**: Automatically invoke `sandbox-troubleshoot` skill if setup fails
 - **For simpler setups**: Suggest `sandbox-setup-basic` if user seems overwhelmed
-- **For more control**: Suggest `sandbox-setup-pro` if user wants step-by-step guidance
+- **For more control**: Suggest `sandbox-setup-yolo` if user wants step-by-step guidance
 - **Updating configs**: Warn about overwriting and offer to backup existing files
 
 ## Key Principles
@@ -309,14 +309,8 @@ For detailed information, refer to embedded documentation in `references/`:
 - Advanced provides brief explanations (Basic minimizes interaction)
 - Advanced offers allowlist review (Basic auto-generates)
 
-**vs. Pro Mode**:
-- Advanced asks 7-10 questions (Pro asks 10-15+)
-- Advanced provides brief explanations (Pro provides detailed education)
-- Advanced uses template-based generation (Pro walks through each file)
-- Advanced focuses on security balance (Pro focuses on learning and full control)
-
-**vs. Shared Mode**:
-- Advanced uses strict firewall (Shared is permissive/no firewall)
-- Advanced uses Docker Compose services (Shared uses host services)
-- Advanced has network isolation (Shared shares host network)
-- Advanced requires container rebuild for changes (Shared is more flexible)
+**vs. YOLO Tier**:
+- Advanced asks 7-10 questions (YOLO asks 10-15+)
+- Advanced provides brief explanations (YOLO provides detailed education)
+- Advanced uses template-based generation (YOLO walks through each file)
+- Advanced focuses on security balance (YOLO focuses on learning and full control)

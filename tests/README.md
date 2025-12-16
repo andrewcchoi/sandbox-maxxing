@@ -17,7 +17,7 @@ Each test file follows this format:
 Execute tests in order:
 1. `test-setup-basic.md` - Basic mode setup wizard
 2. `test-setup-advanced.md` - Advanced mode customization
-3. `test-setup-pro.md` - Pro mode with full guidance
+3. `test-setup-pro.md` - YOLO tier with full guidance
 4. `test-troubleshoot.md` - Troubleshooting assistant
 5. `test-security.md` - Security auditor
 

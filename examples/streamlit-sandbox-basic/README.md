@@ -1,6 +1,6 @@
 # Streamlit Sandbox (Basic Mode)
 
-**Self-contained** Streamlit app demonstrating what the windows-sandbox plugin generates in **Basic mode**.
+**Self-contained** Streamlit app demonstrating what the sandbox plugin generates in **Basic mode**.
 
 ## What is Basic Mode?
 
@@ -74,7 +74,7 @@ streamlit-sandbox-basic/
 - **Advanced mode**: 5-7 questions, configurable Dockerfile with build args, 5 VS Code extensions
 - **Pro mode**: 10-15+ questions, technology-optimized Dockerfile, 11 extensions, production-ready configs
 
-See `examples/demo-app-sandbox-advanced/` and `examples/demo-app-sandbox-pro/` for comparisons.
+See `examples/demo-app-sandbox-advanced/` and `examples/demo-app-sandbox-yolo/` for comparisons.
 
 ## Next Steps
 

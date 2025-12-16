@@ -175,7 +175,7 @@ Skills can invoke each other and share context:
 
 ### What's New
 1. **Data-driven configuration**: All options now sourced from JSON files
-2. **Four-tier system**: Replaces old Basic/Advanced/Pro with clearer tiers
+2. **Four-tier system**: Replaces old Basic/Advanced/YOLO with clearer tiers
 3. **Modular templates**: Section markers enable composable configs
 4. **Enhanced firewall**: Tier-specific domain whitelists
 5. **Official images**: Direct integration with Docker Hub metadata
@@ -185,4 +185,4 @@ Skills can invoke each other and share context:
 - Old `templates/python/`, `templates/node/`, `templates/fullstack/` → Moved to `templates/legacy/`
 - Old Basic mode → New Basic tier (similar)
 - Old Advanced mode → New Intermediate tier (similar functionality)
-- Old Pro mode → New Advanced tier (security-focused) or YOLO tier (flexibility-focused)
+- Old YOLO tier → New Advanced tier (security-focused) or YOLO tier (flexibility-focused)

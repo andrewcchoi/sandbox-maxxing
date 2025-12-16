@@ -2,7 +2,7 @@
 description: Diagnose and fix common Claude Code sandbox issues
 ---
 
-Use and follow the windows-sandbox-troubleshoot skill exactly as written.
+Use and follow the sandbox-troubleshoot skill exactly as written.
 
 Focus on identifying and resolving:
 - Container startup failures

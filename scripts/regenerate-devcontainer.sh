@@ -10,7 +10,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 cd "$REPO_ROOT"
 
-echo "🔄 Regenerating devcontainer using windows-sandbox plugin..."
+echo "🔄 Regenerating devcontainer using sandbox plugin..."
 echo ""
 
 # Check if .devcontainer exists

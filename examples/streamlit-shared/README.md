@@ -54,5 +54,5 @@ Once both tests pass:
   - Shared: `examples/demo-app-shared/`
   - Basic mode: `examples/demo-app-sandbox-basic/`
   - Advanced mode: `examples/demo-app-sandbox-advanced/`
-  - Pro mode: `examples/demo-app-sandbox-pro/`
+  - Pro mode: `examples/demo-app-sandbox-yolo/`
 - 📖 Read the development guide: `docs/DEVELOPMENT.md`

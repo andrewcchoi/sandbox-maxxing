@@ -18,7 +18,7 @@ Before publishing plugin:
 ## Testing
 - [ ] Basic mode tested
 - [ ] Advanced mode tested
-- [ ] Pro mode tested
+- [ ] YOLO tier tested
 - [ ] Troubleshoot tested
 - [ ] Security audit tested
 - [ ] Cross-platform tested

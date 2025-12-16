@@ -1,6 +1,6 @@
 {
-  "name": "windows-sandbox",
-  "version": "2.0.0",
+  "name": "sandbox",
+  "version": "2.1.0",
   "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments with four-tier system (Basic, Intermediate, Advanced, YOLO)",
   "author": {
     "name": "Windows Sandbox Team"

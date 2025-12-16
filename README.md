@@ -306,7 +306,7 @@ Interactive setup wizard with three experience tiers.
 - User wants to configure firewalls for development
 
 **Workflow**:
-1. Mode selection (Basic/Advanced/Pro)
+1. Mode selection (Basic/Advanced/YOLO)
 2. Project detection
 3. Configuration wizard
 4. Template generation
@@ -497,7 +497,7 @@ examples/
 ├── demo-app-shared/                 # Shared: Full-stack blog application
 ├── demo-app-sandbox-basic/          # Demo app with Basic mode DevContainer
 ├── demo-app-sandbox-advanced/       # Demo app with Advanced mode DevContainer
-└── demo-app-sandbox-pro/            # Demo app with Pro mode DevContainer
+└── demo-app-sandbox-yolo/            # Demo app with YOLO tier DevContainer
 ```
 
 ### Quick Validation: Streamlit App
@@ -557,7 +557,7 @@ A complete full-stack blogging platform with:
 **Best for**: Team development, active projects, customization needs
 
 #### 3. Pro Mode - Production-Ready
-**Location**: `examples/demo-app-sandbox-pro/`
+**Location**: `examples/demo-app-sandbox-yolo/`
 
 **What's included**:
 - Multi-stage optimized Dockerfile (7 stages)
@@ -605,7 +605,7 @@ cd frontend && npm run dev
 1. **Start here**: `streamlit-sandbox-basic/` - 30-second validation
 2. **Learn basics**: `demo-app-sandbox-basic/` - Understand minimal setup
 3. **Explore features**: `demo-app-sandbox-advanced/` - See customization options
-4. **Study production**: `demo-app-sandbox-pro/` - Learn best practices
+4. **Study production**: `demo-app-sandbox-yolo/` - Learn best practices
 
 See `examples/README.md` for detailed comparison and customization guides
 
@@ -672,11 +672,11 @@ MIT License - See LICENSE file for details
 - Enhanced firewall with tier-specific domain sets (30-100+ domains)
 - Updated slash commands: `/sandbox:setup-basic`, `/sandbox:setup-intermediate`, etc.
 - Comprehensive tier comparison guide (TIERS.md)
-- Migration from Basic/Advanced/Pro to new four-tier system
+- Migration from Basic/Advanced/YOLO to new four-tier system
 
 ### v1.0.0 (2025-01-XX)
 - Initial release
-- Interactive setup wizard with Basic/Advanced/Pro modes
+- Interactive setup wizard with Basic/Advanced/YOLO tiers
 - Troubleshooting assistant
 - Security auditor
 - Templates for Python, Node.js, and Full-stack projects

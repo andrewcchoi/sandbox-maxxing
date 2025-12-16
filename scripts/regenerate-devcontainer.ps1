@@ -9,7 +9,7 @@ $RepoRoot = Split-Path -Parent $ScriptDir
 
 Set-Location $RepoRoot
 
-Write-Host "🔄 Regenerating devcontainer using windows-sandbox plugin..." -ForegroundColor Cyan
+Write-Host "🔄 Regenerating devcontainer using sandbox plugin..." -ForegroundColor Cyan
 Write-Host ""
 
 # Check if .devcontainer exists

@@ -32,11 +32,11 @@ Basic tier gets developers up and running in minutes using battle-tested base im
 
 - User needs custom firewall rules or network restrictions
 - User wants full control over Dockerfile and build process
-- User is troubleshooting an existing setup (use `sandbox-setup-troubleshoot` instead)
-- User explicitly requests advanced features or Pro mode
+- User is troubleshooting an existing setup (use `sandbox-troubleshoot` instead)
+- User explicitly requests advanced features or YOLO tier
 - Project requires complex multi-service orchestration with custom networking
 
-**Important**: If user mentions firewall, iptables, network policies, or security hardening, recommend Advanced or Pro tier instead.
+**Important**: If user mentions firewall, iptables, network policies, or security hardening, recommend Advanced or YOLO tier instead.
 
 ## Key Characteristics
 
@@ -404,9 +404,9 @@ Your Basic sandbox is ready!
 
 Need more control?
 - Advanced tier: Custom Dockerfile + firewall rules
-- Pro tier: Full security hardening + network policies
+- YOLO tier: Full security hardening + network policies
 
-Run `/setup-advanced` or `/setup-pro` to upgrade.
+Run `/sandbox:advanced` or `/sandbox:yolo` to upgrade.
 ```
 
 ### On Errors
@@ -418,13 +418,13 @@ Encountered an error during setup. For troubleshooting assistance, invoke:
 
 /sandbox-troubleshoot
 
-Or switch to Advanced/Pro tier for more control:
+Or switch to Advanced/YOLO tier for more control:
 
-/sandbox-setup-advanced
-/sandbox-setup-pro
+/sandbox:advanced
+/sandbox:yolo
 ```
 
-Automatically invoke `sandbox-setup-troubleshoot` skill if:
+Automatically invoke `sandbox-troubleshoot` skill if:
 - Docker pull fails repeatedly
 - devcontainer fails to start
 - Services fail to connect
@@ -481,7 +481,7 @@ END
 
 - Don't ask unnecessary questions
 - Don't create custom Dockerfiles unless absolutely required
-- Don't add firewall configuration (that's Advanced/Pro tier)
+- Don't add firewall configuration (that's Advanced/YOLO tier)
 - Don't overcomplicate docker-compose.yml
 - Don't use `latest` tag for official images (use specific versions)
 - Don't proceed with stale/unverified images
@@ -502,7 +502,7 @@ END
 
 3. **Permission errors**
    - Remind user that Basic tier uses `root` user
-   - Suggest Advanced/Pro tier if custom user needed
+   - Suggest Advanced/YOLO tier if custom user needed
 
 ## Security Note
 
@@ -518,7 +518,7 @@ Basic tier relies on Docker sandbox isolation only. No firewall rules are config
 - Custom network policies
 - Outbound traffic restrictions
 
-For production-like security, recommend Advanced or Pro tier.
+For production-like security, recommend Advanced or YOLO tier.
 
 ## Summary
 

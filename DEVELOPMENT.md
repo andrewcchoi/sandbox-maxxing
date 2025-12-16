@@ -96,7 +96,7 @@ sandbox/
 │   ├── demo-app-shared/        # Full-stack demo (shared services)
 │   ├── demo-app-sandbox-basic/  # Full-stack demo (Basic mode)
 │   ├── demo-app-sandbox-advanced/ # Full-stack demo (Advanced mode)
-│   └── demo-app-sandbox-pro/   # Full-stack demo (Pro mode)
+│   └── demo-app-sandbox-yolo/   # Full-stack demo (YOLO tier)
 │
 └── docs/                       # Documentation
 ```

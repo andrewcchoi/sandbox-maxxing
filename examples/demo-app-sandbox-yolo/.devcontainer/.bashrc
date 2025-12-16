@@ -1,4 +1,4 @@
-# Custom bash configuration for Pro mode development
+# Custom bash configuration for YOLO tier development
 
 # Enhanced prompt with git branch
 parse_git_branch() {

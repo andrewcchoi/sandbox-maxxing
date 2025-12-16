@@ -1,9 +1,8 @@
 {
-  "name": "windows-sandbox-plugin",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-  },
+  "name": "sandbox-plugin",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -24,13 +23,11 @@
     }
   },
   "remoteUser": "node",
-  "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
-  "postCreateCommand": "echo '✓ Windows Sandbox Plugin development environment ready!'",
+  "postCreateCommand": "echo '✓ Sandbox Plugin development environment ready!'",
 
-  // Generated using windows-sandbox plugin Basic mode
-  // Detected: Documentation/Template repository (no database services needed)
+  // Generated using sandbox plugin Intermediate tier
+  // Detected: Documentation/Template repository
   // Languages: Python 3.12 + Node.js 20 (for examples and templates)
-  // Services: None (examples have separate docker-compose.yml)
+  // Services: PostgreSQL, Redis, RabbitMQ (for testing examples)
   "features": {}
 }

@@ -82,7 +82,7 @@ Template placeholders:
 After modifying templates:
 1. Test generation with the skill
 2. Verify the generated files work correctly
-3. Test in all modes (Basic/Advanced/Pro)
+3. Test in all modes (Basic/Advanced/YOLO)
 
 ### Working on Example Applications
 
@@ -96,7 +96,7 @@ The `examples/` directory contains working applications that validate the plugin
 - **Shared**: `examples/demo-app-shared/` - Full-stack application code
 - **Basic Mode**: `examples/demo-app-sandbox-basic/` - Minimal DevContainer configuration
 - **Advanced Mode**: `examples/demo-app-sandbox-advanced/` - Balanced DevContainer with customization
-- **Pro Mode**: `examples/demo-app-sandbox-pro/` - Production-ready DevContainer with comprehensive tooling
+- **Pro Mode**: `examples/demo-app-sandbox-yolo/` - Production-ready DevContainer with comprehensive tooling
 
 When modifying examples:
 1. Make your changes
@@ -168,7 +168,7 @@ See `tests/README.md` for manual test procedures.
 Run all tests before submitting:
 - Basic mode test
 - Advanced mode test
-- Pro mode test
+- YOLO tier test
 - Troubleshooting test
 - Security audit test
 

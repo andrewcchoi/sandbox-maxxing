@@ -27,7 +27,7 @@ docker compose up -d
 
 - ✅ Basic mode setup
 - ✅ Advanced mode setup
-- ✅ Pro mode setup
+- ✅ YOLO tier setup
 - ✅ Troubleshooting diagnostics
 - ✅ Security auditing
 - ✅ Template generation

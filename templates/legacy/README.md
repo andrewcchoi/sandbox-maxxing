@@ -4,7 +4,7 @@ This directory contains deprecated monolithic templates from version 1.x of the 
 
 ## What's Here
 
-These templates were used in the original three-tier system (Basic/Advanced/Pro):
+These templates were used in the original three-tier system (Basic/Advanced/YOLO):
 
 - **base/** - Flexible templates for Basic/Advanced modes
 - **python/** - Python-optimized templates with FastAPI + PostgreSQL + Redis
@@ -18,7 +18,7 @@ Version 2.0 introduced a modular, data-driven template system:
 1. **Master Templates**: All configurations in `templates/master/` with section markers
 2. **Modular Sections**: Service-specific configs in `templates/compose/`, `templates/dockerfiles/`, `templates/firewall/`
 3. **Data-Driven**: Image and domain registries in `data/` directory
-4. **Four Tiers**: Basic, Intermediate, Advanced, YOLO (replacing Basic/Advanced/Pro)
+4. **Four Tiers**: Basic, Intermediate, Advanced, YOLO (replacing Basic/Advanced/YOLO)
 
 The new system generates templates dynamically by:
 - Reading JSON data files for available options
