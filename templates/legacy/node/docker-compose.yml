@@ -4,8 +4,8 @@ services:
     image: mongo:7
     container_name: {{PROJECT_NAME}}-mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: devpassword
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-devpassword}
       MONGO_INITDB_DATABASE: {{DB_NAME}}
     ports:
       - "27017:27017"

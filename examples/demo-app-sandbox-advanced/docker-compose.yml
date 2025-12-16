@@ -13,7 +13,7 @@ services:
       - .:/workspace:cached
     environment:
       # Database Configuration
-      - DATABASE_URL=postgresql://sandbox_user:devpassword@postgres:5432/sandbox_dev
+      - DATABASE_URL=${DATABASE_URL:-postgresql://${POSTGRES_USER:-sandbox_user}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-sandbox_dev}}
       - REDIS_URL=redis://redis:6379
 
       # Firewall Configuration (Advanced mode: user-configurable)
