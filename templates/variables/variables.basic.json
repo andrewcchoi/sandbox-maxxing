@@ -1,0 +1,31 @@
+{
+  "mode": "basic",
+  "description": "Essential variables for quick development setup",
+  "build_args": {
+    "TZ": "UTC",
+    "DEBIAN_FRONTEND": "noninteractive"
+  },
+  "runtime_env": {
+    "NODE_ENV": "development",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "compose_env": {
+    "POSTGRES_USER": "sandbox_user",
+    "POSTGRES_PASSWORD": "devpassword",
+    "POSTGRES_DB": "sandbox_dev",
+    "POSTGRES_HOST": "postgres",
+    "POSTGRES_PORT": "5432",
+    "REDIS_HOST": "redis",
+    "REDIS_PORT": "6379"
+  },
+  "derived_vars": {
+    "DATABASE_URL": "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+  },
+  "notes": [
+    "Basic mode uses sensible defaults for quick start",
+    "All passwords are development defaults - change for production",
+    "No firewall configured - relies on hypervisor isolation",
+    "No VS Code input variables - all values are hardcoded"
+  ]
+}

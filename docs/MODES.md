@@ -53,6 +53,32 @@ See [MCP Configuration Guide](MCP.md) for details.
 
 See [Extensions Reference](EXTENSIONS.md) for details.
 
+### Variables Configuration
+
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
+| Build ARGs | 5 (BASE_IMAGE, TZ, versions) | 8 (+ messaging, DB options) | 12+ (+ cloud, API configs) | Custom |
+| Runtime ENVs | 6 (NODE_ENV, paths) | 12 (+ service configs) | 20+ (comprehensive) | Custom |
+| VS Code Inputs | 0 | 2-3 (DB creds) | 5+ (all services) | Custom |
+| .env Template | Minimal | Standard | Comprehensive | Full |
+| Secret Mounts | 0 | 0 | 5+ | Custom |
+
+See [Variables Guide](VARIABLES.md) for details.
+
+### Secrets Management
+
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
+| Secret Handling | Development defaults | VS Code inputs | Docker secrets + inputs | All methods |
+| Git Authentication | None | VS Code input | VS Code input + SSH | All methods |
+| Database Credentials | Hardcoded defaults | Optional input override | Required inputs | Custom |
+| API Keys | None | GitHub token (optional) | All APIs (required) | Custom |
+| Cloud Credentials | None | None | Host mounts | Custom |
+| Build Secrets | None | None | NPM, PyPI, gems | Custom |
+| SSL/TLS Certificates | None | None | Docker secrets | Custom |
+
+See [Secrets Management Guide](SECRETS.md) for details.
+
 ## Mode Details
 
 ### Basic Mode - Zero Configuration Development
