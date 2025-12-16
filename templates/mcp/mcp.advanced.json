@@ -50,7 +50,7 @@
     },
     "postgresConnectionString": {
       "type": "promptString",
-      "description": "PostgreSQL connection string",
+      "description": "PostgreSQL connection string. URL-encode special characters in passwords.",
       "default": "postgresql://user:password@localhost:5432/db"
     },
     "braveApiKey": {

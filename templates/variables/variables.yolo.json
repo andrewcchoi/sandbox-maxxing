@@ -104,6 +104,7 @@
     }
   },
   "derived_vars": {
+    "_note": "URLs constructed from components. Application code handles URL encoding for special characters in credentials.",
     "DATABASE_URL": "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}",
     "MONGODB_URI": "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_INITDB_DATABASE}",
     "REDIS_URL": "redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}",

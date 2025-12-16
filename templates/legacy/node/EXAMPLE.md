@@ -88,6 +88,7 @@ my-node-project/
     "FIREWALL_MODE": "strict",
     "NODE_ENV": "development",
     "MONGODB_URL": "mongodb://admin:devpass@mongodb:27017/myapp?authSource=admin",
+    "// NOTE": "For passwords with special characters, URL-encode them: encodeURIComponent(password)",
     "REDIS_URL": "redis://redis:6379",
     "PORT": "3000"
   }
@@ -376,6 +377,9 @@ start();
 import { MongoClient, Db } from 'mongodb';
 import { createClient, RedisClientType } from 'redis';
 
+// NOTE: For passwords with special characters (@, :, /, etc.), URL-encode them:
+// const password = encodeURIComponent(process.env.MONGO_PASSWORD || 'devpass');
+// const MONGODB_URL = `mongodb://admin:${password}@mongodb:27017/myapp?authSource=admin`;
 const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://admin:devpass@mongodb:27017/myapp?authSource=admin';
 const REDIS_URL = process.env.REDIS_URL || 'redis://redis:6379';
 

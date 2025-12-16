@@ -29,6 +29,7 @@
     "RABBITMQ_MANAGEMENT_PORT": "15672"
   },
   "derived_vars": {
+    "_note": "URLs constructed from components. Application code handles URL encoding for special characters in credentials.",
     "DATABASE_URL": "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
   },
   "vs_code_inputs": {
