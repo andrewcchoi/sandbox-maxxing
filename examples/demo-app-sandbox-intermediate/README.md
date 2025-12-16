@@ -33,7 +33,8 @@ This example shows what the `windows-sandbox` plugin generates when run in Inter
 - **Database services**: PostgreSQL 15 + Redis 7
 - **Message queue**: RabbitMQ 3 with management UI
 - **Network security**: Permissive firewall (no restrictions, audit logging)
-- **VS Code extensions**: Python, Pylance, ESLint, Prettier, Docker (5 extensions)
+- **VS Code extensions**: 15-20 total including Python, Pylance, ESLint, Prettier, GitLens, Git Graph, Code Spell Checker, SQLTools, Material Icons, GitHub Theme, Andromeda, Peacock, Power Mode, and VS Code Pets
+- **MCP servers**: 5 servers (filesystem, memory, sqlite, fetch, github) for enhanced AI integration
 - **Port forwarding**: Backend (8000), Frontend (5173), PostgreSQL (5432), Redis (6379), RabbitMQ (5672), RabbitMQ Management (15672)
 
 ## Quick Start

@@ -21,6 +21,64 @@ This guide helps you choose the right sandbox mode for your project and understa
 | **Learning Curve** | Easy | Easy-Moderate | Moderate-Hard | Expert |
 | **Maintenance** | Low | Low-Medium | Medium-High | High |
 
+### MCP Server Configuration
+
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
+| MCP Servers | 2 | 5 | 8 | 11+ |
+| filesystem | ✓ | ✓ | ✓ | ✓ |
+| memory | ✓ | ✓ | ✓ | ✓ |
+| sqlite | - | ✓ | ✓ | ✓ |
+| fetch | - | ✓ | ✓ | ✓ |
+| github | - | ✓ | ✓ | ✓ |
+| postgres | - | - | ✓ | ✓ |
+| docker | - | - | ✓ | ✓ |
+| brave-search | - | - | ✓ | ✓ |
+| puppeteer | - | - | - | ✓ |
+| slack | - | - | - | ✓ |
+| google-drive | - | - | - | ✓ |
+
+See [MCP Configuration Guide](MCP.md) for details.
+
+### VS Code Extensions
+
+| Category | Basic | Intermediate | Advanced | YOLO |
+|----------|-------|--------------|----------|------|
+| Essential | 3 | 5 | 7 | 7 |
+| Language | 2+ | 4+ | 4+ | 6+ |
+| Themes | 1 | 3 | 5 | 9 |
+| Productivity | 0 | 2 | 4 | 4 |
+| Fun | 1 | 3 | 4 | 7 |
+| **Total** | **6-8** | **15-20** | **22-28** | **35+** |
+
+See [Extensions Reference](EXTENSIONS.md) for details.
+
+### Variables Configuration
+
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
+| Build ARGs | 5 (BASE_IMAGE, TZ, versions) | 8 (+ messaging, DB options) | 12+ (+ cloud, API configs) | Custom |
+| Runtime ENVs | 6 (NODE_ENV, paths) | 12 (+ service configs) | 20+ (comprehensive) | Custom |
+| VS Code Inputs | 0 | 2-3 (DB creds) | 5+ (all services) | Custom |
+| .env Template | Minimal | Standard | Comprehensive | Full |
+| Secret Mounts | 0 | 0 | 5+ | Custom |
+
+See [Variables Guide](VARIABLES.md) for details.
+
+### Secrets Management
+
+| Feature | Basic | Intermediate | Advanced | YOLO |
+|---------|-------|--------------|----------|------|
+| Secret Handling | Development defaults | VS Code inputs | Docker secrets + inputs | All methods |
+| Git Authentication | None | VS Code input | VS Code input + SSH | All methods |
+| Database Credentials | Hardcoded defaults | Optional input override | Required inputs | Custom |
+| API Keys | None | GitHub token (optional) | All APIs (required) | Custom |
+| Cloud Credentials | None | None | Host mounts | Custom |
+| Build Secrets | None | None | NPM, PyPI, gems | Custom |
+| SSL/TLS Certificates | None | None | Docker secrets | Custom |
+
+See [Secrets Management Guide](SECRETS.md) for details.
+
 ## Mode Details
 
 ### Basic Mode - Zero Configuration Development

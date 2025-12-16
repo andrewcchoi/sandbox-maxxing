@@ -33,7 +33,8 @@ This example shows what the `windows-sandbox` plugin generates when run in Advan
 - **Configurable stack**: Python 3.12 + Node.js 20 (customizable via build args)
 - **Database services**: PostgreSQL 15 + Redis 7 with persistence
 - **Network security**: Strict firewall with customizable allowlist (whitelist-based)
-- **Curated extensions**: Python, Pylance, Black, ESLint, Prettier, SQLTools, GitLens, Docker (10+ extensions)
+- **VS Code extensions**: 22-28 total including Python, Pylance, Black, Ruff, ESLint, Prettier, Tailwind CSS, npm Intellisense, GitLens, Git Graph, Code Spell Checker, Error Lens, Path Intellisense, Auto Rename Tag, SQLTools, MongoDB, Database Client, Material Icons, GitHub Theme, Dracula, Andromeda, One Dark Pro, Peacock, Power Mode, VS Code Pets, and TODO Highlight
+- **MCP servers**: 8 servers (filesystem, memory, sqlite, fetch, github, postgres, docker, brave-search) for comprehensive AI integration
 - **Resource limits**: CPU and memory limits configured for containers
 - **Port forwarding**: Backend (8000), Frontend (5173), PostgreSQL (5432), Redis (6379) with labels
 - **Development tools**: Black, Pylint, pytest, IPython, build-essential

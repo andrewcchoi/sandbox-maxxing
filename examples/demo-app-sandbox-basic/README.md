@@ -32,7 +32,8 @@ This example shows what the `windows-sandbox` plugin generates when run in Basic
 - **Auto-detected stack**: Python 3.12 + Node.js 20
 - **Database services**: PostgreSQL 15 + Redis 7
 - **Network security**: No firewall (relies on Windows Sandbox hypervisor isolation)
-- **VS Code extensions**: Python and ESLint (minimal set)
+- **VS Code extensions**: 6-8 total including Python, ESLint, GitLens, Material Icon Theme, and Peacock
+- **MCP servers**: 2 servers (filesystem, memory) for AI assistant integration
 - **Port forwarding**: Backend (8000), Frontend (5173), PostgreSQL (5432), Redis (6379)
 
 ## Quick Start

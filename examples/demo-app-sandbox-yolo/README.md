@@ -34,6 +34,8 @@ This example shows what the `windows-sandbox` plugin generates when run in YOLO 
 
 ### DevContainer Features (YOLO Mode)
 - **Multi-stage Dockerfile**: Optimized layers for minimal image size and fast builds
+- **VS Code extensions**: 35+ including all language support, themes (Material Icons, GitHub, Dracula, Andromeda, One Dark Pro, Night Owl, Nord, Atom One Dark, Monokai Pro), productivity tools (GitLens, Git Graph, Code Spell Checker, Error Lens, Path Intellisense, Auto Rename Tag), database clients (SQLTools, MongoDB, Database Client), and fun extensions (Peacock, Power Mode, VS Code Pets, TODO Highlight, Discord Presence, GlassIt, Custom CSS/JS)
+- **MCP servers**: 11+ servers for maximum AI integration including filesystem, memory, sqlite, fetch, github, postgres, docker, brave-search, puppeteer, slack, and google-drive
 - **Comprehensive tooling**:
   - Python: Black, isort, flake8, pylint, ruff, mypy, pytest, ipdb, IPython
   - Node.js: ESLint, Prettier, Jest, nodemon, yarn, pnpm

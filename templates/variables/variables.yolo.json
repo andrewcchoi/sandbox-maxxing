@@ -1,0 +1,295 @@
+{
+  "mode": "yolo",
+  "description": "Maximum flexibility with full customization and all available options",
+  "build_args": {
+    "BASE_IMAGE": "{{BASE_IMAGE}}",
+    "PYTHON_VERSION": "{{PYTHON_VERSION}}",
+    "NODE_VERSION": "{{NODE_VERSION}}",
+    "GO_VERSION": "{{GO_VERSION}}",
+    "RUST_VERSION": "{{RUST_VERSION}}",
+    "JAVA_VERSION": "{{JAVA_VERSION}}",
+    "RUBY_VERSION": "{{RUBY_VERSION}}",
+    "PHP_VERSION": "{{PHP_VERSION}}",
+    "TZ": "{{TZ}}",
+    "DEBIAN_FRONTEND": "noninteractive",
+    "CLAUDE_CODE_VERSION": "{{CLAUDE_CODE_VERSION}}"
+  },
+  "runtime_env": {
+    "NODE_ENV": "{{NODE_ENV}}",
+    "RAILS_ENV": "{{RAILS_ENV}}",
+    "FLASK_ENV": "{{FLASK_ENV}}",
+    "DJANGO_SETTINGS_MODULE": "{{DJANGO_SETTINGS_MODULE}}",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "{{PYTHONPATH}}",
+    "GOPATH": "{{GOPATH}}",
+    "GOBIN": "{{GOBIN}}",
+    "GOCACHE": "{{GOCACHE}}",
+    "RUST_BACKTRACE": "{{RUST_BACKTRACE}}",
+    "CARGO_HOME": "{{CARGO_HOME}}",
+    "JAVA_HOME": "{{JAVA_HOME}}",
+    "MAVEN_HOME": "{{MAVEN_HOME}}",
+    "GRADLE_HOME": "{{GRADLE_HOME}}",
+    "GEM_HOME": "{{GEM_HOME}}",
+    "BUNDLE_PATH": "{{BUNDLE_PATH}}",
+    "FIREWALL_MODE": "{{FIREWALL_MODE}}",
+    "FIREWALL_LOG_LEVEL": "{{FIREWALL_LOG_LEVEL}}",
+    "LOG_LEVEL": "{{LOG_LEVEL}}",
+    "DEBUG": "{{DEBUG}}"
+  },
+  "compose_env": {
+    "postgres": {
+      "POSTGRES_USER": "{{POSTGRES_USER}}",
+      "POSTGRES_PASSWORD": "{{POSTGRES_PASSWORD}}",
+      "POSTGRES_DB": "{{POSTGRES_DB}}",
+      "POSTGRES_HOST": "{{POSTGRES_HOST}}",
+      "POSTGRES_PORT": "{{POSTGRES_PORT}}",
+      "POSTGRES_SSLMODE": "{{POSTGRES_SSLMODE}}"
+    },
+    "mysql": {
+      "MYSQL_ROOT_PASSWORD": "{{MYSQL_ROOT_PASSWORD}}",
+      "MYSQL_DATABASE": "{{MYSQL_DATABASE}}",
+      "MYSQL_USER": "{{MYSQL_USER}}",
+      "MYSQL_PASSWORD": "{{MYSQL_PASSWORD}}",
+      "MYSQL_HOST": "{{MYSQL_HOST}}",
+      "MYSQL_PORT": "{{MYSQL_PORT}}"
+    },
+    "mongodb": {
+      "MONGO_INITDB_ROOT_USERNAME": "{{MONGO_INITDB_ROOT_USERNAME}}",
+      "MONGO_INITDB_ROOT_PASSWORD": "{{MONGO_INITDB_ROOT_PASSWORD}}",
+      "MONGO_INITDB_DATABASE": "{{MONGO_INITDB_DATABASE}}",
+      "MONGO_HOST": "{{MONGO_HOST}}",
+      "MONGO_PORT": "{{MONGO_PORT}}"
+    },
+    "redis": {
+      "REDIS_HOST": "{{REDIS_HOST}}",
+      "REDIS_PORT": "{{REDIS_PORT}}",
+      "REDIS_PASSWORD": "{{REDIS_PASSWORD}}",
+      "REDIS_DB": "{{REDIS_DB}}"
+    },
+    "rabbitmq": {
+      "RABBITMQ_DEFAULT_USER": "{{RABBITMQ_DEFAULT_USER}}",
+      "RABBITMQ_DEFAULT_PASS": "{{RABBITMQ_DEFAULT_PASS}}",
+      "RABBITMQ_HOST": "{{RABBITMQ_HOST}}",
+      "RABBITMQ_PORT": "{{RABBITMQ_PORT}}",
+      "RABBITMQ_MANAGEMENT_PORT": "{{RABBITMQ_MANAGEMENT_PORT}}"
+    },
+    "kafka": {
+      "KAFKA_BROKER": "{{KAFKA_BROKER}}",
+      "KAFKA_ZOOKEEPER": "{{KAFKA_ZOOKEEPER}}",
+      "KAFKA_TOPIC": "{{KAFKA_TOPIC}}"
+    },
+    "elasticsearch": {
+      "ELASTICSEARCH_HOST": "{{ELASTICSEARCH_HOST}}",
+      "ELASTICSEARCH_PORT": "{{ELASTICSEARCH_PORT}}"
+    }
+  },
+  "cloud_config": {
+    "aws": {
+      "AWS_REGION": "{{AWS_REGION}}",
+      "AWS_PROFILE": "{{AWS_PROFILE}}"
+    },
+    "gcp": {
+      "GCP_PROJECT_ID": "{{GCP_PROJECT_ID}}",
+      "GCP_REGION": "{{GCP_REGION}}",
+      "GOOGLE_APPLICATION_CREDENTIALS": "/run/secrets/gcp_key.json"
+    },
+    "azure": {
+      "AZURE_SUBSCRIPTION_ID": "{{AZURE_SUBSCRIPTION_ID}}",
+      "AZURE_TENANT_ID": "{{AZURE_TENANT_ID}}",
+      "AZURE_RESOURCE_GROUP": "{{AZURE_RESOURCE_GROUP}}"
+    },
+    "digitalocean": {
+      "DO_REGION": "{{DO_REGION}}"
+    }
+  },
+  "derived_vars": {
+    "DATABASE_URL": "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}",
+    "MONGODB_URI": "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_INITDB_DATABASE}",
+    "REDIS_URL": "redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}",
+    "RABBITMQ_URL": "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}"
+  },
+  "vs_code_inputs": {
+    "githubToken": {
+      "type": "promptString",
+      "description": "GitHub personal access token",
+      "password": true,
+      "required": false
+    },
+    "gitlabToken": {
+      "type": "promptString",
+      "description": "GitLab personal access token",
+      "password": true,
+      "required": false
+    },
+    "dbPassword": {
+      "type": "promptString",
+      "description": "Database password",
+      "password": true,
+      "required": false
+    },
+    "openaiKey": {
+      "type": "promptString",
+      "description": "OpenAI API key",
+      "password": true,
+      "required": false
+    },
+    "anthropicKey": {
+      "type": "promptString",
+      "description": "Anthropic API key",
+      "password": true,
+      "required": false
+    },
+    "stripeSecretKey": {
+      "type": "promptString",
+      "description": "Stripe secret key",
+      "password": true,
+      "required": false
+    },
+    "sendgridKey": {
+      "type": "promptString",
+      "description": "SendGrid API key",
+      "password": true,
+      "required": false
+    },
+    "sentryDsn": {
+      "type": "promptString",
+      "description": "Sentry DSN",
+      "password": true,
+      "required": false
+    },
+    "slackBotToken": {
+      "type": "promptString",
+      "description": "Slack bot token",
+      "password": true,
+      "required": false
+    }
+  },
+  "docker_secrets": [
+    {
+      "id": "aws_credentials",
+      "description": "AWS credentials file",
+      "mount_type": "file",
+      "mount_path": "/root/.aws/credentials",
+      "usage": "Mount from host ~/.aws directory or as Docker secret"
+    },
+    {
+      "id": "gcp_key",
+      "description": "GCP service account JSON key",
+      "mount_type": "file",
+      "mount_path": "/run/secrets/gcp_key.json",
+      "usage": "Mount as Docker secret, never commit to Git"
+    },
+    {
+      "id": "azure_credentials",
+      "description": "Azure service principal credentials",
+      "mount_type": "file",
+      "mount_path": "/root/.azure/credentials",
+      "usage": "Mount from host ~/.azure directory"
+    },
+    {
+      "id": "npm_token",
+      "description": "NPM registry authentication token",
+      "mount_type": "secret",
+      "mount_path": "/run/secrets/npm_token",
+      "usage": "RUN --mount=type=secret,id=npm_token during npm install"
+    },
+    {
+      "id": "pypi_token",
+      "description": "PyPI authentication token",
+      "mount_type": "secret",
+      "mount_path": "/run/secrets/pypi_token",
+      "usage": "RUN --mount=type=secret,id=pypi_token during pip install"
+    },
+    {
+      "id": "gem_token",
+      "description": "RubyGems authentication token",
+      "mount_type": "secret",
+      "mount_path": "/run/secrets/gem_token",
+      "usage": "For private Ruby gem installation"
+    },
+    {
+      "id": "ssh_key",
+      "description": "SSH private key for Git operations",
+      "mount_type": "ssh",
+      "mount_path": "$SSH_AUTH_SOCK",
+      "usage": "RUN --mount=type=ssh git clone"
+    },
+    {
+      "id": "ssl_cert",
+      "description": "SSL/TLS certificate",
+      "mount_type": "file",
+      "mount_path": "/run/secrets/ssl_cert",
+      "usage": "For HTTPS configuration"
+    },
+    {
+      "id": "ssl_key",
+      "description": "SSL/TLS private key",
+      "mount_type": "file",
+      "mount_path": "/run/secrets/ssl_key",
+      "usage": "For HTTPS configuration, never commit to Git"
+    },
+    {
+      "id": "ca_cert",
+      "description": "Certificate authority bundle",
+      "mount_type": "file",
+      "mount_path": "/run/secrets/ca_cert",
+      "usage": "For custom CA certificates"
+    }
+  ],
+  "resource_limits": {
+    "cpu": "{{CPU_LIMIT}}",
+    "memory": "{{MEMORY_LIMIT}}",
+    "swap": "{{SWAP_LIMIT}}",
+    "pids": "{{PIDS_LIMIT}}"
+  },
+  "application_vars": {
+    "APP_URL": "{{APP_URL}}",
+    "API_URL": "{{API_URL}}",
+    "FRONTEND_URL": "{{FRONTEND_URL}}",
+    "BACKEND_URL": "{{BACKEND_URL}}",
+    "SESSION_SECRET": "{{SESSION_SECRET}}",
+    "JWT_SECRET": "{{JWT_SECRET}}",
+    "ENCRYPTION_KEY": "{{ENCRYPTION_KEY}}"
+  },
+  "monitoring": {
+    "PROMETHEUS_PORT": "{{PROMETHEUS_PORT}}",
+    "GRAFANA_ADMIN_PASSWORD": "{{GRAFANA_ADMIN_PASSWORD}}",
+    "JAEGER_AGENT_HOST": "{{JAEGER_AGENT_HOST}}",
+    "SENTRY_DSN": "{{SENTRY_DSN}}"
+  },
+  "custom_variables": {
+    "description": "Add your own custom variables here",
+    "example_vars": {
+      "CUSTOM_VAR_1": "{{CUSTOM_VAR_1}}",
+      "CUSTOM_VAR_2": "{{CUSTOM_VAR_2}}",
+      "CUSTOM_SERVICE_URL": "{{CUSTOM_SERVICE_URL}}"
+    }
+  },
+  "security_checklist": [
+    "Replace ALL {{PLACEHOLDER}} values with actual values",
+    "Remove unused sections and variables",
+    "Change ALL default passwords",
+    "Configure VS Code input variables for ALL API keys",
+    "Use Docker secrets for build-time credentials",
+    "Mount cloud credentials from host (never use ENV)",
+    "Add .env to .gitignore",
+    "Configure strict firewall with custom allowlist",
+    "Set up proper resource limits",
+    "Use SSL/TLS certificates for production",
+    "Enable monitoring and logging",
+    "Test secret rotation procedures",
+    "Document required credentials for team",
+    "Set up centralized secret management (Vault, etc.)"
+  ],
+  "notes": [
+    "YOLO mode provides maximum flexibility and control",
+    "All variables are customizable via templates",
+    "Supports all programming languages and frameworks",
+    "Comprehensive cloud provider integration options",
+    "Full secret management with multiple methods",
+    "Suitable for complex, multi-service architectures",
+    "Requires careful security configuration",
+    "With great power comes great responsibility!"
+  ]
+}

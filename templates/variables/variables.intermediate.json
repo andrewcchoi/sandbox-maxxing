@@ -1,0 +1,72 @@
+{
+  "mode": "intermediate",
+  "description": "Standard development configuration with message queue and customizable versions",
+  "build_args": {
+    "PYTHON_VERSION": "3.12",
+    "NODE_VERSION": "20",
+    "TZ": "UTC",
+    "DEBIAN_FRONTEND": "noninteractive",
+    "CLAUDE_CODE_VERSION": "latest"
+  },
+  "runtime_env": {
+    "NODE_ENV": "development",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "FIREWALL_MODE": "permissive"
+  },
+  "compose_env": {
+    "POSTGRES_USER": "sandbox_user",
+    "POSTGRES_PASSWORD": "devpassword",
+    "POSTGRES_DB": "sandbox_dev",
+    "POSTGRES_HOST": "postgres",
+    "POSTGRES_PORT": "5432",
+    "REDIS_HOST": "redis",
+    "REDIS_PORT": "6379",
+    "RABBITMQ_DEFAULT_USER": "guest",
+    "RABBITMQ_DEFAULT_PASS": "guest",
+    "RABBITMQ_HOST": "rabbitmq",
+    "RABBITMQ_PORT": "5672",
+    "RABBITMQ_MANAGEMENT_PORT": "15672"
+  },
+  "derived_vars": {
+    "DATABASE_URL": "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+  },
+  "vs_code_inputs": {
+    "githubToken": {
+      "type": "promptString",
+      "description": "GitHub personal access token (for MCP GitHub server)",
+      "password": true,
+      "required": false
+    },
+    "dbPassword": {
+      "type": "promptString",
+      "description": "PostgreSQL password (optional override)",
+      "password": true,
+      "required": false
+    }
+  },
+  "optional_services": {
+    "mysql": {
+      "MYSQL_ROOT_PASSWORD": "rootpassword",
+      "MYSQL_DATABASE": "sandbox_dev",
+      "MYSQL_USER": "sandbox_user",
+      "MYSQL_PASSWORD": "devpassword"
+    },
+    "mongodb": {
+      "MONGO_INITDB_ROOT_USERNAME": "root",
+      "MONGO_INITDB_ROOT_PASSWORD": "rootpassword",
+      "MONGO_INITDB_DATABASE": "sandbox_dev"
+    },
+    "memcached": {
+      "MEMCACHED_HOST": "memcached",
+      "MEMCACHED_PORT": "11211"
+    }
+  },
+  "notes": [
+    "Intermediate mode adds customizable language versions via build args",
+    "Includes RabbitMQ message queue for event-driven architectures",
+    "Permissive firewall mode allows all network access with logging",
+    "Supports VS Code input variables for Git authentication",
+    "Change default RabbitMQ credentials (guest/guest) for production"
+  ]
+}
