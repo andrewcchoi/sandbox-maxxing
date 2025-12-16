@@ -7,6 +7,7 @@ import streamlit as st
 import psycopg2
 import redis
 import os
+from urllib.parse import quote
 
 # Configuration - Build DATABASE_URL from individual env vars (allows override of each component)
 POSTGRES_USER = os.getenv("POSTGRES_USER", "sandbox_user")
@@ -14,7 +15,8 @@ POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "devpassword")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "postgres")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "sandbox_dev")
-DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
+# URL-encode credentials to prevent injection attacks from special characters (@, :, /, etc.)
+DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql://{quote(POSTGRES_USER, safe='')}:{quote(POSTGRES_PASSWORD, safe='')}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379")
 
 st.title("🚀 Claude Code Sandbox - Connection Test")
