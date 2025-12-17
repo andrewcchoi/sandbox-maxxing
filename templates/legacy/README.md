@@ -57,6 +57,11 @@ They may be removed in a future major version (3.0+).
 ## Questions?
 
 See:
-- [ARCHITECTURE.md](/workspace/docs/ARCHITECTURE.md) - New template system
-- [MODES.md](/workspace/docs/MODES.md) - Four-mode comparison
-- [CHANGELOG.md](/workspace/CHANGELOG.md) - Version history
+- [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) - New template system
+- [MODES.md](../../docs/MODES.md) - Four-mode comparison
+- [CHANGELOG.md](../../CHANGELOG.md) - Version history
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

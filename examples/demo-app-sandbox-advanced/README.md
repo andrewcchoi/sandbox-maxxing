@@ -58,7 +58,14 @@ This example shows what the `windows-sandbox` plugin generates when run in Advan
    - Select: `Dev Containers: Reopen in Container`
    - Wait for container to build and start (first time takes 3-4 minutes)
 
-3. **Start the Application**:
+3. **Install Claude Code** (required after each container rebuild):
+   ```bash
+   curl -fsSL https://claude.ai/install.sh | sh
+   ```
+
+   > **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
+
+4. **Start the Application**:
 
    **Terminal 1 - Backend**:
    ```bash
@@ -456,3 +463,8 @@ alembic init migrations
 ## License
 
 MIT
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

@@ -1,4 +1,4 @@
--- PostgreSQL initialization script for YOLO tier
+-- PostgreSQL initialization script for YOLO mode
 -- This script runs on first database creation
 
 -- Create extensions
@@ -25,5 +25,5 @@ GRANT ALL PRIVILEGES ON DATABASE sandbox_dev TO sandbox_user;
 -- Log initialization
 DO $$
 BEGIN
-    RAISE NOTICE 'Database initialized for YOLO tier development';
+    RAISE NOTICE 'Database initialized for YOLO mode development';
 END $$;

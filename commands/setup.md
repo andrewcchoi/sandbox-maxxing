@@ -47,3 +47,8 @@ Based on selection, invoke the appropriate skill using the Skill tool:
 - Intermediate → Use sandbox-setup-intermediate skill
 - Advanced → Use sandbox-setup-advanced skill
 - YOLO → Use sandbox-setup-yolo skill
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

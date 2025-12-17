@@ -106,3 +106,8 @@ All notable changes to this project will be documented in this file.
 - More language templates (Go, Rust, Java)
 - GitHub Actions integration
 - Template customization CLI
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

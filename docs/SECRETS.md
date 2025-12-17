@@ -2,6 +2,10 @@
 
 This guide covers secure credential handling in DevContainers, including Docker secrets, VS Code input variables, and best practices for different sandbox modes.
 
+> **📝 For non-sensitive configuration:** See [Variables Guide](VARIABLES.md)
+>
+> This guide covers **sensitive credentials only**. For application configuration that doesn't need protection (versions, feature flags, non-sensitive settings), use the Variables Guide instead.
+
 ## Table of Contents
 
 1. [Quick Reference](#quick-reference)
@@ -797,3 +801,8 @@ secrets:
 - `data/secrets.json` - Complete secrets catalog
 - `templates/env/*.template` - Environment templates with secret placeholders
 - `templates/variables/*.json` - Variable configurations per mode
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

@@ -314,3 +314,8 @@ For detailed information, refer to embedded documentation in `references/`:
 - Advanced provides brief explanations (YOLO provides detailed education)
 - Advanced uses template-based generation (YOLO walks through each file)
 - Advanced focuses on security balance (YOLO focuses on learning and full control)
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

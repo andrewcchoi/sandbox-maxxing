@@ -11,3 +11,8 @@ Perform comprehensive security review of:
 - Container permissions and capabilities
 - Secrets management
 - Network isolation
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

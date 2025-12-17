@@ -466,3 +466,8 @@ This Claude Code sandbox template provides a good balance between security and u
 - **Defense in depth** - Combine firewall with other security practices
 
 Stay secure while staying productive.
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

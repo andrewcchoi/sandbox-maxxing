@@ -409,3 +409,8 @@ sudo /usr/local/bin/init-firewall.sh
 **Note**: I am not actively accepting pull requests or feature requests for this project. However, you are more than welcome to fork this repository and make your own improvements!
 
 This project was created with [Claude](https://claude.ai) using the [Superpowers](https://github.com/obra/superpowers) plugin.
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

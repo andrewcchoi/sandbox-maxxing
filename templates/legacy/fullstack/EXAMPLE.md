@@ -856,3 +856,8 @@ For production, consider:
 - [Ollama Documentation](https://github.com/ollama/ollama/tree/main/docs)
 - [Vite Documentation](https://vitejs.dev/)
 - [SQLAlchemy Documentation](https://docs.sqlalchemy.org/)
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

@@ -531,3 +531,8 @@ Basic mode is optimized for speed and simplicity:
 5. Provide next steps
 
 Total time: 2-5 minutes from start to working sandbox.
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

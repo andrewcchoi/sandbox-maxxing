@@ -155,3 +155,8 @@ When adding new features:
 2. Update this README with the new section name
 3. Update generator scripts to handle the new section
 4. Test with all sandbox modes (Basic, Intermediate, Advanced, YOLO)
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

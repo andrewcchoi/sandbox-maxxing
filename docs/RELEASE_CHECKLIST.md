@@ -33,3 +33,8 @@ Before publishing plugin:
 - [ ] Submitted to marketplace (if applicable)
 - [ ] GitHub release created
 - [ ] Documentation deployed
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

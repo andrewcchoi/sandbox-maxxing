@@ -3,7 +3,7 @@
 # CLAUDE CODE SANDBOX - Network Firewall Configuration Script (MASTER)
 # ============================================================================
 # This script configures iptables to restrict outbound network access from
-# the DevContainer. It supports three modes:
+# the DevContainer. It supports three firewall modes:
 #
 # - STRICT MODE: Whitelist approach - only allow specified domains
 # - PERMISSIVE MODE: Allow all outbound traffic (no restrictions)

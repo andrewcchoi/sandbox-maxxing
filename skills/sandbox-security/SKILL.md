@@ -257,3 +257,8 @@ From `references/security.md`:
 - **Trust but verify** - Audit even with firewall
 - **Document security decisions** - Explain trade-offs
 - **Regular audits** - Security is ongoing process
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

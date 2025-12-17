@@ -56,3 +56,8 @@ Once both tests pass:
   - Advanced mode: `examples/demo-app-sandbox-advanced/`
   - YOLO mode: `examples/demo-app-sandbox-yolo/`
 - 📖 Read the development guide: `docs/DEVELOPMENT.md`
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

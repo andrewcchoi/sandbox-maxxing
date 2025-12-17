@@ -2,6 +2,10 @@
 
 This guide covers all variable types used in DevContainer configuration and how to use them effectively across different sandbox modes.
 
+> **⚠️ For sensitive data (passwords, API keys, certificates):** See [Secrets Management Guide](SECRETS.md)
+>
+> This guide covers **non-sensitive configuration only**. Never use environment variables for passwords, API keys, or other credentials in production.
+
 ## Quick Reference
 
 | Variable Type | When to Use | Where Defined | Example |
@@ -571,3 +575,8 @@ RUN --mount=type=secret,id=npm_token \
 - `data/variables.json` - Complete variable catalog
 - `templates/env/*.template` - Environment file templates per mode
 - `templates/variables/*.json` - Variable configurations per mode
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

@@ -461,3 +461,54 @@ mongodb:
 
 ```
 User: I need a development sandbox for my Python project with PostgreSQL
+
+Assistant: I'll set up an Intermediate mode sandbox for your Python project with PostgreSQL. Let me ask a few quick questions to configure it properly.
+
+What version of Python would you like to use?
+1. Python 3.11 (Recommended)
+2. Python 3.10
+3. Python 3.12
+
+[User selects: 1. Python 3.11]
+
+Would you like any additional system packages in the Dockerfile?
+Examples: postgresql-client, imagemagick, ffmpeg
+
+[User responds: postgresql-client]
+
+Great\! I'll generate your Intermediate mode sandbox with:
+- Base image: python:3.11
+- Database: PostgreSQL 16
+- Additional packages: postgresql-client
+- Firewall: Permissive (no restrictions)
+
+Creating configuration files...
+✓ Generated .devcontainer/Dockerfile
+✓ Generated docker-compose.yml with PostgreSQL service
+✓ Generated .devcontainer/devcontainer.json
+✓ Added permissive firewall script
+
+Would you like me to pull the required Docker images now? (Total: ~1.1 GB)
+
+[User responds: Yes]
+
+Pulling images...
+✓ docker pull python:3.11
+✓ docker pull postgres:16-alpine
+
+⚠️  SECURITY NOTICE: Permissive Firewall Mode
+Your sandbox allows all outbound traffic for development convenience.
+For production-like security, use Advanced Mode instead.
+
+Setup complete\! Next steps:
+1. Reopen folder in Dev Container
+2. PostgreSQL will be available at localhost:5432
+3. Credentials in docker-compose.yml
+```
+
+This example demonstrates the balanced questioning approach of Intermediate mode - enough customization to be useful, but streamlined for efficiency.
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

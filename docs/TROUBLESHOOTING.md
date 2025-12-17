@@ -5,15 +5,16 @@ This guide helps diagnose and resolve common issues with Claude Code sandbox env
 ## Table of Contents
 
 1. [Quick Reference](#quick-reference)
-2. [Problem Categories](#problem-categories)
-3. [Container Issues](#container-issues)
-4. [Network Issues](#network-issues)
-5. [Service Connectivity](#service-connectivity)
-6. [Firewall Issues](#firewall-issues)
-7. [Permission Errors](#permission-errors)
-8. [VS Code DevContainer Problems](#vs-code-devcontainer-problems)
-9. [Performance Issues](#performance-issues)
-10. [Nuclear Option: Reset Everything](#nuclear-option-reset-everything)
+2. [Claude Code Installation](#claude-code-installation)
+3. [Problem Categories](#problem-categories)
+4. [Container Issues](#container-issues)
+5. [Network Issues](#network-issues)
+6. [Service Connectivity](#service-connectivity)
+7. [Firewall Issues](#firewall-issues)
+8. [Permission Errors](#permission-errors)
+9. [VS Code DevContainer Problems](#vs-code-devcontainer-problems)
+10. [Performance Issues](#performance-issues)
+11. [Nuclear Option: Reset Everything](#nuclear-option-reset-everything)
 
 ## Quick Reference
 
@@ -30,6 +31,62 @@ Common problems and their immediate fixes:
 | Permission denied | Fix file ownership: `sudo chown -R 1000:1000 .` | [Permission Errors](#permission-errors) |
 | Port already in use | Stop conflicting service or change port | [Service Connectivity](#service-connectivity) |
 | VS Code extension not loading | Rebuild container without cache | [VS Code DevContainer Problems](#vs-code-devcontainer-problems) |
+
+## Claude Code Installation
+
+### Issue: Claude Code not available after container rebuild
+
+**Symptoms:**
+- `claude: command not found` after reopening devcontainer
+- Claude Code was working before rebuild
+
+**Cause:**
+Claude Code is installed in the container filesystem, which is recreated on rebuild.
+
+**Solution:**
+Reinstall Claude Code after each container rebuild:
+
+```bash
+curl -fsSL https://claude.ai/install.sh | sh
+```
+
+**Automation Option:**
+Add to `.devcontainer/postCreateCommand` or `postStartCommand`:
+
+```json
+{
+  "postCreateCommand": "curl -fsSL https://claude.ai/install.sh | sh"
+}
+```
+
+### Issue: Cannot download Claude Code installation script
+
+**Symptoms:**
+- `curl: (6) Could not resolve host: claude.ai`
+- Network timeout during installation
+- Corporate firewall blocking download
+
+**Cause:**
+Installation requires internet access to Anthropic servers.
+
+**Solutions:**
+
+1. **Add to firewall allowlist:**
+   - `claude.ai`
+   - `*.anthropic.com`
+   - Installation CDN endpoints
+
+2. **Pre-download for offline use:**
+   ```bash
+   # On connected machine
+   curl -fsSL https://claude.ai/install.sh -o install-claude.sh
+
+   # Copy to project and run offline
+   sh ./install-claude.sh
+   ```
+
+3. **Use volume mount:**
+   Pre-install Claude Code on host and mount the installation directory.
 
 ## Problem Categories
 

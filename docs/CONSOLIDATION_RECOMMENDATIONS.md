@@ -50,7 +50,7 @@ Choose your development experience:
 - **Advanced** - Security-first with strict firewall, 8-12 minutes
 - **YOLO** - Complete customization and control, 15-30 minutes
 
-See [MODES.md](docs/MODES.md) for detailed comparison and selection guide.
+See [MODES.md](MODES.md) for detailed comparison and selection guide.
 
 ### Quick Commands
 
@@ -61,7 +61,7 @@ See [MODES.md](docs/MODES.md) for detailed comparison and selection guide.
 | `/sandbox:advanced` | Advanced | 8-12 min |
 | `/sandbox:yolo` | YOLO | 15-30 min |
 
-See [Commands Guide](commands/README.md) for full command documentation.
+See [Commands Guide](../commands/README.md) for full command documentation.
 ```
 
 **Benefits:**
@@ -248,7 +248,6 @@ All example READMEs duplicate the same comparison table with minor variations:
 
 ## References
 
-- [Documentation Cleanup Plan](plans/2025-12-16-documentation-cleanup.md)
 - [MODES.md](MODES.md) - Current mode comparison guide
 - [VARIABLES.md](VARIABLES.md) - Current variables guide
 - [SECRETS.md](SECRETS.md) - Current secrets guide
@@ -259,3 +258,8 @@ All example READMEs duplicate the same comparison table with minor variations:
 - Review this document before starting v2.3.0 planning
 - Update decision log when implementing changes
 - Archive when all recommendations implemented or rejected
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

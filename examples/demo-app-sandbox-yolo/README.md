@@ -75,7 +75,14 @@ This example shows what the `windows-sandbox` plugin generates when run in YOLO 
    - Select: `Dev Containers: Reopen in Container`
    - Wait for container to build (first time: 5-7 minutes with BuildKit)
 
-3. **Start the Application**:
+3. **Install Claude Code** (required after each container rebuild):
+   ```bash
+   curl -fsSL https://claude.ai/install.sh | sh
+   ```
+
+   > **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
+
+4. **Start the Application**:
 
    **Terminal 1 - Backend**:
    ```bash
@@ -741,3 +748,8 @@ MIT
 ---
 
 **YOLO Mode** - Production-ready development environments with comprehensive tooling and best practices.
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

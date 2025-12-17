@@ -11,3 +11,8 @@ Focus on identifying and resolving:
 - Firewall blocking legitimate traffic
 - Permission errors
 - VS Code DevContainer issues
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

@@ -181,7 +181,7 @@ iptables -P OUTPUT DROP
 - **Use Case:** Expert customization
 
 ```bash
-# Supports three modes:
+# Supports three firewall modes:
 # - disabled: No firewall
 # - permissive: Allow all
 # - strict: Whitelist-based (comprehensive categories)

@@ -1,10 +1,10 @@
-# Custom bash configuration for YOLO tier development
+# Custom bash configuration for YOLO mode development
 
 # Enhanced prompt with git branch
 parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
 }
-export PS1="\[\033[01;36m\][PRO]\[\033[00m\] \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\] \[\033[01;33m\]\$(parse_git_branch)\[\033[00m\]\$ "
+export PS1="\[\033[01;36m\][YOLO]\[\033[00m\] \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\] \[\033[01;33m\]\$(parse_git_branch)\[\033[00m\]\$ "
 
 # Aliases for development
 alias ll='ls -alF'
@@ -53,7 +53,7 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 # Welcome message
-echo "🚀 Pro Mode Development Environment"
+echo "🚀 YOLO Mode Development Environment"
 echo "Python: $(python --version)"
 echo "Node.js: $(node --version)"
 echo "Git: $(git --version)"

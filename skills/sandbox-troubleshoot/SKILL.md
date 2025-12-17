@@ -177,3 +177,8 @@ For detailed troubleshooting steps, refer to `references/troubleshooting.md` whi
 - **Verify assumptions** - Check actual state, not expected state
 - **Document what worked** - Help user understand the fix
 - **Explain root cause** - Teach, don't just fix
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

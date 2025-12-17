@@ -55,7 +55,14 @@ This example shows what the `windows-sandbox` plugin generates when run in Inter
    - Select: \`Dev Containers: Reopen in Container\`
    - Wait for container to build and start (first time takes 2-3 minutes)
 
-3. **Start the Application**:
+3. **Install Claude Code** (required after each container rebuild):
+   ```bash
+   curl -fsSL https://claude.ai/install.sh | sh
+   ```
+
+   > **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
+
+4. **Start the Application**:
 
    **Terminal 1 - Backend**:
    ```bash
@@ -96,6 +103,58 @@ npm test
 **With coverage**:
 ```bash
 ./run-tests.sh --coverage
+```
+
+## Architecture
+
+### Backend Structure
+```
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── api.py          # FastAPI routes
+│   ├── models.py       # SQLAlchemy models
+│   ├── database.py     # Database connection
+│   ├── cache.py        # Redis caching utilities
+│   └── messaging.py    # RabbitMQ messaging
+├── tests/
+│   ├── test_api.py     # API endpoint tests
+│   ├── test_cache.py   # Cache functionality tests
+│   └── test_messaging.py  # Messaging tests
+├── requirements.txt
+└── pytest.ini
+```
+
+### Frontend Structure
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── PostList.jsx      # List all posts
+│   │   ├── PostDetail.jsx    # View single post
+│   │   ├── PostForm.jsx      # Create/edit form
+│   │   └── __tests__/        # Component tests
+│   ├── api/
+│   │   └── posts.js          # API client
+│   ├── App.jsx               # Main app component
+│   └── main.jsx              # Entry point
+├── package.json
+└── vite.config.js
+```
+
+### Service Architecture
+```
+┌─────────────┐     ┌──────────────┐     ┌────────────┐
+│   Browser   │────→│   Frontend   │────→│  Backend   │
+│  (React)    │     │  (Vite:5173) │     │ (API:8000) │
+└─────────────┘     └──────────────┘     └─────┬──────┘
+                                                │
+                                    ┌───────────┼───────────┐
+                                    ↓           ↓           ↓
+                              ┌──────────┐ ┌────────┐ ┌──────────┐
+                              │PostgreSQL│ │ Redis  │ │ RabbitMQ │
+                              │  :5432   │ │ :6379  │ │  :5672   │
+                              └──────────┘ └────────┘ └──────────┘
 ```
 
 ## DevContainer Configuration (Intermediate Mode)
@@ -251,3 +310,8 @@ docker-compose down
 ## License
 
 MIT
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.0

@@ -1,7 +1,7 @@
 # ============================================================================
 # MASTER DOCKER COMPOSE - All Services Kitchen Sink
 # ============================================================================
-# This file contains ALL possible services for the Docker Sandbox Plugin.
+# This file contains ALL possible services for the Claude Code Sandbox Plugin.
 # Skills strip unused sections based on user selections.
 #
 # Section markers: # ===SECTION_START:name=== / # ===SECTION_END:name===
