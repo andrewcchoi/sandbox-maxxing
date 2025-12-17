@@ -3,7 +3,7 @@
   "version": "2.2.1",
   "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments with four-mode system (Basic, Intermediate, Advanced, YOLO)",
   "author": {
-    "name": "Sandbox Team"
+    "name": "shadow developer"
   },
   "homepage": "https://github.com/andrewcchoi/sandbox-maxxing",
   "repository": "https://github.com/andrewcchoi/sandbox-maxxing",
