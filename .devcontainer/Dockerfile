@@ -2,6 +2,10 @@
 # Development container for plugin development with services
 # Includes PostgreSQL, Redis, RabbitMQ for testing examples
 
+# Stage 1: Get Node.js from official image (Issue #29)
+FROM node:20-slim AS node-source
+
+# Stage 2: Main build
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 # Install system packages including iptables for firewall
@@ -10,10 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   iptables ipset \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-  apt-get install -y nodejs && \
-  apt-get clean && rm -rf /var/lib/apt/lists/*
+# Copy Node.js from official image (Issue #29 - avoids NodeSource SSL issues)
+COPY --from=node-source /usr/local/bin/node /usr/local/bin/
+COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
 # Create node user
 RUN groupadd --gid 1000 node && \
@@ -26,6 +31,10 @@ RUN mkdir -p /usr/local/share/npm-global && \
 RUN mkdir -p /workspace && chown -R node:node /workspace
 
 WORKDIR /workspace
+
+# Setup npm registry allowlist for Claude Code updates (Issue #32)
+RUN echo "registry.npmjs.org" >> /etc/claude-allowed-domains.txt && \
+    echo "npmjs.org" >> /etc/claude-allowed-domains.txt
 
 USER node
 

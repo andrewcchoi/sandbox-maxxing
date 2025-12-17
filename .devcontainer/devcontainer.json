@@ -23,7 +23,7 @@
     }
   },
   "remoteUser": "node",
-  "postCreateCommand": "echo '✓ Sandbox Plugin development environment ready!'",
+  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
 
   // Generated using windows-sandbox plugin Intermediate mode
   // Detected: Documentation/Template repository
