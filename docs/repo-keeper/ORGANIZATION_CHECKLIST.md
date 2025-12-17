@@ -271,40 +271,82 @@ README.md (entry point, summaries)
 - Bash (Linux/macOS/WSL)
 - Git hooks (Git built-in)
 
+### Three-Tier Validation System
+
+The comprehensive validation suite runs checks in three tiers:
+
+**Tier 1: Structural Validation** (~10 seconds)
+- Version sync across 50+ files
+- Link integrity in markdown files
+- Inventory accuracy vs filesystem
+- Relationship validation (skill ↔ command ↔ template)
+- JSON schema validation
+
+**Tier 2: Completeness Validation** (~30 seconds)
+- Feature coverage (all features have documentation)
+- Mode coverage (all 4 modes have complete vertical slices)
+
+**Tier 3: Content Validation** (~2-5 minutes)
+- Required sections in documentation
+- Mode consistency (files reference correct mode)
+- Step sequence validation
+- External link checking (optional)
+
 ### Automation Checklist
+
+- [ ] **Run orchestrator before commits**
+  - Quick check: `./docs/repo-keeper/scripts/run-all-checks.sh --quick`
+  - Standard check: `./docs/repo-keeper/scripts/run-all-checks.sh`
+  - Full check: `./docs/repo-keeper/scripts/run-all-checks.sh --full`
 
 - [ ] **Version validation workflow** (`workflows/validate-versions.yml`)
   - Triggers on PR and push to master
-  - Runs `scripts/check-version-sync.ps1`
+  - Runs `scripts/check-version-sync.sh`
   - Fails if versions mismatch
 
 - [ ] **Link validation workflow** (`workflows/validate-links.yml`)
   - Triggers on PR and weekly schedule
-  - Runs `scripts/check-links.ps1`
+  - Runs `scripts/check-links.sh`
   - Comments on PR with broken links
 
-- [ ] **Inventory validation workflow** (optional)
-  - Runs `scripts/validate-inventory.ps1`
-  - Ensures inventory matches filesystem
+- [ ] **Comprehensive validation workflow** (optional, recommended)
+  - Runs `scripts/run-all-checks.sh` (standard mode)
+  - Validates all Tier 1 + Tier 2 checks
+  - Provides detailed failure reports
 
 ### Setup Instructions
 
-**1. Copy workflows to activate:**
+**1. Run Local Validation (Recommended):**
+```bash
+# Bash (Linux/macOS/WSL)
+./docs/repo-keeper/scripts/run-all-checks.sh           # Standard (Tier 1+2)
+./docs/repo-keeper/scripts/run-all-checks.sh --quick   # Quick (Tier 1 only)
+./docs/repo-keeper/scripts/run-all-checks.sh --full    # Full (all tiers)
+```
+
+```powershell
+# PowerShell (Windows)
+.\docs\repo-keeper\scripts\run-all-checks.ps1           # Standard (Tier 1+2)
+.\docs\repo-keeper\scripts\run-all-checks.ps1 -Quick    # Quick (Tier 1 only)
+.\docs\repo-keeper\scripts\run-all-checks.ps1 -Full     # Full (all tiers)
+```
+
+**2. Run Individual Scripts:**
+```bash
+# Bash
+./docs/repo-keeper/scripts/check-version-sync.sh
+./docs/repo-keeper/scripts/check-links.sh
+./docs/repo-keeper/scripts/validate-inventory.sh
+./docs/repo-keeper/scripts/validate-relationships.sh
+./docs/repo-keeper/scripts/validate-schemas.sh
+./docs/repo-keeper/scripts/validate-completeness.sh
+./docs/repo-keeper/scripts/validate-content.sh
+```
+
+**3. Copy workflows to activate CI/CD:**
 ```powershell
 # PowerShell
 Copy-Item -Path "docs/repo-keeper/workflows/*" -Destination ".github/workflows/" -Recurse
-```
-
-**2. Run validation locally:**
-```powershell
-# Check version sync
-.\docs\repo-keeper\scripts\check-version-sync.ps1
-
-# Check links
-.\docs\repo-keeper\scripts\check-links.ps1
-
-# Validate inventory
-.\docs\repo-keeper\scripts\validate-inventory.ps1
 ```
 
 **3. Git hooks (optional):**
