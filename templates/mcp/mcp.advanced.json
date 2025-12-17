@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "servers": {
     "filesystem": {
@@ -61,67 +60,3 @@
     }
   }
 }
-=======
-{
-  "servers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
-    },
-    "sqlite": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "/workspace/data.db"]
-    },
-    "fetch": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-fetch"]
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_TOKEN": "${input:githubToken}"
-      }
-    },
-    "postgres": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres"],
-      "env": {
-        "POSTGRES_CONNECTION_STRING": "${input:postgresConnectionString}"
-      }
-    },
-    "docker": {
-      "command": "docker",
-      "args": ["run", "-i", "--rm", "mcp/docker"]
-    },
-    "brave-search": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
-      "env": {
-        "BRAVE_API_KEY": "${input:braveApiKey}"
-      }
-    }
-  },
-  "inputs": {
-    "githubToken": {
-      "type": "promptString",
-      "description": "GitHub personal access token",
-      "password": true
-    },
-    "postgresConnectionString": {
-      "type": "promptString",
-      "description": "PostgreSQL connection string",
-      "default": "postgresql://user:password@localhost:5432/db"
-    },
-    "braveApiKey": {
-      "type": "promptString",
-      "description": "Brave Search API key (optional)",
-      "password": true
-    }
-  }
-}
->>>>>>> dc2424c2457c6bf1fc281678bfedb2e3930d7a62

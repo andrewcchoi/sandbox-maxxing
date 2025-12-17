@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "extensions": [
     "anthropic.claude-code",
@@ -34,40 +33,3 @@
     "php": ["bmewburn.vscode-intelephense-client"]
   }
 }
-=======
-{
-  "extensions": [
-    "anthropic.claude-code",
-    "ms-azuretools.vscode-docker",
-    "redhat.vscode-yaml",
-    "eamodio.gitlens",
-    "mhutchie.git-graph",
-    "streetsidesoftware.code-spell-checker",
-    "usernamehw.errorlens",
-    "christian-kohler.path-intellisense",
-    "formulahendry.auto-rename-tag",
-    "mtxr.sqltools",
-    "mongodb.mongodb-vscode",
-    "cweijan.vscode-database-client2",
-    "PKief.material-icon-theme",
-    "GitHub.github-vscode-theme",
-    "dracula-theme.theme-dracula",
-    "EliverLara.andromeda",
-    "zhuangtongfa.material-theme",
-    "johnpapa.vscode-peacock",
-    "hoovercj.vscode-power-mode",
-    "tonybaloney.vscode-pets",
-    "wayou.vscode-todo-highlight"
-  ],
-  "platform_extensions": {
-    "python": ["ms-python.python", "ms-python.vscode-pylance", "ms-python.black-formatter", "charliermarsh.ruff"],
-    "node": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "bradlc.vscode-tailwindcss", "christian-kohler.npm-intellisense"],
-    "go": ["golang.go"],
-    "rust": ["rust-lang.rust-analyzer"],
-    "java": ["redhat.java", "vscjava.vscode-maven", "vscjava.vscode-java-pack"],
-    "cpp": ["ms-vscode.cpptools", "ms-vscode.cmake-tools"],
-    "ruby": ["Shopify.ruby-lsp", "rebornix.ruby"],
-    "php": ["bmewburn.vscode-intelephense-client"]
-  }
-}
->>>>>>> dc2424c2457c6bf1fc281678bfedb2e3930d7a62

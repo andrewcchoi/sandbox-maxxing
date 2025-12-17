@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "servers": {
     "filesystem": {
@@ -11,17 +10,3 @@
     }
   }
 }
-=======
-{
-  "servers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
-    }
-  }
-}
->>>>>>> dc2424c2457c6bf1fc281678bfedb2e3930d7a62

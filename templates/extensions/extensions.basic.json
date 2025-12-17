@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "extensions": [
     "anthropic.claude-code",
@@ -19,25 +18,3 @@
     "php": ["bmewburn.vscode-intelephense-client"]
   }
 }
-=======
-{
-  "extensions": [
-    "anthropic.claude-code",
-    "ms-azuretools.vscode-docker",
-    "redhat.vscode-yaml",
-    "eamodio.gitlens",
-    "PKief.material-icon-theme",
-    "johnpapa.vscode-peacock"
-  ],
-  "platform_extensions": {
-    "python": ["ms-python.python", "ms-python.vscode-pylance"],
-    "node": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
-    "go": ["golang.go"],
-    "rust": ["rust-lang.rust-analyzer"],
-    "java": ["redhat.java"],
-    "cpp": ["ms-vscode.cpptools"],
-    "ruby": ["Shopify.ruby-lsp"],
-    "php": ["bmewburn.vscode-intelephense-client"]
-  }
-}
->>>>>>> dc2424c2457c6bf1fc281678bfedb2e3930d7a62

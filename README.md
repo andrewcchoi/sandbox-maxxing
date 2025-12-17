@@ -387,7 +387,6 @@ The plugin includes comprehensive reference documentation:
 - `skills/sandbox-setup-advanced/references/customization.md` - Customization guide
 - `skills/sandbox-setup-advanced/references/security.md` - Security model and best practices
 - `skills/sandbox-setup-advanced/references/troubleshooting.md` - Detailed troubleshooting guide
-<<<<<<< HEAD
 
 ## Naming Convention
 
@@ -404,8 +403,6 @@ This plugin uses consistent naming across different contexts:
 - **sandbox-maxxing**: Official repository name (reflects Windows WSL 2 compatibility)
 - **sandbox**: Shorthand used in commands and skills for brevity
 - **Claude Code Sandbox Plugin**: Full descriptive name for user-facing documentation
-=======
->>>>>>> dc2424c2457c6bf1fc281678bfedb2e3930d7a62
 
 ## Development
 
