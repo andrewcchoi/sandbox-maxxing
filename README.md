@@ -457,7 +457,8 @@ sandbox-maxxing/
     ├── streamlit-sandbox-basic/
     ├── demo-app-sandbox-basic/
     ├── demo-app-sandbox-intermediate/
-    └── demo-app-sandbox-advanced/
+    ├── demo-app-sandbox-advanced/
+    └── demo-app-sandbox-yolo/
 ```
 
 ## Examples
@@ -740,9 +741,4 @@ MIT License - See LICENSE file for details
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.0
-
----
-
-**Last Updated:** 2025-12-16
-**Version:** 2.2.0
+**Version:** 2.2.1

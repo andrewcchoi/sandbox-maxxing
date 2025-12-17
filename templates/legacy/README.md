@@ -18,7 +18,7 @@ Version 2.0 introduced a modular, data-driven template system:
 1. **Master Templates**: All configurations in `templates/master/` with section markers
 2. **Modular Sections**: Service-specific configs in `templates/compose/`, `templates/dockerfiles/`, `templates/firewall/`
 3. **Data-Driven**: Image and domain registries in `data/` directory
-4. **Four Tiers**: Basic, Intermediate, Advanced, YOLO (replacing Basic/Advanced/YOLO)
+4. **Four Modes**: Basic, Intermediate, Advanced, YOLO (replacing Basic/Advanced/Pro)
 
 The new system generates templates dynamically by:
 - Reading JSON data files for available options

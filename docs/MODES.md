@@ -10,7 +10,7 @@ This guide helps you choose the right sandbox mode for your project and understa
 | **Setup Time** | 1-2 minutes | 3-5 minutes | 8-12 minutes | 15-30 minutes |
 | **Questions Asked** | 2-3 | 5-8 | 10-15 | 15-20+ |
 | **Base Images** | sandbox-templates (latest, claude-code) | Official images (python:3.12-slim) | Security-hardened official | Any (including nightly/experimental) |
-| **Firewall** | Strict (40-50 essential domains) | Expanded (100+ domains) | Minimal (30-40, explicit additions) | Optional or fully custom |
+| **Firewall** | None (container isolation) | Permissive (no restrictions) | Strict (customizable allowlist) | Optional or fully custom |
 | **VS Code Extensions** | 5-8 essential | 10-15 curated | 20+ comprehensive | User-controlled |
 | **Dockerfile Complexity** | Single-stage | Single-stage with build args | Multi-stage optimized | Fully custom |
 | **Auto-Detection** | Yes | Partial | No | No |

@@ -73,9 +73,11 @@ When modifying skills:
 ### Working on Templates
 
 Templates are in the `templates/` directory:
-- `python/` - Python + PostgreSQL + Redis
-- `nodejs/` - Node.js + MongoDB + Redis
-- `fullstack/` - React + FastAPI + PostgreSQL
+- `master/` - Master templates with all features
+- `dockerfiles/` - Language-specific Dockerfiles (Python, Node.js, Go, Rust, etc.)
+- `compose/` - Mode-specific docker-compose templates
+- `firewall/` - Mode-specific firewall scripts
+- `legacy/` - Deprecated monolithic templates (python/, nodejs/, fullstack/)
 
 Template placeholders:
 - `{{PROJECT_NAME}}` - Project name

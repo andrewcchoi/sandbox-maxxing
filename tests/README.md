@@ -27,3 +27,8 @@ Execute tests in order:
 - Docker Desktop running
 - VS Code with DevContainers extension
 - Claude Code CLI installed
+
+---
+
+**Last Updated:** 2025-12-16
+**Version:** 2.2.1
