@@ -5,6 +5,7 @@
 # Shell Scripts - MUST be LF (critical for Docker)
 # ============================================================================
 *.sh text eol=lf
+*.ps1 text eol=crlf
 
 # ============================================================================
 # Docker Files - MUST be LF
@@ -35,6 +36,11 @@ devcontainer.json text eol=lf
 *.env.* text eol=lf
 .gitignore text eol=lf
 .gitattributes text eol=lf
+
+# ============================================================================
+# Documentation - LF preferred
+# ============================================================================
+*.md text eol=lf
 
 # ============================================================================
 # Binary Files - Do not modify
