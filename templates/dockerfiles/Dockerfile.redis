@@ -1,4 +1,11 @@
-# Redis 7 Development Environment
+# ============================================================================
+# Stage 1: Get Node.js from official image (Issue #29)
+# ============================================================================
+FROM node:20-slim AS node-source
+
+# ============================================================================
+# Stage 2: Redis Development Environment
+# ============================================================================
 FROM redis:7-alpine
 
 # Install system dependencies
@@ -25,7 +32,7 @@ RUN apk add --no-cache \
     pip3 install --no-cache-dir redis redis-cli
 
 # Install Claude Code CLI
-RUN curl -fsSL https://claude.ai/install.sh | sh
+RUN npm install -g @anthropic-ai/claude-code
 
 # Set Redis environment variables
 ENV REDIS_PORT=6379 \

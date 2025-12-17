@@ -191,6 +191,38 @@ frontend/
 - Provides informational messages about security model
 - Container isolation is primary protection
 
+### Claude Credentials
+
+**Automatic Credential Persistence** (Issue #30):
+
+Claude Code credentials are automatically copied from your host machine to the container:
+
+1. **Host Mount** (in `docker-compose.yml`):
+```yaml
+app:
+  volumes:
+    - ~/.claude:/tmp/host-claude:ro  # Read-only mount from host
+```
+
+2. **Setup Script** (`.devcontainer/setup-claude-credentials.sh`):
+- Runs automatically on container creation
+- Copies `.credentials.json` and `settings.json` from host
+- Preserves authentication across container rebuilds
+
+3. **Result**:
+- No need to run `claude login` after rebuilds
+- Credentials persist automatically
+- Works seamlessly with container recreation
+
+**Manual Override:**
+
+If you need to re-authenticate:
+```bash
+claude login
+```
+
+The new credentials will be saved in the container's `~/.claude` directory.
+
 ## Customization
 
 ### Change Python or Node.js Version

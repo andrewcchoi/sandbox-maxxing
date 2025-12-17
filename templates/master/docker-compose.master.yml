@@ -14,6 +14,46 @@
 # ============================================================================
 
 services:
+  # ===SECTION_START:app_service===
+  # ============================================================================
+  # APPLICATION SERVICE (Issue #30 - Claude Credentials)
+  # ============================================================================
+  # This is the main DevContainer application service
+  app:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        TZ: ${TZ:-America/Los_Angeles}
+        CLAUDE_CODE_VERSION: ${CLAUDE_CODE_VERSION:-latest}
+    container_name: {{PROJECT_NAME}}-app
+    hostname: {{PROJECT_NAME}}-app
+    restart: unless-stopped
+    volumes:
+      # Workspace volume with cached mode for better performance
+      - .:/workspace:cached
+      # Host Claude config (Issue #30 - read-only)
+      - ~/.claude:/tmp/host-claude:ro
+    environment:
+      # Database connections
+      - DATABASE_URL=${DATABASE_URL:-postgresql://${POSTGRES_USER:-{{DB_USER}}}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-{{DB_NAME}}}}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      # Development settings
+      - NODE_ENV=${NODE_ENV:-development}
+      - PYTHONUNBUFFERED=1
+    cap_add:
+      - NET_ADMIN  # Required for firewall
+      - NET_RAW    # Required for network tools
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - default
+    command: sleep infinity
+  # ===SECTION_END:app_service===
+
   # ===SECTION_START:postgres===
   postgres:
     image: postgres:16-bookworm

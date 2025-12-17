@@ -1,4 +1,11 @@
-# PHP 8.4 Development Environment
+# ============================================================================
+# Stage 1: Get Node.js from official image (Issue #29)
+# ============================================================================
+FROM node:20-slim AS node-source
+
+# ============================================================================
+# Stage 2: PHP Development Environment
+# ============================================================================
 FROM php:8.4-fpm-bookworm
 
 # Install system dependencies
@@ -19,6 +26,12 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy Node.js from official image (Issue #29 - avoids NodeSource SSL issues)
+COPY --from=node-source /usr/local/bin/node /usr/local/bin/
+COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
 # Install PHP extensions
 RUN docker-php-ext-install \
     pdo_mysql \
@@ -38,7 +51,7 @@ RUN groupadd -g 1000 node && \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Install Claude Code CLI
-RUN curl -fsSL https://claude.ai/install.sh | sh
+RUN npm install -g @anthropic-ai/claude-code
 
 # Configure PHP
 RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/custom.ini && \

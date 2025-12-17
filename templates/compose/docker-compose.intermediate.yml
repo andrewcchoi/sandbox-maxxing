@@ -6,6 +6,19 @@
 # No resource limits - simpler than advanced mode
 # ============================================================================
 
+# =============================================================================
+# APP SERVICE EXAMPLE (Issue #30 - Claude Credentials)
+# =============================================================================
+# When adding your app service, include the credentials mount:
+#
+#   app:
+#     volumes:
+#       - .:/workspace:cached
+#       - ~/.claude:/tmp/host-claude:ro  # Host Claude config (read-only)
+#
+# Then use .devcontainer/setup-claude-credentials.sh in postCreateCommand
+# =============================================================================
+
 services:
   postgres:
     image: postgres:16-bookworm
