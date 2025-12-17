@@ -1,12 +1,12 @@
 # Comprehensive Consistency, Completeness, and Consolidation Audit
 
 **Date:** 2025-12-16
-**Version Context:** Post v2.2.0 release
+**Version Context:** Post v2.2.1 release
 **Audit Scope:** All documentation, examples, skills, commands, templates, and data files
 
 ## Executive Summary
 
-This audit reviews the repository for consistency, completeness, and consolidation opportunities in preparation for v2.3.0. The repository is in good shape following the v2.2.0 documentation cleanup, but 39 files lack version footers, 10 cross-references are broken, and significant consolidation opportunities exist.
+This audit reviews the repository for consistency, completeness, and consolidation opportunities in preparation for v2.3.0. The repository is in good shape following the v2.2.1 documentation cleanup, but 39 files lack version footers, 10 cross-references are broken, and significant consolidation opportunities exist.
 
 **Overall Status:** 🟡 Good with improvements needed
 
@@ -67,7 +67,7 @@ This audit reviews the repository for consistency, completeness, and consolidati
 ✗ ./docs/SECRETS.md
 ✗ ./docs/VARIABLES.md
 ✗ ./docs/CONSOLIDATION_RECOMMENDATIONS.md
-✗ ./docs/LOW_PRIORITY_FIXES_v2.2.0.md
+✗ ./docs/LOW_PRIORITY_FIXES_v2.2.1.md
 ```
 
 **Example READMEs (7):**
@@ -128,7 +128,7 @@ Standard footer format:
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.0
+**Version:** 2.2.1
 ```
 
 Files to update immediately:
@@ -426,21 +426,21 @@ Only reference found was in CHANGELOG.md documenting the change itself:
 **Findings:**
 1. `docs/security-model.md` - Uses "Tier" for threat levels (correct context) ✅
 2. `docs/archive/2025-12-12-devcontainer-setup-design.md` - Uses "Two-Tier Approach" (archived) ✅
-3. `.github-issue-v2.2.0.md` - Documents the terminology fix (historical) ✅
+3. `.github-issue-v2.2.1.md` - Documents the terminology fix (historical) ✅
 4. `templates/README.md` - Uses "three-tier system" referring to v1.x (historical context) ✅
 
 **Recommendation:**
 - **No action needed** ✅
 - All uses are either correct context or historical documentation
 
-### 4.4 "windows-sandbox" Naming
+### 4.4 "sandbox-maxxing" Naming
 
 **Status:** 🟡 Inconsistent usage
 
-**Issue:** Repository uses both "windows-sandbox" and "sandbox"
+**Issue:** Repository uses both "sandbox-maxxing" and "sandbox"
 
 **Findings:**
-- Official repo name: `andrewcchoi/windows-sandbox` (GitHub URL)
+- Official repo name: `andrewcchoi/sandbox-maxxing` (GitHub URL)
 - Documentation shorthand: "sandbox" (commands, skills)
 - Installation command: Uses full GitHub path
 
@@ -448,8 +448,8 @@ Only reference found was in CHANGELOG.md documenting the change itself:
 
 **CONTRIBUTING.md and DEVELOPMENT.md (3 occurrences):**
 ```bash
-git clone https://github.com/andrewcchoi/windows-sandbox
-cd windows-sandbox    # ← Should this be standardized?
+git clone https://github.com/andrewcchoi/sandbox-maxxing
+cd sandbox-maxxing    # ← Should this be standardized?
 ```
 
 **Recommendation:**
@@ -458,7 +458,7 @@ cd windows-sandbox    # ← Should this be standardized?
   ```markdown
   ## Naming Convention
 
-  - **Repository:** windows-sandbox (official GitHub name)
+  - **Repository:** sandbox-maxxing (official GitHub name)
   - **Commands:** /sandbox:* (short form)
   - **Skills:** sandbox-* (short form)
   - **Plugin name:** "Claude Code Sandbox Plugin" (user-facing)
@@ -474,7 +474,7 @@ cd windows-sandbox    # ← Should this be standardized?
 2. "Claude Code Sandbox" (slightly informal)
 3. "Docker Sandbox Plugin" (data/README.md - incorrect)
 4. "Sandbox Plugin" (informal shorthand)
-5. "windows-sandbox" (technical/GitHub)
+5. "sandbox-maxxing" (technical/GitHub)
 6. "sandbox" (command shorthand)
 
 **Recommendation:**
@@ -657,7 +657,7 @@ data/vscode-extensions.json    (6.9K)
    - Estimated: Remove ~50-75 lines of duplication
 
 2. **Add naming convention guide to README.md**
-   - Document "windows-sandbox" vs "sandbox" usage
+   - Document "sandbox-maxxing" vs "sandbox" usage
    - Standardize plugin title variations
    - Create style guide section
 
@@ -767,7 +767,7 @@ data/vscode-extensions.json    (6.9K)
 
 ## 10. Conclusion
 
-The repository is in **good shape** following v2.2.0, with strong structural consistency and well-organized content. The primary issues are:
+The repository is in **good shape** following v2.2.1, with strong structural consistency and well-organized content. The primary issues are:
 
 1. **Version footer gaps** (39 files) - Easy fix, high impact
 2. **Broken links** (10) - Quick fix, important for UX

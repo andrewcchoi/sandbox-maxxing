@@ -11,7 +11,7 @@ Intermediate mode is designed for developers who want:
 - **Additional services** like message queues
 - **More VS Code extensions** for enhanced productivity (5 essential extensions)
 
-This example shows what the `windows-sandbox` plugin generates when run in Intermediate mode on a full-stack application.
+This example shows what the `sandbox-maxxing` plugin generates when run in Intermediate mode on a full-stack application.
 
 ## Features
 
@@ -51,8 +51,8 @@ This example shows what the `windows-sandbox` plugin generates when run in Inter
    ```
 
 2. **Reopen in Container**:
-   - Press \`F1\` or \`Ctrl+Shift+P\`
-   - Select: \`Dev Containers: Reopen in Container\`
+   - Press `F1` or `Ctrl+Shift+P`
+   - Select: `Dev Containers: Reopen in Container`
    - Wait for container to build and start (first time takes 2-3 minutes)
 
 3. **Install Claude Code** (required after each container rebuild):
@@ -170,10 +170,10 @@ frontend/
 
 **Dockerfile**:
 - Build arguments for Python and Node.js versions
-- Platform template: \`python:3.12-slim-bookworm\`
+- Platform template: `python:3.12-slim-bookworm`
 - Node.js installation from official repository
 - Firewall tools (iptables, ipset) for permissive mode
-- Non-root user (\`node\`) with sudo access for firewall
+- Non-root user (`node`) with sudo access for firewall
 
 **docker-compose.yml**:
 - Build args for version customization (PYTHON_VERSION, NODE_VERSION)
@@ -227,34 +227,34 @@ The new credentials will be saved in the container's `~/.claude` directory.
 
 ### Change Python or Node.js Version
 
-Edit \`docker-compose.yml\`:
-\`\`\`yaml
+Edit `docker-compose.yml`:
+```yaml
 services:
   app:
     build:
       args:
         PYTHON_VERSION: "3.11"  # Change Python version
         NODE_VERSION: "18"      # Change Node.js version
-\`\`\`
+```
 
-Then rebuild: \`Dev Containers: Rebuild Container\`
+Then rebuild: `Dev Containers: Rebuild Container`
 
 ### Upgrade to Stricter Security
 
 If you need network-level restrictions:
 
 **Advanced Mode**: Add strict firewall with customizable allowlist
-- Copy configuration from \`demo-app-sandbox-advanced/\`
+- Copy configuration from `demo-app-sandbox-advanced/`
 - Provides whitelist-based network access control
 
 **YOLO Mode**: Full customization with optional firewall
-- Copy configuration from \`demo-app-sandbox-yolo/\`
+- Copy configuration from `demo-app-sandbox-yolo/`
 - Maximum flexibility with all available options
 
 ### Add More VS Code Extensions
 
-Edit \`.devcontainer/devcontainer.json\`:
-\`\`\`json
+Edit `.devcontainer/devcontainer.json`:
+```json
 {
   "customizations": {
     "vscode": {
@@ -269,47 +269,47 @@ Edit \`.devcontainer/devcontainer.json\`:
     }
   }
 }
-\`\`\`
+```
 
 ## Troubleshooting
 
 ### Database Connection Issues
 If you see database connection errors:
-\`\`\`bash
+```bash
 # Wait for PostgreSQL to be ready
 docker-compose logs postgres
 
 # Check health status
 docker-compose ps
-\`\`\`
+```
 
 ### RabbitMQ Connection Issues
-\`\`\`bash
+```bash
 # Check RabbitMQ logs
 docker-compose logs rabbitmq
 
 # Verify RabbitMQ is healthy
 docker-compose exec rabbitmq rabbitmq-diagnostics ping
-\`\`\`
+```
 
 ### Firewall Issues
 Intermediate mode uses permissive mode (no restrictions), but if you experience issues:
-\`\`\`bash
+```bash
 # Check firewall status
 sudo iptables -L -v
 
 # Verify permissive mode
 echo $FIREWALL_MODE  # Should output: permissive
-\`\`\`
+```
 
 ### Port Already in Use
-\`\`\`bash
+```bash
 # Stop conflicting services
 docker-compose down
 
 # Or change ports in devcontainer.json
 "forwardPorts": [8001, 5174, 5433, 6380, 5673, 15673]
-\`\`\`
+```
 
 ## Comparing to Other Modes
 
@@ -326,11 +326,11 @@ docker-compose down
 
 ## Related Examples
 
-- \`examples/demo-app-shared/\` - Uses shared Docker Compose services
-- \`examples/demo-app-sandbox-basic/\` - Basic mode (no firewall, minimal config)
-- \`examples/demo-app-sandbox-advanced/\` - Advanced mode with strict firewall
-- \`examples/demo-app-sandbox-yolo/\` - YOLO mode with full customization
-- \`examples/streamlit-sandbox-basic/\` - Simpler Python-only app
+- `examples/demo-app-shared/` - Uses shared Docker Compose services
+- `examples/demo-app-sandbox-basic/` - Basic mode (no firewall, minimal config)
+- `examples/demo-app-sandbox-advanced/` - Advanced mode with strict firewall
+- `examples/demo-app-sandbox-yolo/` - YOLO mode with full customization
+- `examples/streamlit-sandbox-basic/` - Simpler Python-only app
 
 ## Learn More
 
@@ -346,4 +346,4 @@ MIT
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.0
+**Version:** 2.2.1

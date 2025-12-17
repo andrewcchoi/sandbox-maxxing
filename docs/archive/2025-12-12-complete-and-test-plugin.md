@@ -30,7 +30,7 @@ Read all Python template files to verify they're complete.
 
 Run:
 ```bash
-ls -la "D:\!wip\plugins-sandbox\windows-sandbox-plugin\templates\python\"
+ls -la "D:\!wip\plugins-sandbox\sandbox-maxxing-plugin\templates\python\"
 ```
 
 Expected: Dockerfile, docker-compose.yml, requirements.txt, EXAMPLE.md
@@ -41,7 +41,7 @@ Read all Node.js template files to verify they're complete.
 
 Run:
 ```bash
-ls -la "D:\!wip\plugins-sandbox\windows-sandbox-plugin\templates\node\"
+ls -la "D:\!wip\plugins-sandbox\sandbox-maxxing-plugin\templates\node\"
 ```
 
 Expected: Dockerfile, docker-compose.yml, package.json, EXAMPLE.md
@@ -52,7 +52,7 @@ Read all fullstack template files.
 
 Run:
 ```bash
-ls -la "D:\!wip\plugins-sandbox\windows-sandbox-plugin\templates\fullstack\"
+ls -la "D:\!wip\plugins-sandbox\sandbox-maxxing-plugin\templates\fullstack\"
 ```
 
 Expected: docker-compose.yml, EXAMPLE.md, and optionally separate Dockerfiles
@@ -100,7 +100,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 **Step 1: Create tests directory**
 
 ```bash
-mkdir -p "D:\!wip\plugins-sandbox\windows-sandbox-plugin\tests"
+mkdir -p "D:\!wip\plugins-sandbox\sandbox-maxxing-plugin\tests"
 ```
 
 **Step 2: Write test README**
@@ -155,7 +155,7 @@ Create `tests/test-setup-basic.md`:
 
 ### 1. Install Plugin Locally
 ```bash
-cd D:\!wip\plugins-sandbox\windows-sandbox-plugin
+cd D:\!wip\plugins-sandbox\sandbox-maxxing-plugin
 claude plugins add .
 ```
 
@@ -346,7 +346,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 **Step 1: Install plugin locally**
 
 ```bash
-cd "D:\!wip\plugins-sandbox\windows-sandbox-plugin"
+cd "D:\!wip\plugins-sandbox\sandbox-maxxing-plugin"
 claude plugins add .
 ```
 
@@ -358,7 +358,7 @@ Expected: "Plugin installed successfully" or similar
 claude plugins list
 ```
 
-Expected: See "windows-sandbox" in the list
+Expected: See "sandbox-maxxing" in the list
 
 **Step 3: Create Python test project**
 
@@ -1316,7 +1316,7 @@ Initial stable release of Claude Code Sandbox plugin.
 ## Installation
 
 ```bash
-claude plugins add https://github.com/andrewcchoi/windows-sandbox
+claude plugins add https://github.com/andrewcchoi/sandbox-maxxing
 ```
 
 ## Quick Start

@@ -673,4 +673,4 @@ This will take approximately 5-10 minutes. Ready to proceed?
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.0
+**Version:** 2.2.1

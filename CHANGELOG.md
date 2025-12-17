@@ -28,7 +28,7 @@ All notable changes to this project will be documented in this file.
   - `templates/README.md` - Template system documentation with master templates guide
 - **SECURITY.md** - Security policy with responsible disclosure process
 - **docs/CONSOLIDATION_RECOMMENDATIONS.md** - Future documentation improvement suggestions
-- **docs/LOW_PRIORITY_FIXES_v2.2.0.md** - Status report on all low priority issues
+- **docs/LOW_PRIORITY_FIXES_v2.2.1.md** - Status report on all low priority issues
 - **Version footers** added to all key documentation files for traceability
 
 ### Fixed

@@ -194,4 +194,4 @@ Skills can invoke each other and share context:
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.0
+**Version:** 2.2.1

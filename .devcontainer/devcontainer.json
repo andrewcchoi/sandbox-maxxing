@@ -25,7 +25,7 @@
   "remoteUser": "node",
   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
 
-  // Generated using windows-sandbox plugin Intermediate mode
+  // Generated using sandbox-maxxing plugin Intermediate mode
   // Detected: Documentation/Template repository
   // Languages: Python 3.12 + Node.js 20 (for examples and templates)
   // Services: PostgreSQL, Redis, RabbitMQ (for testing examples)

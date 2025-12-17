@@ -1,4 +1,4 @@
-# Generated using windows-sandbox plugin Intermediate mode
+# Generated using sandbox-maxxing plugin Intermediate mode
 # Development container for plugin development with services
 # Includes PostgreSQL, Redis, RabbitMQ for testing examples
 

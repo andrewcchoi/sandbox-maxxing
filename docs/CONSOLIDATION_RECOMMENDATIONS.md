@@ -8,7 +8,7 @@ This document outlines opportunities for future documentation consolidation to r
 
 ## Overview
 
-Following the v2.2.0 documentation cleanup, several consolidation opportunities have been identified. While the current documentation is complete and functional, reducing duplication would improve long-term maintainability.
+Following the v2.2.1 documentation cleanup, several consolidation opportunities have been identified. While the current documentation is complete and functional, reducing duplication would improve long-term maintainability.
 
 ## Recommendation 1: README.md Consolidation
 
@@ -201,7 +201,7 @@ All example READMEs duplicate the same comparison table with minor variations:
 
 ## Implementation Approach
 
-### Phase 1: Community Feedback (v2.2.0 - v2.3.0)
+### Phase 1: Community Feedback (v2.2.1 - v2.3.0)
 1. Share this document in GitHub Discussions
 2. Gather feedback from users and contributors
 3. Identify any additional consolidation opportunities
@@ -222,7 +222,7 @@ All example READMEs duplicate the same comparison table with minor variations:
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2025-12-16 | Defer to v2.3.0 | v2.2.0 focused on completeness and correctness |
+| 2025-12-16 | Defer to v2.3.0 | v2.2.1 focused on completeness and correctness |
 | 2025-12-16 | Keep mode tables duplicated | Standalone readability valued over DRY |
 
 ## Questions for Community
@@ -262,4 +262,4 @@ All example READMEs duplicate the same comparison table with minor variations:
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.0
+**Version:** 2.2.1

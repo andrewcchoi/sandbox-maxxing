@@ -36,7 +36,7 @@ Initial stable release of Claude Code Sandbox plugin.
 ## Installation
 
 ```bash
-claude plugins add https://github.com/andrewcchoi/windows-sandbox
+claude plugins add https://github.com/andrewcchoi/sandbox-maxxing
 ```
 
 ## Quick Start
