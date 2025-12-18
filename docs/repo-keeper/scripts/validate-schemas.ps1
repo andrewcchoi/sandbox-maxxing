@@ -2,14 +2,24 @@
 # Validates JSON files against their schemas
 
 param(
-    [switch]$Verbose
+    [switch]$Verbose,
+    [switch]$Quiet,
+    [string]$Log
 )
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
+
 $repoRoot = "/workspace"
 
-Write-Host "=== JSON Schema Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== JSON Schema Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 $errorCount = 0
 
@@ -20,7 +30,9 @@ function Test-VersionFormat {
 }
 
 # Validate INVENTORY.json
-Write-Host "Validating INVENTORY.json..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating INVENTORY.json..." -ForegroundColor Cyan
+}
 $inventoryPath = Join-Path $repoRoot "docs/repo-keeper/INVENTORY.json"
 
 if (Test-Path $inventoryPath) {
@@ -34,7 +46,7 @@ if (Test-Path $inventoryPath) {
         } elseif (-not (Test-VersionFormat $inventory.version)) {
             Write-Host "  [ERROR] Invalid version format: $($inventory.version)" -ForegroundColor Red
             $errorCount++
-        } else {
+        } elseif (-not $Quiet) {
             Write-Host "  [OK] version: $($inventory.version)" -ForegroundColor Green
         }
 
@@ -44,27 +56,31 @@ if (Test-Path $inventoryPath) {
         } elseif ($inventory.last_updated -notmatch '^\d{4}-\d{2}-\d{2}$') {
             Write-Host "  [ERROR] Invalid date format: $($inventory.last_updated) (expected YYYY-MM-DD)" -ForegroundColor Red
             $errorCount++
-        } else {
+        } elseif (-not $Quiet) {
             Write-Host "  [OK] last_updated: $($inventory.last_updated)" -ForegroundColor Green
         }
 
         if (-not $inventory.repository) {
             Write-Host "  [ERROR] Missing required field: repository" -ForegroundColor Red
             $errorCount++
-        } else {
+        } elseif (-not $Quiet) {
             Write-Host "  [OK] repository: $($inventory.repository)" -ForegroundColor Green
         }
 
         # Check arrays
         if ($inventory.skills) {
-            Write-Host "  [OK] skills: $($inventory.skills.Count) entries" -ForegroundColor Green
-        } else {
+            if (-not $Quiet) {
+                Write-Host "  [OK] skills: $($inventory.skills.Count) entries" -ForegroundColor Green
+            }
+        } elseif (-not $Quiet) {
             Write-Host "  [WARNING] No skills defined" -ForegroundColor Yellow
         }
 
         if ($inventory.commands) {
-            Write-Host "  [OK] commands: $($inventory.commands.Count) entries" -ForegroundColor Green
-        } else {
+            if (-not $Quiet) {
+                Write-Host "  [OK] commands: $($inventory.commands.Count) entries" -ForegroundColor Green
+            }
+        } elseif (-not $Quiet) {
             Write-Host "  [WARNING] No commands defined" -ForegroundColor Yellow
         }
 
@@ -78,8 +94,10 @@ if (Test-Path $inventoryPath) {
 }
 
 # Validate data files
-Write-Host ""
-Write-Host "Validating data files..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Validating data files..." -ForegroundColor Cyan
+}
 
 $dataPath = Join-Path $repoRoot "data"
 $dataFiles = @()
@@ -94,13 +112,15 @@ foreach ($file in $dataFiles) {
 
         if ($data.version) {
             if (Test-VersionFormat $data.version) {
-                Write-Host "  [OK] $($file.Name): version $($data.version)" -ForegroundColor Green
+                if (-not $Quiet) {
+                    Write-Host "  [OK] $($file.Name): version $($data.version)" -ForegroundColor Green
+                }
             } else {
                 Write-Host "  [ERROR] $($file.Name): Invalid version format: $($data.version)" -ForegroundColor Red
                 $errorCount++
             }
         } else {
-            if ($Verbose) {
+            if ($Verbose -and -not $Quiet) {
                 Write-Host "  [INFO] $($file.Name): no version field" -ForegroundColor Gray
             }
         }
@@ -111,14 +131,22 @@ foreach ($file in $dataFiles) {
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+}
 if ($errorCount -eq 0) {
-    Write-Host "✓ All schemas valid!" -ForegroundColor Green
-    Write-Host "Total errors: $errorCount" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All schemas valid!" -ForegroundColor Green
+        Write-Host "Total errors: $errorCount" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Schema validation failed!" -ForegroundColor Red
-    Write-Host "Total errors: $errorCount" -ForegroundColor Red
+    if (-not $Quiet) {
+        Write-Host "Total errors: $errorCount" -ForegroundColor Red
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }

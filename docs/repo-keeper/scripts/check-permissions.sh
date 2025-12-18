@@ -14,15 +14,23 @@ if [[ -n "${REPO_ROOT_OVERRIDE:-}" ]]; then
 fi
 
 VERBOSE=false
+QUIET=false
+LOG_FILE=""
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v|--verbose) VERBOSE=true ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
     esac
     shift
 done
+
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -32,14 +40,18 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
-echo -e "${CYAN}=== File Permissions Validator ===${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== File Permissions Validator ===${NC}"
+    echo ""
+fi
 
 WARNING_COUNT=0
 TOTAL_SCRIPTS=0
 
 # Check script permissions in scripts directory
-echo -e "${CYAN}Checking script permissions...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Checking script permissions...${NC}"
+fi
 
 for script in "$SCRIPT_DIR"/*.sh; do
     [ -e "$script" ] || continue
@@ -73,18 +85,24 @@ if [ -d "$SCRIPT_DIR/lib" ]; then
 fi
 
 # Summary
-echo ""
-echo -e "${CYAN}=== Summary ===${NC}"
-echo "Total shell scripts checked: $TOTAL_SCRIPTS"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Summary ===${NC}"
+    echo "Total shell scripts checked: $TOTAL_SCRIPTS"
+fi
 if [ $WARNING_COUNT -eq 0 ]; then
-    echo -e "${GREEN}All scripts are executable!${NC}"
-    echo -e "${GREEN}Warnings: $WARNING_COUNT${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}All scripts are executable!${NC}"
+        echo -e "${GREEN}Warnings: $WARNING_COUNT${NC}"
+    fi
     exit 0
 else
-    echo -e "${YELLOW}Scripts with permission issues: $WARNING_COUNT${NC}"
-    echo ""
-    echo "To fix permission issues, run:"
-    echo "  chmod +x \$SCRIPT_DIR/*.sh"
-    echo "  chmod +x \$SCRIPT_DIR/lib/*.sh"
+    if [ "$QUIET" = false ]; then
+        echo -e "${YELLOW}Scripts with permission issues: $WARNING_COUNT${NC}"
+        echo ""
+        echo "To fix permission issues, run:"
+        echo "  chmod +x \$SCRIPT_DIR/*.sh"
+        echo "  chmod +x \$SCRIPT_DIR/lib/*.sh"
+    fi
     exit 0  # Don't fail on warnings
 fi

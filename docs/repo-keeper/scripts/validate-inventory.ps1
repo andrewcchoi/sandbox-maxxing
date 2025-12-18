@@ -3,10 +3,17 @@
 
 param(
     [switch]$Verbose,
-    [switch]$FindOrphans
+    [switch]$FindOrphans,
+    [switch]$Quiet,
+    [string]$Log
 )
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 
 # Auto-detect repo root from script location
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -17,20 +24,25 @@ if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
 }
 
-Write-Host "=== Repository Inventory Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Repository Inventory Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 # Read INVENTORY.json
 $inventoryPath = Join-Path $repoRoot "docs\repo-keeper\INVENTORY.json"
 if (-not (Test-Path $inventoryPath)) {
     Write-Host "[ERROR] INVENTORY.json not found at $inventoryPath" -ForegroundColor Red
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }
 
 $inventory = Get-Content $inventoryPath -Raw | ConvertFrom-Json
-Write-Host "Inventory version: $($inventory.version)" -ForegroundColor Green
-Write-Host "Last updated: $($inventory.last_updated)" -ForegroundColor Green
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "Inventory version: $($inventory.version)" -ForegroundColor Green
+    Write-Host "Last updated: $($inventory.last_updated)" -ForegroundColor Green
+    Write-Host ""
+}
 
 # Initialize counters
 $totalPaths = 0
@@ -67,7 +79,9 @@ function Test-InventoryPath {
 }
 
 # Validate Skills
-Write-Host "Validating skills..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating skills..." -ForegroundColor Cyan
+}
 foreach ($skill in $inventory.skills) {
     Test-InventoryPath -Path $skill.path -Category "Skill" | Out-Null
 
@@ -80,13 +94,17 @@ foreach ($skill in $inventory.skills) {
 }
 
 # Validate Commands
-Write-Host "Validating commands..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating commands..." -ForegroundColor Cyan
+}
 foreach ($command in $inventory.commands) {
     Test-InventoryPath -Path $command.path -Category "Command" | Out-Null
 }
 
 # Validate Templates
-Write-Host "Validating templates..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating templates..." -ForegroundColor Cyan
+}
 
 # Master templates
 foreach ($template in $inventory.templates.master) {
@@ -129,7 +147,9 @@ foreach ($template in $inventory.templates.env) {
 }
 
 # Validate Examples
-Write-Host "Validating examples..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating examples..." -ForegroundColor Cyan
+}
 foreach ($example in $inventory.examples) {
     Test-InventoryPath -Path $example.path -Category "Example" | Out-Null
 
@@ -150,13 +170,17 @@ foreach ($example in $inventory.examples) {
 }
 
 # Validate Data Files
-Write-Host "Validating data files..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating data files..." -ForegroundColor Cyan
+}
 foreach ($dataFile in $inventory.data_files) {
     Test-InventoryPath -Path $dataFile.path -Category "Data File" | Out-Null
 }
 
 # Validate Documentation
-Write-Host "Validating documentation..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating documentation..." -ForegroundColor Cyan
+}
 
 foreach ($category in @("root", "docs", "commands", "skills", "templates", "examples", "data", "tests", "repo-keeper")) {
     if ($inventory.documentation.$category) {
@@ -167,7 +191,9 @@ foreach ($category in @("root", "docs", "commands", "skills", "templates", "exam
 }
 
 # Validate DevContainers
-Write-Host "Validating devcontainers..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating devcontainers..." -ForegroundColor Cyan
+}
 foreach ($devcontainer in $inventory.devcontainers) {
     Test-InventoryPath -Path $devcontainer.path -Category "DevContainer" | Out-Null
 
@@ -181,7 +207,9 @@ foreach ($devcontainer in $inventory.devcontainers) {
 }
 
 # Validate Dependencies
-Write-Host "Validating dependencies..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating dependencies..." -ForegroundColor Cyan
+}
 foreach ($req in $inventory.dependencies.python_requirements) {
     Test-InventoryPath -Path $req -Category "Python Requirements" | Out-Null
 }
@@ -191,7 +219,9 @@ foreach ($pkg in $inventory.dependencies.node_packages) {
 }
 
 # Validate Test Files
-Write-Host "Validating test files..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating test files..." -ForegroundColor Cyan
+}
 foreach ($test in $inventory.test_files.manual_tests) {
     Test-InventoryPath -Path $test -Category "Manual Test" | Out-Null
 }
@@ -199,8 +229,10 @@ foreach ($test in $inventory.test_files.manual_tests) {
 # Find orphaned files (if requested)
 $orphans = @()
 if ($FindOrphans) {
-    Write-Host ""
-    Write-Host "Searching for orphaned files..." -ForegroundColor Cyan
+    if (-not $Quiet) {
+        Write-Host ""
+        Write-Host "Searching for orphaned files..." -ForegroundColor Cyan
+    }
 
     # Get all paths from inventory
     $inventoryPaths = @()
@@ -260,14 +292,16 @@ if ($FindOrphans) {
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Total paths in inventory: $totalPaths"
-Write-Host "Valid paths:              $validPaths" -ForegroundColor Green
-Write-Host "Missing paths:            $missingPaths" -ForegroundColor $(if ($missingPaths -eq 0) { "Green" } else { "Red" })
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+    Write-Host "Total paths in inventory: $totalPaths"
+    Write-Host "Valid paths:              $validPaths" -ForegroundColor Green
+    Write-Host "Missing paths:            $missingPaths" -ForegroundColor $(if ($missingPaths -eq 0) { "Green" } else { "Red" })
 
-if ($FindOrphans) {
-    Write-Host "Orphaned files found:     $($orphans.Count)" -ForegroundColor $(if ($orphans.Count -eq 0) { "Green" } else { "Yellow" })
+    if ($FindOrphans) {
+        Write-Host "Orphaned files found:     $($orphans.Count)" -ForegroundColor $(if ($orphans.Count -eq 0) { "Green" } else { "Yellow" })
+    }
 }
 
 # Detailed error report
@@ -289,22 +323,28 @@ if ($errors.Count -gt 0) {
 }
 
 # Check version consistency
-Write-Host ""
-Write-Host "=== Version Checks ===" -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Version Checks ===" -ForegroundColor Cyan
+}
 
 $versionIssues = @()
 
 # Check if inventory version matches known issues
 $knownIssues = $inventory.known_issues
 if ($knownIssues.outdated_versions) {
-    Write-Host "Known version issues:" -ForegroundColor Yellow
-    $knownIssues.outdated_versions | ForEach-Object {
-        Write-Host "  $_" -ForegroundColor Yellow
+    if (-not $Quiet) {
+        Write-Host "Known version issues:" -ForegroundColor Yellow
+        $knownIssues.outdated_versions | ForEach-Object {
+            Write-Host "  $_" -ForegroundColor Yellow
+        }
     }
     $versionIssues += $knownIssues.outdated_versions
 }
 
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host ""
+}
 
 # Exit with appropriate code for CI/CD
 $exitCode = 0
@@ -313,18 +353,25 @@ if ($missingPaths -gt 0) {
     Write-Host "✗ Inventory validation failed! ($missingPaths missing paths)" -ForegroundColor Red
     $exitCode = 1
 } elseif ($versionIssues.Count -gt 0) {
-    Write-Host "⚠ Inventory valid but version issues found" -ForegroundColor Yellow
-    Write-Host "  Run version sync check to fix these issues" -ForegroundColor Yellow
+    if (-not $Quiet) {
+        Write-Host "⚠ Inventory valid but version issues found" -ForegroundColor Yellow
+        Write-Host "  Run version sync check to fix these issues" -ForegroundColor Yellow
+    }
     $exitCode = 0  # Don't fail on version issues, just warn
 } else {
-    Write-Host "✓ Inventory is valid and all paths exist!" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ Inventory is valid and all paths exist!" -ForegroundColor Green
+    }
     $exitCode = 0
 }
 
 if ($FindOrphans -and $orphans.Count -gt 0) {
-    Write-Host ""
-    Write-Host "ℹ Found $($orphans.Count) orphaned files not in inventory" -ForegroundColor Cyan
-    Write-Host "  Consider adding them to INVENTORY.json"
+    if (-not $Quiet) {
+        Write-Host ""
+        Write-Host "ℹ Found $($orphans.Count) orphaned files not in inventory" -ForegroundColor Cyan
+        Write-Host "  Consider adding them to INVENTORY.json"
+    }
 }
 
+if ($Log) { Stop-Transcript | Out-Null }
 exit $exitCode

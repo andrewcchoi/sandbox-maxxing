@@ -1,9 +1,18 @@
 # check-permissions.ps1
 # Validates that shell scripts have execute permissions (Linux only)
 
-param([switch]$Verbose)
+param(
+    [switch]$Verbose,
+    [switch]$Quiet,
+    [string]$Log
+)
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 
 # Auto-detect repo root from script location
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -14,23 +23,29 @@ if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
 }
 
-Write-Host "=== File Permissions Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== File Permissions Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 # Note: Execute permissions are Linux-specific
 # On Windows, this check is mostly informational
 $isWindows = $PSVersionTable.PSVersion.Major -ge 6 -and $IsWindows
 if ($isWindows -or $env:OS -match "Windows") {
-    Write-Host "[INFO] Running on Windows - execute permissions are Linux-specific" -ForegroundColor Gray
-    Write-Host "[INFO] Checking file existence instead..." -ForegroundColor Gray
-    Write-Host ""
+    if (-not $Quiet) {
+        Write-Host "[INFO] Running on Windows - execute permissions are Linux-specific" -ForegroundColor Gray
+        Write-Host "[INFO] Checking file existence instead..." -ForegroundColor Gray
+        Write-Host ""
+    }
 }
 
 $warningCount = 0
 $totalScripts = 0
 
 # Check script permissions in scripts directory
-Write-Host "Checking script permissions..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Checking script permissions..." -ForegroundColor Cyan
+}
 
 $scripts = Get-ChildItem -Path $scriptPath -Filter "*.sh" -File
 
@@ -107,19 +122,27 @@ if (Test-Path $libPath) {
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Total shell scripts checked: $totalScripts"
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+    Write-Host "Total shell scripts checked: $totalScripts"
+}
 
 if ($warningCount -eq 0) {
-    Write-Host "All scripts are executable!" -ForegroundColor Green
-    Write-Host "Warnings: $warningCount" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "All scripts are executable!" -ForegroundColor Green
+        Write-Host "Warnings: $warningCount" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
-    Write-Host "Scripts with permission issues: $warningCount" -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "To fix permission issues, run:" -ForegroundColor Yellow
-    Write-Host "  chmod +x `$scriptPath/*.sh"
-    Write-Host "  chmod +x `$scriptPath/lib/*.sh"
+    if (-not $Quiet) {
+        Write-Host "Scripts with permission issues: $warningCount" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "To fix permission issues, run:" -ForegroundColor Yellow
+        Write-Host "  chmod +x `$scriptPath/*.sh"
+        Write-Host "  chmod +x `$scriptPath/lib/*.sh"
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0  # Don't fail on warnings
 }

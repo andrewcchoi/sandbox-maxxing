@@ -3,10 +3,17 @@
 
 param(
     [switch]$Verbose,
-    [switch]$SkipExternal
+    [switch]$SkipExternal,
+    [switch]$Quiet,
+    [string]$Log
 )
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 
 # Auto-detect repo root from script location
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -17,8 +24,10 @@ if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
 }
 
-Write-Host "=== Repository Link Checker ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Repository Link Checker ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 # Initialize counters
 $totalLinks = 0
@@ -33,8 +42,10 @@ $mdFiles = Get-ChildItem -Path $repoRoot -Filter "*.md" -Recurse | Where-Object 
     $_.FullName -notmatch "\.git"
 }
 
-Write-Host "Scanning $($mdFiles.Count) markdown files..." -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "Scanning $($mdFiles.Count) markdown files..." -ForegroundColor Cyan
+    Write-Host ""
+}
 
 foreach ($file in $mdFiles) {
     $relativePath = $file.FullName.Replace("$repoRoot\", "")
@@ -114,13 +125,15 @@ foreach ($file in $mdFiles) {
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Total markdown files:  $($mdFiles.Count)"
-Write-Host "Total links found:     $totalLinks"
-Write-Host "Valid internal links:  $validLinks" -ForegroundColor Green
-Write-Host "External links:        $externalLinks" -ForegroundColor Gray
-Write-Host "Broken links:          $brokenLinks" -ForegroundColor $(if ($brokenLinks -eq 0) { "Green" } else { "Red" })
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+    Write-Host "Total markdown files:  $($mdFiles.Count)"
+    Write-Host "Total links found:     $totalLinks"
+    Write-Host "Valid internal links:  $validLinks" -ForegroundColor Green
+    Write-Host "External links:        $externalLinks" -ForegroundColor Gray
+    Write-Host "Broken links:          $brokenLinks" -ForegroundColor $(if ($brokenLinks -eq 0) { "Green" } else { "Red" })
+}
 
 # Detailed error report
 if ($errors.Count -gt 0) {
@@ -141,19 +154,27 @@ if ($errors.Count -gt 0) {
     }
 }
 
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host ""
+}
 
 # Exit with appropriate code for CI/CD
 if ($brokenLinks -eq 0) {
-    Write-Host "✓ All internal links are valid!" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All internal links are valid!" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Link check failed!" -ForegroundColor Red
-    Write-Host ""
-    Write-Host "To fix broken links:"
-    Write-Host "  1. Update relative paths to match actual file locations"
-    Write-Host "  2. Use relative paths (../path) instead of absolute (/workspace/path)"
-    Write-Host "  3. Ensure linked files exist in the repository"
-    Write-Host "  4. Run this script again to verify"
+    if (-not $Quiet) {
+        Write-Host ""
+        Write-Host "To fix broken links:"
+        Write-Host "  1. Update relative paths to match actual file locations"
+        Write-Host "  2. Use relative paths (../path) instead of absolute (/workspace/path)"
+        Write-Host "  3. Ensure linked files exist in the repository"
+        Write-Host "  4. Run this script again to verify"
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }

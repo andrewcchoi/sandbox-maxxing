@@ -23,6 +23,8 @@ check_node
 TIER="standard"  # quick, standard, full
 VERBOSE=false
 FIX_CRLF=false
+QUIET=false
+LOG_FILE=""
 
 # Colors
 RED='\033[0;31m'
@@ -39,30 +41,42 @@ while [[ "$#" -gt 0 ]]; do
         --full) TIER="full" ;;
         -v|--verbose) VERBOSE=true ;;
         --fix-crlf) FIX_CRLF=true ;;
-        *) echo "Unknown parameter: $1"; echo "Usage: $0 [--quick|--full] [-v|--verbose] [--fix-crlf]"; exit 1 ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; echo "Usage: $0 [--quick|--full] [-v|--verbose] [--fix-crlf] [-q|--quiet] [--log FILE]"; exit 1 ;;
     esac
     shift
 done
 
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
+
 # Get version from plugin.json
 VERSION=$(node -e "try { console.log(JSON.parse(require('fs').readFileSync('$REPO_ROOT/.claude-plugin/plugin.json')).version); } catch(e) { console.log('unknown'); }")
 
-echo -e "${CYAN}=== Repository Validation Suite ===${NC}"
-echo "Version: $VERSION"
-echo "Date: $(date +%Y-%m-%d)"
-echo "Tier: $TIER"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== Repository Validation Suite ===${NC}"
+    echo "Version: $VERSION"
+    echo "Date: $(date +%Y-%m-%d)"
+    echo "Tier: $TIER"
+    echo ""
+fi
 
 # Fix CRLF if requested
 if [ "$FIX_CRLF" = true ]; then
-    echo -e "${CYAN}Fixing line endings...${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${CYAN}Fixing line endings...${NC}"
+    fi
     for file in "$SCRIPT_DIR"/*.sh; do
         if [ -f "$file" ]; then
             sed -i 's/\r$//' "$file" 2>/dev/null || true
         fi
     done
-    echo -e "${GREEN}✓ Line endings fixed${NC}"
-    echo ""
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}✓ Line endings fixed${NC}"
+        echo ""
+    fi
 fi
 
 # Counters
@@ -94,7 +108,9 @@ run_check() {
     fi
 
     # Prepare display name with padding
-    printf "  [%d/%d] %-30s" "$check_num" "$total_in_tier" "$check_name"
+    if [ "$QUIET" = false ]; then
+        printf "  [%d/%d] %-30s" "$check_num" "$total_in_tier" "$check_name"
+    fi
 
     # Capture output and exit code
     local output_file="$TEMP_DIR/check_$TOTAL_CHECKS.out"
@@ -126,17 +142,21 @@ run_check() {
 
     # Display result
     if [ $exit_code -eq 0 ]; then
-        if [ $check_warnings -gt 0 ]; then
-            echo -e " ${GREEN}✓ PASS${NC} ${YELLOW}($check_warnings warnings)${NC}"
-        else
-            echo -e " ${GREEN}✓ PASS${NC}"
+        if [ "$QUIET" = false ]; then
+            if [ $check_warnings -gt 0 ]; then
+                echo -e " ${GREEN}✓ PASS${NC} ${YELLOW}($check_warnings warnings)${NC}"
+            else
+                echo -e " ${GREEN}✓ PASS${NC}"
+            fi
         fi
         PASSED_CHECKS=$((PASSED_CHECKS + 1))
     else
-        echo -e " ${RED}✗ FAIL${NC} ${RED}($check_errors errors)${NC}"
+        if [ "$QUIET" = false ]; then
+            echo -e " ${RED}✗ FAIL${NC} ${RED}($check_errors errors)${NC}"
+        fi
         FAILED_CHECKS=$((FAILED_CHECKS + 1))
 
-        # Show error details if not verbose
+        # Show error details if not verbose (always show errors even in quiet mode)
         if [ "$VERBOSE" = false ]; then
             echo ""
             grep -E "\[ERROR\]|✗" "$output_file" 2>/dev/null | head -10 | while read -r line; do
@@ -154,7 +174,9 @@ run_check() {
 }
 
 # Tier 1: Structural Validation
-echo -e "${CYAN}Running Tier 1: Structural Validation...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Running Tier 1: Structural Validation...${NC}"
+fi
 
 run_check 1 6 "Version sync" "check-version-sync.sh"
 run_check 2 6 "Link integrity" "check-links.sh"
@@ -165,35 +187,71 @@ run_check 6 6 "File permissions" "check-permissions.sh"
 
 # Exit early if quick mode
 if [ "$TIER" = "quick" ]; then
-    echo ""
-    echo -e "${CYAN}=== Summary (Quick Mode) ===${NC}"
+    if [ "$QUIET" = false ]; then
+        echo ""
+        echo -e "${CYAN}=== Summary (Quick Mode) ===${NC}"
 
-    if [ $FAILED_CHECKS -eq 0 ]; then
-        echo -e "${GREEN}Status: PASSED${NC}"
-    else
-        echo -e "${RED}Status: FAILED${NC}"
+        if [ $FAILED_CHECKS -eq 0 ]; then
+            echo -e "${GREEN}Status: PASSED${NC}"
+        else
+            echo -e "${RED}Status: FAILED${NC}"
+        fi
+
+        echo "Checks run: $TOTAL_CHECKS"
+        echo -e "${GREEN}Passed: $PASSED_CHECKS${NC}"
+        echo -e "${RED}Failed: $FAILED_CHECKS${NC}"
+        echo -e "${YELLOW}Warnings: $WARNINGS${NC}"
+        echo -e "${RED}Errors: $ERRORS${NC}"
+        echo ""
     fi
-
-    echo "Checks run: $TOTAL_CHECKS"
-    echo -e "${GREEN}Passed: $PASSED_CHECKS${NC}"
-    echo -e "${RED}Failed: $FAILED_CHECKS${NC}"
-    echo -e "${YELLOW}Warnings: $WARNINGS${NC}"
-    echo -e "${RED}Errors: $ERRORS${NC}"
-    echo ""
 
     exit $FAILED_CHECKS
 fi
 
 # Tier 2: Completeness Validation
-echo ""
-echo -e "${CYAN}Running Tier 2: Completeness Validation...${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}Running Tier 2: Completeness Validation...${NC}"
+fi
 
 run_check 6 6 "Feature coverage" "validate-completeness.sh"
 
 # Exit if standard mode (not full)
 if [ "$TIER" = "standard" ]; then
+    if [ "$QUIET" = false ]; then
+        echo ""
+        echo -e "${CYAN}=== Summary (Standard Mode) ===${NC}"
+
+        if [ $FAILED_CHECKS -eq 0 ]; then
+            echo -e "${GREEN}Status: PASSED${NC}"
+        else
+            echo -e "${RED}Status: FAILED${NC}"
+        fi
+
+        echo "Checks run: $TOTAL_CHECKS"
+        echo -e "${GREEN}Passed: $PASSED_CHECKS${NC}"
+        echo -e "${RED}Failed: $FAILED_CHECKS${NC}"
+        echo -e "${YELLOW}Warnings: $WARNINGS${NC}"
+        echo -e "${RED}Errors: $ERRORS${NC}"
+        echo ""
+    fi
+
+    exit $FAILED_CHECKS
+fi
+
+# Tier 3: Content Validation (full mode only)
+if [ "$QUIET" = false ]; then
     echo ""
-    echo -e "${CYAN}=== Summary (Standard Mode) ===${NC}"
+    echo -e "${CYAN}Running Tier 3: Content Validation...${NC}"
+fi
+
+run_check 7 8 "Required sections" "validate-content.sh"
+run_check 8 8 "External links (slow)" "validate-content.sh" "--check-external"
+
+# Final Summary
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Summary (Full Mode) ===${NC}"
 
     if [ $FAILED_CHECKS -eq 0 ]; then
         echo -e "${GREEN}Status: PASSED${NC}"
@@ -207,33 +265,7 @@ if [ "$TIER" = "standard" ]; then
     echo -e "${YELLOW}Warnings: $WARNINGS${NC}"
     echo -e "${RED}Errors: $ERRORS${NC}"
     echo ""
-
-    exit $FAILED_CHECKS
 fi
-
-# Tier 3: Content Validation (full mode only)
-echo ""
-echo -e "${CYAN}Running Tier 3: Content Validation...${NC}"
-
-run_check 7 8 "Required sections" "validate-content.sh"
-run_check 8 8 "External links (slow)" "validate-content.sh" "--check-external"
-
-# Final Summary
-echo ""
-echo -e "${CYAN}=== Summary (Full Mode) ===${NC}"
-
-if [ $FAILED_CHECKS -eq 0 ]; then
-    echo -e "${GREEN}Status: PASSED${NC}"
-else
-    echo -e "${RED}Status: FAILED${NC}"
-fi
-
-echo "Checks run: $TOTAL_CHECKS"
-echo -e "${GREEN}Passed: $PASSED_CHECKS${NC}"
-echo -e "${RED}Failed: $FAILED_CHECKS${NC}"
-echo -e "${YELLOW}Warnings: $WARNINGS${NC}"
-echo -e "${RED}Errors: $ERRORS${NC}"
-echo ""
 
 if [ $FAILED_CHECKS -gt 0 ]; then
     echo -e "${RED}Some checks failed. Review the output above for details.${NC}"

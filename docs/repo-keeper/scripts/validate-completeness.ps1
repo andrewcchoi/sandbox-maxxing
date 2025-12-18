@@ -2,18 +2,28 @@
 # Ensures every feature has documentation and all modes have full coverage
 
 param(
-    [switch]$Verbose
+    [switch]$Verbose,
+    [switch]$Quiet,
+    [string]$Log
 )
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 $repoRoot = "/workspace"
 
-Write-Host "=== Completeness Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Completeness Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 $inventoryPath = Join-Path $repoRoot "docs/repo-keeper/INVENTORY.json"
 if (-not (Test-Path $inventoryPath)) {
     Write-Host "Error: INVENTORY.json not found" -ForegroundColor Red
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }
 
@@ -22,7 +32,9 @@ $inventory = Get-Content $inventoryPath -Raw | ConvertFrom-Json
 $errorCount = 0
 
 # Feature Documentation Check
-Write-Host "Checking feature documentation..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Checking feature documentation..." -ForegroundColor Cyan
+}
 
 # Check skills have SKILL.md
 $skillsWithDocs = 0
@@ -35,7 +47,9 @@ foreach ($skill in $inventory.skills) {
         $errorCount++
     }
 }
-Write-Host "  [OK] $skillsWithDocs/$($inventory.skills.Count) skills have SKILL.md" -ForegroundColor Green
+if (-not $Quiet) {
+    Write-Host "  [OK] $skillsWithDocs/$($inventory.skills.Count) skills have SKILL.md" -ForegroundColor Green
+}
 
 # Check commands documented in README
 $commandsReadme = Join-Path $repoRoot "commands/README.md"
@@ -51,7 +65,9 @@ if (Test-Path $commandsReadme) {
             $errorCount++
         }
     }
-    Write-Host "  [OK] $commandsDocumented/$($inventory.commands.Count) commands documented in README" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "  [OK] $commandsDocumented/$($inventory.commands.Count) commands documented in README" -ForegroundColor Green
+    }
 } else {
     Write-Host "  [ERROR] commands/README.md not found" -ForegroundColor Red
     $errorCount++
@@ -71,14 +87,18 @@ if (Test-Path $dataReadme) {
             $errorCount++
         }
     }
-    Write-Host "  [OK] $dataDocumented/$($inventory.data_files.Count) data files documented" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "  [OK] $dataDocumented/$($inventory.data_files.Count) data files documented" -ForegroundColor Green
+    }
 } else {
     Write-Host "  [WARNING] data/README.md not found" -ForegroundColor Yellow
 }
 
 # Mode Coverage Check
-Write-Host ""
-Write-Host "Checking mode coverage..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking mode coverage..." -ForegroundColor Cyan
+}
 
 $modes = @("basic", "intermediate", "advanced", "yolo")
 foreach ($mode in $modes) {
@@ -125,21 +145,31 @@ foreach ($mode in $modes) {
     }
 
     if ($missingCount -eq 0) {
-        Write-Host "  [OK] $mode`: 9/9 components" -ForegroundColor Green
+        if (-not $Quiet) {
+            Write-Host "  [OK] $mode`: 9/9 components" -ForegroundColor Green
+        }
     } else {
         Write-Host "  [ERROR] $mode`: Missing $missingCount components" -ForegroundColor Red
     }
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+}
 if ($errorCount -eq 0) {
-    Write-Host "✓ All completeness checks passed!" -ForegroundColor Green
-    Write-Host "Total errors: $errorCount" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All completeness checks passed!" -ForegroundColor Green
+        Write-Host "Total errors: $errorCount" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Completeness validation failed!" -ForegroundColor Red
-    Write-Host "Total errors: $errorCount" -ForegroundColor Red
+    if (-not $Quiet) {
+        Write-Host "Total errors: $errorCount" -ForegroundColor Red
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }

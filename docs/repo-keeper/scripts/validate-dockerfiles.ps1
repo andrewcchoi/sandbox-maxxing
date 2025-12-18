@@ -1,9 +1,18 @@
 # validate-dockerfiles.ps1
 # V14: Basic Dockerfile syntax validation
 
-param([switch]$Verbose)
+param(
+    [switch]$Verbose,
+    [switch]$Quiet,
+    [string]$Log
+)
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 
 # Auto-detect repo root from script location
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -14,8 +23,10 @@ if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
 }
 
-Write-Host "=== Dockerfile Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Dockerfile Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 $warningCount = 0
 $errorCount = 0
@@ -30,7 +41,9 @@ $dockerfiles = Get-ChildItem -Path $repoRoot -Recurse -File | Where-Object {
 $totalDockerfiles = $dockerfiles.Count
 $invalidDockerfiles = 0
 
-Write-Host "Validating Dockerfile syntax..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating Dockerfile syntax..." -ForegroundColor Cyan
+}
 
 $validInstructions = "FROM|RUN|CMD|LABEL|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ARG|ONBUILD|STOPSIGNAL|HEALTHCHECK|SHELL"
 
@@ -84,20 +97,29 @@ foreach ($dockerfile in $dockerfiles) {
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Total Dockerfiles checked: $totalDockerfiles"
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+    Write-Host "Total Dockerfiles checked: $totalDockerfiles"
+}
 
 if ($errorCount -eq 0 -and $warningCount -eq 0) {
-    Write-Host "✓ All Dockerfiles are valid!" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All Dockerfiles are valid!" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } elseif ($errorCount -eq 0) {
-    Write-Host "⚠ Dockerfile validation passed with warnings" -ForegroundColor Yellow
-    Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    if (-not $Quiet) {
+        Write-Host "⚠ Dockerfile validation passed with warnings" -ForegroundColor Yellow
+        Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Dockerfile validation failed!" -ForegroundColor Red
     Write-Host "Errors: $errorCount" -ForegroundColor Red
     Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }

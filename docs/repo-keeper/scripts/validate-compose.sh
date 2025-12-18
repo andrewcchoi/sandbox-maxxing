@@ -20,15 +20,23 @@ source "$SCRIPT_DIR/lib/check-dependencies.sh"
 check_node
 
 VERBOSE=false
+QUIET=false
+LOG_FILE=""
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v|--verbose) VERBOSE=true ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
     esac
     shift
 done
+
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -38,8 +46,10 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
-echo -e "${CYAN}=== Docker Compose Validator ===${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== Docker Compose Validator ===${NC}"
+    echo ""
+fi
 
 WARNING_COUNT=0
 ERROR_COUNT=0
@@ -50,7 +60,9 @@ COMPOSE_FILES=$(find "$REPO_ROOT" -type f \( -name "docker-compose*.yml" -o -nam
 TOTAL_COMPOSE=0
 INVALID_COMPOSE=0
 
-echo -e "${CYAN}Validating docker-compose files...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating docker-compose files...${NC}"
+fi
 
 for compose_file in $COMPOSE_FILES; do
     [ -e "$compose_file" ] || continue
@@ -176,16 +188,22 @@ for compose_file in $COMPOSE_FILES; do
 done
 
 # Summary
-echo ""
-echo -e "${CYAN}=== Summary ===${NC}"
-echo "Total compose files checked: $TOTAL_COMPOSE"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Summary ===${NC}"
+    echo "Total compose files checked: $TOTAL_COMPOSE"
+fi
 
 if [ $ERROR_COUNT -eq 0 ] && [ $WARNING_COUNT -eq 0 ]; then
-    echo -e "${GREEN}✓ All docker-compose files are valid!${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}✓ All docker-compose files are valid!${NC}"
+    fi
     exit 0
 elif [ $ERROR_COUNT -eq 0 ]; then
-    echo -e "${YELLOW}⚠ Compose validation passed with warnings${NC}"
-    echo -e "${YELLOW}Warnings: $WARNING_COUNT${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${YELLOW}⚠ Compose validation passed with warnings${NC}"
+        echo -e "${YELLOW}Warnings: $WARNING_COUNT${NC}"
+    fi
     exit 0
 else
     echo -e "${RED}✗ Compose validation failed!${NC}"

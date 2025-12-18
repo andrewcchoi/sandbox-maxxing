@@ -1,9 +1,18 @@
 # validate-compose.ps1
 # V15: Validate docker-compose YAML structure
 
-param([switch]$Verbose)
+param(
+    [switch]$Verbose,
+    [switch]$Quiet,
+    [string]$Log
+)
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 
 # Auto-detect repo root from script location
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -14,8 +23,10 @@ if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
 }
 
-Write-Host "=== Docker Compose Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Docker Compose Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 $warningCount = 0
 $errorCount = 0
@@ -31,7 +42,9 @@ $composeFiles = Get-ChildItem -Path $repoRoot -Recurse -File | Where-Object {
 $totalCompose = $composeFiles.Count
 $invalidCompose = 0
 
-Write-Host "Validating docker-compose files..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Validating docker-compose files..." -ForegroundColor Cyan
+}
 
 $knownKeys = @("version", "services", "networks", "volumes", "configs", "secrets", "name")
 
@@ -114,20 +127,31 @@ foreach ($composeFile in $composeFiles) {
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Total compose files checked: $totalCompose"
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+    Write-Host "Total compose files checked: $totalCompose"
+}
 
 if ($errorCount -eq 0 -and $warningCount -eq 0) {
-    Write-Host "✓ All docker-compose files are valid!" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All docker-compose files are valid!" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } elseif ($errorCount -eq 0) {
-    Write-Host "⚠ Compose validation passed with warnings" -ForegroundColor Yellow
-    Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    if (-not $Quiet) {
+        Write-Host "⚠ Compose validation passed with warnings" -ForegroundColor Yellow
+        Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Compose validation failed!" -ForegroundColor Red
-    Write-Host "Errors: $errorCount" -ForegroundColor Red
-    Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    if (-not $Quiet) {
+        Write-Host "Errors: $errorCount" -ForegroundColor Red
+        Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }

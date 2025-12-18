@@ -2,18 +2,29 @@
 # Validates INVENTORY.json relationships are accurate
 
 param(
-    [switch]$Verbose
+    [switch]$Verbose,
+    [switch]$Quiet,
+    [string]$Log
 )
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
+
 $repoRoot = "/workspace"
 
-Write-Host "=== Relationship Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Relationship Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 $inventoryPath = Join-Path $repoRoot "docs\repo-keeper\INVENTORY.json"
 if (-not (Test-Path $inventoryPath)) {
-    Write-Host "Error: INVENTORY.json not found" -ForegroundColor Red
+    Write-Host "[ERROR] INVENTORY.json not found" -ForegroundColor Red
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }
 
@@ -23,7 +34,9 @@ $errorCount = 0
 $totalChecks = 0
 
 # Check skill → template relationships
-Write-Host "Checking skill → template relationships..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Checking skill → template relationships..." -ForegroundColor Cyan
+}
 
 foreach ($skill in $inventory.skills) {
     $totalChecks++
@@ -53,13 +66,15 @@ foreach ($skill in $inventory.skills) {
     }
 }
 
-if ($errorCount -eq 0) {
+if ($errorCount -eq 0 -and -not $Quiet) {
     Write-Host "  [OK] All skill → template relationships valid" -ForegroundColor Green
 }
 
 # Check skill ↔ command relationships
-Write-Host ""
-Write-Host "Checking skill ↔ command relationships..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking skill ↔ command relationships..." -ForegroundColor Cyan
+}
 
 foreach ($skill in $inventory.skills) {
     if ($skill.related_command) {
@@ -83,13 +98,15 @@ foreach ($skill in $inventory.skills) {
     }
 }
 
-if ($errorCount -eq 0) {
+if ($errorCount -eq 0 -and -not $Quiet) {
     Write-Host "  [OK] All skill ↔ command relationships valid" -ForegroundColor Green
 }
 
 # Check command → skill relationships
-Write-Host ""
-Write-Host "Checking command → skill relationships..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking command → skill relationships..." -ForegroundColor Cyan
+}
 
 foreach ($command in $inventory.commands) {
     $totalChecks++
@@ -105,13 +122,15 @@ foreach ($command in $inventory.commands) {
     }
 }
 
-if ($errorCount -eq 0) {
+if ($errorCount -eq 0 -and -not $Quiet) {
     Write-Host "  [OK] All command → skill relationships valid" -ForegroundColor Green
 }
 
 # Check skill → example relationships
-Write-Host ""
-Write-Host "Checking skill → example relationships..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking skill → example relationships..." -ForegroundColor Cyan
+}
 
 foreach ($skill in $inventory.skills) {
     if ($skill.related_example -and $skill.related_example -ne $null) {
@@ -127,20 +146,26 @@ foreach ($skill in $inventory.skills) {
     }
 }
 
-if ($errorCount -eq 0) {
+if ($errorCount -eq 0 -and -not $Quiet) {
     Write-Host "  [OK] All skill → example relationships valid" -ForegroundColor Green
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Total relationships checked: $totalChecks"
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+    Write-Host "Total relationships checked: $totalChecks"
+}
 if ($errorCount -eq 0) {
-    Write-Host "✓ All relationships valid!" -ForegroundColor Green
-    Write-Host "Total errors: $errorCount" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All relationships valid!" -ForegroundColor Green
+        Write-Host "Total errors: $errorCount" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Relationship validation failed!" -ForegroundColor Red
     Write-Host "Total errors: $errorCount" -ForegroundColor Red
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }

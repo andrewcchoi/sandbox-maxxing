@@ -1,9 +1,18 @@
 # validate-templates.ps1
 # V13: Validates template variable syntax
 
-param([switch]$Verbose)
+param(
+    [switch]$Verbose,
+    [switch]$Quiet,
+    [string]$Log
+)
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 
 # Auto-detect repo root from script location
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -14,14 +23,18 @@ if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
 }
 
-Write-Host "=== Template Variable Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Template Variable Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 $warningCount = 0
 $errorCount = 0
 
 # V13: Check variable syntax in templates
-Write-Host "Checking variable syntax in template files..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Checking variable syntax in template files..." -ForegroundColor Cyan
+}
 
 # Find all template files
 $templatePath = Join-Path $repoRoot "templates"
@@ -72,14 +85,20 @@ foreach ($template in $templateFiles) {
 }
 
 if ($invalidSyntax -eq 0) {
-    Write-Host "  [OK] All template variable syntax is valid" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "  [OK] All template variable syntax is valid" -ForegroundColor Green
+    }
 } else {
-    Write-Host "  Templates with syntax issues: $invalidSyntax" -ForegroundColor Yellow
+    if (-not $Quiet) {
+        Write-Host "  Templates with syntax issues: $invalidSyntax" -ForegroundColor Yellow
+    }
 }
 
 # Check variables.*.json files for consistency
-Write-Host ""
-Write-Host "Checking variables JSON files..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking variables JSON files..." -ForegroundColor Cyan
+}
 
 $varPath = Join-Path $repoRoot "templates\variables"
 if (Test-Path $varPath) {
@@ -110,7 +129,9 @@ foreach ($varFile in $varFiles) {
             $varName = $match.Groups[1].Value
             # Check if variable is defined in the file
             if ($content -notmatch "`"$varName`"") {
-                Write-Host "  [WARNING] $relativePath - References undefined variable: $varName" -ForegroundColor Yellow
+                if (-not $Quiet) {
+                    Write-Host "  [WARNING] $relativePath - References undefined variable: $varName" -ForegroundColor Yellow
+                }
                 $warningCount++
             }
         }
@@ -120,24 +141,37 @@ foreach ($varFile in $varFiles) {
     }
 }
 
-Write-Host "  Checked $varFileCount variables files" -ForegroundColor Green
+if (-not $Quiet) {
+    Write-Host "  Checked $varFileCount variables files" -ForegroundColor Green
+}
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Total template files checked: $totalTemplates"
-Write-Host "Variables files checked: $varFileCount"
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+    Write-Host "Total template files checked: $totalTemplates"
+    Write-Host "Variables files checked: $varFileCount"
+}
 
 if ($errorCount -eq 0 -and $warningCount -eq 0) {
-    Write-Host "✓ All template validation checks passed!" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All template validation checks passed!" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } elseif ($errorCount -eq 0) {
-    Write-Host "⚠ Template validation passed with warnings" -ForegroundColor Yellow
-    Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    if (-not $Quiet) {
+        Write-Host "⚠ Template validation passed with warnings" -ForegroundColor Yellow
+        Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Template validation failed!" -ForegroundColor Red
-    Write-Host "Errors: $errorCount" -ForegroundColor Red
-    Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    if (-not $Quiet) {
+        Write-Host "Errors: $errorCount" -ForegroundColor Red
+        Write-Host "Warnings: $warningCount" -ForegroundColor Yellow
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }
