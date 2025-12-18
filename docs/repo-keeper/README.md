@@ -34,7 +34,7 @@ Repo-Keeper is a comprehensive system for maintaining the sandbox-maxxing reposi
 |------|---------|----------|
 | `scripts/check-version-sync.sh/.ps1` | Validates version consistency across 50+ files | Bash / PowerShell |
 | `scripts/check-links.sh/.ps1` | Scans markdown files for broken internal links | Bash / PowerShell |
-| `scripts/validate-inventory.sh/.ps1` | Verifies inventory matches filesystem | Bash / PowerShell |
+| `scripts/validate-inventory.sh/.ps1` | Verifies inventory matches filesystem (orphan detection: PowerShell only) | Bash / PowerShell |
 | `scripts/validate-relationships.sh/.ps1` | Validates skill ↔ command ↔ template relationships | Bash / PowerShell |
 | `scripts/validate-schemas.sh/.ps1` | Validates JSON files against JSON schemas | Bash / PowerShell |
 
@@ -133,6 +133,37 @@ docs/repo-keeper/
    - `skills/sandbox-setup-advanced/references/` (2 links)
    - `templates/legacy/README.md` (3 links)
    - Archive files (2 links)
+
+---
+
+## Dependencies
+
+### Required
+- **Node.js 18+** - For JSON processing and schema validation
+- **bash 4.0+** - For bash scripts (Linux/macOS)
+- **PowerShell Core 7.0+** - For PowerShell scripts (Windows/cross-platform)
+
+### Auto-installed (via npm)
+- `ajv-cli` - JSON Schema validation
+- `ajv-formats` - Additional schema format validators
+
+### Optional
+- `curl` - External link checking (bash scripts only)
+
+### Installation
+
+**Node.js:**
+```bash
+# Via nvm (recommended)
+nvm install --lts
+
+# Or download from https://nodejs.org/
+```
+
+**Validation tools** (installed automatically by scripts):
+```bash
+npm install -g ajv-cli ajv-formats
+```
 
 ---
 
@@ -404,6 +435,22 @@ The [`INVENTORY.json`](./INVENTORY.json) tracks:
 9. **EditorConfig standardization:**
    - Decide: Add to all examples or remove from YOLO
    - Implement chosen approach
+
+---
+
+## Known Limitations
+
+### Current Limitations
+1. **Orphan file detection** - Only available in PowerShell scripts (bash implementation planned)
+2. **External link checking** - Optional, requires curl (bash) or uses Invoke-WebRequest (PowerShell)
+3. **JSON parsing** - Migrating from jq/python to Node.js (in progress)
+4. **Cross-platform differences** - Minor behavioral differences between bash and PowerShell versions
+
+### Planned Improvements
+See `docs/plans/2025-12-18-repo-keeper-improvements.md` for comprehensive roadmap.
+
+### Reporting Issues
+Found a bug or limitation? Report at: https://github.com/andrewcchoi/sandbox-maxxing/issues
 
 ---
 

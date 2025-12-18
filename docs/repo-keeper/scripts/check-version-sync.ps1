@@ -6,7 +6,15 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$repoRoot = "D:\!wip\sandbox-maxxing"
+
+# Auto-detect repo root from script location
+$scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = (Get-Item "$scriptPath\..\..\..").FullName
+
+# Or allow override via environment variable
+if ($env:REPO_ROOT) {
+    $repoRoot = $env:REPO_ROOT
+}
 
 Write-Host "=== Repository Version Sync Checker ===" -ForegroundColor Cyan
 Write-Host ""
