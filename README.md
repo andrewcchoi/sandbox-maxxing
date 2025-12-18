@@ -69,13 +69,13 @@ If the installation script cannot be downloaded or the Anthropic servers are unr
 2. Include it in your project or mount it as a volume
 3. Run the local script instead: `sh ./scripts/install-claude.sh`
 
-See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#claude-code-installation) for details.
+See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installation) for details.
 
-> **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues).
+> **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues).
 
 ## Four-Mode System
 
-See [MODES.md](docs/MODES.md) for comprehensive comparison guide.
+See [MODES.md](docs/features/MODES.md) for comprehensive comparison guide.
 
 ### Basic Mode - Zero Configuration
 

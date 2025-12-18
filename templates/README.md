@@ -191,7 +191,7 @@ iptables -P OUTPUT DROP
 # - strict: Whitelist-based (comprehensive categories)
 ```
 
-See [Security Model](../docs/security-model.md) for detailed firewall documentation.
+See [Security Model](../docs/features/security-model.md) for detailed firewall documentation.
 
 ### 4. Docker Compose Templates (`compose/`)
 
@@ -241,7 +241,7 @@ VS Code extension lists for each sandbox mode.
 - **Productivity:** TODO Tree, Error Lens, Code Spell Checker
 - **Fun:** Power Mode, Rainbow Brackets, Pets
 
-See [Extensions Reference](../docs/EXTENSIONS.md) for full lists.
+See [Extensions Reference](../docs/features/EXTENSIONS.md) for full lists.
 
 ### 6. MCP Server Templates (`mcp/`)
 
@@ -267,7 +267,7 @@ MCP (Model Context Protocol) server configurations for each mode.
 - **slack** - Slack integration
 - **google-drive** - Google Drive access
 
-See [MCP Configuration Guide](../docs/MCP.md) for details.
+See [MCP Configuration Guide](../docs/features/MCP.md) for details.
 
 ### 7. Variable Templates (`variables/`)
 
@@ -295,7 +295,7 @@ Environment variable and build argument configurations for each mode.
 | Advanced | 12+ | 20+ | Comprehensive configuration |
 | YOLO | Custom | Custom | User-defined |
 
-See [Variables Guide](../docs/VARIABLES.md) for detailed documentation.
+See [Variables Guide](../docs/features/VARIABLES.md) for detailed documentation.
 
 ## Master Templates
 
@@ -686,15 +686,15 @@ All fixes are included by default when using templates since version 2.2.1.
 ## Related Documentation
 
 ### Configuration Guides
-- [Modes Guide](../docs/MODES.md) - Mode comparison and selection
-- [Variables Guide](../docs/VARIABLES.md) - Environment variables and build args
-- [Secrets Management](../docs/SECRETS.md) - Credential handling
-- [MCP Configuration](../docs/MCP.md) - MCP server setup
-- [Extensions Reference](../docs/EXTENSIONS.md) - VS Code extensions
+- [Modes Guide](../docs/features/MODES.md) - Mode comparison and selection
+- [Variables Guide](../docs/features/VARIABLES.md) - Environment variables and build args
+- [Secrets Management](../docs/features/SECRETS.md) - Credential handling
+- [MCP Configuration](../docs/features/MCP.md) - MCP server setup
+- [Extensions Reference](../docs/features/EXTENSIONS.md) - VS Code extensions
 
 ### Security
-- [Security Model](../docs/security-model.md) - Security architecture
-- [Firewall Documentation](../docs/security-model.md#network-isolation--firewall-modes) - Firewall modes
+- [Security Model](../docs/features/security-model.md) - Security architecture
+- [Firewall Documentation](../docs/features/security-model.md#network-isolation--firewall-modes) - Firewall modes
 
 ### Skills and Commands
 - [Skills README](../skills/README.md) - Setup skills that use templates
