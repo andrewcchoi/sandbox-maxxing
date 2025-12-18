@@ -2,7 +2,8 @@
 # check-permissions.sh
 # Validates that shell scripts have execute permissions
 
-set -e
+# Don't exit on errors (we want to report warnings gracefully)
+set +e
 
 # Auto-detect repo root from script location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -40,8 +41,24 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
+# Detect Windows/WSL
+IS_WSL=false
+if grep -qi microsoft /proc/version 2>/dev/null; then
+    IS_WSL=true
+fi
+
+# Check if core.filemode is false
+FILEMODE_DISABLED=false
+if git config core.filemode | grep -q "false"; then
+    FILEMODE_DISABLED=true
+fi
+
 if [ "$QUIET" = false ]; then
     echo -e "${CYAN}=== File Permissions Validator ===${NC}"
+    if [ "$IS_WSL" = true ] || [ "$FILEMODE_DISABLED" = true ]; then
+        echo -e "${YELLOW}Note: Running on WSL or with core.filemode=false${NC}"
+        echo -e "${YELLOW}Permissions check is informational only${NC}"
+    fi
     echo ""
 fi
 
@@ -53,27 +70,36 @@ if [ "$QUIET" = false ]; then
     echo -e "${CYAN}Checking script permissions...${NC}"
 fi
 
-for script in "$SCRIPT_DIR"/*.sh; do
-    [ -e "$script" ] || continue
-    ((TOTAL_SCRIPTS++))
-
-    script_name=$(basename "$script")
-
-    if [ ! -x "$script" ]; then
-        echo -e "  ${YELLOW}[WARNING] Not executable: $script_name${NC}"
-        ((WARNING_COUNT++))
-    elif [ "$VERBOSE" = true ]; then
-        echo -e "  ${GRAY}[OK] $script_name is executable${NC}"
-    fi
-done
-
-# Check scripts in lib directory
-if [ -d "$SCRIPT_DIR/lib" ]; then
-    for script in "$SCRIPT_DIR/lib"/*.sh; do
+# On WSL/Windows with filemode disabled, skip actual permission checks
+if [ "$IS_WSL" = true ] || [ "$FILEMODE_DISABLED" = true ]; then
+    # Count scripts but don't check permissions
+    for script in "$SCRIPT_DIR"/*.sh; do
         [ -e "$script" ] || continue
+        script_name=$(basename "$script")
+        [ "$script_name" = "check-permissions.sh" ] && continue
         ((TOTAL_SCRIPTS++))
+    done
 
-        script_name="lib/$(basename "$script")"
+    if [ -d "$SCRIPT_DIR/lib" ]; then
+        for script in "$SCRIPT_DIR/lib"/*.sh; do
+            [ -e "$script" ] || continue
+            ((TOTAL_SCRIPTS++))
+        done
+    fi
+
+    if [ "$QUIET" = false ]; then
+        echo -e "  ${YELLOW}[SKIPPED] Permission checks not applicable on WSL/Windows${NC}"
+    fi
+else
+    # Normal permission checking on Linux
+    for script in "$SCRIPT_DIR"/*.sh; do
+        [ -e "$script" ] || continue
+
+        # Skip this script to avoid issues
+        script_name=$(basename "$script")
+        [ "$script_name" = "check-permissions.sh" ] && continue
+
+        ((TOTAL_SCRIPTS++))
 
         if [ ! -x "$script" ]; then
             echo -e "  ${YELLOW}[WARNING] Not executable: $script_name${NC}"
@@ -82,6 +108,23 @@ if [ -d "$SCRIPT_DIR/lib" ]; then
             echo -e "  ${GRAY}[OK] $script_name is executable${NC}"
         fi
     done
+
+    # Check scripts in lib directory
+    if [ -d "$SCRIPT_DIR/lib" ]; then
+        for script in "$SCRIPT_DIR/lib"/*.sh; do
+            [ -e "$script" ] || continue
+            ((TOTAL_SCRIPTS++))
+
+            script_name="lib/$(basename "$script")"
+
+            if [ ! -x "$script" ]; then
+                echo -e "  ${YELLOW}[WARNING] Not executable: $script_name${NC}"
+                ((WARNING_COUNT++))
+            elif [ "$VERBOSE" = true ]; then
+                echo -e "  ${GRAY}[OK] $script_name is executable${NC}"
+            fi
+        done
+    fi
 fi
 
 # Summary
@@ -100,9 +143,16 @@ else
     if [ "$QUIET" = false ]; then
         echo -e "${YELLOW}Scripts with permission issues: $WARNING_COUNT${NC}"
         echo ""
-        echo "To fix permission issues, run:"
+        if [ "$IS_WSL" = true ] || [ "$FILEMODE_DISABLED" = true ]; then
+            echo -e "${YELLOW}Note: On WSL/Windows, permissions may not work as expected.${NC}"
+            echo -e "${YELLOW}Scripts can still be run with: bash script.sh${NC}"
+            echo ""
+            echo "On Linux systems, to fix permission issues run:"
+        else
+            echo "To fix permission issues, run:"
+        fi
         echo "  chmod +x \$SCRIPT_DIR/*.sh"
         echo "  chmod +x \$SCRIPT_DIR/lib/*.sh"
     fi
-    exit 0  # Don't fail on warnings
+    exit 0  # Don't fail on warnings (informational only)
 fi
