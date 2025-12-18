@@ -2,7 +2,21 @@
 # validate-inventory.sh
 # Validates INVENTORY.json against actual repository filesystem
 
-REPO_ROOT="/workspace"
+# Auto-detect repo root from script location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Allow override via environment variable
+if [[ -n "${REPO_ROOT_OVERRIDE:-}" ]]; then
+    REPO_ROOT="$REPO_ROOT_OVERRIDE"
+fi
+
+# Source dependency checking library
+source "$SCRIPT_DIR/lib/check-dependencies.sh"
+
+# Check required dependencies
+check_node
+
 VERBOSE=false
 FIND_ORPHANS=false
 
@@ -239,10 +253,60 @@ PYEOF
 )
 
 # Find orphaned files (if requested)
+ORPHAN_COUNT=0
 if [ "$FIND_ORPHANS" = true ]; then
     echo ""
     echo -e "${CYAN}Searching for orphaned files...${NC}"
-    echo -e "${YELLOW}(Not implemented in bash version yet)${NC}"
+
+    # Build list of all paths in INVENTORY.json using Node.js
+    INVENTORY_PATHS=$(node -e "
+        const inv = JSON.parse(require('fs').readFileSync('$INVENTORY_FILE'));
+        const paths = [];
+
+        // Collect all paths from inventory
+        inv.skills?.forEach(s => {
+            paths.push(s.path);
+            (s.references || []).forEach(r => paths.push(r));
+        });
+        inv.commands?.forEach(c => paths.push(c.path));
+        Object.values(inv.templates || {}).flat().forEach(t => paths.push(t.path));
+        inv.examples?.forEach(e => {
+            paths.push(e.path);
+            e.devcontainer_path && paths.push(e.devcontainer_path);
+            e.dockerfile_path && paths.push(e.dockerfile_path);
+            e.compose_path && paths.push(e.compose_path);
+        });
+        inv.data_files?.forEach(d => paths.push(d.path));
+        Object.values(inv.documentation || {}).flat().forEach(d => paths.push(d.path));
+        inv.devcontainers?.forEach(d => {
+            paths.push(d.path);
+            d.dockerfile_path && paths.push(d.dockerfile_path);
+            d.firewall_path && paths.push(d.firewall_path);
+        });
+
+        console.log(JSON.stringify(paths));
+    ")
+
+    # Directories to scan for orphans
+    DIRS_TO_SCAN=(".claude-plugin" "commands" "skills" "templates" "examples" "data" "docs")
+
+    for dir in "${DIRS_TO_SCAN[@]}"; do
+        if [[ -d "$REPO_ROOT/$dir" ]]; then
+            while IFS= read -r -d '' file; do
+                local_file="$file"
+                rel_path="${local_file#$REPO_ROOT/}"
+
+                # Check if path is in inventory
+                if ! echo "$INVENTORY_PATHS" | grep -qF "\"$rel_path\""; then
+                    echo -e "  ${YELLOW}[ORPHAN]${NC} $rel_path"
+                    ((ORPHAN_COUNT++)) || true
+                fi
+            done < <(find "$REPO_ROOT/$dir" -type f -print0 2>/dev/null)
+        fi
+    done
+
+    echo ""
+    echo -e "Orphaned files found: $ORPHAN_COUNT"
 fi
 
 # Summary
@@ -330,10 +394,10 @@ else
     EXIT_CODE=0
 fi
 
-if [ "$FIND_ORPHANS" = true ]; then
+if [ "$FIND_ORPHANS" = true ] && [ $ORPHAN_COUNT -gt 0 ]; then
     echo ""
-    echo -e "${CYAN}ℹ Orphan detection not yet implemented in bash version${NC}"
-    echo -e "${CYAN}  Use PowerShell version for this feature${NC}"
+    echo -e "${CYAN}ℹ Found $ORPHAN_COUNT orphaned files not in inventory${NC}"
+    echo -e "${CYAN}  Consider adding them to INVENTORY.json${NC}"
 fi
 
 exit $EXIT_CODE

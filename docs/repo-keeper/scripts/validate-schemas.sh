@@ -4,7 +4,21 @@
 
 set -e
 
-REPO_ROOT="/workspace"
+# Auto-detect repo root from script location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Allow override via environment variable
+if [[ -n "${REPO_ROOT_OVERRIDE:-}" ]]; then
+    REPO_ROOT="$REPO_ROOT_OVERRIDE"
+fi
+
+# Source dependency checking library
+source "$SCRIPT_DIR/lib/check-dependencies.sh"
+
+# Check required dependencies
+check_node
+
 VERBOSE=false
 
 # Parse arguments
@@ -27,131 +41,63 @@ NC='\033[0m'
 echo -e "${CYAN}=== JSON Schema Validator ===${NC}"
 echo ""
 
-# Check if jq is available
-if ! command -v jq &> /dev/null; then
-    echo -e "${YELLOW}Warning: jq not found, using basic validation${NC}"
-    USE_JQ=false
-else
-    USE_JQ=true
-fi
-
 ERROR_COUNT=0
 
-# Function to validate version pattern
-validate_version() {
-    local file=$1
-    local version=$2
+# Function to validate a file against a schema using ajv-cli
+validate_against_schema() {
+    local data_file="$1"
+    local schema_file="$2"
+    local file_name=$(basename "$data_file")
 
-    if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        echo -e "  ${RED}[ERROR] Invalid version format: $version${NC}"
+    echo -e "${CYAN}Validating $file_name...${NC}"
+
+    if [ ! -f "$data_file" ]; then
+        echo -e "  ${RED}[ERROR] File not found: $data_file${NC}"
+        ((ERROR_COUNT++))
         return 1
     fi
-    return 0
+
+    if [ ! -f "$schema_file" ]; then
+        echo -e "  ${YELLOW}[WARNING] Schema not found: $schema_file${NC}"
+        return 0
+    fi
+
+    # Validate using ajv-cli
+    if ajv validate -s "$schema_file" -d "$data_file" --spec=draft7 2>&1 | grep -q "valid"; then
+        echo -e "  ${GREEN}✓ Schema validation passed${NC}"
+
+        # Additional info using node
+        if [ "$VERBOSE" = true ]; then
+            local version=$(node -e "try { const data = JSON.parse(require('fs').readFileSync('$data_file')); console.log(data.version || 'N/A'); } catch(e) { console.log('N/A'); }")
+            local desc=$(node -e "try { const data = JSON.parse(require('fs').readFileSync('$data_file')); console.log((data.description || 'N/A').substring(0, 60)); } catch(e) { console.log('N/A'); }")
+            echo -e "  ${GRAY}  version: $version${NC}"
+            echo -e "  ${GRAY}  description: $desc${NC}"
+        fi
+        return 0
+    else
+        echo -e "  ${RED}✗ Schema validation failed${NC}"
+        # Show validation errors
+        ajv validate -s "$schema_file" -d "$data_file" --spec=draft7 2>&1 | grep -v "valid" | head -10 | while read line; do
+            echo -e "  ${RED}  $line${NC}"
+        done
+        ((ERROR_COUNT++))
+        return 1
+    fi
 }
 
-# Validate INVENTORY.json
-echo -e "${CYAN}Validating INVENTORY.json...${NC}"
+# Validate INVENTORY.json against schema
 INVENTORY="$REPO_ROOT/docs/repo-keeper/INVENTORY.json"
+INVENTORY_SCHEMA="$REPO_ROOT/docs/repo-keeper/schemas/inventory.schema.json"
 
-if [ -f "$INVENTORY" ]; then
-    if [ "$USE_JQ" = true ]; then
-        # Validate JSON syntax
-        if ! jq empty "$INVENTORY" 2>/dev/null; then
-            echo -e "  ${RED}[ERROR] Invalid JSON syntax${NC}"
-            ((ERROR_COUNT++))
-        else
-            # Check required fields
-            VERSION=$(jq -r '.version // empty' "$INVENTORY")
-            LAST_UPDATED=$(jq -r '.last_updated // empty' "$INVENTORY")
-            REPO=$(jq -r '.repository // empty' "$INVENTORY")
+validate_against_schema "$INVENTORY" "$INVENTORY_SCHEMA"
 
-            if [ -z "$VERSION" ]; then
-                echo -e "  ${RED}[ERROR] Missing required field: version${NC}"
-                ((ERROR_COUNT++))
-            elif ! validate_version "$INVENTORY" "$VERSION"; then
-                ((ERROR_COUNT++))
-            else
-                echo -e "  ${GREEN}[OK] version: $VERSION${NC}"
-            fi
-
-            if [ -z "$LAST_UPDATED" ]; then
-                echo -e "  ${RED}[ERROR] Missing required field: last_updated${NC}"
-                ((ERROR_COUNT++))
-            elif [[ ! $LAST_UPDATED =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-                echo -e "  ${RED}[ERROR] Invalid date format: $LAST_UPDATED (expected YYYY-MM-DD)${NC}"
-                ((ERROR_COUNT++))
-            else
-                echo -e "  ${GREEN}[OK] last_updated: $LAST_UPDATED${NC}"
-            fi
-
-            if [ -z "$REPO" ]; then
-                echo -e "  ${RED}[ERROR] Missing required field: repository${NC}"
-                ((ERROR_COUNT++))
-            else
-                echo -e "  ${GREEN}[OK] repository: $REPO${NC}"
-            fi
-
-            # Check skills array
-            SKILLS_COUNT=$(jq '.skills | length' "$INVENTORY")
-            if [ "$SKILLS_COUNT" -eq 0 ]; then
-                echo -e "  ${YELLOW}[WARNING] No skills defined${NC}"
-            else
-                echo -e "  ${GREEN}[OK] skills: $SKILLS_COUNT entries${NC}"
-            fi
-
-            # Check commands array
-            COMMANDS_COUNT=$(jq '.commands | length' "$INVENTORY")
-            if [ "$COMMANDS_COUNT" -eq 0 ]; then
-                echo -e "  ${YELLOW}[WARNING] No commands defined${NC}"
-            else
-                echo -e "  ${GREEN}[OK] commands: $COMMANDS_COUNT entries${NC}"
-            fi
-        fi
-    else
-        # Basic validation without jq
-        if grep -q '"version"' "$INVENTORY" && grep -q '"skills"' "$INVENTORY"; then
-            echo -e "  ${GREEN}[OK] Basic structure valid${NC}"
-        else
-            echo -e "  ${RED}[ERROR] Missing required fields${NC}"
-            ((ERROR_COUNT++))
-        fi
-    fi
-else
-    echo -e "  ${RED}[ERROR] INVENTORY.json not found${NC}"
-    ((ERROR_COUNT++))
-fi
-
-# Validate data files
+# Validate data files against generic data-file schema
 echo ""
-echo -e "${CYAN}Validating data files...${NC}"
+DATA_SCHEMA="$REPO_ROOT/docs/repo-keeper/schemas/data-file.schema.json"
 
 for data_file in "$REPO_ROOT/data"/*.json; do
     [ -e "$data_file" ] || continue
-
-    filename=$(basename "$data_file")
-
-    if [ "$USE_JQ" = true ]; then
-        if ! jq empty "$data_file" 2>/dev/null; then
-            echo -e "  ${RED}[ERROR] $filename: Invalid JSON syntax${NC}"
-            ((ERROR_COUNT++))
-        else
-            # Check for version field if present
-            VERSION=$(jq -r '.version // empty' "$data_file")
-            if [ -n "$VERSION" ]; then
-                if validate_version "$data_file" "$VERSION"; then
-                    echo -e "  ${GREEN}[OK] $filename: version $VERSION${NC}"
-                else
-                    ((ERROR_COUNT++))
-                fi
-            else
-                if [ "$VERBOSE" = true ]; then
-                    echo -e "  ${GRAY}[INFO] $filename: no version field${NC}"
-                fi
-            fi
-        fi
-    else
-        echo -e "  ${GRAY}[SKIP] $filename (jq not available)${NC}"
-    fi
+    validate_against_schema "$data_file" "$DATA_SCHEMA"
 done
 
 # Summary
