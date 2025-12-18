@@ -1,0 +1,505 @@
+═════════════════════════════════════════════════════════════════
+📋 REPO-KEEPER DETAILED VALIDATION RESULTS
+═════════════════════════════════════════════════════════════════
+
+Date: 2025-12-17 22:21:29
+Version: 2.2.1
+Repository: sandbox-maxxing
+
+═════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ CHECK 1: VERSION SYNC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ❌ FAIL
+
+Summary:
+  Expected version: 2.2.1
+  ✓ marketplace.json: 2.2.1
+  ✓ INVENTORY.json: 2.2.1
+
+Issues Found:
+  ❌ data/secrets.json: 2.1.0 (should be 2.2.1)
+  ❌ data/variables.json: 2.1.0 (should be 2.2.1)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔗 CHECK 2: LINK INTEGRITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ❌ FAIL (66 broken links)
+
+Summary Statistics:
+  Total markdown files scanned: 69
+  Total links found: 287
+  ✓ Valid internal links: 86
+  External links (not checked): 45
+  ❌ Broken links: 66
+
+Missing Files Causing Most Broken Links:
+  • docs/TROUBLESHOOTING.md - 22 references
+  • docs/security-model.md - 16 references
+  • docs/MODES.md - 8 references
+  • docs/SECRETS.md - 6 references
+  • docs/VARIABLES.md - 5 references
+  • docs/MCP.md - 3 references
+  • docs/EXTENSIONS.md - 2 references
+  • docs/CONSISTENCY_AUDIT_2025-12-16.md - 2 references
+  • docs/CONSOLIDATION_RECOMMENDATIONS.md - 2 references
+
+Files with Most Broken Links:
+  1. templates/README.md - 11 broken links
+  2. skills/README.md - 8 broken links
+  3. docs/audits/CONSOLIDATION_RECOMMENDATIONS.md - 8 broken links
+  4. commands/README.md - 6 broken links
+  5. SECURITY.md - 4 broken links
+  6. docs/repo-keeper/README.md - 4 broken links
+
+Sample Broken Links:
+
+  README.md:72
+    [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#claude-code-installation)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  README.md:74
+    [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  README.md:78
+    [MODES.md](docs/MODES.md)
+    -> docs/MODES.md (NOT FOUND)
+
+  SECURITY.md:88
+    [docs/security-model.md](docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  SECURITY.md:105
+    [docs/SECRETS.md](docs/SECRETS.md)
+    -> docs/SECRETS.md (NOT FOUND)
+
+  SECURITY.md:158
+    [docs/security-model.md](docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  commands/README.md:83
+    [Troubleshooting Guide](../docs/TROUBLESHOOTING.md)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  commands/README.md:110
+    [Security Model](../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  commands/README.md:338
+    [Modes Guide](../docs/MODES.md)
+    -> docs/MODES.md (NOT FOUND)
+
+  commands/README.md:339
+    [Troubleshooting](../docs/TROUBLESHOOTING.md)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  commands/README.md:343
+    [Variables Guide](../docs/VARIABLES.md)
+    -> docs/VARIABLES.md (NOT FOUND)
+
+  commands/README.md:344
+    [Secrets Management](../docs/SECRETS.md)
+    -> docs/SECRETS.md (NOT FOUND)
+
+  templates/README.md:194
+    [Security Model](../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  templates/README.md:244
+    [Extensions Reference](../docs/EXTENSIONS.md)
+    -> docs/EXTENSIONS.md (NOT FOUND)
+
+  templates/README.md:270
+    [MCP Configuration Guide](../docs/MCP.md)
+    -> docs/MCP.md (NOT FOUND)
+
+  templates/README.md:298
+    [Variables Guide](../docs/VARIABLES.md)
+    -> docs/VARIABLES.md (NOT FOUND)
+
+  templates/README.md:689
+    [Modes Guide](../docs/MODES.md)
+    -> docs/MODES.md (NOT FOUND)
+
+  templates/README.md:690
+    [Variables Guide](../docs/VARIABLES.md)
+    -> docs/VARIABLES.md (NOT FOUND)
+
+  templates/README.md:691
+    [Secrets Management](../docs/SECRETS.md)
+    -> docs/SECRETS.md (NOT FOUND)
+
+  templates/README.md:692
+    [MCP Configuration](../docs/MCP.md)
+    -> docs/MCP.md (NOT FOUND)
+
+  templates/README.md:693
+    [Extensions Reference](../docs/EXTENSIONS.md)
+    -> docs/EXTENSIONS.md (NOT FOUND)
+
+  templates/README.md:696
+    [Security Model](../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  templates/README.md:697
+    [Firewall Documentation](../docs/security-model.md#network-isolation--firewall-modes)
+    -> docs/security-model.md (NOT FOUND)
+
+  skills/README.md:132
+    [Troubleshooting Guide](../docs/TROUBLESHOOTING.md)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  skills/README.md:162
+    [Security Model](../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  skills/README.md:321
+    [Modes Comparison](../docs/MODES.md)
+    -> docs/MODES.md (NOT FOUND)
+
+  skills/README.md:322
+    [Security Model](../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  skills/README.md:323
+    [Troubleshooting Guide](../docs/TROUBLESHOOTING.md)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  skills/README.md:326
+    [Variables Guide](../docs/VARIABLES.md)
+    -> docs/VARIABLES.md (NOT FOUND)
+
+  skills/README.md:327
+    [Secrets Management](../docs/SECRETS.md)
+    -> docs/SECRETS.md (NOT FOUND)
+
+  skills/README.md:328
+    [MCP Configuration](../docs/MCP.md)
+    -> docs/MCP.md (NOT FOUND)
+
+  examples/demo-app-sandbox-advanced/README.md:66
+    [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  examples/demo-app-sandbox-advanced/README.md:491
+    [Security Model](../../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  examples/demo-app-sandbox-basic/README.md:62
+    [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  examples/demo-app-sandbox-basic/README.md:292
+    [Security Model](../../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  examples/demo-app-sandbox-intermediate/README.md:63
+    [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  examples/demo-app-sandbox-intermediate/README.md:338
+    [Security Model](../../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  examples/demo-app-sandbox-yolo/README.md:83
+    [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  examples/demo-app-sandbox-yolo/README.md:772
+    [Security Model](../../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+  examples/streamlit-sandbox-basic/README.md:57
+    [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  examples/streamlit-sandbox-basic/README.md:147
+    [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  examples/streamlit-sandbox-basic/README.md:155
+    [../../docs/TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  docs/repo-keeper/README.md:457
+    [Consistency Audit](../CONSISTENCY_AUDIT_2025-12-16.md)
+    -> docs/CONSISTENCY_AUDIT_2025-12-16.md (NOT FOUND)
+
+  docs/repo-keeper/README.md:458
+    [Consolidation Recommendations](../CONSOLIDATION_RECOMMENDATIONS.md)
+    -> docs/CONSOLIDATION_RECOMMENDATIONS.md (NOT FOUND)
+
+  docs/repo-keeper/README.md:462
+    [MODES.md](../MODES.md)
+    -> docs/MODES.md (NOT FOUND)
+
+  docs/repo-keeper/README.md:463
+    [TROUBLESHOOTING.md](../TROUBLESHOOTING.md)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  docs/repo-keeper/ORGANIZATION_CHECKLIST.md:9
+    [`docs/CONSISTENCY_AUDIT_2025-12-16.md`](../CONSISTENCY_AUDIT_2025-12-16.md)
+    -> docs/CONSISTENCY_AUDIT_2025-12-16.md (NOT FOUND)
+
+  docs/repo-keeper/ORGANIZATION_CHECKLIST.md:10
+    [`docs/CONSOLIDATION_RECOMMENDATIONS.md`](../CONSOLIDATION_RECOMMENDATIONS.md)
+    -> docs/CONSOLIDATION_RECOMMENDATIONS.md (NOT FOUND)
+
+  docs/audits/CONSOLIDATION_RECOMMENDATIONS.md:53
+    [MODES.md](MODES.md)
+    -> docs/audits/MODES.md (NOT FOUND)
+
+  docs/audits/CONSOLIDATION_RECOMMENDATIONS.md:64
+    [Commands Guide](../commands/README.md)
+    -> docs/commands/README.md (NOT FOUND)
+
+  docs/audits/CONSOLIDATION_RECOMMENDATIONS.md:103
+    [SECRETS.md](SECRETS.md)
+    -> docs/audits/SECRETS.md (NOT FOUND)
+
+  docs/audits/CONSOLIDATION_RECOMMENDATIONS.md:112
+    [VARIABLES.md](VARIABLES.md)
+    -> docs/audits/VARIABLES.md (NOT FOUND)
+
+  docs/audits/CONSOLIDATION_RECOMMENDATIONS.md:120
+    [Secrets Management Guide](SECRETS.md)
+    -> docs/audits/SECRETS.md (NOT FOUND)
+
+  docs/audits/CONSOLIDATION_RECOMMENDATIONS.md:251
+    [MODES.md](MODES.md)
+    -> docs/audits/MODES.md (NOT FOUND)
+
+  docs/audits/CONSOLIDATION_RECOMMENDATIONS.md:252
+    [VARIABLES.md](VARIABLES.md)
+    -> docs/audits/VARIABLES.md (NOT FOUND)
+
+  docs/audits/CONSOLIDATION_RECOMMENDATIONS.md:253
+    [SECRETS.md](SECRETS.md)
+    -> docs/audits/SECRETS.md (NOT FOUND)
+
+  docs/archive/2025-12-12-devcontainer-setup-design.md:353
+    [DEVELOPMENT.md](docs/DEVELOPMENT.md)
+    -> docs/archive/docs/DEVELOPMENT.md (NOT FOUND)
+
+  docs/archive/2025-12-12-devcontainer-setup-design.md:363
+    [Explore Examples →](examples/)
+    -> docs/archive/examples (NOT FOUND)
+
+  docs/plans/2025-12-17-comprehensive-validation-implementation.md:1723
+    [text](url)
+    -> docs/plans/url (NOT FOUND)
+
+  docs/plans/2025-12-17-comprehensive-validation-implementation.md:1731
+    [text](url)
+    -> docs/plans/url (NOT FOUND)
+
+  skills/sandbox-setup-advanced/references/customization.md:597
+    [examples/](../../../../examples/)
+    -> /examples (NOT FOUND)
+
+  skills/sandbox-setup-advanced/references/troubleshooting.md:617
+    [examples](../../../../examples/)
+    -> /examples (NOT FOUND)
+
+  templates/legacy/README.md:61
+    [MODES.md](../../docs/MODES.md)
+    -> docs/MODES.md (NOT FOUND)
+
+  examples/README.md:349
+    [TROUBLESHOOTING.md](../docs/TROUBLESHOOTING.md)
+    -> docs/TROUBLESHOOTING.md (NOT FOUND)
+
+  examples/README.md:404
+    [security-model.md](../docs/security-model.md)
+    -> docs/security-model.md (NOT FOUND)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 CHECK 3: INVENTORY ACCURACY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ❌ FAIL (13 missing paths)
+
+Summary:
+  Total paths in inventory: 175
+  ✓ Valid paths: 162
+  ❌ Missing paths: 13
+
+All Missing Paths:
+
+Documentation (docs) - 12 files:
+  1. docs/CONSISTENCY_AUDIT_2025-12-16.md
+  2. docs/CONSOLIDATION_RECOMMENDATIONS.md
+  3. docs/EXTENSIONS.md
+  4. docs/LOW_PRIORITY_FIXES_v2.2.0.md
+  5. docs/MCP.md
+  6. docs/MODES.md
+  7. docs/RELEASE_NOTES_v1.0.0.md
+  8. docs/SECRETS.md
+  9. docs/security-model.md
+  10. docs/TESTING.md
+  11. docs/TROUBLESHOOTING.md
+  12. docs/VARIABLES.md
+
+Documentation (root) - 1 file:
+  13. .github-issue-v2.2.0.md
+
+Version Issues Also Detected:
+  ❌ data/secrets.json (2.1.0 → needs 2.2.1)
+  ❌ data/variables.json (2.1.0 → needs 2.2.1)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔄 CHECK 4: RELATIONSHIP VALIDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ✅ PASS
+
+Summary:
+  Total relationships checked: 47
+  ✓ All skill → template relationships valid
+  ✓ All skill ↔ command relationships valid
+  ✓ All command → skill relationships valid
+  ✓ All skill → example relationships valid
+
+Total errors: 0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 CHECK 5: SCHEMA VALIDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ✅ PASS (with warning)
+
+⚠️  Warning: jq not found in system PATH, using basic validation
+
+INVENTORY.json:
+  ✓ Basic structure valid
+
+Data files (7 total - detailed validation skipped):
+  • allowable-domains.json
+  • mcp-servers.json
+  • official-images.json
+  • sandbox-templates.json
+  • secrets.json
+  • variables.json
+  • vscode-extensions.json
+
+Total errors: 0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✔️  CHECK 6: COMPLETENESS VALIDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ❌ ERROR (unable to run)
+
+Error:
+  jq is required but not installed
+
+Note:
+  This check requires jq to parse INVENTORY.json. The tool should
+  auto-download jq or use Python fallback, but encountered an error.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 CHECK 7: CONTENT VALIDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ❌ FAIL (5 errors)
+
+Missing Required Sections in SKILL.md Files:
+
+  1. skills/sandbox-security/SKILL.md
+     ❌ Missing: Usage
+     ❌ Missing: Examples
+
+  2. skills/sandbox-setup-advanced/SKILL.md
+     ❌ Missing: Usage
+
+  3. skills/sandbox-setup-basic/SKILL.md
+     ❌ Missing: Usage
+
+  4. skills/sandbox-setup-intermediate/SKILL.md
+     ❌ Missing: Usage
+
+  5. skills/sandbox-troubleshoot/SKILL.md
+     ❌ Missing: Usage
+     ❌ Missing: Examples
+
+Other Checks:
+  ✓ Mode consistency: 7/7 files reference correct mode
+  ✓ Step sequences: No broken step sequences found
+
+Total errors: 5
+
+═════════════════════════════════════════════════════════════════
+📊 OVERALL SUMMARY
+═════════════════════════════════════════════════════════════════
+
+| Check                      | Status    | Issues                    |
+|----------------------------|-----------|---------------------------|
+| 1. Version Sync            | ❌ FAIL   | 2+ version mismatches     |
+| 2. Link Integrity          | ❌ FAIL   | 66 broken links           |
+| 3. Inventory Accuracy      | ❌ FAIL   | 13 missing paths          |
+| 4. Relationship Validation | ✅ PASS   | 0 errors                  |
+| 5. Schema Validation       | ✅ PASS   | 0 errors (1 warning)      |
+| 6. Completeness            | ❌ ERROR  | jq not found              |
+| 7. Content                 | ❌ FAIL   | 5 SKILL.md files incomplete|
+
+Total: 2 passed, 5 failed, 1 error
+
+═════════════════════════════════════════════════════════════════
+🎯 PRIORITY FIXES
+═════════════════════════════════════════════════════════════════
+
+HIGH PRIORITY (Breaking Issues)
+────────────────────────────────
+
+1. Create Missing Documentation Files (13 files)
+   These files are referenced throughout the codebase and are
+   causing 66 broken links.
+
+   Priority order:
+   • docs/TROUBLESHOOTING.md (22 references)
+   • docs/security-model.md (16 references)
+   • docs/MODES.md (8 references)
+   • docs/SECRETS.md (6 references)
+   • docs/VARIABLES.md (5 references)
+   • docs/MCP.md (3 references)
+   • docs/EXTENSIONS.md (2 references)
+   • docs/CONSISTENCY_AUDIT_2025-12-16.md (2 references)
+   • docs/CONSOLIDATION_RECOMMENDATIONS.md (2 references)
+   • docs/LOW_PRIORITY_FIXES_v2.2.0.md
+   • docs/RELEASE_NOTES_v1.0.0.md
+   • docs/TESTING.md
+   • .github-issue-v2.2.0.md
+
+2. Fix Version Mismatches (2 files)
+   • data/secrets.json: 2.1.0 → 2.2.1
+   • data/variables.json: 2.1.0 → 2.2.1
+
+3. Add Missing SKILL.md Sections (5 files)
+   • Add Usage sections (4 files)
+   • Add Examples sections (2 files)
+
+   Files affected:
+   • skills/sandbox-security/SKILL.md (Usage, Examples)
+   • skills/sandbox-setup-advanced/SKILL.md (Usage)
+   • skills/sandbox-setup-basic/SKILL.md (Usage)
+   • skills/sandbox-setup-intermediate/SKILL.md (Usage)
+   • skills/sandbox-troubleshoot/SKILL.md (Usage, Examples)
+
+MEDIUM PRIORITY (Tool Issues)
+──────────────────────────────
+
+4. Fix jq Dependency
+   Completeness check failed due to missing jq in PATH.
+   Scripts should auto-download jq to /workspace/bin/ or use
+   Python fallback when jq is not available.
+
+═════════════════════════════════════════════════════════════════
+END OF DETAILED RESULTS
+═════════════════════════════════════════════════════════════════
+
+Generated: 2025-12-17 22:21:29
+Report Location: /workspace/docs/repo-keeper/REPO_KEEPER_FULL_RESULTS.txt

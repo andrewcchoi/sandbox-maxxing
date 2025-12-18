@@ -1,0 +1,199 @@
+=================================================================
+MANUAL SCAN RESULTS (Without Repo-Keeper Scripts)
+=================================================================
+Date: 2025-12-17
+Expected Version: 2.2.1
+Repository: /workspace
+
+-----------------------------------------------------------------
+1. VERSION SYNC CHECK
+-----------------------------------------------------------------
+Expected version: 2.2.1
+
+JSON Files:
+  ✓ .claude-plugin/marketplace.json: 2.2.1
+  ✓ docs/repo-keeper/INVENTORY.json: 2.2.1 (main field)
+  ✗ data/secrets.json: 2.1.0 (should be 2.2.1)
+  ✗ data/variables.json: 2.1.0 (should be 2.2.1)
+
+Markdown Files:
+  - Total markdown files: 67
+  - Files with version footers: 60
+  - Files missing footers: 7
+  - Files with wrong version pattern: 2
+    - CONTRIBUTING.md (has "X.Y.Z" placeholder)
+    - ORGANIZATION_CHECKLIST.md (has "X.Y.Z" placeholder)
+
+ISSUES FOUND: 4 (2 version mismatches, 2 wrong patterns)
+
+-----------------------------------------------------------------
+2. LINK INTEGRITY CHECK
+-----------------------------------------------------------------
+Unique internal markdown links: 162
+Broken links found: 49
+
+Sample broken links:
+  - ../../CHANGELOG.md
+  - ../../CONTRIBUTING.md
+  - ../../README.md
+  - ../MODES.md
+  - docs/TROUBLESHOOTING.md
+  - security-model.md
+  (and 43 more...)
+
+ISSUES FOUND: 49 broken links
+
+NOTE: This count may include false positives due to simplistic
+validation logic. Repo-keeper script uses more sophisticated
+relative path resolution.
+
+-----------------------------------------------------------------
+3. INVENTORY PATH VALIDATION
+-----------------------------------------------------------------
+Skills paths: Checked (no missing paths)
+Commands paths: Checked (no missing paths)
+Template paths: jq error (array indexing issue)
+Example paths: Checked (no missing paths)
+Data file paths: jq error (null iteration)
+
+Documentation paths:
+  ✗ docs/CONSISTENCY_AUDIT_2025-12-16.md
+  ✗ docs/CONSOLIDATION_RECOMMENDATIONS.md
+  ✗ docs/EXTENSIONS.md
+  ✗ docs/LOW_PRIORITY_FIXES_v2.2.0.md
+  ✗ docs/MCP.md
+  ✗ docs/MODES.md
+  ✗ docs/RELEASE_NOTES_v1.0.0.md
+  ✗ docs/SECRETS.md
+  ✗ docs/security-model.md
+  ✗ docs/TESTING.md
+  ✗ docs/TROUBLESHOOTING.md
+  ✗ docs/VARIABLES.md
+
+ISSUES FOUND: 12 missing documentation paths
+NOTE: jq query errors prevented full validation of templates and data
+
+-----------------------------------------------------------------
+4. RELATIONSHIP VALIDATION
+-----------------------------------------------------------------
+Skills -> related_templates: All valid
+Skills -> related_command: All valid
+Skills -> related_example: All valid
+
+Commands -> invokes_skill:
+  ✗ Command 'commands/setup.md' references non-existent skill: 'interactive'
+
+ISSUES FOUND: 1 invalid relationship
+
+-----------------------------------------------------------------
+5. SCHEMA VALIDATION
+-----------------------------------------------------------------
+INVENTORY.json:
+  ✓ version field: 2.2.1 (valid semver)
+  ✓ last_updated field: 2025-12-16 (valid YYYY-MM-DD)
+  ✓ repository field: sandbox-maxxing
+
+Data files (JSON syntax):
+  ✓ data/allowable-domains.json
+  ✓ data/mcp-servers.json
+  ✓ data/official-images.json
+  ✓ data/sandbox-templates.json
+  ✓ data/secrets.json
+  ✓ data/variables.json
+  ✓ data/vscode-extensions.json
+
+ISSUES FOUND: 0 schema errors
+
+-----------------------------------------------------------------
+6. COMPLETENESS VALIDATION
+-----------------------------------------------------------------
+Skills with SKILL.md: 6/6 ✓
+
+Commands mentioned in commands/README.md: 7/7 ✓
+
+Data files (note: inventory shows 0 data files due to jq error)
+
+Mode coverage (4 modes: basic, intermediate, advanced, yolo):
+  All modes missing:
+    - master templates
+    - compose templates
+    - firewall templates
+    - extensions templates
+    - mcp templates
+    - variables templates
+    - example directories (example-{mode}/)
+
+ISSUES FOUND: 28 missing components
+NOTE: Many false positives due to incorrect file naming patterns
+in manual validation script. Actual files likely exist with different
+naming conventions.
+
+-----------------------------------------------------------------
+7. CONTENT VALIDATION
+-----------------------------------------------------------------
+SKILL.md files with missing required sections:
+
+  ✗ skills/sandbox-security/SKILL.md
+    - Missing: Usage, Examples
+
+  ✗ skills/sandbox-setup-advanced/SKILL.md
+    - Missing: Usage
+
+  ✗ skills/sandbox-setup-basic/SKILL.md
+    - Missing: Usage
+
+  ✗ skills/sandbox-setup-intermediate/SKILL.md
+    - Missing: Usage
+
+  ✓ skills/sandbox-setup-yolo/SKILL.md
+    - All sections present
+
+  ✗ skills/sandbox-troubleshoot/SKILL.md
+    - Missing: Usage, Examples
+
+Mode-specific files mentioning their mode: All valid (no warnings)
+
+ISSUES FOUND: 5 SKILL.md files with missing sections
+
+=================================================================
+MANUAL SCAN SUMMARY
+=================================================================
+
+Total Issues by Category:
+  1. Version Sync:      4 issues
+  2. Link Integrity:   49 issues (may include false positives)
+  3. Inventory Paths:  12 issues
+  4. Relationships:     1 issue
+  5. Schema:            0 issues
+  6. Completeness:     28 issues (many false positives expected)
+  7. Content:           5 issues
+
+TOTAL ISSUES: 99
+
+Validation Categories:
+  ✓ PASS: Schema Validation (0 errors)
+  ✗ FAIL: Version Sync (4 errors)
+  ✗ FAIL: Link Integrity (49 errors)
+  ✗ FAIL: Inventory Paths (12 errors)
+  ✗ FAIL: Relationships (1 error)
+  ✗ FAIL: Completeness (28 errors)
+  ✗ FAIL: Content (5 errors)
+
+=================================================================
+LIMITATIONS OF MANUAL SCAN
+=================================================================
+
+1. Link validation is simplistic - doesn't handle complex relative
+   path resolution like repo-keeper scripts do
+
+2. Completeness check uses basic file naming patterns that don't
+   match actual repository structure, causing many false positives
+
+3. jq queries had errors due to INVENTORY.json structure complexity,
+   preventing full validation of some sections
+
+4. No external link checking (would be very slow manually)
+
+5. No sophisticated error reporting or progress tracking
+
+=================================================================
