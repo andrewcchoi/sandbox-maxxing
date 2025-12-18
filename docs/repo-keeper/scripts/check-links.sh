@@ -46,7 +46,9 @@ echo ""
 # Temporary files for tracking
 ERROR_FILE=$(mktemp)
 LINKS_FILE=$(mktemp)
-trap "rm -f $ERROR_FILE $LINKS_FILE" EXIT
+ANCHOR_ERROR_FILE=$(mktemp)
+IMAGE_ERROR_FILE=$(mktemp)
+trap "rm -f $ERROR_FILE $LINKS_FILE $ANCHOR_ERROR_FILE $IMAGE_ERROR_FILE" EXIT
 
 # Find all markdown files
 mapfile -t MD_FILES < <(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null)
@@ -135,6 +137,75 @@ for file in "${MD_FILES[@]}"; do
     done
 done
 
+# V8: Check anchor links
+ANCHOR_ERRORS=0
+echo ""
+echo -e "${CYAN}Validating anchor links...${NC}"
+for file in "${MD_FILES[@]}"; do
+    RELATIVE_PATH="${file#$REPO_ROOT/}"
+    FILE_DIR=$(dirname "$file")
+
+    # Find links with anchors
+    grep -n '\[[^]]*\](#[^)]*)' "$file" 2>/dev/null | while IFS=: read -r line_num line_content; do
+        if [[ "$line_content" =~ \[([^\]]*)\]\(([^#]*)(#[^\)]*)\) ]]; then
+            link_path="${BASH_REMATCH[2]}"
+            anchor="${BASH_REMATCH[3]}"
+
+            # Resolve target file
+            if [ -z "$link_path" ]; then
+                target_file="$file"
+            elif [[ "$link_path" =~ ^/ ]]; then
+                target_file="$REPO_ROOT${link_path}"
+            else
+                target_file="$FILE_DIR/$link_path"
+            fi
+
+            # Check if anchor exists in target
+            if [ -f "$target_file" ]; then
+                anchor_text="${anchor#\#}"
+                anchor_slug=$(echo "$anchor_text" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+                if ! grep -qi "$anchor_text" "$target_file" 2>/dev/null; then
+                    echo "ANCHOR_ERROR|$RELATIVE_PATH|$line_num|$anchor_slug" >> "$ANCHOR_ERROR_FILE"
+                fi
+            fi
+        fi
+    done
+done
+ANCHOR_ERRORS=$(wc -l < "$ANCHOR_ERROR_FILE" 2>/dev/null || echo 0)
+
+# V9: Check image references
+IMAGE_ERRORS=0
+echo -e "${CYAN}Validating image references...${NC}"
+for file in "${MD_FILES[@]}"; do
+    RELATIVE_PATH="${file#$REPO_ROOT/}"
+    FILE_DIR=$(dirname "$file")
+
+    # Find image references
+    grep -n '!\[[^]]*\]([^)]*)' "$file" 2>/dev/null | while IFS=: read -r line_num line_content; do
+        if [[ "$line_content" =~ !\[([^\]]*)\]\(([^\)]*)\) ]]; then
+            img_path="${BASH_REMATCH[2]}"
+
+            # Skip URLs
+            if [[ "$img_path" =~ ^https?:// ]]; then
+                continue
+            fi
+
+            # Resolve image path
+            if [[ "$img_path" =~ ^/ ]]; then
+                resolved_img="$REPO_ROOT${img_path}"
+            else
+                resolved_img="$FILE_DIR/$img_path"
+            fi
+
+            # Check if image exists
+            if [ ! -f "$resolved_img" ]; then
+                echo "IMAGE_ERROR|$RELATIVE_PATH|$line_num|$img_path" >> "$IMAGE_ERROR_FILE"
+            fi
+        fi
+    done
+done
+IMAGE_ERRORS=$(wc -l < "$IMAGE_ERROR_FILE" 2>/dev/null || echo 0)
+
 # Count results from temp file
 TOTAL_LINKS=$(grep -c '^LINK|' "$LINKS_FILE" 2>/dev/null || echo 0)
 EXTERNAL_LINKS=$(grep -c '^EXTERNAL|' "$LINKS_FILE" 2>/dev/null || echo 0)
@@ -152,6 +223,16 @@ if [ $BROKEN_LINKS -eq 0 ]; then
     echo -e "${GREEN}Broken links:          $BROKEN_LINKS${NC}"
 else
     echo -e "${RED}Broken links:          $BROKEN_LINKS${NC}"
+fi
+if [ $ANCHOR_ERRORS -eq 0 ]; then
+    echo -e "${GREEN}Broken anchors:        $ANCHOR_ERRORS${NC}"
+else
+    echo -e "${YELLOW}Broken anchors:        $ANCHOR_ERRORS${NC}"
+fi
+if [ $IMAGE_ERRORS -eq 0 ]; then
+    echo -e "${GREEN}Missing images:        $IMAGE_ERRORS${NC}"
+else
+    echo -e "${YELLOW}Missing images:        $IMAGE_ERRORS${NC}"
 fi
 
 # Detailed error report
