@@ -7,9 +7,9 @@
   },
   "plugins": [
     {
-      "name": "sandbox-maxxing",
+      "name": "sandboxxer",
       "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments with four-mode system (Basic, Intermediate, Advanced, YOLO)",
-      "version": "2.2.1",
+      "version": "2.2.2",
       "source": "./",
       "author": {
         "name": "Andrew C. Choi"

@@ -319,7 +319,7 @@ lsof -i :6379
 
 ```bash
 # Reinstall plugin
-claude plugins remove sandbox-maxxing
+claude plugins remove sandboxxer
 claude plugins add .
 
 # Verify installation
