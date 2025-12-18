@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.2] - 2025-12-18
+
+### Changed
+- **Plugin name**: Renamed from "sandbox-maxxing" to "sandboxxer"
+  - Updated plugin.json and marketplace.json with new plugin name
+  - Repository and marketplace name remain "sandbox-maxxing"
+  - Updated documentation to clarify naming convention
+  - Commands and skills continue to use "sandbox" shorthand
+
 ## [2.2.1] - 2025-12-16
 
 ### Fixed
@@ -46,7 +55,7 @@ All notable changes to this project will be documented in this file.
   - Updated skill references to show correct directory structure
 - **Terminology inconsistencies** (4 occurrences):
   - Fixed "tier" → "mode" in templates/legacy/README.md (3 occurrences)
-  - Standardized plugin naming: "sandbox-maxxing" (official) vs "sandbox" (shorthand)
+  - Standardized plugin naming: "sandboxxer" (plugin name), "sandbox-maxxing" (repository/marketplace), "sandbox" (shorthand)
 
 ### Changed
 - **Documentation completeness**: Improved from 91% to 100%

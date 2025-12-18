@@ -594,7 +594,7 @@ And update firewall for AI provider APIs.
 
 - Review [security.md](security.md) to understand the security model
 - Check [troubleshooting.md](troubleshooting.md) for common issues
-- Browse [examples/](../../../../examples/) for complete configuration examples
+- Browse [examples/](../../../examples/) for complete configuration examples
 
 ---
 

@@ -394,13 +394,15 @@ This plugin uses consistent naming across different contexts:
 
 | Context | Name | Example |
 |---------|------|---------|
+| Plugin name | sandboxxer | Plugin installation and management |
 | GitHub repository | sandbox-maxxing | github.com/andrewcchoi/sandbox-maxxing |
 | Slash commands | /sandbox:* | /sandbox:basic, /sandbox:yolo |
 | Skills | sandbox-* | sandbox-setup-basic |
 | User-facing title | Claude Code Sandbox Plugin | In documentation headers |
 
 **Why different names?**
-- **sandbox-maxxing**: Official repository name (reflects Windows WSL 2 compatibility)
+- **sandboxxer**: Official plugin name used for installation and management
+- **sandbox-maxxing**: Repository and marketplace name (reflects Windows WSL 2 compatibility)
 - **sandbox**: Shorthand used in commands and skills for brevity
 - **Claude Code Sandbox Plugin**: Full descriptive name for user-facing documentation
 

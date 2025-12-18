@@ -614,7 +614,7 @@ docker compose up -d
 
 ## Still having issues?
 
-1. Check the [examples](../../../../examples/) for working configurations
+1. Check the [examples](../../../examples/) for working configurations
 2. Review [customization.md](customization.md) for configuration tips
 3. Check [security.md](security.md) for firewall behavior
 4. Search existing GitHub issues

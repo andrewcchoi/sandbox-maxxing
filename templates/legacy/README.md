@@ -58,7 +58,7 @@ They may be removed in a future major version (3.0+).
 
 See:
 - [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) - New template system
-- [MODES.md](../../docs/MODES.md) - Four-mode comparison
+- [MODES.md](../../docs/features/MODES.md) - Four-mode comparison
 - [CHANGELOG.md](../../CHANGELOG.md) - Version history
 
 ---
