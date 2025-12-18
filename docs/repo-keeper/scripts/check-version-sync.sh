@@ -16,12 +16,16 @@ fi
 # Source dependency checking library
 source "$SCRIPT_DIR/lib/check-dependencies.sh"
 
+# Source exclusions library
+source "$SCRIPT_DIR/lib/exclusions.sh"
+
 # Check required dependencies
 check_node
 
 VERBOSE=false
 QUIET=false
 LOG_FILE=""
+NO_IGNORE=false
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -29,10 +33,16 @@ while [[ "$#" -gt 0 ]]; do
         -v|--verbose) VERBOSE=true ;;
         -q|--quiet) QUIET=true ;;
         --log) LOG_FILE="$2"; shift ;;
+        --no-ignore) NO_IGNORE=true ;;
         *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+# Set environment variable for exclusions library
+if [ "$NO_IGNORE" = true ]; then
+    export REPOKEEPER_NO_IGNORE=true
+fi
 
 if [ -n "$LOG_FILE" ]; then
     exec > >(tee -a "$LOG_FILE") 2>&1
@@ -149,11 +159,10 @@ while IFS= read -r -d '' file; do
             echo -e "  ${GRAY}[NO FOOTER] $RELATIVE_PATH${NC}"
         fi
     fi
-done < <(find "$REPO_ROOT" -name "*.md" -type f \
-    ! -path "*/node_modules/*" \
-    ! -path "*/.git/*" \
-    ! -name "CHANGELOG.md" \
-    -print0)
+done < <(
+    EXCLUSION_ARGS=$(get_find_exclusions)
+    eval "find \"$REPO_ROOT\" $EXCLUSION_ARGS -name \"*.md\" -type f ! -name \"CHANGELOG.md\" -print0"
+)
 
 # Check data files with version fields
 if [ "$QUIET" = false ]; then

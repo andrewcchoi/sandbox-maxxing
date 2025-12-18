@@ -4,7 +4,8 @@
 param(
     [switch]$Verbose,
     [switch]$Quiet,
-    [string]$Log
+    [string]$Log,
+    [switch]$NoIgnore
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,6 +22,14 @@ $repoRoot = (Get-Item "$scriptPath\..\..\..").FullName
 # Or allow override via environment variable
 if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
+}
+
+# Import exclusions module
+. "$scriptPath\lib\exclusions.ps1"
+
+# Set NoIgnore flag if requested
+if ($NoIgnore) {
+    Set-NoIgnore -Value $true
 }
 
 if (-not $Quiet) {
@@ -90,12 +99,11 @@ if (-not $Quiet) {
     Write-Host "Checking documentation footers..." -ForegroundColor Cyan
 }
 
-# Find all markdown files
+# Find all markdown files (with exclusions)
 $mdFiles = Get-ChildItem -Path $repoRoot -Filter "*.md" -Recurse | Where-Object {
-    # Exclude node_modules and .git
-    $_.FullName -notmatch "node_modules" -and
-    $_.FullName -notmatch "\.git" -and
-    $_.FullName -notmatch "CHANGELOG\.md"  # CHANGELOG doesn't need footer
+    # Exclude CHANGELOG and use exclusions
+    $_.FullName -notmatch "CHANGELOG\.md" -and
+    -not (Test-PathExcluded -Path $_.FullName)
 }
 
 foreach ($file in $mdFiles) {

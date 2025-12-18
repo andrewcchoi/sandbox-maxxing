@@ -4,7 +4,8 @@
 param(
     [switch]$Verbose,
     [switch]$Quiet,
-    [string]$Log
+    [string]$Log,
+    [switch]$NoIgnore
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,6 +16,15 @@ if ($Log) {
 }
 
 $repoRoot = "/workspace"
+
+# Import exclusions module
+$scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+. "$scriptPath\lib\exclusions.ps1"
+
+# Set NoIgnore flag if requested
+if ($NoIgnore) {
+    Set-NoIgnore -Value $true
+}
 
 if (-not $Quiet) {
     Write-Host "=== Relationship Validator ===" -ForegroundColor Cyan
@@ -43,7 +53,13 @@ foreach ($skill in $inventory.skills) {
 
     # Check skill file exists
     $skillPath = Join-Path $repoRoot $skill.path
-    if (-not (Test-Path $skillPath)) {
+
+    # Skip excluded files
+    if (Test-PathExcluded -Path $skillPath) {
+        if ($Verbose) {
+            Write-Host "  [EXCLUDED] $($skill.name): $($skill.path)" -ForegroundColor Gray
+        }
+    } elseif (-not (Test-Path $skillPath)) {
         Write-Host "  [ERROR] $($skill.name): Skill file not found: $($skill.path)" -ForegroundColor Red
         Write-Host "    How to fix: Create skill file at $($skill.path) or update path in INVENTORY.json" -ForegroundColor Yellow
         $errorCount++
@@ -57,7 +73,12 @@ foreach ($skill in $inventory.skills) {
             $totalChecks++
             $templatePath = Join-Path $repoRoot $template
 
-            if (-not (Test-Path $templatePath)) {
+            # Skip excluded files
+            if (Test-PathExcluded -Path $templatePath) {
+                if ($Verbose) {
+                    Write-Host "  [EXCLUDED] $($skill.name) → $template" -ForegroundColor Gray
+                }
+            } elseif (-not (Test-Path $templatePath)) {
                 Write-Host "  [ERROR] $($skill.name) → $template (NOT FOUND)" -ForegroundColor Red
                 Write-Host "    How to fix: Create template file at $template or remove from related_templates in INVENTORY.json" -ForegroundColor Yellow
                 $errorCount++
@@ -83,7 +104,12 @@ foreach ($skill in $inventory.skills) {
         $totalChecks++
         $commandPath = Join-Path $repoRoot $skill.related_command
 
-        if (-not (Test-Path $commandPath)) {
+        # Skip excluded files
+        if (Test-PathExcluded -Path $commandPath) {
+            if ($Verbose) {
+                Write-Host "  [EXCLUDED] $($skill.name) → $($skill.related_command)" -ForegroundColor Gray
+            }
+        } elseif (-not (Test-Path $commandPath)) {
             Write-Host "  [ERROR] $($skill.name) → $($skill.related_command) (NOT FOUND)" -ForegroundColor Red
             Write-Host "    How to fix: Create command file at $($skill.related_command) or update related_command in INVENTORY.json" -ForegroundColor Yellow
             $errorCount++
@@ -141,7 +167,12 @@ foreach ($skill in $inventory.skills) {
         $totalChecks++
         $examplePath = Join-Path $repoRoot $skill.related_example
 
-        if (-not (Test-Path $examplePath)) {
+        # Skip excluded files
+        if (Test-PathExcluded -Path $examplePath) {
+            if ($Verbose) {
+                Write-Host "  [EXCLUDED] $($skill.name) → $($skill.related_example)" -ForegroundColor Gray
+            }
+        } elseif (-not (Test-Path $examplePath)) {
             Write-Host "  [ERROR] $($skill.name) → $($skill.related_example) (NOT FOUND)" -ForegroundColor Red
             Write-Host "    How to fix: Create example at $($skill.related_example) or update related_example in INVENTORY.json" -ForegroundColor Yellow
             $errorCount++

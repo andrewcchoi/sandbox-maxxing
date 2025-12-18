@@ -14,6 +14,9 @@ fi
 # Source dependency checking library
 source "$SCRIPT_DIR/lib/check-dependencies.sh"
 
+# Source exclusions library
+source "$SCRIPT_DIR/lib/exclusions.sh"
+
 # Check required dependencies
 check_node
 
@@ -21,6 +24,7 @@ VERBOSE=false
 FIND_ORPHANS=false
 QUIET=false
 LOG_FILE=""
+NO_IGNORE=false
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -29,10 +33,16 @@ while [[ "$#" -gt 0 ]]; do
         --find-orphans) FIND_ORPHANS=true ;;
         -q|--quiet) QUIET=true ;;
         --log) LOG_FILE="$2"; shift ;;
+        --no-ignore) NO_IGNORE=true ;;
         *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+# Set environment variable for exclusions library
+if [ "$NO_IGNORE" = true ]; then
+    export REPOKEEPER_NO_IGNORE=true
+fi
 
 if [ -n "$LOG_FILE" ]; then
     exec > >(tee -a "$LOG_FILE") 2>&1
@@ -88,7 +98,17 @@ validate_path() {
 
     ((TOTAL_PATHS++))
 
-    if [ -e "$REPO_ROOT/$path" ]; then
+    # Check if path should be excluded
+    local full_path="$REPO_ROOT/$path"
+    if should_exclude "$full_path"; then
+        if [ "$VERBOSE" = true ]; then
+            echo -e "  ${GRAY}[EXCLUDED] $path${NC}"
+        fi
+        ((VALID_PATHS++))  # Count excluded paths as valid
+        return 0
+    fi
+
+    if [ -e "$full_path" ]; then
         ((VALID_PATHS++))
         if [ "$VERBOSE" = true ]; then
             echo -e "  ${GRAY}[OK] $path${NC}"

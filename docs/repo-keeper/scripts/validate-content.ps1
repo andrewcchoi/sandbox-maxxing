@@ -5,7 +5,8 @@ param(
     [switch]$Verbose,
     [switch]$CheckExternal,
     [switch]$Quiet,
-    [string]$Log
+    [string]$Log,
+    [switch]$NoIgnore
 )
 
 $ErrorActionPreference = "Stop"
@@ -16,6 +17,15 @@ if ($Log) {
 }
 
 $repoRoot = "/workspace"
+
+# Import exclusions module
+$scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+. "$scriptPath\lib\exclusions.ps1"
+
+# Set NoIgnore flag if requested
+if ($NoIgnore) {
+    Set-NoIgnore -Value $true
+}
 
 if (-not $Quiet) {
     Write-Host "=== Content Validator ===" -ForegroundColor Cyan
@@ -29,7 +39,8 @@ if (-not $Quiet) {
     Write-Host "Checking required sections in SKILL.md files..." -ForegroundColor Cyan
 }
 
-$skillFiles = Get-ChildItem -Path (Join-Path $repoRoot "skills") -Filter "SKILL.md" -Recurse -File -ErrorAction SilentlyContinue
+$skillFiles = Get-ChildItem -Path (Join-Path $repoRoot "skills") -Filter "SKILL.md" -Recurse -File -ErrorAction SilentlyContinue |
+    Where-Object { -not (Test-PathExcluded -Path $_.FullName) }
 
 foreach ($skillFile in $skillFiles) {
     $skillName = Split-Path -Leaf (Split-Path -Parent $skillFile.FullName)
@@ -62,7 +73,10 @@ if (-not $Quiet) {
 }
 
 $modeFiles = Get-ChildItem -Path $repoRoot -Include @("*basic*", "*intermediate*", "*advanced*", "*yolo*") -Recurse -File -ErrorAction SilentlyContinue |
-    Where-Object { $_.Extension -eq ".md" -or $_.Name -eq "SKILL.md" }
+    Where-Object {
+        ($_.Extension -eq ".md" -or $_.Name -eq "SKILL.md") -and
+        -not (Test-PathExcluded -Path $_.FullName)
+    }
 
 $modeConsistent = 0
 $modeChecked = 0
@@ -107,7 +121,7 @@ if (-not $Quiet) {
 }
 
 $mdFiles = Get-ChildItem -Path $repoRoot -Filter "*.md" -Recurse -File -ErrorAction SilentlyContinue |
-    Where-Object { $_.FullName -notmatch 'node_modules' -and $_.FullName -notmatch '\.git' } |
+    Where-Object { -not (Test-PathExcluded -Path $_.FullName) } |
     Select-Object -First 50
 
 $brokenSequences = 0
@@ -157,7 +171,7 @@ if ($CheckExternal) {
     # Extract all external links from markdown files
     $externalLinks = @()
     $mdAllFiles = Get-ChildItem -Path $repoRoot -Filter "*.md" -Recurse -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.FullName -notmatch 'node_modules' -and $_.FullName -notmatch '\.git' } |
+        Where-Object { -not (Test-PathExcluded -Path $_.FullName) } |
         Select-Object -First 20
 
     foreach ($mdFile in $mdAllFiles) {

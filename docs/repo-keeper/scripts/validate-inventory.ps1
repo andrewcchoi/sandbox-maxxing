@@ -5,7 +5,8 @@ param(
     [switch]$Verbose,
     [switch]$FindOrphans,
     [switch]$Quiet,
-    [string]$Log
+    [string]$Log,
+    [switch]$NoIgnore
 )
 
 $ErrorActionPreference = "Stop"
@@ -22,6 +23,14 @@ $repoRoot = (Get-Item "$scriptPath\..\..\..").FullName
 # Or allow override via environment variable
 if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
+}
+
+# Import exclusions module
+. "$scriptPath\lib\exclusions.ps1"
+
+# Set NoIgnore flag if requested
+if ($NoIgnore) {
+    Set-NoIgnore -Value $true
 }
 
 if (-not $Quiet) {
@@ -59,6 +68,15 @@ function Test-InventoryPath {
 
     $script:totalPaths++
     $fullPath = Join-Path $repoRoot $Path
+
+    # Check if path should be excluded
+    if (Test-PathExcluded -Path $fullPath) {
+        if ($Verbose) {
+            Write-Host "  [EXCLUDED] $Path" -ForegroundColor Gray
+        }
+        $script:validPaths++  # Count excluded paths as valid
+        return $true
+    }
 
     if (Test-Path $fullPath) {
         $script:validPaths++

@@ -16,6 +16,9 @@ fi
 # Source dependency checking library
 source "$SCRIPT_DIR/lib/check-dependencies.sh"
 
+# Source exclusions library
+source "$SCRIPT_DIR/lib/exclusions.sh"
+
 # Check required dependencies
 check_node
 
@@ -23,6 +26,7 @@ VERBOSE=false
 CHECK_EXTERNAL=false
 QUIET=false
 LOG_FILE=""
+NO_IGNORE=false
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -31,10 +35,16 @@ while [[ "$#" -gt 0 ]]; do
         --check-external) CHECK_EXTERNAL=true ;;
         -q|--quiet) QUIET=true ;;
         --log) LOG_FILE="$2"; shift ;;
+        --no-ignore) NO_IGNORE=true ;;
         *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+# Set environment variable for exclusions library
+if [ "$NO_IGNORE" = true ]; then
+    export REPOKEEPER_NO_IGNORE=true
+fi
 
 if [ -n "$LOG_FILE" ]; then
     exec > >(tee -a "$LOG_FILE") 2>&1
@@ -69,7 +79,10 @@ while IFS= read -r -d '' file; do
         ((BOM_COUNT++))
         ((WARNING_COUNT++))
     fi
-done < <(find "$REPO_ROOT" \( -name "*.md" -o -name "*.json" -o -name "*.sh" \) ! -path "*/node_modules/*" ! -path "*/.git/*" -print0 2>/dev/null)
+done < <(
+    EXCLUSION_ARGS=$(get_find_exclusions)
+    eval "find \"$REPO_ROOT\" $EXCLUSION_ARGS \\( -name \"*.md\" -o -name \"*.json\" -o -name \"*.sh\" \\) -print0 2>/dev/null"
+)
 
 if [ "$QUIET" = false ]; then
     if [ $BOM_COUNT -eq 0 ]; then
@@ -86,6 +99,11 @@ fi
 
 SKILL_FILES=$(find "$REPO_ROOT/skills" -name "SKILL.md" -type f 2>/dev/null)
 for skill_file in $SKILL_FILES; do
+    # Skip excluded files
+    if should_exclude "$skill_file"; then
+        continue
+    fi
+
     SKILL_NAME=$(basename $(dirname "$skill_file"))
 
     # Check for required sections
@@ -130,7 +148,8 @@ if [ "$QUIET" = false ]; then
     echo -e "${CYAN}Checking mode consistency...${NC}"
 fi
 
-MODE_FILES=$(find "$REPO_ROOT" -type f \( -name "*basic*" -o -name "*intermediate*" -o -name "*advanced*" -o -name "*yolo*" \) \( -name "*.md" -o -name "SKILL.md" \) 2>/dev/null)
+EXCLUSION_ARGS=$(get_find_exclusions)
+MODE_FILES=$(eval "find \"$REPO_ROOT\" $EXCLUSION_ARGS -type f \\( -name \"*basic*\" -o -name \"*intermediate*\" -o -name \"*advanced*\" -o -name \"*yolo*\" \\) \\( -name \"*.md\" -o -name \"SKILL.md\" \\) 2>/dev/null")
 
 MODE_CONSISTENT=0
 MODE_CHECKED=0
@@ -169,7 +188,8 @@ if [ "$QUIET" = false ]; then
     echo -e "${CYAN}Checking step sequences...${NC}"
 fi
 
-MD_FILES=$(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null | head -50)
+EXCLUSION_ARGS=$(get_find_exclusions)
+MD_FILES=$(eval "find \"$REPO_ROOT\" $EXCLUSION_ARGS -name \"*.md\" -type f 2>/dev/null" | head -50)
 
 BROKEN_SEQUENCES=0
 for md_file in $MD_FILES; do
@@ -206,7 +226,8 @@ fi
 VALID_LANGS="bash|sh|shell|python|py|javascript|js|typescript|ts|json|yaml|yml|markdown|md|html|css|dockerfile|sql|go|rust|java|c|cpp|ruby|php|perl|powershell|ps1|text|txt|plaintext"
 
 INVALID_CODE_BLOCKS=0
-MD_FILES_SUBSET=$(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null | head -100)
+EXCLUSION_ARGS=$(get_find_exclusions)
+MD_FILES_SUBSET=$(eval "find \"$REPO_ROOT\" $EXCLUSION_ARGS -name \"*.md\" -type f 2>/dev/null" | head -100)
 
 for md_file in $MD_FILES_SUBSET; do
     RELATIVE_PATH="${md_file#$REPO_ROOT/}"
@@ -240,7 +261,8 @@ if [ "$QUIET" = false ]; then
 fi
 
 INVALID_FRONTMATTER=0
-MD_FILES_WITH_FM=$(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null | head -100)
+EXCLUSION_ARGS=$(get_find_exclusions)
+MD_FILES_WITH_FM=$(eval "find \"$REPO_ROOT\" $EXCLUSION_ARGS -name \"*.md\" -type f 2>/dev/null" | head -100)
 
 for md_file in $MD_FILES_WITH_FM; do
     RELATIVE_PATH="${md_file#$REPO_ROOT/}"

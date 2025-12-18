@@ -8,6 +8,7 @@ param(
     [switch]$FixCrlf,
     [switch]$Quiet,
     [switch]$FailFast,
+    [switch]$NoIgnore,
     [string]$Log
 )
 
@@ -19,6 +20,11 @@ if ($Log) {
 }
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = "/workspace"
+
+# Set environment variable for exclusions
+if ($NoIgnore) {
+    $env:REPOKEEPER_NO_IGNORE = "true"
+}
 
 # Determine tier
 $tier = "standard"

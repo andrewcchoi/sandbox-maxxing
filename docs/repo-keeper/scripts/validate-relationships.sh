@@ -16,12 +16,16 @@ fi
 # Source dependency checking library
 source "$SCRIPT_DIR/lib/check-dependencies.sh"
 
+# Source exclusions library
+source "$SCRIPT_DIR/lib/exclusions.sh"
+
 # Check required dependencies
 check_node
 
 VERBOSE=false
 QUIET=false
 LOG_FILE=""
+NO_IGNORE=false
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -29,10 +33,16 @@ while [[ "$#" -gt 0 ]]; do
         -v|--verbose) VERBOSE=true ;;
         -q|--quiet) QUIET=true ;;
         --log) LOG_FILE="$2"; shift ;;
+        --no-ignore) NO_IGNORE=true ;;
         *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+# Set environment variable for exclusions library
+if [ "$NO_IGNORE" = true ]; then
+    export REPOKEEPER_NO_IGNORE=true
+fi
 
 if [ -n "$LOG_FILE" ]; then
     exec > >(tee -a "$LOG_FILE") 2>&1
@@ -72,7 +82,14 @@ for ((i=0; i<SKILL_COUNT; i++)); do
 
     # Check skill file exists
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
-    if [ ! -f "$REPO_ROOT/$SKILL_PATH" ]; then
+    FULL_SKILL_PATH="$REPO_ROOT/$SKILL_PATH"
+
+    # Skip excluded files
+    if should_exclude "$FULL_SKILL_PATH"; then
+        if [ "$VERBOSE" = true ]; then
+            echo -e "  ${GRAY}[EXCLUDED] $SKILL_NAME: $SKILL_PATH${NC}"
+        fi
+    elif [ ! -f "$FULL_SKILL_PATH" ]; then
         echo -e "  ${RED}[ERROR] $SKILL_NAME: Skill file not found: $SKILL_PATH${NC}"
         echo -e "    ${YELLOW}How to fix: Create skill file at $SKILL_PATH or update path in INVENTORY.json${NC}"
         ERROR_COUNT=$((ERROR_COUNT + 1))
@@ -86,8 +103,14 @@ for ((i=0; i<SKILL_COUNT; i++)); do
         for ((j=0; j<TEMPLATE_COUNT; j++)); do
             TEMPLATE_PATH=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log(d.skills[$i]?.related_templates?.[$j] || '')")
             TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+            FULL_TEMPLATE_PATH="$REPO_ROOT/$TEMPLATE_PATH"
 
-            if [ ! -f "$REPO_ROOT/$TEMPLATE_PATH" ]; then
+            # Skip excluded files
+            if should_exclude "$FULL_TEMPLATE_PATH"; then
+                if [ "$VERBOSE" = true ]; then
+                    echo -e "  ${GRAY}[EXCLUDED] $SKILL_NAME → $TEMPLATE_PATH${NC}"
+                fi
+            elif [ ! -f "$FULL_TEMPLATE_PATH" ]; then
                 echo -e "  ${RED}[ERROR] $SKILL_NAME → $TEMPLATE_PATH (NOT FOUND)${NC}"
                 echo -e "    ${YELLOW}How to fix: Create template file at $TEMPLATE_PATH or remove from related_templates in INVENTORY.json${NC}"
                 ERROR_COUNT=$((ERROR_COUNT + 1))

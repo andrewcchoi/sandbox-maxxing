@@ -25,6 +25,7 @@ VERBOSE=false
 FIX_CRLF=false
 QUIET=false
 FAIL_FAST=false
+NO_IGNORE=false
 LOG_FILE=""
 
 # Colors
@@ -44,11 +45,17 @@ while [[ "$#" -gt 0 ]]; do
         --fix-crlf) FIX_CRLF=true ;;
         -q|--quiet) QUIET=true ;;
         -f|--fail-fast) FAIL_FAST=true ;;
+        --no-ignore) NO_IGNORE=true ;;
         --log) LOG_FILE="$2"; shift ;;
-        *) echo "Unknown parameter: $1"; echo "Usage: $0 [--quick|--full] [-v|--verbose] [--fix-crlf] [-q|--quiet] [-f|--fail-fast] [--log FILE]"; exit 128 ;;
+        *) echo "Unknown parameter: $1"; echo "Usage: $0 [--quick|--full] [-v|--verbose] [--fix-crlf] [-q|--quiet] [-f|--fail-fast] [--no-ignore] [--log FILE]"; exit 128 ;;
     esac
     shift
 done
+
+# Set environment variable for exclusions
+if [ "$NO_IGNORE" = true ]; then
+    export REPOKEEPER_NO_IGNORE=true
+fi
 
 if [ -n "$LOG_FILE" ]; then
     exec > >(tee -a "$LOG_FILE") 2>&1

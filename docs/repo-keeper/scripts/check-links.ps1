@@ -5,7 +5,8 @@ param(
     [switch]$Verbose,
     [switch]$SkipExternal,
     [switch]$Quiet,
-    [string]$Log
+    [string]$Log,
+    [switch]$NoIgnore
 )
 
 $ErrorActionPreference = "Stop"
@@ -24,6 +25,14 @@ if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
 }
 
+# Import exclusions module
+. "$scriptPath\lib\exclusions.ps1"
+
+# Set NoIgnore flag if requested
+if ($NoIgnore) {
+    Set-NoIgnore -Value $true
+}
+
 if (-not $Quiet) {
     Write-Host "=== Repository Link Checker ===" -ForegroundColor Cyan
     Write-Host ""
@@ -36,10 +45,9 @@ $externalLinks = 0
 $validLinks = 0
 $errors = @()
 
-# Find all markdown files
+# Find all markdown files (with exclusions)
 $mdFiles = Get-ChildItem -Path $repoRoot -Filter "*.md" -Recurse | Where-Object {
-    $_.FullName -notmatch "node_modules" -and
-    $_.FullName -notmatch "\.git"
+    -not (Test-PathExcluded -Path $_.FullName)
 }
 
 if (-not $Quiet) {

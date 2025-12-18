@@ -16,6 +16,9 @@ fi
 # Source dependency checking library
 source "$SCRIPT_DIR/lib/check-dependencies.sh"
 
+# Source exclusions library
+source "$SCRIPT_DIR/lib/exclusions.sh"
+
 # Check required dependencies
 check_node
 
@@ -23,6 +26,7 @@ VERBOSE=false
 SKIP_EXTERNAL=true
 QUIET=false
 LOG_FILE=""
+NO_IGNORE=false
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -31,10 +35,16 @@ while [[ "$#" -gt 0 ]]; do
         --check-external) SKIP_EXTERNAL=false ;;
         -q|--quiet) QUIET=true ;;
         --log) LOG_FILE="$2"; shift ;;
+        --no-ignore) NO_IGNORE=true ;;
         *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+# Set environment variable for exclusions library
+if [ "$NO_IGNORE" = true ]; then
+    export REPOKEEPER_NO_IGNORE=true
+fi
 
 if [ -n "$LOG_FILE" ]; then
     exec > >(tee -a "$LOG_FILE") 2>&1
@@ -60,8 +70,9 @@ ANCHOR_ERROR_FILE=$(mktemp)
 IMAGE_ERROR_FILE=$(mktemp)
 trap "rm -f $ERROR_FILE $LINKS_FILE $ANCHOR_ERROR_FILE $IMAGE_ERROR_FILE" EXIT
 
-# Find all markdown files
-mapfile -t MD_FILES < <(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null)
+# Find all markdown files (with exclusions)
+EXCLUSION_ARGS=$(get_find_exclusions)
+eval "mapfile -t MD_FILES < <(find \"$REPO_ROOT\" $EXCLUSION_ARGS -name \"*.md\" -type f 2>/dev/null)"
 
 FILE_COUNT=${#MD_FILES[@]}
 if [ "$QUIET" = false ]; then
