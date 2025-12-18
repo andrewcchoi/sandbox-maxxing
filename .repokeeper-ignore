@@ -1,0 +1,25 @@
+# Repo-Keeper Validation Exclusions
+# Syntax: gitignore-style patterns (glob patterns, comments with #)
+
+# Archive and legacy documentation
+docs/archive/
+docs/audits/
+
+# Test directories
+test-*/
+tests/results/
+
+# Build artifacts
+.venv/
+__pycache__/
+*.pyc
+bin/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Already excluded by validation scripts (listed for completeness)
+node_modules/
+.git/

@@ -1,0 +1,824 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Repository Inventory",
+  "description": "Complete inventory schema for repository structure, templates, and metadata",
+  "type": "object",
+  "required": ["version", "last_updated", "repository", "description", "skills", "commands", "templates", "examples", "data_files", "documentation", "devcontainers", "dependencies", "test_files", "known_issues", "statistics"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Reference to this schema file"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version matching plugin.json"
+    },
+    "last_updated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "ISO date format YYYY-MM-DD"
+    },
+    "repository": {
+      "type": "string",
+      "description": "Repository name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Repository description"
+    },
+    "skills": {
+      "type": "array",
+      "description": "Plugin skills with metadata and relationships",
+      "items": {
+        "type": "object",
+        "required": ["name", "path", "version", "last_updated", "mode"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Skill name"
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to SKILL.md file"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Semantic version"
+          },
+          "last_updated": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "ISO date format YYYY-MM-DD"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["basic", "intermediate", "advanced", "yolo", "utility"],
+            "description": "Skill mode category"
+          },
+          "related_command": {
+            "type": ["string", "null"],
+            "description": "Associated command path"
+          },
+          "related_example": {
+            "type": ["string", "null"],
+            "description": "Associated example directory"
+          },
+          "related_templates": {
+            "type": "array",
+            "description": "List of template files used by this skill",
+            "items": {
+              "type": "string"
+            }
+          },
+          "references": {
+            "type": "array",
+            "description": "Additional reference documentation",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "description": "Slash commands with metadata",
+      "items": {
+        "type": "object",
+        "required": ["name", "path", "version", "last_updated", "invokes_skill", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Command name"
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to command file"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Semantic version"
+          },
+          "last_updated": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "ISO date format YYYY-MM-DD"
+          },
+          "invokes_skill": {
+            "type": "string",
+            "description": "Skill name or 'interactive'"
+          },
+          "description": {
+            "type": "string",
+            "description": "Command description"
+          }
+        }
+      }
+    },
+    "templates": {
+      "type": "object",
+      "description": "All template files organized by category",
+      "required": ["master", "dockerfiles", "compose", "firewall", "extensions", "mcp", "variables", "env"],
+      "additionalProperties": false,
+      "properties": {
+        "master": {
+          "type": "array",
+          "description": "Master templates with all options",
+          "items": {
+            "type": "object",
+            "required": ["name", "path", "type", "last_updated", "description"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "const": "master"
+              },
+              "last_updated": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "sections": {
+                "type": "integer",
+                "description": "Number of sections in template"
+              },
+              "domain_categories": {
+                "type": "integer",
+                "description": "Number of domain categories (for firewall)"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "dockerfiles": {
+          "type": "array",
+          "description": "Language and service-specific Dockerfiles",
+          "items": {
+            "type": "object",
+            "required": ["name", "path"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "language": {
+                "type": "string",
+                "description": "Programming language"
+              },
+              "service": {
+                "type": "string",
+                "description": "Service name (e.g., postgres, redis)"
+              }
+            }
+          }
+        },
+        "compose": {
+          "type": "array",
+          "description": "Docker Compose files by mode",
+          "items": {
+            "type": "object",
+            "required": ["name", "path", "mode"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "mode": {
+                "type": "string",
+                "enum": ["basic", "intermediate", "advanced", "yolo"]
+              }
+            }
+          }
+        },
+        "firewall": {
+          "type": "array",
+          "description": "Firewall scripts by mode",
+          "items": {
+            "type": "object",
+            "required": ["name", "path", "mode", "policy"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "mode": {
+                "type": "string",
+                "enum": ["basic", "intermediate", "advanced", "yolo"]
+              },
+              "policy": {
+                "type": "string",
+                "enum": ["none", "permissive", "strict", "configurable"]
+              }
+            }
+          }
+        },
+        "extensions": {
+          "type": "array",
+          "description": "VS Code extension configs by mode",
+          "items": {
+            "type": "object",
+            "required": ["name", "path", "mode", "count"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "mode": {
+                "type": "string",
+                "enum": ["basic", "intermediate", "advanced", "yolo"]
+              },
+              "count": {
+                "type": "string",
+                "description": "Extension count range"
+              }
+            }
+          }
+        },
+        "mcp": {
+          "type": "array",
+          "description": "MCP server configs by mode",
+          "items": {
+            "type": "object",
+            "required": ["name", "path", "mode"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "mode": {
+                "type": "string",
+                "enum": ["basic", "intermediate", "advanced", "yolo"]
+              }
+            }
+          }
+        },
+        "variables": {
+          "type": "array",
+          "description": "Variable configs by mode",
+          "items": {
+            "type": "object",
+            "required": ["name", "path", "mode"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "mode": {
+                "type": "string",
+                "enum": ["basic", "intermediate", "advanced", "yolo"]
+              }
+            }
+          }
+        },
+        "env": {
+          "type": "array",
+          "description": "Environment variable templates by mode",
+          "items": {
+            "type": "object",
+            "required": ["name", "path", "mode"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "mode": {
+                "type": "string",
+                "enum": ["basic", "intermediate", "advanced", "yolo"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "examples": {
+      "type": "array",
+      "description": "Example applications and demos",
+      "items": {
+        "type": "object",
+        "required": ["name", "path", "mode", "has_tests", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["basic", "intermediate", "advanced", "yolo", "shared"]
+          },
+          "devcontainer_path": {
+            "type": ["string", "null"],
+            "description": "Path to .devcontainer directory"
+          },
+          "dockerfile_path": {
+            "type": ["string", "null"],
+            "description": "Path to Dockerfile"
+          },
+          "compose_path": {
+            "type": ["string", "null"],
+            "description": "Path to docker-compose.yml"
+          },
+          "has_tests": {
+            "type": "boolean"
+          },
+          "test_types": {
+            "type": "array",
+            "description": "Testing frameworks used",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "data_files": {
+      "type": "array",
+      "description": "Data files with metadata and relationships",
+      "items": {
+        "type": "object",
+        "required": ["name", "path", "size_kb", "referenced_by", "update_frequency", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "version": {
+            "type": ["string", "null"],
+            "pattern": "^(\\d+\\.\\d+\\.\\d+)?$"
+          },
+          "version_status": {
+            "type": "string",
+            "description": "Version status notes"
+          },
+          "size_kb": {
+            "type": "integer",
+            "description": "File size in kilobytes"
+          },
+          "referenced_by": {
+            "type": "array",
+            "description": "Files or components that reference this data",
+            "items": {
+              "type": "string"
+            }
+          },
+          "update_frequency": {
+            "type": "string",
+            "description": "How often this file should be updated"
+          },
+          "status": {
+            "type": "string",
+            "description": "File status notes"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "documentation": {
+      "type": "object",
+      "description": "Documentation files organized by location",
+      "required": ["root", "docs", "commands", "skills", "templates", "examples", "data", "tests", "repo-keeper"],
+      "additionalProperties": false,
+      "properties": {
+        "root": {
+          "type": "array",
+          "description": "Root-level documentation",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "category": {
+                "type": "string"
+              },
+              "missing_footer": {
+                "type": "boolean",
+                "description": "Explicitly marks missing footer"
+              }
+            }
+          }
+        },
+        "docs": {
+          "type": "array",
+          "description": "Documentation in docs/ directory",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "missing_footer": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "commands": {
+          "type": "array",
+          "description": "Command documentation files",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "missing_footer": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "skills": {
+          "type": "array",
+          "description": "Skill documentation files",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "missing_footer": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "templates": {
+          "type": "array",
+          "description": "Template documentation files",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "missing_footer": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "examples": {
+          "type": "array",
+          "description": "Example documentation files",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "missing_footer": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "data": {
+          "type": "array",
+          "description": "Data directory documentation",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "missing_footer": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "tests": {
+          "type": "array",
+          "description": "Test documentation files",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "missing_footer": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "repo-keeper": {
+          "type": "array",
+          "description": "Repo-keeper documentation files",
+          "items": {
+            "type": "object",
+            "required": ["path", "has_footer"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "has_footer": {
+                "type": "boolean"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              "missing_footer": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "devcontainers": {
+      "type": "array",
+      "description": "Devcontainer configurations",
+      "items": {
+        "type": "object",
+        "required": ["name", "path", "mode"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["basic", "intermediate", "advanced", "yolo"]
+          },
+          "dockerfile_path": {
+            "type": ["string", "null"]
+          },
+          "compose_path": {
+            "type": ["string", "null"]
+          },
+          "firewall_path": {
+            "type": ["string", "null"]
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of the devcontainer"
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "object",
+      "description": "Dependency files by language",
+      "required": ["python_requirements", "node_packages"],
+      "additionalProperties": false,
+      "properties": {
+        "python_requirements": {
+          "type": "array",
+          "description": "Python requirements.txt files",
+          "items": {
+            "type": "string"
+          }
+        },
+        "node_packages": {
+          "type": "array",
+          "description": "Node.js package.json files",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "test_files": {
+      "type": "object",
+      "description": "Test files and configurations",
+      "required": ["manual_tests", "jest_configs", "pytest_configs"],
+      "additionalProperties": false,
+      "properties": {
+        "manual_tests": {
+          "type": "array",
+          "description": "Manual test documentation",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jest_configs": {
+          "type": "array",
+          "description": "Jest configuration files",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pytest_configs": {
+          "type": "array",
+          "description": "Pytest configuration files",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "known_issues": {
+      "type": "object",
+      "description": "Known issues and inconsistencies",
+      "required": ["missing_footers", "broken_links", "outdated_versions", "undocumented_files", "naming_inconsistencies"],
+      "additionalProperties": false,
+      "properties": {
+        "missing_footers": {
+          "type": "integer",
+          "description": "Count of docs missing footers"
+        },
+        "broken_links": {
+          "type": "integer",
+          "description": "Count of broken links"
+        },
+        "outdated_versions": {
+          "type": "array",
+          "description": "Files with outdated version numbers",
+          "items": {
+            "type": "string"
+          }
+        },
+        "undocumented_files": {
+          "type": "array",
+          "description": "Files lacking documentation",
+          "items": {
+            "type": "string"
+          }
+        },
+        "naming_inconsistencies": {
+          "type": "array",
+          "description": "Naming inconsistencies found",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "description": "Repository statistics",
+      "required": [
+        "total_skills",
+        "total_commands",
+        "total_templates",
+        "total_examples",
+        "total_data_files",
+        "total_documentation_files",
+        "total_devcontainers",
+        "total_python_requirements",
+        "total_node_packages",
+        "documentation_with_footers",
+        "documentation_without_footers"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_skills": {
+          "type": "integer"
+        },
+        "total_commands": {
+          "type": "integer"
+        },
+        "total_templates": {
+          "type": "integer"
+        },
+        "total_examples": {
+          "type": "integer"
+        },
+        "total_data_files": {
+          "type": "integer"
+        },
+        "total_documentation_files": {
+          "type": "integer"
+        },
+        "total_devcontainers": {
+          "type": "integer"
+        },
+        "total_python_requirements": {
+          "type": "integer"
+        },
+        "total_node_packages": {
+          "type": "integer"
+        },
+        "documentation_with_footers": {
+          "type": "integer"
+        },
+        "documentation_without_footers": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

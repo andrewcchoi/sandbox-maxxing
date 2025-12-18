@@ -25,6 +25,19 @@ Do NOT use this skill when:
 - User is troubleshooting an existing sandbox (use `sandbox-troubleshoot` instead)
 - User wants to audit security of existing setup (use `sandbox-security` instead)
 
+## Usage
+
+**Via slash command:**
+```
+/sandbox:advanced
+```
+
+**Via natural language:**
+- "Set up advanced mode with firewall"
+- "I need a secure sandbox with strict network controls"
+- "Create a sandbox for production-like environment"
+- "Set up advanced sandbox with custom domain allowlist"
+
 ## Key Characteristics
 
 **Advanced Mode Configuration**:

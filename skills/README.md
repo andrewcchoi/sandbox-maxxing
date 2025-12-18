@@ -129,7 +129,7 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 
 **Location:** `skills/sandbox-troubleshoot/SKILL.md`
 
-See also: [Troubleshooting Guide](../docs/TROUBLESHOOTING.md)
+See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 
 ---
 
@@ -159,7 +159,7 @@ See also: [Troubleshooting Guide](../docs/TROUBLESHOOTING.md)
 
 **Location:** `skills/sandbox-security/SKILL.md`
 
-See also: [Security Model](../docs/security-model.md)
+See also: [Security Model](../docs/features/security-model.md)
 
 ---
 
@@ -318,14 +318,14 @@ Test skills with various scenarios:
 ## Related Documentation
 
 ### Core Documentation
-- [Modes Comparison](../docs/MODES.md) - Detailed mode comparison
-- [Security Model](../docs/security-model.md) - Security architecture
-- [Troubleshooting Guide](../docs/TROUBLESHOOTING.md) - Common issues and fixes
+- [Modes Comparison](../docs/features/MODES.md) - Detailed mode comparison
+- [Security Model](../docs/features/security-model.md) - Security architecture
+- [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md) - Common issues and fixes
 
 ### Configuration Guides
-- [Variables Guide](../docs/VARIABLES.md) - Environment variables and build args
-- [Secrets Management](../docs/SECRETS.md) - Credential handling
-- [MCP Configuration](../docs/MCP.md) - MCP server setup
+- [Variables Guide](../docs/features/VARIABLES.md) - Environment variables and build args
+- [Secrets Management](../docs/features/SECRETS.md) - Credential handling
+- [MCP Configuration](../docs/features/MCP.md) - MCP server setup
 
 ### Reference
 - [Development Guide](../DEVELOPMENT.md) - Plugin development

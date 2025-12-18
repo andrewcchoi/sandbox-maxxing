@@ -69,13 +69,13 @@ If the installation script cannot be downloaded or the Anthropic servers are unr
 2. Include it in your project or mount it as a volume
 3. Run the local script instead: `sh ./scripts/install-claude.sh`
 
-See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#claude-code-installation) for details.
+See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installation) for details.
 
-> **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues).
+> **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues).
 
 ## Four-Mode System
 
-See [MODES.md](docs/MODES.md) for comprehensive comparison guide.
+See [MODES.md](docs/features/MODES.md) for comprehensive comparison guide.
 
 ### Basic Mode - Zero Configuration
 
@@ -716,6 +716,16 @@ MIT License - See LICENSE file for details
 - **Issues**: https://github.com/andrewcchoi/sandbox-maxxing/issues
 - **Documentation**: See `skills/*/references/` directories
 - **Claude Code Docs**: https://claude.ai/code
+
+## Repository Maintenance
+
+For contributors and maintainers, see [`docs/repo-keeper/`](docs/repo-keeper/):
+
+- **Organization Checklist**: [`ORGANIZATION_CHECKLIST.md`](docs/repo-keeper/ORGANIZATION_CHECKLIST.md) - 18-category maintenance checklist
+- **Inventory**: [`INVENTORY.json`](docs/repo-keeper/INVENTORY.json) - Entity inventory for auditing
+- **Automation Scripts**: [`scripts/`](docs/repo-keeper/scripts/) - Version sync, link checking, inventory validation
+- **GitHub Workflows**: [`workflows/`](docs/repo-keeper/workflows/) - CI/CD templates for automated validation
+- **Issue/PR Templates**: [`templates/`](docs/repo-keeper/templates/) - Standardized templates for contributors
 
 ## Changelog
 

@@ -80,7 +80,7 @@ Each command loads and executes the corresponding skill with user-friendly promp
 - Network errors
 - Any sandbox-related problem
 
-See also: [Troubleshooting Guide](../docs/TROUBLESHOOTING.md)
+See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 
 ---
 
@@ -107,7 +107,7 @@ See also: [Troubleshooting Guide](../docs/TROUBLESHOOTING.md)
 - Learning security best practices
 - Hardening sandbox environment
 
-See also: [Security Model](../docs/security-model.md)
+See also: [Security Model](../docs/features/security-model.md)
 
 ---
 
@@ -335,13 +335,13 @@ Test commands with:
 
 ### Core Documentation
 - [Skills README](../skills/README.md) - Skill details and workflows
-- [Modes Guide](../docs/MODES.md) - Mode comparison and selection
-- [Troubleshooting](../docs/TROUBLESHOOTING.md) - Common issues
+- [Modes Guide](../docs/features/MODES.md) - Mode comparison and selection
+- [Troubleshooting](../docs/features/TROUBLESHOOTING.md) - Common issues
 
 ### Configuration
 - [DevContainer Setup](../DEVELOPMENT.md) - DevContainer configuration
-- [Variables Guide](../docs/VARIABLES.md) - Environment configuration
-- [Secrets Management](../docs/SECRETS.md) - Credential handling
+- [Variables Guide](../docs/features/VARIABLES.md) - Environment configuration
+- [Secrets Management](../docs/features/SECRETS.md) - Credential handling
 
 ### Examples
 - [Examples README](../examples/README.md) - Example projects

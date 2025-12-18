@@ -1,0 +1,590 @@
+{
+  "$schema": "./inventory.schema.json",
+  "version": "2.2.1",
+  "last_updated": "2025-12-16",
+  "repository": "sandbox-maxxing",
+  "description": "Repository entity inventory for auditing and organization",
+
+  "skills": [
+    {
+      "name": "sandbox-setup-basic",
+      "path": "skills/sandbox-setup-basic/SKILL.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "mode": "basic",
+      "related_command": "commands/basic.md",
+      "related_example": "examples/demo-app-sandbox-basic/",
+      "related_templates": [
+        "templates/compose/docker-compose.basic.yml",
+        "templates/firewall/basic-no-firewall.sh",
+        "templates/extensions/extensions.basic.json",
+        "templates/mcp/mcp.basic.json",
+        "templates/variables/variables.basic.json",
+        "templates/env/.env.basic.template"
+      ]
+    },
+    {
+      "name": "sandbox-setup-intermediate",
+      "path": "skills/sandbox-setup-intermediate/SKILL.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "mode": "intermediate",
+      "related_command": "commands/intermediate.md",
+      "related_example": "examples/demo-app-sandbox-intermediate/",
+      "related_templates": [
+        "templates/compose/docker-compose.intermediate.yml",
+        "templates/firewall/intermediate-permissive.sh",
+        "templates/extensions/extensions.intermediate.json",
+        "templates/mcp/mcp.intermediate.json",
+        "templates/variables/variables.intermediate.json",
+        "templates/env/.env.intermediate.template"
+      ]
+    },
+    {
+      "name": "sandbox-setup-advanced",
+      "path": "skills/sandbox-setup-advanced/SKILL.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "mode": "advanced",
+      "related_command": "commands/advanced.md",
+      "related_example": "examples/demo-app-sandbox-advanced/",
+      "related_templates": [
+        "templates/compose/docker-compose.advanced.yml",
+        "templates/firewall/advanced-strict.sh",
+        "templates/extensions/extensions.advanced.json",
+        "templates/mcp/mcp.advanced.json",
+        "templates/variables/variables.advanced.json",
+        "templates/env/.env.advanced.template"
+      ],
+      "references": [
+        "skills/sandbox-setup-advanced/references/customization.md",
+        "skills/sandbox-setup-advanced/references/security.md",
+        "skills/sandbox-setup-advanced/references/troubleshooting.md"
+      ]
+    },
+    {
+      "name": "sandbox-setup-yolo",
+      "path": "skills/sandbox-setup-yolo/SKILL.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "mode": "yolo",
+      "related_command": "commands/yolo.md",
+      "related_example": "examples/demo-app-sandbox-yolo/",
+      "related_templates": [
+        "templates/compose/docker-compose.yolo.yml",
+        "templates/firewall/yolo-configurable.sh",
+        "templates/extensions/extensions.yolo.json",
+        "templates/mcp/mcp.yolo.json",
+        "templates/variables/variables.yolo.json",
+        "templates/env/.env.yolo.template"
+      ]
+    },
+    {
+      "name": "sandbox-troubleshoot",
+      "path": "skills/sandbox-troubleshoot/SKILL.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "mode": "utility",
+      "related_command": "commands/troubleshoot.md",
+      "related_example": null
+    },
+    {
+      "name": "sandbox-security",
+      "path": "skills/sandbox-security/SKILL.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "mode": "utility",
+      "related_command": "commands/audit.md",
+      "related_example": null
+    }
+  ],
+
+  "commands": [
+    {
+      "name": "setup",
+      "path": "commands/setup.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "invokes_skill": "interactive",
+      "description": "Main setup command with interactive mode selection"
+    },
+    {
+      "name": "basic",
+      "path": "commands/basic.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "invokes_skill": "sandbox-setup-basic",
+      "description": "Basic mode setup"
+    },
+    {
+      "name": "intermediate",
+      "path": "commands/intermediate.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "invokes_skill": "sandbox-setup-intermediate",
+      "description": "Intermediate mode setup"
+    },
+    {
+      "name": "advanced",
+      "path": "commands/advanced.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "invokes_skill": "sandbox-setup-advanced",
+      "description": "Advanced mode setup with strict security"
+    },
+    {
+      "name": "yolo",
+      "path": "commands/yolo.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "invokes_skill": "sandbox-setup-yolo",
+      "description": "YOLO mode setup with maximum control"
+    },
+    {
+      "name": "troubleshoot",
+      "path": "commands/troubleshoot.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "invokes_skill": "sandbox-troubleshoot",
+      "description": "Troubleshooting and diagnostics"
+    },
+    {
+      "name": "audit",
+      "path": "commands/audit.md",
+      "version": "2.2.1",
+      "last_updated": "2025-12-16",
+      "invokes_skill": "sandbox-security",
+      "description": "Security audit and best practices validation"
+    }
+  ],
+
+  "templates": {
+    "master": [
+      {
+        "name": "devcontainer.json.master",
+        "path": "templates/master/devcontainer.json.master",
+        "type": "master",
+        "last_updated": "2025-12-16",
+        "sections": 37,
+        "description": "Master devcontainer template with all options"
+      },
+      {
+        "name": "Dockerfile.master",
+        "path": "templates/master/Dockerfile.master",
+        "type": "master",
+        "last_updated": "2025-12-16",
+        "sections": 14,
+        "description": "Master Dockerfile with all language toolchains"
+      },
+      {
+        "name": "docker-compose.master.yml",
+        "path": "templates/master/docker-compose.master.yml",
+        "type": "master",
+        "last_updated": "2025-12-16",
+        "description": "Master compose file with all services"
+      },
+      {
+        "name": "init-firewall.master.sh",
+        "path": "templates/master/init-firewall.master.sh",
+        "type": "master",
+        "last_updated": "2025-12-16",
+        "domain_categories": 200,
+        "description": "Master firewall script with all modes and domains"
+      },
+      {
+        "name": "setup-claude-credentials.master.sh",
+        "path": "templates/master/setup-claude-credentials.master.sh",
+        "type": "master",
+        "last_updated": "2025-12-16",
+        "description": "Master credential setup script"
+      }
+    ],
+    "dockerfiles": [
+      {"name": "Dockerfile.python", "path": "templates/dockerfiles/Dockerfile.python", "language": "python"},
+      {"name": "Dockerfile.node", "path": "templates/dockerfiles/Dockerfile.node", "language": "node"},
+      {"name": "Dockerfile.go", "path": "templates/dockerfiles/Dockerfile.go", "language": "go"},
+      {"name": "Dockerfile.rust", "path": "templates/dockerfiles/Dockerfile.rust", "language": "rust"},
+      {"name": "Dockerfile.java", "path": "templates/dockerfiles/Dockerfile.java", "language": "java"},
+      {"name": "Dockerfile.ruby", "path": "templates/dockerfiles/Dockerfile.ruby", "language": "ruby"},
+      {"name": "Dockerfile.php", "path": "templates/dockerfiles/Dockerfile.php", "language": "php"},
+      {"name": "Dockerfile.cpp-gcc", "path": "templates/dockerfiles/Dockerfile.cpp-gcc", "language": "cpp"},
+      {"name": "Dockerfile.cpp-clang", "path": "templates/dockerfiles/Dockerfile.cpp-clang", "language": "cpp"},
+      {"name": "Dockerfile.postgres", "path": "templates/dockerfiles/Dockerfile.postgres", "service": "postgres"},
+      {"name": "Dockerfile.redis", "path": "templates/dockerfiles/Dockerfile.redis", "service": "redis"}
+    ],
+    "compose": [
+      {"name": "docker-compose.basic.yml", "path": "templates/compose/docker-compose.basic.yml", "mode": "basic"},
+      {"name": "docker-compose.intermediate.yml", "path": "templates/compose/docker-compose.intermediate.yml", "mode": "intermediate"},
+      {"name": "docker-compose.advanced.yml", "path": "templates/compose/docker-compose.advanced.yml", "mode": "advanced"},
+      {"name": "docker-compose.yolo.yml", "path": "templates/compose/docker-compose.yolo.yml", "mode": "yolo"}
+    ],
+    "firewall": [
+      {"name": "basic-no-firewall.sh", "path": "templates/firewall/basic-no-firewall.sh", "mode": "basic", "policy": "none"},
+      {"name": "intermediate-permissive.sh", "path": "templates/firewall/intermediate-permissive.sh", "mode": "intermediate", "policy": "permissive"},
+      {"name": "advanced-strict.sh", "path": "templates/firewall/advanced-strict.sh", "mode": "advanced", "policy": "strict"},
+      {"name": "yolo-configurable.sh", "path": "templates/firewall/yolo-configurable.sh", "mode": "yolo", "policy": "configurable"}
+    ],
+    "extensions": [
+      {"name": "extensions.basic.json", "path": "templates/extensions/extensions.basic.json", "mode": "basic", "count": "6-8"},
+      {"name": "extensions.intermediate.json", "path": "templates/extensions/extensions.intermediate.json", "mode": "intermediate", "count": "15-20"},
+      {"name": "extensions.advanced.json", "path": "templates/extensions/extensions.advanced.json", "mode": "advanced", "count": "22-28"},
+      {"name": "extensions.yolo.json", "path": "templates/extensions/extensions.yolo.json", "mode": "yolo", "count": "35+"}
+    ],
+    "mcp": [
+      {"name": "mcp.basic.json", "path": "templates/mcp/mcp.basic.json", "mode": "basic"},
+      {"name": "mcp.intermediate.json", "path": "templates/mcp/mcp.intermediate.json", "mode": "intermediate"},
+      {"name": "mcp.advanced.json", "path": "templates/mcp/mcp.advanced.json", "mode": "advanced"},
+      {"name": "mcp.yolo.json", "path": "templates/mcp/mcp.yolo.json", "mode": "yolo"}
+    ],
+    "variables": [
+      {"name": "variables.basic.json", "path": "templates/variables/variables.basic.json", "mode": "basic"},
+      {"name": "variables.intermediate.json", "path": "templates/variables/variables.intermediate.json", "mode": "intermediate"},
+      {"name": "variables.advanced.json", "path": "templates/variables/variables.advanced.json", "mode": "advanced"},
+      {"name": "variables.yolo.json", "path": "templates/variables/variables.yolo.json", "mode": "yolo"}
+    ],
+    "env": [
+      {"name": ".env.basic.template", "path": "templates/env/.env.basic.template", "mode": "basic"},
+      {"name": ".env.intermediate.template", "path": "templates/env/.env.intermediate.template", "mode": "intermediate"},
+      {"name": ".env.advanced.template", "path": "templates/env/.env.advanced.template", "mode": "advanced"},
+      {"name": ".env.yolo.template", "path": "templates/env/.env.yolo.template", "mode": "yolo"}
+    ]
+  },
+
+  "examples": [
+    {
+      "name": "demo-app-sandbox-basic",
+      "path": "examples/demo-app-sandbox-basic/",
+      "mode": "basic",
+      "devcontainer_path": "examples/demo-app-sandbox-basic/.devcontainer/",
+      "dockerfile_path": "examples/demo-app-sandbox-basic/.devcontainer/Dockerfile",
+      "compose_path": "examples/demo-app-sandbox-basic/docker-compose.yml",
+      "has_tests": true,
+      "test_types": ["jest", "pytest"],
+      "description": "Full-stack demo with Basic mode"
+    },
+    {
+      "name": "demo-app-sandbox-intermediate",
+      "path": "examples/demo-app-sandbox-intermediate/",
+      "mode": "intermediate",
+      "devcontainer_path": "examples/demo-app-sandbox-intermediate/.devcontainer/",
+      "dockerfile_path": "examples/demo-app-sandbox-intermediate/.devcontainer/Dockerfile",
+      "compose_path": "examples/demo-app-sandbox-intermediate/docker-compose.yml",
+      "has_tests": true,
+      "test_types": ["jest", "pytest"],
+      "description": "Full-stack demo with Intermediate mode"
+    },
+    {
+      "name": "demo-app-sandbox-advanced",
+      "path": "examples/demo-app-sandbox-advanced/",
+      "mode": "advanced",
+      "devcontainer_path": "examples/demo-app-sandbox-advanced/.devcontainer/",
+      "dockerfile_path": "examples/demo-app-sandbox-advanced/.devcontainer/Dockerfile",
+      "compose_path": "examples/demo-app-sandbox-advanced/docker-compose.yml",
+      "has_tests": true,
+      "test_types": ["jest", "pytest"],
+      "description": "Full-stack demo with Advanced mode"
+    },
+    {
+      "name": "demo-app-sandbox-yolo",
+      "path": "examples/demo-app-sandbox-yolo/",
+      "mode": "yolo",
+      "devcontainer_path": "examples/demo-app-sandbox-yolo/.devcontainer/",
+      "dockerfile_path": "examples/demo-app-sandbox-yolo/.devcontainer/Dockerfile",
+      "compose_path": "examples/demo-app-sandbox-yolo/docker-compose.yml",
+      "has_tests": true,
+      "test_types": ["jest", "pytest"],
+      "description": "Full-stack demo with YOLO mode"
+    },
+    {
+      "name": "streamlit-sandbox-basic",
+      "path": "examples/streamlit-sandbox-basic/",
+      "mode": "basic",
+      "devcontainer_path": "examples/streamlit-sandbox-basic/.devcontainer/",
+      "dockerfile_path": "examples/streamlit-sandbox-basic/.devcontainer/Dockerfile",
+      "compose_path": "examples/streamlit-sandbox-basic/docker-compose.yml",
+      "has_tests": false,
+      "description": "Streamlit dashboard with Basic mode"
+    },
+    {
+      "name": "demo-app-shared",
+      "path": "examples/demo-app-shared/",
+      "mode": "shared",
+      "devcontainer_path": null,
+      "has_tests": true,
+      "test_types": ["jest", "pytest"],
+      "description": "Shared demo app source (FastAPI + React)"
+    },
+    {
+      "name": "streamlit-shared",
+      "path": "examples/streamlit-shared/",
+      "mode": "shared",
+      "devcontainer_path": null,
+      "has_tests": false,
+      "description": "Shared Streamlit dashboard source"
+    }
+  ],
+
+  "data_files": [
+    {
+      "name": "allowable-domains.json",
+      "path": "data/allowable-domains.json",
+      "version": null,
+      "size_kb": 11,
+      "referenced_by": ["firewall templates", "security docs"],
+      "update_frequency": "quarterly",
+      "description": "Firewall domain allowlists by category"
+    },
+    {
+      "name": "mcp-servers.json",
+      "path": "data/mcp-servers.json",
+      "version": null,
+      "size_kb": 5,
+      "referenced_by": [],
+      "update_frequency": "as needed",
+      "status": "undocumented",
+      "description": "MCP server configurations (needs documentation)"
+    },
+    {
+      "name": "official-images.json",
+      "path": "data/official-images.json",
+      "version": null,
+      "size_kb": 6,
+      "referenced_by": ["Dockerfiles", "skills"],
+      "update_frequency": "monthly",
+      "description": "Approved Docker base images"
+    },
+    {
+      "name": "sandbox-templates.json",
+      "path": "data/sandbox-templates.json",
+      "version": null,
+      "size_kb": 4,
+      "referenced_by": ["skills", "setup commands"],
+      "update_frequency": "as needed",
+      "description": "Docker sandbox-templates image registry"
+    },
+    {
+      "name": "secrets.json",
+      "path": "data/secrets.json",
+      "version": "2.1.0",
+      "version_status": "outdated (should be 2.2.1)",
+      "size_kb": 15,
+      "referenced_by": ["SECRETS.md"],
+      "update_frequency": "on version bump",
+      "description": "Secret management patterns and examples"
+    },
+    {
+      "name": "variables.json",
+      "path": "data/variables.json",
+      "version": "2.1.0",
+      "version_status": "outdated (should be 2.2.1)",
+      "size_kb": 17,
+      "referenced_by": ["VARIABLES.md"],
+      "update_frequency": "on version bump",
+      "description": "Environment variable definitions"
+    },
+    {
+      "name": "vscode-extensions.json",
+      "path": "data/vscode-extensions.json",
+      "version": null,
+      "size_kb": 7,
+      "referenced_by": ["extension templates"],
+      "update_frequency": "monthly",
+      "description": "VS Code extension recommendations"
+    }
+  ],
+
+  "documentation": {
+    "root": [
+      {"path": "README.md", "has_footer": true, "version": "2.2.1", "category": "main"},
+      {"path": "CHANGELOG.md", "has_footer": true, "version": "2.2.1", "category": "changelog"},
+      {"path": "CONTRIBUTING.md", "has_footer": true, "version": "2.2.1", "category": "contributing"},
+      {"path": "DEVELOPMENT.md", "has_footer": true, "version": "2.2.1", "category": "development"},
+      {"path": "SECURITY.md", "has_footer": true, "version": "2.2.1", "category": "security"},
+      {"path": "docs/archive/.github-issue-v2.2.0.md", "has_footer": false, "category": "issue"}
+    ],
+    "docs": [
+      {"path": "docs/ARCHITECTURE.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/audits/CONSISTENCY_AUDIT_2025-12-16.md", "has_footer": false},
+      {"path": "docs/audits/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/EXTENSIONS.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/archive/LOW_PRIORITY_FIXES_v2.2.0.md", "has_footer": false},
+      {"path": "docs/features/MCP.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/features/MODES.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/RELEASE_CHECKLIST.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/archive/RELEASE_NOTES_v1.0.0.md", "has_footer": false},
+      {"path": "docs/features/SECRETS.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/features/security-model.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/TESTING.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/TROUBLESHOOTING.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/VARIABLES.md", "has_footer": false, "missing_footer": true}
+    ],
+    "commands": [
+      {"path": "commands/README.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "commands/advanced.md", "has_footer": false, "missing_footer": true},
+      {"path": "commands/audit.md", "has_footer": false, "missing_footer": true},
+      {"path": "commands/basic.md", "has_footer": false, "missing_footer": true},
+      {"path": "commands/intermediate.md", "has_footer": false, "missing_footer": true},
+      {"path": "commands/setup.md", "has_footer": false, "missing_footer": true},
+      {"path": "commands/troubleshoot.md", "has_footer": false, "missing_footer": true},
+      {"path": "commands/yolo.md", "has_footer": false, "missing_footer": true}
+    ],
+    "skills": [
+      {"path": "skills/README.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "skills/sandbox-security/SKILL.md", "has_footer": false, "missing_footer": true},
+      {"path": "skills/sandbox-setup-advanced/SKILL.md", "has_footer": false, "missing_footer": true},
+      {"path": "skills/sandbox-setup-advanced/references/customization.md", "has_footer": false, "missing_footer": true},
+      {"path": "skills/sandbox-setup-advanced/references/security.md", "has_footer": false, "missing_footer": true},
+      {"path": "skills/sandbox-setup-advanced/references/troubleshooting.md", "has_footer": false, "missing_footer": true},
+      {"path": "skills/sandbox-setup-basic/SKILL.md", "has_footer": false, "missing_footer": true},
+      {"path": "skills/sandbox-setup-intermediate/SKILL.md", "has_footer": false, "missing_footer": true},
+      {"path": "skills/sandbox-setup-yolo/SKILL.md", "has_footer": false, "missing_footer": true},
+      {"path": "skills/sandbox-troubleshoot/SKILL.md", "has_footer": false, "missing_footer": true}
+    ],
+    "templates": [
+      {"path": "templates/README.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "templates/legacy/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "templates/legacy/fullstack/EXAMPLE.md", "has_footer": false, "missing_footer": true},
+      {"path": "templates/legacy/node/EXAMPLE.md", "has_footer": false, "missing_footer": true},
+      {"path": "templates/legacy/python/EXAMPLE.md", "has_footer": false, "missing_footer": true},
+      {"path": "templates/master/README.md", "has_footer": false, "missing_footer": true}
+    ],
+    "examples": [
+      {"path": "examples/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "examples/demo-app-sandbox-advanced/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "examples/demo-app-sandbox-basic/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "examples/demo-app-sandbox-intermediate/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "examples/demo-app-sandbox-yolo/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "examples/streamlit-sandbox-basic/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "examples/streamlit-shared/README.md", "has_footer": false, "missing_footer": true}
+    ],
+    "data": [
+      {"path": "data/README.md", "has_footer": false, "missing_footer": true}
+    ],
+    "tests": [
+      {"path": "tests/README.md", "has_footer": false, "missing_footer": true}
+    ],
+    "repo-keeper": [
+      {"path": "docs/repo-keeper/ORGANIZATION_CHECKLIST.md", "has_footer": true, "version": "2.2.1"}
+    ]
+  },
+
+  "devcontainers": [
+    {
+      "name": "repo-devcontainer",
+      "path": ".devcontainer/",
+      "mode": "intermediate",
+      "dockerfile_path": ".devcontainer/Dockerfile",
+      "compose_path": "docker-compose.yml",
+      "description": "Repository's own devcontainer (Intermediate mode)"
+    },
+    {
+      "name": "demo-basic",
+      "path": "examples/demo-app-sandbox-basic/.devcontainer/",
+      "mode": "basic",
+      "dockerfile_path": "examples/demo-app-sandbox-basic/.devcontainer/Dockerfile",
+      "firewall_path": "examples/demo-app-sandbox-basic/.devcontainer/init-firewall.sh"
+    },
+    {
+      "name": "demo-intermediate",
+      "path": "examples/demo-app-sandbox-intermediate/.devcontainer/",
+      "mode": "intermediate",
+      "dockerfile_path": "examples/demo-app-sandbox-intermediate/.devcontainer/Dockerfile",
+      "firewall_path": "examples/demo-app-sandbox-intermediate/.devcontainer/init-firewall.sh"
+    },
+    {
+      "name": "demo-advanced",
+      "path": "examples/demo-app-sandbox-advanced/.devcontainer/",
+      "mode": "advanced",
+      "dockerfile_path": "examples/demo-app-sandbox-advanced/.devcontainer/Dockerfile",
+      "firewall_path": "examples/demo-app-sandbox-advanced/.devcontainer/init-firewall.sh"
+    },
+    {
+      "name": "demo-yolo",
+      "path": "examples/demo-app-sandbox-yolo/.devcontainer/",
+      "mode": "yolo",
+      "dockerfile_path": "examples/demo-app-sandbox-yolo/.devcontainer/Dockerfile",
+      "firewall_path": "examples/demo-app-sandbox-yolo/.devcontainer/init-firewall.sh"
+    },
+    {
+      "name": "streamlit-basic",
+      "path": "examples/streamlit-sandbox-basic/.devcontainer/",
+      "mode": "basic",
+      "dockerfile_path": "examples/streamlit-sandbox-basic/.devcontainer/Dockerfile",
+      "firewall_path": "examples/streamlit-sandbox-basic/.devcontainer/init-firewall.sh"
+    }
+  ],
+
+  "dependencies": {
+    "python_requirements": [
+      "examples/demo-app-sandbox-basic/backend/requirements.txt",
+      "examples/demo-app-sandbox-intermediate/backend/requirements.txt",
+      "examples/demo-app-sandbox-advanced/backend/requirements.txt",
+      "examples/demo-app-sandbox-yolo/backend/requirements.txt",
+      "examples/demo-app-shared/backend/requirements.txt",
+      "examples/streamlit-sandbox-basic/requirements.txt",
+      "examples/streamlit-shared/requirements.txt",
+      "templates/legacy/python/requirements.txt"
+    ],
+    "node_packages": [
+      "examples/demo-app-sandbox-basic/frontend/package.json",
+      "examples/demo-app-sandbox-intermediate/frontend/package.json",
+      "examples/demo-app-sandbox-advanced/frontend/package.json",
+      "examples/demo-app-sandbox-yolo/frontend/package.json",
+      "examples/demo-app-shared/frontend/package.json",
+      "templates/legacy/node/package.json"
+    ]
+  },
+
+  "test_files": {
+    "manual_tests": [
+      "tests/test-setup-basic.md",
+      "tests/test-setup-advanced.md",
+      "tests/test-setup-yolo.md",
+      "tests/test-troubleshoot.md",
+      "tests/test-security.md"
+    ],
+    "jest_configs": [
+      "examples/demo-app-sandbox-basic/frontend/jest.config.js",
+      "examples/demo-app-sandbox-intermediate/frontend/jest.config.js",
+      "examples/demo-app-sandbox-advanced/frontend/jest.config.js",
+      "examples/demo-app-sandbox-yolo/frontend/jest.config.js",
+      "examples/demo-app-shared/frontend/jest.config.js"
+    ],
+    "pytest_configs": [
+      "examples/demo-app-sandbox-basic/backend/pytest.ini",
+      "examples/demo-app-sandbox-intermediate/backend/pytest.ini",
+      "examples/demo-app-sandbox-advanced/backend/pytest.ini",
+      "examples/demo-app-sandbox-yolo/backend/pytest.ini",
+      "examples/demo-app-shared/backend/pytest.ini"
+    ]
+  },
+
+  "known_issues": {
+    "missing_footers": 39,
+    "broken_links": 10,
+    "outdated_versions": [
+      "data/secrets.json (2.1.0 -> 2.2.1)",
+      "data/variables.json (2.1.0 -> 2.2.1)"
+    ],
+    "undocumented_files": [
+      "data/mcp-servers.json"
+    ],
+    "naming_inconsistencies": [
+      "data/README.md uses 'Docker Sandbox Plugin' instead of 'Claude Code Sandbox Plugin'"
+    ]
+  },
+
+  "statistics": {
+    "total_skills": 6,
+    "total_commands": 7,
+    "total_templates": 48,
+    "total_examples": 7,
+    "total_data_files": 7,
+    "total_documentation_files": 51,
+    "total_devcontainers": 6,
+    "total_python_requirements": 8,
+    "total_node_packages": 6,
+    "documentation_with_footers": 12,
+    "documentation_without_footers": 39
+  }
+}

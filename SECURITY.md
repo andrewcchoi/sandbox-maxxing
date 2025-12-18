@@ -85,7 +85,7 @@ Choose the appropriate security mode for your use case:
 - **Advanced Mode**: Use for production-like environments and sensitive work
 - **YOLO Mode**: Use only if you understand the security implications
 
-See [docs/security-model.md](docs/security-model.md) for detailed security model documentation.
+See [docs/features/security-model.md](docs/features/security-model.md) for detailed security model documentation.
 
 ### 2. Firewall Configuration
 
@@ -102,7 +102,7 @@ See [docs/security-model.md](docs/security-model.md) for detailed security model
 - Use build secrets for private registry authentication
 - Read-only mount cloud CLI credentials when possible
 
-See [docs/SECRETS.md](docs/SECRETS.md) for comprehensive secrets management guide.
+See [docs/features/SECRETS.md](docs/features/SECRETS.md) for comprehensive secrets management guide.
 
 ### 4. Container Security
 
@@ -155,7 +155,7 @@ See [docs/SECRETS.md](docs/SECRETS.md) for comprehensive secrets management guid
 
 ### Threat Model
 
-See [docs/security-model.md](docs/security-model.md) for comprehensive threat model documentation.
+See [docs/features/security-model.md](docs/features/security-model.md) for comprehensive threat model documentation.
 
 ## Scope
 
@@ -219,7 +219,7 @@ We'll recognize security researchers who responsibly disclose vulnerabilities:
 
 For security-related questions that are not vulnerabilities:
 
-1. Check [docs/security-model.md](docs/security-model.md) for security architecture
+1. Check [docs/features/security-model.md](docs/features/security-model.md) for security architecture
 2. Use [GitHub Discussions](https://github.com/andrewcchoi/sandbox-maxxing/discussions) for public questions
 3. Open a regular GitHub issue for feature requests
 

@@ -2,6 +2,9 @@
 test-*
 tests/results/
 
+# Build artifacts
+bin/
+
 # Node modules
 node_modules/
 

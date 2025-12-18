@@ -38,6 +38,19 @@ Basic mode gets developers up and running in minutes using battle-tested base im
 
 **Important**: If user mentions firewall, iptables, network policies, or security hardening, recommend Advanced or YOLO mode instead.
 
+## Usage
+
+**Via slash command:**
+```
+/sandbox:basic
+```
+
+**Via natural language:**
+- "Set up a basic sandbox"
+- "I need a simple development environment"
+- "Create a sandbox for local testing"
+- "Set up basic mode"
+
 ## Key Characteristics
 
 ### Base Images

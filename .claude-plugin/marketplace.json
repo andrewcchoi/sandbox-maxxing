@@ -1,8 +1,8 @@
 {
-  "name": "sandbox-dev",
-  "description": "Local development marketplace for Windows Sandbox plugin",
+  "name": "sandbox-maxxing",
+  "description": "Local development marketplace for createing and managing sandbox environments",
   "owner": {
-    "name": "Windows Sandbox Team",
+    "name": "shadow developer",
     "email": "github-sandbox@shadowenvironment.com"
   },
   "plugins": [

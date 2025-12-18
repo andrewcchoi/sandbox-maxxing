@@ -195,6 +195,43 @@ Run all tests before submitting:
 - Follow existing patterns
 - Keep skills focused and modular
 
+## Repository Organization
+
+Before submitting changes, please review the [`docs/repo-keeper/ORGANIZATION_CHECKLIST.md`](docs/repo-keeper/ORGANIZATION_CHECKLIST.md) to ensure your contribution maintains repository consistency.
+
+**Key guidelines:**
+
+1. **Version Footers**: Add version footers to all new .md files
+   ```markdown
+   ---
+
+   **Last Updated:** YYYY-MM-DD
+   **Version:** X.Y.Z
+   ```
+
+2. **Inventory**: Update [`docs/repo-keeper/INVENTORY.json`](docs/repo-keeper/INVENTORY.json) when adding/removing files
+
+3. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
+
+4. **Naming Conventions**:
+   - Commands: `/sandbox:{action}`
+   - Skills: `sandbox-{action}[-mode]/SKILL.md`
+   - Templates: `{component}.{mode}.{ext}`
+
+5. **Validation**: Run these scripts before committing:
+   ```powershell
+   # Check version consistency
+   .\docs\repo-keeper\scripts\check-version-sync.ps1
+
+   # Check for broken links
+   .\docs\repo-keeper\scripts\check-links.ps1
+
+   # Validate inventory
+   .\docs\repo-keeper\scripts\validate-inventory.ps1
+   ```
+
+See the full [Organization Checklist](docs/repo-keeper/ORGANIZATION_CHECKLIST.md) for complete guidelines.
+
 ---
 
 **Last Updated:** 2025-12-16

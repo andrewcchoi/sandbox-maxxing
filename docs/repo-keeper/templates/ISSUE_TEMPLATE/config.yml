@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://github.com/andrewcchoi/sandbox-maxxing/blob/master/README.md
+    about: Check the documentation for guides and examples
+  - name: Troubleshooting Guide
+    url: https://github.com/andrewcchoi/sandbox-maxxing/blob/master/docs/TROUBLESHOOTING.md
+    about: Common issues and solutions
+  - name: Security Issues
+    url: https://github.com/andrewcchoi/sandbox-maxxing/blob/master/SECURITY.md
+    about: Report security vulnerabilities responsibly

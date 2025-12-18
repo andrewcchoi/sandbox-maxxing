@@ -1,0 +1,70 @@
+name: Validate Links
+
+on:
+  pull_request:
+    branches: [ master, main ]
+  schedule:
+    # Run weekly on Sundays at 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run link check
+        id: link_check
+        continue-on-error: true
+        run: |
+          chmod +x docs/repo-keeper/scripts/check-links.sh
+          # Note: Bash version would need to be created, for now use PowerShell Core
+          pwsh -File docs/repo-keeper/scripts/check-links.ps1 -Verbose > link-report.txt 2>&1
+          echo "Exit code: $?"
+          cat link-report.txt
+
+      - name: Upload link report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-check-report
+          path: link-report.txt
+
+      - name: Comment on PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let report = '';
+
+            try {
+              report = fs.readFileSync('link-report.txt', 'utf8');
+            } catch (error) {
+              report = 'Could not read link check report';
+            }
+
+            const brokenLinksMatch = report.match(/Broken links:\s+(\d+)/);
+            const brokenCount = brokenLinksMatch ? parseInt(brokenLinksMatch[1]) : 0;
+
+            let body = '';
+
+            if (brokenCount === 0) {
+              body = '## ✅ Link Check Passed\n\nAll internal links are valid!';
+            } else {
+              body = `## ❌ Link Check Failed\n\nFound ${brokenCount} broken link(s).\n\n<details>\n<summary>View Report</summary>\n\n\`\`\`\n${report}\n\`\`\`\n\n</details>\n\nPlease fix broken links before merging.`;
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            })
+
+      - name: Fail workflow if links are broken
+        if: steps.link_check.outcome == 'failure'
+        run: exit 1
