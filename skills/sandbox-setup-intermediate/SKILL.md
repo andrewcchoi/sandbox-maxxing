@@ -32,6 +32,19 @@ Intermediate mode provides a standard Dockerfile-based development sandbox with 
 - User wants complete control over all configuration → Use `sandbox-setup-yolo` instead
 - User needs production-grade security → Use `sandbox-setup-advanced` with restricted firewall
 
+## Usage
+
+**Via slash command:**
+```
+/sandbox:intermediate
+```
+
+**Via natural language:**
+- "Set up intermediate mode"
+- "I need a sandbox with custom Dockerfile"
+- "Create a development environment with my own base image"
+- "Set up intermediate sandbox"
+
 ## Key Characteristics
 
 ### Base Images

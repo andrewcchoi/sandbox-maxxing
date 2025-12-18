@@ -23,6 +23,43 @@ Do NOT use this skill when:
 - Setting up new sandbox (security review is part of `sandbox-setup`)
 - Troubleshooting connectivity issues (use `sandbox-troubleshoot`)
 
+## Usage
+
+**Via slash command:**
+```
+/sandbox:audit
+```
+
+**Via natural language:**
+- "Can you audit my sandbox security?"
+- "Review the firewall configuration"
+- "Check my sandbox for security issues"
+- "What security best practices should I follow?"
+- "Is my sandbox configuration secure?"
+
+## Examples
+
+### Example: Security Audit Request
+
+**User:** "Can you audit my sandbox security?"
+
+**Assistant:** "I'll perform a comprehensive security audit of your Claude Code Docker sandbox."
+
+The skill will systematically check:
+1. Configuration files for hardcoded secrets
+2. Firewall rules and allowed domains
+3. Credentials and secrets management
+4. Port exposure and network configuration
+5. Container permissions and capabilities
+6. Volume mounts and file access
+7. Network isolation settings
+
+The audit provides:
+- Security issues found (with severity ratings)
+- Specific recommendations for each issue
+- Commands to implement fixes
+- Best practices guidance
+
 ## Security Audit Workflow
 
 ### 1. Scan Configuration Files

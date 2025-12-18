@@ -24,6 +24,50 @@ Do NOT use this skill when:
 - Setting up a new sandbox (use `sandbox-setup` instead)
 - Performing security audit (use `sandbox-security` instead)
 
+## Usage
+
+**Via slash command:**
+```
+/sandbox:troubleshoot
+```
+
+**Via natural language:**
+- "My sandbox won't start"
+- "I can't connect to the database"
+- "The firewall is blocking my requests"
+- "Troubleshoot my sandbox"
+- "Fix network connectivity issues"
+
+## Examples
+
+### Example: Container Won't Start
+
+**User:** "My sandbox container won't start"
+
+**Assistant:** "I'll help troubleshoot your container startup issue."
+
+The skill will:
+1. Check container logs with `docker logs <container>`
+2. Verify Docker daemon status
+3. Check for port conflicts
+4. Examine resource limits
+5. Review Dockerfile for syntax errors
+6. Suggest specific fixes based on error messages
+
+### Example: Network Connectivity Issue
+
+**User:** "I can't connect to my database service"
+
+**Assistant:** "Let's diagnose the connectivity issue."
+
+The skill will:
+1. Verify service is running (`docker ps`)
+2. Check port mappings
+3. Test network connectivity between containers
+4. Review docker-compose network configuration
+5. Check firewall rules (if applicable)
+6. Provide step-by-step resolution
+
 ## Troubleshooting Workflow
 
 ### 1. Identify the Problem Category
