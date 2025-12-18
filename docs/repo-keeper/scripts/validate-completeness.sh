@@ -20,15 +20,23 @@ source "$SCRIPT_DIR/lib/check-dependencies.sh"
 check_node
 
 VERBOSE=false
+QUIET=false
+LOG_FILE=""
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v|--verbose) VERBOSE=true ;;
-        *) echo "Unknown parameter: $1"; exit 1 ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -38,8 +46,10 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
-echo -e "${CYAN}=== Completeness Validator ===${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== Completeness Validator ===${NC}"
+    echo ""
+fi
 
 INVENTORY="$REPO_ROOT/docs/repo-keeper/INVENTORY.json"
 if [ ! -f "$INVENTORY" ]; then
@@ -50,7 +60,9 @@ fi
 ERROR_COUNT=0
 
 # Feature Documentation Check
-echo -e "${CYAN}Checking feature documentation...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Checking feature documentation...${NC}"
+fi
 
 # Check skills have SKILL.md
 SKILL_COUNT=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log((d.skills || []).length)")
@@ -66,7 +78,9 @@ for ((i=0; i<SKILL_COUNT; i++)); do
         ((ERROR_COUNT++)) || true
     fi
 done
-echo -e "  ${GREEN}[OK] $SKILLS_WITH_DOCS/$SKILL_COUNT skills have SKILL.md${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "  ${GREEN}[OK] $SKILLS_WITH_DOCS/$SKILL_COUNT skills have SKILL.md${NC}"
+fi
 
 # Check commands documented in README
 COMMAND_COUNT=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log((d.commands || []).length)")
@@ -84,7 +98,9 @@ if [ -f "$COMMANDS_README" ]; then
             ((ERROR_COUNT++)) || true
         fi
     done
-    echo -e "  ${GREEN}[OK] $COMMANDS_DOCUMENTED/$COMMAND_COUNT commands documented in README${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "  ${GREEN}[OK] $COMMANDS_DOCUMENTED/$COMMAND_COUNT commands documented in README${NC}"
+    fi
 else
     echo -e "  ${RED}[ERROR] commands/README.md not found${NC}"
     ((ERROR_COUNT++)) || true
@@ -106,14 +122,18 @@ if [ -f "$DATA_README" ]; then
             ((ERROR_COUNT++)) || true
         fi
     done
-    echo -e "  ${GREEN}[OK] $DATA_DOCUMENTED/$DATA_COUNT data files documented${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "  ${GREEN}[OK] $DATA_DOCUMENTED/$DATA_COUNT data files documented${NC}"
+    fi
 else
     echo -e "  ${YELLOW}[WARNING] data/README.md not found${NC}"
 fi
 
 # Mode Coverage Check
-echo ""
-echo -e "${CYAN}Checking mode coverage...${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}Checking mode coverage...${NC}"
+fi
 
 MODES=("basic" "intermediate" "advanced" "yolo")
 for mode in "${MODES[@]}"; do
@@ -161,19 +181,25 @@ for mode in "${MODES[@]}"; do
         ((MISSING_COUNT++)) || true
     fi
 
-    if [ $MISSING_COUNT -eq 0 ]; then
-        echo -e "  ${GREEN}[OK] $mode: 9/9 components${NC}"
-    else
-        echo -e "  ${RED}[ERROR] $mode: Missing $MISSING_COUNT components${NC}"
+    if [ "$QUIET" = false ]; then
+        if [ $MISSING_COUNT -eq 0 ]; then
+            echo -e "  ${GREEN}[OK] $mode: 9/9 components${NC}"
+        else
+            echo -e "  ${RED}[ERROR] $mode: Missing $MISSING_COUNT components${NC}"
+        fi
     fi
 done
 
 # Summary
-echo ""
-echo -e "${CYAN}=== Summary ===${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Summary ===${NC}"
+fi
 if [ $ERROR_COUNT -eq 0 ]; then
-    echo -e "${GREEN}✓ All completeness checks passed!${NC}"
-    echo -e "${GREEN}Total errors: $ERROR_COUNT${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}✓ All completeness checks passed!${NC}"
+        echo -e "${GREEN}Total errors: $ERROR_COUNT${NC}"
+    fi
     exit 0
 else
     echo -e "${RED}✗ Completeness validation failed!${NC}"

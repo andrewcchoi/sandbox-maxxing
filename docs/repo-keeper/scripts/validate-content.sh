@@ -21,16 +21,24 @@ check_node
 
 VERBOSE=false
 CHECK_EXTERNAL=false
+QUIET=false
+LOG_FILE=""
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v|--verbose) VERBOSE=true ;;
         --check-external) CHECK_EXTERNAL=true ;;
-        *) echo "Unknown parameter: $1"; exit 1 ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -40,14 +48,18 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
-echo -e "${CYAN}=== Content Validator ===${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== Content Validator ===${NC}"
+    echo ""
+fi
 
 ERROR_COUNT=0
 WARNING_COUNT=0
 
 # Check for UTF-8 BOM
-echo -e "${CYAN}Checking for UTF-8 BOM...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Checking for UTF-8 BOM...${NC}"
+fi
 
 BOM_COUNT=0
 while IFS= read -r -d '' file; do
@@ -59,16 +71,18 @@ while IFS= read -r -d '' file; do
     fi
 done < <(find "$REPO_ROOT" \( -name "*.md" -o -name "*.json" -o -name "*.sh" \) ! -path "*/node_modules/*" ! -path "*/.git/*" -print0 2>/dev/null)
 
-if [ $BOM_COUNT -eq 0 ]; then
-    echo -e "  ${GREEN}[OK] No UTF-8 BOM detected in files${NC}"
-elif [ "$VERBOSE" = false ]; then
-    echo -e "  ${YELLOW}Total files with BOM: $BOM_COUNT${NC}"
+if [ "$QUIET" = false ]; then
+    if [ $BOM_COUNT -eq 0 ]; then
+        echo -e "  ${GREEN}[OK] No UTF-8 BOM detected in files${NC}"
+    elif [ "$VERBOSE" = false ]; then
+        echo -e "  ${YELLOW}Total files with BOM: $BOM_COUNT${NC}"
+    fi
+
+    echo ""
+
+    # Check SKILL.md files for required sections
+    echo -e "${CYAN}Checking required sections in SKILL.md files...${NC}"
 fi
-
-echo ""
-
-# Check SKILL.md files for required sections
-echo -e "${CYAN}Checking required sections in SKILL.md files...${NC}"
 
 SKILL_FILES=$(find "$REPO_ROOT/skills" -name "SKILL.md" -type f 2>/dev/null)
 for skill_file in $SKILL_FILES; do
@@ -111,8 +125,10 @@ for skill_file in $SKILL_FILES; do
 done
 
 # Check mode consistency
-echo ""
-echo -e "${CYAN}Checking mode consistency...${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}Checking mode consistency...${NC}"
+fi
 
 MODE_FILES=$(find "$REPO_ROOT" -type f \( -name "*basic*" -o -name "*intermediate*" -o -name "*advanced*" -o -name "*yolo*" \) \( -name "*.md" -o -name "SKILL.md" \) 2>/dev/null)
 
@@ -145,11 +161,13 @@ for file in $MODE_FILES; do
     fi
 done
 
-echo -e "  ${GREEN}[OK] $MODE_CONSISTENT/$MODE_CHECKED files reference correct mode${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "  ${GREEN}[OK] $MODE_CONSISTENT/$MODE_CHECKED files reference correct mode${NC}"
 
-# Check step sequences
-echo ""
-echo -e "${CYAN}Checking step sequences...${NC}"
+    # Check step sequences
+    echo ""
+    echo -e "${CYAN}Checking step sequences...${NC}"
+fi
 
 MD_FILES=$(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null | head -50)
 
@@ -172,15 +190,17 @@ for md_file in $MD_FILES; do
     fi
 done
 
-if [ $BROKEN_SEQUENCES -eq 0 ]; then
-    echo -e "  ${GREEN}[OK] No broken step sequences found${NC}"
-else
-    echo -e "  ${YELLOW}[WARNING] Found $BROKEN_SEQUENCES files with step gaps${NC}"
-fi
+if [ "$QUIET" = false ]; then
+    if [ $BROKEN_SEQUENCES -eq 0 ]; then
+        echo -e "  ${GREEN}[OK] No broken step sequences found${NC}"
+    else
+        echo -e "  ${YELLOW}[WARNING] Found $BROKEN_SEQUENCES files with step gaps${NC}"
+    fi
 
-# V10: Check code block syntax
-echo ""
-echo -e "${CYAN}Checking code block syntax...${NC}"
+    # V10: Check code block syntax
+    echo ""
+    echo -e "${CYAN}Checking code block syntax...${NC}"
+fi
 
 # Common valid language tags
 VALID_LANGS="bash|sh|shell|python|py|javascript|js|typescript|ts|json|yaml|yml|markdown|md|html|css|dockerfile|sql|go|rust|java|c|cpp|ruby|php|perl|powershell|ps1|text|txt|plaintext"
@@ -207,15 +227,17 @@ for md_file in $MD_FILES_SUBSET; do
     done
 done
 
-if [ $INVALID_CODE_BLOCKS -eq 0 ]; then
-    echo -e "  ${GREEN}[OK] All code block language tags are valid${NC}"
-elif [ "$VERBOSE" = false ]; then
-    echo -e "  ${YELLOW}Total code blocks with unknown languages: $INVALID_CODE_BLOCKS${NC}"
-fi
+if [ "$QUIET" = false ]; then
+    if [ $INVALID_CODE_BLOCKS -eq 0 ]; then
+        echo -e "  ${GREEN}[OK] All code block language tags are valid${NC}"
+    elif [ "$VERBOSE" = false ]; then
+        echo -e "  ${YELLOW}Total code blocks with unknown languages: $INVALID_CODE_BLOCKS${NC}"
+    fi
 
-# V11: Check YAML frontmatter
-echo ""
-echo -e "${CYAN}Checking YAML frontmatter...${NC}"
+    # V11: Check YAML frontmatter
+    echo ""
+    echo -e "${CYAN}Checking YAML frontmatter...${NC}"
+fi
 
 INVALID_FRONTMATTER=0
 MD_FILES_WITH_FM=$(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null | head -100)
@@ -288,16 +310,20 @@ for md_file in $MD_FILES_WITH_FM; do
     fi
 done
 
-if [ $INVALID_FRONTMATTER -eq 0 ]; then
-    echo -e "  ${GREEN}[OK] All YAML frontmatter is valid${NC}"
-else
-    echo -e "  ${YELLOW}Files with invalid frontmatter: $INVALID_FRONTMATTER${NC}"
+if [ "$QUIET" = false ]; then
+    if [ $INVALID_FRONTMATTER -eq 0 ]; then
+        echo -e "  ${GREEN}[OK] All YAML frontmatter is valid${NC}"
+    else
+        echo -e "  ${YELLOW}Files with invalid frontmatter: $INVALID_FRONTMATTER${NC}"
+    fi
 fi
 
 # External link checking (optional)
 if [ "$CHECK_EXTERNAL" = true ]; then
-    echo ""
-    echo -e "${CYAN}Checking external links (slow)...${NC}"
+    if [ "$QUIET" = false ]; then
+        echo ""
+        echo -e "${CYAN}Checking external links (slow)...${NC}"
+    fi
 
     EXTERNAL_LINKS=$(grep -rhoP 'https?://[^)]+' "$REPO_ROOT" --include="*.md" 2>/dev/null | sort -u | head -20)
 
@@ -317,17 +343,23 @@ if [ "$CHECK_EXTERNAL" = true ]; then
         fi
     done
 
-    echo -e "  ${GREEN}Checked $CHECKED external links, $FAILED failed${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "  ${GREEN}Checked $CHECKED external links, $FAILED failed${NC}"
+    fi
 fi
 
 # Summary
-echo ""
-echo -e "${CYAN}=== Summary ===${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Summary ===${NC}"
+fi
 if [ $ERROR_COUNT -eq 0 ]; then
-    echo -e "${GREEN}✓ All content checks passed!${NC}"
-    echo -e "${GREEN}Total errors: $ERROR_COUNT${NC}"
-    if [ $WARNING_COUNT -gt 0 ]; then
-        echo -e "${YELLOW}Total warnings: $WARNING_COUNT${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}✓ All content checks passed!${NC}"
+        echo -e "${GREEN}Total errors: $ERROR_COUNT${NC}"
+        if [ $WARNING_COUNT -gt 0 ]; then
+            echo -e "${YELLOW}Total warnings: $WARNING_COUNT${NC}"
+        fi
     fi
     exit 0
 else

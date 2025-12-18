@@ -19,16 +19,24 @@ check_node
 
 VERBOSE=false
 FIND_ORPHANS=false
+QUIET=false
+LOG_FILE=""
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v|--verbose) VERBOSE=true ;;
         --find-orphans) FIND_ORPHANS=true ;;
-        *) echo "Unknown parameter: $1"; exit 1 ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -38,8 +46,10 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
-echo -e "${CYAN}=== Repository Inventory Validator ===${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== Repository Inventory Validator ===${NC}"
+    echo ""
+fi
 
 INVENTORY="$REPO_ROOT/docs/repo-keeper/INVENTORY.json"
 if [ ! -f "$INVENTORY" ]; then
@@ -51,8 +61,10 @@ fi
 VERSION=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log(d.version || 'unknown')")
 LAST_UPDATED=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log(d.last_updated || 'unknown')")
 
-echo -e "${GREEN}Inventory version: $VERSION${NC}"
-echo -e "${GREEN}Last updated: $LAST_UPDATED${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${GREEN}Inventory version: $VERSION${NC}"
+    echo -e "${GREEN}Last updated: $LAST_UPDATED${NC}"
+fi
 
 # Check timestamp not in future
 CURRENT_DATE=$(date +%Y-%m-%d)
@@ -60,7 +72,9 @@ if [[ "$LAST_UPDATED" > "$CURRENT_DATE" ]]; then
     echo -e "${YELLOW}[WARNING] last_updated is in the future: $LAST_UPDATED (current: $CURRENT_DATE)${NC}"
 fi
 
-echo ""
+if [ "$QUIET" = false ]; then
+    echo ""
+fi
 
 TOTAL_PATHS=0
 VALID_PATHS=0
@@ -84,12 +98,15 @@ validate_path() {
         ((MISSING_PATHS++))
         ERRORS+=("$category|$path|NOT FOUND")
         echo -e "  ${RED}[MISSING] $path${NC}"
+        echo -e "    ${YELLOW}How to fix: Create the file at $path or remove it from INVENTORY.json${NC}"
         return 1
     fi
 }
 
 # Validate Skills
-echo -e "${CYAN}Validating skills...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating skills...${NC}"
+fi
 while IFS= read -r line; do
     if [[ $line == SKILL:* ]]; then
         validate_path "${line#SKILL:}" "Skill"
@@ -107,7 +124,9 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 ")
 
 # Validate Commands
-echo -e "${CYAN}Validating commands...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating commands...${NC}"
+fi
 while IFS= read -r path; do
     [ -n "$path" ] && validate_path "$path" "Command"
 done < <(node -e "
@@ -118,7 +137,9 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 ")
 
 # Validate Templates
-echo -e "${CYAN}Validating templates...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating templates...${NC}"
+fi
 
 # Master templates
 while IFS= read -r path; do
@@ -143,7 +164,9 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 done
 
 # Validate Examples
-echo -e "${CYAN}Validating examples...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating examples...${NC}"
+fi
 while IFS= read -r line; do
     if [[ $line == EXAMPLE:* ]]; then
         validate_path "${line#EXAMPLE:}" "Example"
@@ -171,7 +194,9 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 ")
 
 # Validate Data Files
-echo -e "${CYAN}Validating data files...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating data files...${NC}"
+fi
 while IFS= read -r path; do
     [ -n "$path" ] && validate_path "$path" "Data File"
 done < <(node -e "
@@ -182,7 +207,9 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 ")
 
 # Validate Documentation
-echo -e "${CYAN}Validating documentation...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating documentation...${NC}"
+fi
 for category in root docs commands skills templates examples data tests repo-keeper; do
     while IFS= read -r path; do
         [ -n "$path" ] && validate_path "$path" "Documentation ($category)"
@@ -195,7 +222,9 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 done
 
 # Validate DevContainers
-echo -e "${CYAN}Validating devcontainers...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating devcontainers...${NC}"
+fi
 while IFS= read -r line; do
     if [[ $line == DEVCONTAINER:* ]]; then
         validate_path "${line#DEVCONTAINER:}" "DevContainer"
@@ -218,7 +247,9 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 ")
 
 # Validate Dependencies
-echo -e "${CYAN}Validating dependencies...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating dependencies...${NC}"
+fi
 while IFS= read -r path; do
     [ -n "$path" ] && validate_path "$path" "Python Requirements"
 done < <(node -e "
@@ -238,7 +269,9 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 ")
 
 # Validate Test Files
-echo -e "${CYAN}Validating test files...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating test files...${NC}"
+fi
 while IFS= read -r path; do
     [ -n "$path" ] && validate_path "$path" "Manual Test"
 done < <(node -e "
@@ -251,8 +284,10 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 # Find orphaned files (if requested)
 ORPHAN_COUNT=0
 if [ "$FIND_ORPHANS" = true ]; then
-    echo ""
-    echo -e "${CYAN}Searching for orphaned files...${NC}"
+    if [ "$QUIET" = false ]; then
+        echo ""
+        echo -e "${CYAN}Searching for orphaned files...${NC}"
+    fi
 
     # Build list of all paths in INVENTORY.json using Node.js
     INVENTORY_PATHS=$(node -e "
@@ -301,19 +336,23 @@ if [ "$FIND_ORPHANS" = true ]; then
         fi
     done
 
-    echo ""
-    echo -e "Orphaned files found: $ORPHAN_COUNT"
+    if [ "$QUIET" = false ]; then
+        echo ""
+        echo -e "Orphaned files found: $ORPHAN_COUNT"
+    fi
 fi
 
 # Summary
-echo ""
-echo -e "${CYAN}=== Summary ===${NC}"
-echo "Total paths in inventory: $TOTAL_PATHS"
-echo -e "${GREEN}Valid paths:              $VALID_PATHS${NC}"
-if [ $MISSING_PATHS -eq 0 ]; then
-    echo -e "${GREEN}Missing paths:            $MISSING_PATHS${NC}"
-else
-    echo -e "${RED}Missing paths:            $MISSING_PATHS${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Summary ===${NC}"
+    echo "Total paths in inventory: $TOTAL_PATHS"
+    echo -e "${GREEN}Valid paths:              $VALID_PATHS${NC}"
+    if [ $MISSING_PATHS -eq 0 ]; then
+        echo -e "${GREEN}Missing paths:            $MISSING_PATHS${NC}"
+    else
+        echo -e "${RED}Missing paths:            $MISSING_PATHS${NC}"
+    fi
 fi
 
 # Detailed error report
@@ -356,8 +395,10 @@ NODEOF
 fi
 
 # Check for duplicate paths
-echo ""
-echo -e "${CYAN}=== Duplicate Path Check ===${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Duplicate Path Check ===${NC}"
+fi
 
 DUPLICATES=$(node -e "
 const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
@@ -414,15 +455,21 @@ if [ -n "$DUPLICATES" ]; then
         echo -e "  ${RED}[DUPLICATE] $path${NC}"
         echo -e "    ${YELLOW}Used in: $types${NC}"
     done <<< "$DUPLICATES"
-    echo ""
+    if [ "$QUIET" = false ]; then
+        echo ""
+    fi
     echo -e "${RED}Each path should appear only once in INVENTORY.json${NC}"
 else
-    echo -e "${GREEN}✓ No duplicate paths found${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}✓ No duplicate paths found${NC}"
+    fi
 fi
 
 # Check version consistency
-echo ""
-echo -e "${CYAN}=== Version Checks ===${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Version Checks ===${NC}"
+fi
 
 KNOWN_ISSUES=$(node -e "
 const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
@@ -440,7 +487,9 @@ else
     HAS_ISSUES=false
 fi
 
-echo ""
+if [ "$QUIET" = false ]; then
+    echo ""
+fi
 
 # Exit with appropriate code for CI/CD
 EXIT_CODE=0
@@ -458,9 +507,11 @@ else
 fi
 
 if [ "$FIND_ORPHANS" = true ] && [ $ORPHAN_COUNT -gt 0 ]; then
-    echo ""
-    echo -e "${CYAN}ℹ Found $ORPHAN_COUNT orphaned files not in inventory${NC}"
-    echo -e "${CYAN}  Consider adding them to INVENTORY.json${NC}"
+    if [ "$QUIET" = false ]; then
+        echo ""
+        echo -e "${CYAN}ℹ Found $ORPHAN_COUNT orphaned files not in inventory${NC}"
+        echo -e "${CYAN}  Consider adding them to INVENTORY.json${NC}"
+    fi
 fi
 
 exit $EXIT_CODE

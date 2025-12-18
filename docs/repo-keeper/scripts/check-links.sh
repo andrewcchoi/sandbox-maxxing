@@ -21,16 +21,24 @@ check_node
 
 VERBOSE=false
 SKIP_EXTERNAL=true
+QUIET=false
+LOG_FILE=""
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v|--verbose) VERBOSE=true ;;
         --check-external) SKIP_EXTERNAL=false ;;
-        *) echo "Unknown parameter: $1"; exit 1 ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -40,8 +48,10 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
-echo -e "${CYAN}=== Repository Link Checker ===${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== Repository Link Checker ===${NC}"
+    echo ""
+fi
 
 # Temporary files for tracking
 ERROR_FILE=$(mktemp)
@@ -54,8 +64,10 @@ trap "rm -f $ERROR_FILE $LINKS_FILE $ANCHOR_ERROR_FILE $IMAGE_ERROR_FILE" EXIT
 mapfile -t MD_FILES < <(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null)
 
 FILE_COUNT=${#MD_FILES[@]}
-echo -e "${CYAN}Scanning $FILE_COUNT markdown files...${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Scanning $FILE_COUNT markdown files...${NC}"
+    echo ""
+fi
 
 # Process each file
 for file in "${MD_FILES[@]}"; do
@@ -139,8 +151,10 @@ done
 
 # V8: Check anchor links
 ANCHOR_ERRORS=0
-echo ""
-echo -e "${CYAN}Validating anchor links...${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}Validating anchor links...${NC}"
+fi
 for file in "${MD_FILES[@]}"; do
     RELATIVE_PATH="${file#$REPO_ROOT/}"
     FILE_DIR=$(dirname "$file")
@@ -175,7 +189,9 @@ ANCHOR_ERRORS=$(wc -l < "$ANCHOR_ERROR_FILE" 2>/dev/null || echo 0)
 
 # V9: Check image references
 IMAGE_ERRORS=0
-echo -e "${CYAN}Validating image references...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating image references...${NC}"
+fi
 for file in "${MD_FILES[@]}"; do
     RELATIVE_PATH="${file#$REPO_ROOT/}"
     FILE_DIR=$(dirname "$file")
@@ -213,26 +229,28 @@ VALID_LINKS=$(grep -c '^VALID|' "$LINKS_FILE" 2>/dev/null || echo 0)
 BROKEN_LINKS=$(grep -c '^BROKEN|' "$LINKS_FILE" 2>/dev/null || echo 0)
 
 # Summary
-echo ""
-echo -e "${CYAN}=== Summary ===${NC}"
-echo "Total markdown files:  $FILE_COUNT"
-echo "Total links found:     $TOTAL_LINKS"
-echo -e "${GREEN}Valid internal links:  $VALID_LINKS${NC}"
-echo -e "${GRAY}External links:        $EXTERNAL_LINKS${NC}"
-if [ $BROKEN_LINKS -eq 0 ]; then
-    echo -e "${GREEN}Broken links:          $BROKEN_LINKS${NC}"
-else
-    echo -e "${RED}Broken links:          $BROKEN_LINKS${NC}"
-fi
-if [ $ANCHOR_ERRORS -eq 0 ]; then
-    echo -e "${GREEN}Broken anchors:        $ANCHOR_ERRORS${NC}"
-else
-    echo -e "${YELLOW}Broken anchors:        $ANCHOR_ERRORS${NC}"
-fi
-if [ $IMAGE_ERRORS -eq 0 ]; then
-    echo -e "${GREEN}Missing images:        $IMAGE_ERRORS${NC}"
-else
-    echo -e "${YELLOW}Missing images:        $IMAGE_ERRORS${NC}"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Summary ===${NC}"
+    echo "Total markdown files:  $FILE_COUNT"
+    echo "Total links found:     $TOTAL_LINKS"
+    echo -e "${GREEN}Valid internal links:  $VALID_LINKS${NC}"
+    echo -e "${GRAY}External links:        $EXTERNAL_LINKS${NC}"
+    if [ $BROKEN_LINKS -eq 0 ]; then
+        echo -e "${GREEN}Broken links:          $BROKEN_LINKS${NC}"
+    else
+        echo -e "${RED}Broken links:          $BROKEN_LINKS${NC}"
+    fi
+    if [ $ANCHOR_ERRORS -eq 0 ]; then
+        echo -e "${GREEN}Broken anchors:        $ANCHOR_ERRORS${NC}"
+    else
+        echo -e "${YELLOW}Broken anchors:        $ANCHOR_ERRORS${NC}"
+    fi
+    if [ $IMAGE_ERRORS -eq 0 ]; then
+        echo -e "${GREEN}Missing images:        $IMAGE_ERRORS${NC}"
+    else
+        echo -e "${YELLOW}Missing images:        $IMAGE_ERRORS${NC}"
+    fi
 fi
 
 # Detailed error report
@@ -262,19 +280,25 @@ if [ $BROKEN_LINKS -gt 0 ] && [ -s "$ERROR_FILE" ]; then
     done
 fi
 
-echo ""
+if [ "$QUIET" = false ]; then
+    echo ""
+fi
 
 # Exit with appropriate code for CI/CD
 if [ $BROKEN_LINKS -eq 0 ]; then
-    echo -e "${GREEN}✓ All internal links are valid!${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}✓ All internal links are valid!${NC}"
+    fi
     exit 0
 else
     echo -e "${RED}✗ Link check failed!${NC}"
-    echo ""
-    echo "To fix broken links:"
-    echo "  1. Update relative paths to match actual file locations"
-    echo "  2. Use relative paths (../path) instead of absolute (/workspace/path)"
-    echo "  3. Ensure linked files exist in the repository"
-    echo "  4. Run this script again to verify"
+    if [ "$QUIET" = false ]; then
+        echo ""
+        echo "To fix broken links:"
+        echo "  1. Update relative paths to match actual file locations"
+        echo "  2. Use relative paths (../path) instead of absolute (/workspace/path)"
+        echo "  3. Ensure linked files exist in the repository"
+        echo "  4. Run this script again to verify"
+    fi
     exit 1
 fi

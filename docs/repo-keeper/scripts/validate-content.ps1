@@ -3,19 +3,31 @@
 
 param(
     [switch]$Verbose,
-    [switch]$CheckExternal
+    [switch]$CheckExternal,
+    [switch]$Quiet,
+    [string]$Log
 )
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
+
 $repoRoot = "/workspace"
 
-Write-Host "=== Content Validator ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Content Validator ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 $errorCount = 0
 
 # Check SKILL.md files for required sections
-Write-Host "Checking required sections in SKILL.md files..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Checking required sections in SKILL.md files..." -ForegroundColor Cyan
+}
 
 $skillFiles = Get-ChildItem -Path (Join-Path $repoRoot "skills") -Filter "SKILL.md" -Recurse -File -ErrorAction SilentlyContinue
 
@@ -44,8 +56,10 @@ foreach ($skillFile in $skillFiles) {
 }
 
 # Check mode consistency
-Write-Host ""
-Write-Host "Checking mode consistency..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking mode consistency..." -ForegroundColor Cyan
+}
 
 $modeFiles = Get-ChildItem -Path $repoRoot -Include @("*basic*", "*intermediate*", "*advanced*", "*yolo*") -Recurse -File -ErrorAction SilentlyContinue |
     Where-Object { $_.Extension -eq ".md" -or $_.Name -eq "SKILL.md" }
@@ -82,11 +96,15 @@ foreach ($file in $modeFiles) {
     }
 }
 
-Write-Host "  [OK] $modeConsistent/$modeChecked files reference correct mode" -ForegroundColor Green
+if (-not $Quiet) {
+    Write-Host "  [OK] $modeConsistent/$modeChecked files reference correct mode" -ForegroundColor Green
+}
 
 # Check step sequences
-Write-Host ""
-Write-Host "Checking step sequences..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking step sequences..." -ForegroundColor Cyan
+}
 
 $mdFiles = Get-ChildItem -Path $repoRoot -Filter "*.md" -Recurse -File -ErrorAction SilentlyContinue |
     Where-Object { $_.FullName -notmatch 'node_modules' -and $_.FullName -notmatch '\.git' } |
@@ -121,16 +139,20 @@ foreach ($mdFile in $mdFiles) {
     }
 }
 
-if ($brokenSequences -eq 0) {
-    Write-Host "  [OK] No broken step sequences found" -ForegroundColor Green
-} else {
-    Write-Host "  [WARNING] Found $brokenSequences files with step gaps" -ForegroundColor Yellow
+if (-not $Quiet) {
+    if ($brokenSequences -eq 0) {
+        Write-Host "  [OK] No broken step sequences found" -ForegroundColor Green
+    } else {
+        Write-Host "  [WARNING] Found $brokenSequences files with step gaps" -ForegroundColor Yellow
+    }
 }
 
 # External link checking (optional)
 if ($CheckExternal) {
-    Write-Host ""
-    Write-Host "Checking external links (slow)..." -ForegroundColor Cyan
+    if (-not $Quiet) {
+        Write-Host ""
+        Write-Host "Checking external links (slow)..." -ForegroundColor Cyan
+    }
 
     # Extract all external links from markdown files
     $externalLinks = @()
@@ -166,18 +188,26 @@ if ($CheckExternal) {
         }
     }
 
-    Write-Host "  Checked $checked external links, $failed failed" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "  Checked $checked external links, $failed failed" -ForegroundColor Green
+    }
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+}
 if ($errorCount -eq 0) {
-    Write-Host "✓ All content checks passed!" -ForegroundColor Green
-    Write-Host "Total errors: $errorCount" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All content checks passed!" -ForegroundColor Green
+        Write-Host "Total errors: $errorCount" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Content validation failed!" -ForegroundColor Red
     Write-Host "Total errors: $errorCount" -ForegroundColor Red
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }

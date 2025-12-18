@@ -20,15 +20,23 @@ source "$SCRIPT_DIR/lib/check-dependencies.sh"
 check_node
 
 VERBOSE=false
+QUIET=false
+LOG_FILE=""
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v|--verbose) VERBOSE=true ;;
-        *) echo "Unknown parameter: $1"; exit 1 ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -38,8 +46,10 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
-echo -e "${CYAN}=== Relationship Validator ===${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== Relationship Validator ===${NC}"
+    echo ""
+fi
 
 INVENTORY="$REPO_ROOT/docs/repo-keeper/INVENTORY.json"
 if [ ! -f "$INVENTORY" ]; then
@@ -51,7 +61,9 @@ ERROR_COUNT=0
 TOTAL_CHECKS=0
 
 # Check skill → template relationships
-echo -e "${CYAN}Checking skill → template relationships...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Checking skill → template relationships...${NC}"
+fi
 
 SKILL_COUNT=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log((d.skills || []).length)")
 for ((i=0; i<SKILL_COUNT; i++)); do
@@ -62,6 +74,7 @@ for ((i=0; i<SKILL_COUNT; i++)); do
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
     if [ ! -f "$REPO_ROOT/$SKILL_PATH" ]; then
         echo -e "  ${RED}[ERROR] $SKILL_NAME: Skill file not found: $SKILL_PATH${NC}"
+        echo -e "    ${YELLOW}How to fix: Create skill file at $SKILL_PATH or update path in INVENTORY.json${NC}"
         ERROR_COUNT=$((ERROR_COUNT + 1))
     elif [ "$VERBOSE" = true ]; then
         echo -e "  ${GRAY}[OK] $SKILL_NAME: skill file exists${NC}"
@@ -76,6 +89,7 @@ for ((i=0; i<SKILL_COUNT; i++)); do
 
             if [ ! -f "$REPO_ROOT/$TEMPLATE_PATH" ]; then
                 echo -e "  ${RED}[ERROR] $SKILL_NAME → $TEMPLATE_PATH (NOT FOUND)${NC}"
+                echo -e "    ${YELLOW}How to fix: Create template file at $TEMPLATE_PATH or remove from related_templates in INVENTORY.json${NC}"
                 ERROR_COUNT=$((ERROR_COUNT + 1))
             elif [ "$VERBOSE" = true ]; then
                 echo -e "  ${GRAY}[OK] $SKILL_NAME → $TEMPLATE_PATH${NC}"
@@ -84,13 +98,15 @@ for ((i=0; i<SKILL_COUNT; i++)); do
     fi
 done
 
-if [ "$ERROR_COUNT" -eq 0 ]; then
-    echo -e "  ${GREEN}[OK] All skill → template relationships valid${NC}"
-fi
+if [ "$QUIET" = false ]; then
+    if [ "$ERROR_COUNT" -eq 0 ]; then
+        echo -e "  ${GREEN}[OK] All skill → template relationships valid${NC}"
+    fi
 
-# Check skill ↔ command relationships
-echo ""
-echo -e "${CYAN}Checking skill ↔ command relationships...${NC}"
+    # Check skill ↔ command relationships
+    echo ""
+    echo -e "${CYAN}Checking skill ↔ command relationships...${NC}"
+fi
 
 for ((i=0; i<SKILL_COUNT; i++)); do
     SKILL_NAME=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log(d.skills[$i]?.name || '')")
@@ -102,6 +118,7 @@ for ((i=0; i<SKILL_COUNT; i++)); do
         # Check command file exists
         if [ ! -f "$REPO_ROOT/$RELATED_COMMAND" ]; then
             echo -e "  ${RED}[ERROR] $SKILL_NAME → $RELATED_COMMAND (NOT FOUND)${NC}"
+            echo -e "    ${YELLOW}How to fix: Create command file at $RELATED_COMMAND or update related_command in INVENTORY.json${NC}"
             ERROR_COUNT=$((ERROR_COUNT + 1))
         else
             # Check command mentions skill (bidirectional)
@@ -116,13 +133,15 @@ for ((i=0; i<SKILL_COUNT; i++)); do
     fi
 done
 
-if [ "$ERROR_COUNT" -eq 0 ]; then
-    echo -e "  ${GREEN}[OK] All skill ↔ command relationships valid${NC}"
-fi
+if [ "$QUIET" = false ]; then
+    if [ "$ERROR_COUNT" -eq 0 ]; then
+        echo -e "  ${GREEN}[OK] All skill ↔ command relationships valid${NC}"
+    fi
 
-# Check command → skill relationships (reverse)
-echo ""
-echo -e "${CYAN}Checking command → skill relationships...${NC}"
+    # Check command → skill relationships (reverse)
+    echo ""
+    echo -e "${CYAN}Checking command → skill relationships...${NC}"
+fi
 
 COMMAND_COUNT=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log((d.commands || []).length)")
 for ((i=0; i<COMMAND_COUNT; i++)); do
@@ -137,19 +156,22 @@ for ((i=0; i<COMMAND_COUNT; i++)); do
 
     if [ -z "$SKILL_EXISTS" ] && [ "$INVOKES_SKILL" != "interactive" ]; then
         echo -e "  ${RED}[ERROR] $COMMAND_NAME invokes non-existent skill: $INVOKES_SKILL${NC}"
+        echo -e "    ${YELLOW}How to fix: Add skill '$INVOKES_SKILL' to INVENTORY.json or update invokes_skill field for command${NC}"
         ERROR_COUNT=$((ERROR_COUNT + 1))
     elif [ "$VERBOSE" = true ]; then
         echo -e "  ${GRAY}[OK] $COMMAND_NAME → $INVOKES_SKILL${NC}"
     fi
 done
 
-if [ "$ERROR_COUNT" -eq 0 ]; then
-    echo -e "  ${GREEN}[OK] All command → skill relationships valid${NC}"
-fi
+if [ "$QUIET" = false ]; then
+    if [ "$ERROR_COUNT" -eq 0 ]; then
+        echo -e "  ${GREEN}[OK] All command → skill relationships valid${NC}"
+    fi
 
-# Check skill → example relationships
-echo ""
-echo -e "${CYAN}Checking skill → example relationships...${NC}"
+    # Check skill → example relationships
+    echo ""
+    echo -e "${CYAN}Checking skill → example relationships...${NC}"
+fi
 
 for ((i=0; i<SKILL_COUNT; i++)); do
     SKILL_NAME=$(node -e "const d=JSON.parse(require('fs').readFileSync('$INVENTORY')); console.log(d.skills[$i]?.name || '')")
@@ -160,6 +182,7 @@ for ((i=0; i<SKILL_COUNT; i++)); do
 
         if [ ! -d "$REPO_ROOT/$RELATED_EXAMPLE" ]; then
             echo -e "  ${RED}[ERROR] $SKILL_NAME → $RELATED_EXAMPLE (NOT FOUND)${NC}"
+            echo -e "    ${YELLOW}How to fix: Create example at $RELATED_EXAMPLE or update related_example in INVENTORY.json${NC}"
             ERROR_COUNT=$((ERROR_COUNT + 1))
         elif [ "$VERBOSE" = true ]; then
             echo -e "  ${GRAY}[OK] $SKILL_NAME → $RELATED_EXAMPLE${NC}"
@@ -167,17 +190,22 @@ for ((i=0; i<SKILL_COUNT; i++)); do
     fi
 done
 
-if [ "$ERROR_COUNT" -eq 0 ]; then
-    echo -e "  ${GREEN}[OK] All skill → example relationships valid${NC}"
+if [ "$QUIET" = false ]; then
+    if [ "$ERROR_COUNT" -eq 0 ]; then
+        echo -e "  ${GREEN}[OK] All skill → example relationships valid${NC}"
+    fi
+
+    # Summary
+    echo ""
+    echo -e "${CYAN}=== Summary ===${NC}"
+    echo "Total relationships checked: $TOTAL_CHECKS"
 fi
 
-# Summary
-echo ""
-echo -e "${CYAN}=== Summary ===${NC}"
-echo "Total relationships checked: $TOTAL_CHECKS"
 if [ $ERROR_COUNT -eq 0 ]; then
-    echo -e "${GREEN}✓ All relationships valid!${NC}"
-    echo -e "${GREEN}Total errors: $ERROR_COUNT${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}✓ All relationships valid!${NC}"
+        echo -e "${GREEN}Total errors: $ERROR_COUNT${NC}"
+    fi
     exit 0
 else
     echo -e "${RED}✗ Relationship validation failed!${NC}"

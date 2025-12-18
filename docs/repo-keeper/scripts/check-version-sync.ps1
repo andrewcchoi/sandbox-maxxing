@@ -2,10 +2,17 @@
 # Validates version consistency across the repository
 
 param(
-    [switch]$Verbose
+    [switch]$Verbose,
+    [switch]$Quiet,
+    [string]$Log
 )
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 
 # Auto-detect repo root from script location
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -16,15 +23,19 @@ if ($env:REPO_ROOT) {
     $repoRoot = $env:REPO_ROOT
 }
 
-Write-Host "=== Repository Version Sync Checker ===" -ForegroundColor Cyan
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Repository Version Sync Checker ===" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 # Read version from plugin.json
 $pluginJsonPath = Join-Path $repoRoot ".claude-plugin\plugin.json"
 $pluginJson = Get-Content $pluginJsonPath -Raw | ConvertFrom-Json
 $expectedVersion = $pluginJson.version
-Write-Host "Expected version (from plugin.json): $expectedVersion" -ForegroundColor Green
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "Expected version (from plugin.json): $expectedVersion" -ForegroundColor Green
+    Write-Host ""
+}
 
 # Read version from marketplace.json
 $marketplaceJsonPath = Join-Path $repoRoot ".claude-plugin\marketplace.json"
@@ -55,6 +66,7 @@ if ($marketplaceVersion -ne $expectedVersion) {
         Type = "Config"
     }
     Write-Host "[ERROR] marketplace.json version mismatch: $marketplaceVersion" -ForegroundColor Red
+    Write-Host "  How to fix: Update version field in .claude-plugin\marketplace.json to $expectedVersion" -ForegroundColor Yellow
 } else {
     Write-Host "[OK] marketplace.json version matches: $marketplaceVersion" -ForegroundColor Green
 }
@@ -68,12 +80,15 @@ if ($inventoryVersion -ne $expectedVersion) {
         Type = "Inventory"
     }
     Write-Host "[ERROR] INVENTORY.json version mismatch: $inventoryVersion" -ForegroundColor Red
+    Write-Host "  How to fix: Update version field in docs\repo-keeper\INVENTORY.json to $expectedVersion" -ForegroundColor Yellow
 } else {
     Write-Host "[OK] INVENTORY.json version matches: $inventoryVersion" -ForegroundColor Green
 }
 
-Write-Host ""
-Write-Host "Checking documentation footers..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking documentation footers..." -ForegroundColor Cyan
+}
 
 # Find all markdown files
 $mdFiles = Get-ChildItem -Path $repoRoot -Filter "*.md" -Recurse | Where-Object {
@@ -107,6 +122,7 @@ foreach ($file in $mdFiles) {
                 Type = "Footer"
             }
             Write-Host "  [MISMATCH] $relativePath - Found: $foundVersion" -ForegroundColor Yellow
+            Write-Host "    How to fix: Update **Version:** footer in $relativePath to $expectedVersion" -ForegroundColor Yellow
         }
     } else {
         $missingFooters++
@@ -117,8 +133,10 @@ foreach ($file in $mdFiles) {
 }
 
 # Check data files with version fields
-Write-Host ""
-Write-Host "Checking data files..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Checking data files..." -ForegroundColor Cyan
+}
 
 $dataFiles = @(
     @{ Path = "data\secrets.json"; Field = "version" },
@@ -139,6 +157,7 @@ foreach ($dataFile in $dataFiles) {
                 Type = "Data"
             }
             Write-Host "  [ERROR] $($dataFile.Path) version mismatch: $dataVersion" -ForegroundColor Red
+            Write-Host "    How to fix: Update version field in $($dataFile.Path) to $expectedVersion" -ForegroundColor Yellow
         } else {
             Write-Host "  [OK] $($dataFile.Path) version matches: $dataVersion" -ForegroundColor Green
         }
@@ -146,13 +165,15 @@ foreach ($dataFile in $dataFiles) {
 }
 
 # Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Total markdown files checked: $totalFiles"
-Write-Host "Files with matching footers:  $matchingFiles" -ForegroundColor Green
-Write-Host "Files with wrong versions:    $wrongVersions" -ForegroundColor Yellow
-Write-Host "Files missing footers:        $missingFooters" -ForegroundColor DarkGray
-Write-Host "Total errors found:           $($errors.Count)" -ForegroundColor $(if ($errors.Count -eq 0) { "Green" } else { "Red" })
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary ===" -ForegroundColor Cyan
+    Write-Host "Total markdown files checked: $totalFiles"
+    Write-Host "Files with matching footers:  $matchingFiles" -ForegroundColor Green
+    Write-Host "Files with wrong versions:    $wrongVersions" -ForegroundColor Yellow
+    Write-Host "Files missing footers:        $missingFooters" -ForegroundColor DarkGray
+    Write-Host "Total errors found:           $($errors.Count)" -ForegroundColor $(if ($errors.Count -eq 0) { "Green" } else { "Red" })
+}
 
 # Detailed error report
 if ($errors.Count -gt 0) {
@@ -211,18 +232,26 @@ if ($Verbose -and $missingFooters -gt 0) {
     }
 }
 
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host ""
+}
 
 # Exit with appropriate code for CI/CD
 if ($errors.Count -eq 0) {
-    Write-Host "✓ All versions are in sync!" -ForegroundColor Green
+    if (-not $Quiet) {
+        Write-Host "✓ All versions are in sync!" -ForegroundColor Green
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 0
 } else {
     Write-Host "✗ Version sync check failed!" -ForegroundColor Red
-    Write-Host ""
-    Write-Host "To fix version mismatches:"
-    Write-Host "  1. Update all files to version $expectedVersion"
-    Write-Host "  2. Use search/replace across the repository"
-    Write-Host "  3. Run this script again to verify"
+    if (-not $Quiet) {
+        Write-Host ""
+        Write-Host "To fix version mismatches:"
+        Write-Host "  1. Update all files to version $expectedVersion"
+        Write-Host "  2. Use search/replace across the repository"
+        Write-Host "  3. Run this script again to verify"
+    }
+    if ($Log) { Stop-Transcript | Out-Null }
     exit 1
 }

@@ -14,15 +14,23 @@ if [[ -n "${REPO_ROOT_OVERRIDE:-}" ]]; then
 fi
 
 VERBOSE=false
+QUIET=false
+LOG_FILE=""
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v|--verbose) VERBOSE=true ;;
-        *) echo "Unknown parameter: $1"; exit 1 ;;
+        -q|--quiet) QUIET=true ;;
+        --log) LOG_FILE="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 128 ;;
     esac
     shift
 done
+
+if [ -n "$LOG_FILE" ]; then
+    exec > >(tee -a "$LOG_FILE") 2>&1
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -32,8 +40,10 @@ CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
-echo -e "${CYAN}=== Dockerfile Validator ===${NC}"
-echo ""
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}=== Dockerfile Validator ===${NC}"
+    echo ""
+fi
 
 WARNING_COUNT=0
 ERROR_COUNT=0
@@ -44,7 +54,9 @@ DOCKERFILES=$(find "$REPO_ROOT" -type f \( -name "Dockerfile*" -o -name "*.docke
 TOTAL_DOCKERFILES=0
 INVALID_DOCKERFILES=0
 
-echo -e "${CYAN}Validating Dockerfile syntax...${NC}"
+if [ "$QUIET" = false ]; then
+    echo -e "${CYAN}Validating Dockerfile syntax...${NC}"
+fi
 
 for dockerfile in $DOCKERFILES; do
     [ -e "$dockerfile" ] || continue
@@ -116,16 +128,22 @@ for dockerfile in $DOCKERFILES; do
 done
 
 # Summary
-echo ""
-echo -e "${CYAN}=== Summary ===${NC}"
-echo "Total Dockerfiles checked: $TOTAL_DOCKERFILES"
+if [ "$QUIET" = false ]; then
+    echo ""
+    echo -e "${CYAN}=== Summary ===${NC}"
+    echo "Total Dockerfiles checked: $TOTAL_DOCKERFILES"
+fi
 
 if [ $ERROR_COUNT -eq 0 ] && [ $WARNING_COUNT -eq 0 ]; then
-    echo -e "${GREEN}✓ All Dockerfiles are valid!${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${GREEN}✓ All Dockerfiles are valid!${NC}"
+    fi
     exit 0
 elif [ $ERROR_COUNT -eq 0 ]; then
-    echo -e "${YELLOW}⚠ Dockerfile validation passed with warnings${NC}"
-    echo -e "${YELLOW}Warnings: $WARNING_COUNT${NC}"
+    if [ "$QUIET" = false ]; then
+        echo -e "${YELLOW}⚠ Dockerfile validation passed with warnings${NC}"
+        echo -e "${YELLOW}Warnings: $WARNING_COUNT${NC}"
+    fi
     exit 0
 else
     echo -e "${RED}✗ Dockerfile validation failed!${NC}"

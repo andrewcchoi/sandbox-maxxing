@@ -5,10 +5,18 @@ param(
     [switch]$Quick,
     [switch]$Full,
     [switch]$Verbose,
-    [switch]$FixCrlf
+    [switch]$FixCrlf,
+    [switch]$Quiet,
+    [switch]$FailFast,
+    [string]$Log
 )
 
 $ErrorActionPreference = "Stop"
+
+# Start logging if requested
+if ($Log) {
+    Start-Transcript -Path $Log -Append | Out-Null
+}
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = "/workspace"
 
@@ -26,23 +34,29 @@ if (Test-Path $pluginJsonPath) {
     $version = "unknown"
 }
 
-Write-Host "=== Repository Validation Suite ===" -ForegroundColor Cyan
-Write-Host "Version: $version"
-Write-Host "Date: $(Get-Date -Format 'yyyy-MM-dd')"
-Write-Host "Tier: $tier"
-Write-Host ""
+if (-not $Quiet) {
+    Write-Host "=== Repository Validation Suite ===" -ForegroundColor Cyan
+    Write-Host "Version: $version"
+    Write-Host "Date: $(Get-Date -Format 'yyyy-MM-dd')"
+    Write-Host "Tier: $tier"
+    Write-Host ""
+}
 
 # Fix CRLF if requested
 if ($FixCrlf) {
-    Write-Host "Fixing line endings..." -ForegroundColor Cyan
+    if (-not $Quiet) {
+        Write-Host "Fixing line endings..." -ForegroundColor Cyan
+    }
     $shellScripts = Get-ChildItem -Path $scriptDir -Filter "*.sh" -File
     foreach ($script in $shellScripts) {
         $content = Get-Content $script.FullName -Raw
         $content = $content -replace "`r`n", "`n"
         Set-Content -Path $script.FullName -Value $content -NoNewline
     }
-    Write-Host "✓ Line endings fixed" -ForegroundColor Green
-    Write-Host ""
+    if (-not $Quiet) {
+        Write-Host "✓ Line endings fixed" -ForegroundColor Green
+        Write-Host ""
+    }
 }
 
 # Counters
@@ -69,9 +83,16 @@ function Run-Check {
         $Args = @("-Verbose") + $Args
     }
 
+    # Build quiet flag if needed
+    if ($script:Quiet) {
+        $Args = @("-Quiet") + $Args
+    }
+
     # Prepare display name with padding
     $displayName = $CheckName.PadRight(30)
-    Write-Host "  [$CheckNum/$TotalInTier] $displayName" -NoNewline
+    if (-not $script:Quiet) {
+        Write-Host "  [$CheckNum/$TotalInTier] $displayName" -NoNewline
+    }
 
     # Determine if PowerShell or Bash script
     $scriptPath = Join-Path $scriptDir $ScriptName
@@ -99,6 +120,7 @@ function Run-Check {
             $exitCode = $LASTEXITCODE
         }
     } catch {
+        Write-Host "[ERROR] $($_.Exception.Message)" -ForegroundColor Red
         $output = $_.Exception.Message
         $exitCode = 1
     }
@@ -117,30 +139,45 @@ function Run-Check {
 
     # Display result
     if ($exitCode -eq 0) {
-        if ($checkWarnings -gt 0) {
-            Write-Host " " -NoNewline
-            Write-Host "✓ PASS" -ForegroundColor Green -NoNewline
-            Write-Host " " -NoNewline
-            Write-Host "($checkWarnings warnings)" -ForegroundColor Yellow
-        } else {
-            Write-Host " " -NoNewline
-            Write-Host "✓ PASS" -ForegroundColor Green
+        if (-not $script:Quiet) {
+            if ($checkWarnings -gt 0) {
+                Write-Host " " -NoNewline
+                Write-Host "✓ PASS" -ForegroundColor Green -NoNewline
+                Write-Host " " -NoNewline
+                Write-Host "($checkWarnings warnings)" -ForegroundColor Yellow
+            } else {
+                Write-Host " " -NoNewline
+                Write-Host "✓ PASS" -ForegroundColor Green
+            }
         }
         $script:passedChecks++
     } else {
-        Write-Host " " -NoNewline
-        Write-Host "✗ FAIL" -ForegroundColor Red -NoNewline
-        Write-Host " " -NoNewline
-        Write-Host "($checkErrors errors)" -ForegroundColor Red
+        if (-not $script:Quiet) {
+            Write-Host " " -NoNewline
+            Write-Host "✗ FAIL" -ForegroundColor Red -NoNewline
+            Write-Host " " -NoNewline
+            Write-Host "($checkErrors errors)" -ForegroundColor Red
+        }
         $script:failedChecks++
 
-        # Show error details if not verbose
-        if (-not $script:Verbose) {
+        # Show error details if not verbose and not quiet
+        if (-not $script:Verbose -and -not $script:Quiet) {
             Write-Host ""
             $errorLines = $output -split "`n" | Where-Object { $_ -match "\[ERROR\]|✗" } | Select-Object -First 10
             foreach ($line in $errorLines) {
                 Write-Host "    $line" -ForegroundColor Red
             }
+        }
+
+        # Exit immediately if fail-fast is enabled
+        if ($script:FailFast) {
+            if (-not $script:Quiet) {
+                Write-Host ""
+                Write-Host "Exiting due to --FailFast flag" -ForegroundColor Red
+                Write-Host ""
+            }
+            if ($script:Log) { Stop-Transcript | Out-Null }
+            exit 1
         }
     }
 
@@ -153,7 +190,9 @@ function Run-Check {
 }
 
 # Tier 1: Structural Validation
-Write-Host "Running Tier 1: Structural Validation..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host "Running Tier 1: Structural Validation..." -ForegroundColor Cyan
+}
 
 Run-Check 1 5 "Version sync" "check-version-sync.sh"
 Run-Check 2 5 "Link integrity" "check-links.sh"
@@ -163,35 +202,73 @@ Run-Check 5 5 "Schema validation" "validate-schemas.sh"
 
 # Exit early if quick mode
 if ($tier -eq "quick") {
-    Write-Host ""
-    Write-Host "=== Summary (Quick Mode) ===" -ForegroundColor Cyan
+    if (-not $Quiet) {
+        Write-Host ""
+        Write-Host "=== Summary (Quick Mode) ===" -ForegroundColor Cyan
 
-    if ($failedChecks -eq 0) {
-        Write-Host "Status: PASSED" -ForegroundColor Green
-    } else {
-        Write-Host "Status: FAILED" -ForegroundColor Red
+        if ($failedChecks -eq 0) {
+            Write-Host "Status: PASSED" -ForegroundColor Green
+        } else {
+            Write-Host "Status: FAILED" -ForegroundColor Red
+        }
+
+        Write-Host "Checks run: $totalChecks"
+        Write-Host "Passed: $passedChecks" -ForegroundColor Green
+        Write-Host "Failed: $failedChecks" -ForegroundColor Red
+        Write-Host "Warnings: $warnings" -ForegroundColor Yellow
+        Write-Host "Errors: $errors" -ForegroundColor Red
+        Write-Host ""
     }
 
-    Write-Host "Checks run: $totalChecks"
-    Write-Host "Passed: $passedChecks" -ForegroundColor Green
-    Write-Host "Failed: $failedChecks" -ForegroundColor Red
-    Write-Host "Warnings: $warnings" -ForegroundColor Yellow
-    Write-Host "Errors: $errors" -ForegroundColor Red
-    Write-Host ""
-
-    exit $failedChecks
+    if ($Log) { Stop-Transcript | Out-Null }
+    exit $(if ($failedChecks -gt 0) { 1 } else { 0 })
 }
 
 # Tier 2: Completeness Validation
-Write-Host ""
-Write-Host "Running Tier 2: Completeness Validation..." -ForegroundColor Cyan
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "Running Tier 2: Completeness Validation..." -ForegroundColor Cyan
+}
 
 Run-Check 6 6 "Feature coverage" "validate-completeness.sh"
 
 # Exit if standard mode (not full)
 if ($tier -eq "standard") {
+    if (-not $Quiet) {
+        Write-Host ""
+        Write-Host "=== Summary (Standard Mode) ===" -ForegroundColor Cyan
+
+        if ($failedChecks -eq 0) {
+            Write-Host "Status: PASSED" -ForegroundColor Green
+        } else {
+            Write-Host "Status: FAILED" -ForegroundColor Red
+        }
+
+        Write-Host "Checks run: $totalChecks"
+        Write-Host "Passed: $passedChecks" -ForegroundColor Green
+        Write-Host "Failed: $failedChecks" -ForegroundColor Red
+        Write-Host "Warnings: $warnings" -ForegroundColor Yellow
+        Write-Host "Errors: $errors" -ForegroundColor Red
+        Write-Host ""
+    }
+
+    if ($Log) { Stop-Transcript | Out-Null }
+    exit $(if ($failedChecks -gt 0) { 1 } else { 0 })
+}
+
+# Tier 3: Content Validation (full mode only)
+if (-not $Quiet) {
     Write-Host ""
-    Write-Host "=== Summary (Standard Mode) ===" -ForegroundColor Cyan
+    Write-Host "Running Tier 3: Content Validation..." -ForegroundColor Cyan
+}
+
+Run-Check 7 8 "Required sections" "validate-content.sh"
+Run-Check 8 8 "External links (slow)" "validate-content.sh" @("--check-external")
+
+# Final Summary
+if (-not $Quiet) {
+    Write-Host ""
+    Write-Host "=== Summary (Full Mode) ===" -ForegroundColor Cyan
 
     if ($failedChecks -eq 0) {
         Write-Host "Status: PASSED" -ForegroundColor Green
@@ -206,42 +283,17 @@ if ($tier -eq "standard") {
     Write-Host "Errors: $errors" -ForegroundColor Red
     Write-Host ""
 
-    exit $failedChecks
+    if ($failedChecks -gt 0) {
+        Write-Host "Some checks failed. Review the output above for details." -ForegroundColor Red
+        Write-Host ""
+        Write-Host "To fix issues:"
+        Write-Host "  1. Review error messages above"
+        Write-Host "  2. Run individual scripts with -Verbose for more details"
+        Write-Host "  3. Fix reported issues"
+        Write-Host "  4. Re-run this script"
+        Write-Host ""
+    }
 }
 
-# Tier 3: Content Validation (full mode only)
-Write-Host ""
-Write-Host "Running Tier 3: Content Validation..." -ForegroundColor Cyan
-
-Run-Check 7 8 "Required sections" "validate-content.sh"
-Run-Check 8 8 "External links (slow)" "validate-content.sh" @("--check-external")
-
-# Final Summary
-Write-Host ""
-Write-Host "=== Summary (Full Mode) ===" -ForegroundColor Cyan
-
-if ($failedChecks -eq 0) {
-    Write-Host "Status: PASSED" -ForegroundColor Green
-} else {
-    Write-Host "Status: FAILED" -ForegroundColor Red
-}
-
-Write-Host "Checks run: $totalChecks"
-Write-Host "Passed: $passedChecks" -ForegroundColor Green
-Write-Host "Failed: $failedChecks" -ForegroundColor Red
-Write-Host "Warnings: $warnings" -ForegroundColor Yellow
-Write-Host "Errors: $errors" -ForegroundColor Red
-Write-Host ""
-
-if ($failedChecks -gt 0) {
-    Write-Host "Some checks failed. Review the output above for details." -ForegroundColor Red
-    Write-Host ""
-    Write-Host "To fix issues:"
-    Write-Host "  1. Review error messages above"
-    Write-Host "  2. Run individual scripts with -Verbose for more details"
-    Write-Host "  3. Fix reported issues"
-    Write-Host "  4. Re-run this script"
-    Write-Host ""
-}
-
-exit $failedChecks
+if ($Log) { Stop-Transcript | Out-Null }
+exit $(if ($failedChecks -gt 0) { 1 } else { 0 })

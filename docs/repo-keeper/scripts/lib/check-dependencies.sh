@@ -12,7 +12,7 @@ check_node() {
     if ! command -v node &>/dev/null; then
         echo -e "${RED}Error: Node.js is required but not installed${NC}"
         echo "Install with: https://nodejs.org/ or 'nvm install --lts'"
-        exit 1
+        exit 127
     fi
 
     # Check Node.js version (require 18+)
