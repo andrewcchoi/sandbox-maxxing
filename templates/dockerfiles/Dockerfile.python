@@ -4,7 +4,12 @@
 FROM node:20-slim AS node-source
 
 # ============================================================================
-# Stage 2: Python Development Environment
+# Stage 2: Get uv from official Astral image
+# ============================================================================
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS uv-source
+
+# ============================================================================
+# Stage 3: Python Development Environment
 # ============================================================================
 FROM python:3.12-slim-bookworm
 
@@ -17,6 +22,14 @@ RUN apt-get update && apt-get install -y \
     sudo \
     build-essential \
     ca-certificates \
+    gnupg \
+    gnupg2 \
+    jq \
+    gh \
+    iptables \
+    ipset \
+    iproute2 \
+    dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Node.js from official image (Issue #29 - avoids NodeSource SSL issues)
@@ -25,20 +38,20 @@ COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
     ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
+# Copy uv from Astral image
+COPY --from=uv-source /usr/local/bin/uv /usr/local/bin/
+COPY --from=uv-source /usr/local/bin/uvx /usr/local/bin/
+
 # Create non-root user with sudo access
 RUN groupadd -g 1000 node && \
     useradd -m -u 1000 -g 1000 -s /bin/bash node && \
     echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install Python development tools - UV with pip fallback for SSL/proxy issues
-RUN pip install --no-cache-dir --upgrade pip && \
-    if pip install --no-cache-dir uv 2>/dev/null; then \
-      echo "UV installed successfully, using uv for packages..." && \
-      uv pip install --system poetry black pytest ruff ipython; \
-    else \
-      echo "UV installation failed (SSL/proxy?), using pip fallback..." && \
-      pip install --no-cache-dir poetry black pytest ruff ipython; \
-    fi
+# Install Python development tools via uv
+RUN uv pip install --system poetry black pytest ruff ipython
+
+# Install DeepAgents + Tavily (AI/LLM Tools)
+RUN uv pip install --system deepagents tavily-python
 
 # Set Python environment variables
 ENV UV_COMPILE_BYTECODE=1 \
@@ -48,6 +61,9 @@ ENV UV_COMPILE_BYTECODE=1 \
 
 # Install Claude Code CLI
 RUN npm install -g @anthropic-ai/claude-code
+
+# Install Mermaid CLI (Diagram Generation)
+RUN npm install -g @mermaid-js/mermaid-cli
 
 # Set working directory
 WORKDIR /workspace

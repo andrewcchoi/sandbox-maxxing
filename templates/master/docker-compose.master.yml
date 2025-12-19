@@ -34,6 +34,8 @@ services:
       - .:/workspace:cached
       # Host Claude config (Issue #30 - read-only)
       - ~/.claude:/tmp/host-claude:ro
+      # Environment secrets (Issue #30 Extended - optional, read-only)
+      - ~/.config/claude-env:/tmp/host-env:ro
     environment:
       # Database connections
       - DATABASE_URL=${DATABASE_URL:-postgresql://${POSTGRES_USER:-{{DB_USER}}}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-{{DB_NAME}}}}
