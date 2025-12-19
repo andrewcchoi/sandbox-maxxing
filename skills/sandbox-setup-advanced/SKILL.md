@@ -59,6 +59,22 @@ The user will use VS Code's "Dev Containers: Reopen in Container" command to sta
 **Self-Check:** "Does my file path start with `.devcontainer/` or is it `docker-compose.yml`?"
 If NO → STOP and re-read the TASK IDENTITY section.
 
+## MANDATORY FIRST STEP - READ TEMPLATES
+
+**STOP. BEFORE doing ANYTHING else, you MUST read these template files using the Read tool:**
+
+1. Extensions template: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.advanced.json`
+2. Firewall template: `${CLAUDE_PLUGIN_ROOT}/templates/firewall/advanced-strict.sh`
+3. Compose template: `${CLAUDE_PLUGIN_ROOT}/templates/compose/docker-compose.advanced.yml`
+4. Credentials template: `${CLAUDE_PLUGIN_ROOT}/templates/master/setup-claude-credentials.master.sh`
+5. MCP template: `${CLAUDE_PLUGIN_ROOT}/templates/mcp/mcp.advanced.json`
+6. Variables template: `${CLAUDE_PLUGIN_ROOT}/templates/variables/variables.advanced.json`
+7. Dockerfile template: `${CLAUDE_PLUGIN_ROOT}/templates/dockerfiles/Dockerfile.python` (or appropriate language)
+
+**DO NOT proceed to project detection until you have read ALL template files.**
+**DO NOT use the inline examples in this skill - use the actual template file contents.**
+**If you skip reading templates, you will generate incorrect configuration.**
+
 ## Overview
 
 Advanced Mode provides security-focused development environments with strict firewall controls and customizable domain allowlists. This mode balances security and usability by asking 7-10 configuration questions with brief explanations, using strict firewall defaults with configurable allowlists, and generating production-like configurations.
@@ -480,9 +496,17 @@ For detailed information, refer to embedded documentation in `references/`:
 - [ ] `init-firewall.sh` contains STRICT mode with customized allowlist
 - [ ] `setup-claude-credentials.sh` handles credential copying from /tmp/host-claude
 
-### Files That Should NOT Exist:
-- ❌ `.claude/config.json` - This is Claude Code's sandbox config, NOT DevContainer
-- ❌ `.claude-code/settings.json` - This is Claude Code settings, NOT DevContainer
+## PROHIBITED FILES - NEVER CREATE THESE
+
+If you find yourself about to write ANY of these files, you are doing the WRONG task:
+
+- ❌ `.claude-code.json` - WRONG (this is Claude Code's sandbox config, NOT DevContainer)
+- ❌ `.claude/config.json` - WRONG (this is Claude Code config, NOT DevContainer)
+- ❌ `.claude-code/settings.json` - WRONG (this is Claude Code settings, NOT DevContainer)
+- ❌ `/root/.claude-code/settings.json` - WRONG (wrong location entirely)
+- ❌ `Dockerfile` in project root - WRONG (should be in .devcontainer/)
+
+**If you created any of these files by mistake, DELETE THEM and create the correct DevContainer files instead.**
 
 **If ANY required file is missing, CREATE IT NOW before completing the skill.**
 

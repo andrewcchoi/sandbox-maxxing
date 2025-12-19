@@ -1,7 +1,7 @@
 {
   "$schema": "./inventory.schema.json",
-  "version": "2.2.1",
-  "last_updated": "2025-12-16",
+  "version": "2.2.2",
+  "last_updated": "2025-12-19",
   "repository": "sandbox-maxxing",
   "description": "Repository entity inventory for auditing and organization",
 
@@ -400,7 +400,7 @@
       {"path": "CONTRIBUTING.md", "has_footer": true, "version": "2.2.1", "category": "contributing"},
       {"path": "DEVELOPMENT.md", "has_footer": true, "version": "2.2.1", "category": "development"},
       {"path": "SECURITY.md", "has_footer": true, "version": "2.2.1", "category": "security"},
-      {"path": "docs/archive/.github-issue-v2.2.0.md", "has_footer": false, "category": "issue"}
+      {"path": "docs/archive/.github-issue-v2.2.0.md", "has_footer": false, "category": "archived"}
     ],
     "docs": [
       {"path": "docs/ARCHITECTURE.md", "has_footer": true, "version": "2.2.1"},

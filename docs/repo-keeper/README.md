@@ -501,13 +501,13 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 - [CHANGELOG](../../CHANGELOG.md)
 
 ### Existing Audits
-- [Consistency Audit](../CONSISTENCY_AUDIT_2025-12-16.md)
-- [Consolidation Recommendations](../CONSOLIDATION_RECOMMENDATIONS.md)
+- [Consistency Audit](../audits/CONSISTENCY_AUDIT_2025-12-16.md)
+- [Consolidation Recommendations](../audits/CONSOLIDATION_RECOMMENDATIONS.md)
 - [Release Checklist](../RELEASE_CHECKLIST.md)
 
 ### Related Docs
-- [MODES.md](../MODES.md) - Mode comparison guide
-- [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) - Issue resolution
+- [MODES.md](../features/MODES.md) - Mode comparison guide
+- [TROUBLESHOOTING.md](../features/TROUBLESHOOTING.md) - Issue resolution
 - [ARCHITECTURE.md](../ARCHITECTURE.md) - System design
 
 ---

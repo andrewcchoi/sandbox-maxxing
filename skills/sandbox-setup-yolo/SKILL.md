@@ -77,6 +77,23 @@ The user will use VS Code's "Dev Containers: Reopen in Container" command to sta
 **Self-Check:** "Does my file path start with `.devcontainer/` or is it `docker-compose.yml`?"
 If NO → STOP and re-read the TASK IDENTITY section.
 
+## MANDATORY FIRST STEP - READ TEMPLATES
+
+**STOP. BEFORE doing ANYTHING else, you MUST read these template files using the Read tool:**
+
+1. Extensions template: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.yolo.json`
+2. Firewall template: `${CLAUDE_PLUGIN_ROOT}/templates/firewall/yolo-configurable.sh`
+3. Compose template (master): `${CLAUDE_PLUGIN_ROOT}/templates/master/docker-compose.master.yml`
+4. Credentials template: `${CLAUDE_PLUGIN_ROOT}/templates/master/setup-claude-credentials.master.sh`
+5. MCP template: `${CLAUDE_PLUGIN_ROOT}/templates/mcp/mcp.yolo.json`
+6. Variables template: `${CLAUDE_PLUGIN_ROOT}/templates/variables/variables.yolo.json`
+7. Dockerfile master: `${CLAUDE_PLUGIN_ROOT}/templates/master/Dockerfile.master`
+8. DevContainer master: `${CLAUDE_PLUGIN_ROOT}/templates/master/devcontainer.json.master`
+
+**DO NOT proceed to user configuration until you have read ALL template files.**
+**DO NOT use the inline examples in this skill - use the actual template file contents.**
+**If you skip reading templates, you will generate incorrect configuration.**
+
 ## Overview
 
 YOLO mode provides **complete control with NO restrictions**. You get:
@@ -827,9 +844,17 @@ This will take approximately 5-10 minutes. Ready to proceed?
 - [ ] `setup-claude-credentials.sh` handles credential copying from /tmp/host-claude
 - [ ] `Dockerfile` uses the custom/unofficial image specified by user (if applicable)
 
-### Files That Should NOT Exist:
-- ❌ `.claude/config.json` - This is Claude Code's sandbox config, NOT DevContainer
-- ❌ `.claude-code/settings.json` - This is Claude Code settings, NOT DevContainer
+## PROHIBITED FILES - NEVER CREATE THESE
+
+If you find yourself about to write ANY of these files, you are doing the WRONG task:
+
+- ❌ `.claude-code.json` - WRONG (this is Claude Code's sandbox config, NOT DevContainer)
+- ❌ `.claude/config.json` - WRONG (this is Claude Code config, NOT DevContainer)
+- ❌ `.claude-code/settings.json` - WRONG (this is Claude Code settings, NOT DevContainer)
+- ❌ `/root/.claude-code/settings.json` - WRONG (wrong location entirely)
+- ❌ `Dockerfile` in project root - WRONG (should be in .devcontainer/)
+
+**If you created any of these files by mistake, DELETE THEM and create the correct DevContainer files instead.**
 
 **If ANY required file is missing, CREATE IT NOW before completing the skill.**
 

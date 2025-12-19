@@ -6,8 +6,8 @@
 
 **Related Files:**
 - [`docs/RELEASE_CHECKLIST.md`](../RELEASE_CHECKLIST.md) - For release-time checks
-- [`docs/CONSISTENCY_AUDIT_2025-12-16.md`](../CONSISTENCY_AUDIT_2025-12-16.md) - Comprehensive audit
-- [`docs/CONSOLIDATION_RECOMMENDATIONS.md`](../CONSOLIDATION_RECOMMENDATIONS.md) - Future opportunities
+- [`docs/audits/CONSISTENCY_AUDIT_2025-12-16.md`](../audits/CONSISTENCY_AUDIT_2025-12-16.md) - Comprehensive audit
+- [`docs/audits/CONSOLIDATION_RECOMMENDATIONS.md`](../audits/CONSOLIDATION_RECOMMENDATIONS.md) - Future opportunities
 - [`INVENTORY.json`](./INVENTORY.json) - Entity inventory for auditing
 
 ---
