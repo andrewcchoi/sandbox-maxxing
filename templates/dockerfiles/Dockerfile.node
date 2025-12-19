@@ -1,4 +1,11 @@
-# Node.js 20 Development Environment
+# ============================================================================
+# Stage 1: Get Python + uv from official Astral image
+# ============================================================================
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
+
+# ============================================================================
+# Stage 2: Node.js 20 Development Environment
+# ============================================================================
 FROM node:20-bookworm-slim
 
 # Install system dependencies
@@ -9,9 +16,25 @@ RUN apt-get update && apt-get install -y \
     wget \
     sudo \
     build-essential \
-    python3 \
     ca-certificates \
+    gnupg \
+    gnupg2 \
+    jq \
+    gh \
+    iptables \
+    ipset \
+    iproute2 \
+    dnsutils \
     && rm -rf /var/lib/apt/lists/*
+
+# Copy Python + uv from Astral image
+COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/
+COPY --from=python-uv-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=python-uv-source /usr/local/bin/pip* /usr/local/bin/
+COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/
+COPY --from=python-uv-source /usr/local/bin/uvx /usr/local/bin/
+RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
+    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3
 
 # Create non-root user with sudo access
 RUN groupadd -g 1000 node || true && \
@@ -30,6 +53,12 @@ RUN npm install -g \
 
 # Install Claude Code CLI
 RUN npm install -g @anthropic-ai/claude-code
+
+# Install Mermaid CLI (Diagram Generation)
+RUN npm install -g @mermaid-js/mermaid-cli
+
+# Install DeepAgents + Tavily (AI/LLM Tools)
+RUN uv pip install --system deepagents tavily-python
 
 # Set working directory
 WORKDIR /workspace

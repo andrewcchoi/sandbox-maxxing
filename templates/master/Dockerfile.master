@@ -13,8 +13,17 @@
 # Avoids NodeSource SSL certificate issues with corporate proxies
 FROM node:20-slim AS node-source
 
+# ===SECTION_START:python_uv_source===
 # ============================================================================
-# Stage 2: Main Build
+# Stage 2: Get Python + uv from official Astral image
+# ============================================================================
+# Contains Python 3.12 and uv pre-installed (official Astral Docker image)
+# Fallback: Use curl or pip to install uv if different Python version needed
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
+# ===SECTION_END:python_uv_source===
+
+# ============================================================================
+# Stage 3: Main Build
 # ============================================================================
 ARG BASE_IMAGE=node:20-bookworm-slim
 FROM ${BASE_IMAGE}
@@ -53,6 +62,22 @@ COPY --from=node-source /usr/local/bin/node /usr/local/bin/
 COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
     ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
+# ===SECTION_START:python_uv_copy===
+# ============================================================================
+# PYTHON + UV - Copy from Astral uv image (for non-Python base images)
+# ============================================================================
+# Copy Python 3.12 binaries
+COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/
+COPY --from=python-uv-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=python-uv-source /usr/local/bin/pip* /usr/local/bin/
+RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
+    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3
+
+# Copy uv and uvx binaries
+COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/
+COPY --from=python-uv-source /usr/local/bin/uvx /usr/local/bin/
+# ===SECTION_END:python_uv_copy===
 
 # ===SECTION_START:packages_python===
 # ============================================================================
@@ -231,6 +256,21 @@ ENV VISUAL=nano
 # ============================================================================
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 # ===SECTION_END:claude_code===
+
+# ===SECTION_START:deepagents_tavily===
+# ============================================================================
+# INSTALL DEEPAGENTS + TAVILY (AI/LLM Tools)
+# ============================================================================
+# Install via uv for fast, reliable installation
+RUN uv pip install --system deepagents tavily-python
+# ===SECTION_END:deepagents_tavily===
+
+# ===SECTION_START:mermaid_cli===
+# ============================================================================
+# INSTALL MERMAID CLI (Diagram Generation)
+# ============================================================================
+RUN npm install -g @mermaid-js/mermaid-cli
+# ===SECTION_END:mermaid_cli===
 
 # ===SECTION_START:python_packages===
 # ============================================================================
