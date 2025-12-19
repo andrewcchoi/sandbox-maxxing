@@ -84,10 +84,10 @@ This guide explains how to handle validation failures and recover from common er
    vim docs/GUIDE.md
 
    # Change line 45:
-   [Installation Guide](../guides/install.md)
+   [Installation Guide]\(../guides/install.md)
 
    # To:
-   [Installation Guide](setup/install.md)
+   [Installation Guide]\(setup/install.md)
    ```
 
 3. Re-run validation:
