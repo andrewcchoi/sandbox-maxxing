@@ -5,6 +5,36 @@ description: Use when user wants security-focused development setup with strict 
 
 # Sandbox Setup: Advanced Mode
 
+## What This Skill Creates
+
+**⚠️ CRITICAL: THIS SKILL CREATES A DEVCONTAINER SETUP, NOT CLAUDE CODE'S SANDBOX FEATURE.**
+
+You will create VS Code DevContainer files in the project's `.devcontainer/` directory:
+- `.devcontainer/Dockerfile` - Custom Dockerfile with security hardening
+- `.devcontainer/devcontainer.json` - DevContainer configuration for VS Code
+- `.devcontainer/init-firewall.sh` - Firewall initialization script (advanced: strict with allowlist)
+- `.devcontainer/setup-claude-credentials.sh` - Claude credentials persistence (Issue #30)
+- `docker-compose.yml` - Docker services configuration with production-like settings (in project root)
+
+### What This Is:
+- A **file generation task** that creates DevContainer configuration files
+- Files that enable VS Code's "Reopen in Container" feature
+- Docker-based development environment with strict firewall controls
+
+### What This Is NOT:
+- **NOT** Claude Code's built-in sandbox feature (`.claude/config.json`)
+- **NOT** a task that runs containers (user does that via VS Code)
+- **NOT** a configuration for Claude Code's execution sandbox
+
+### DO NOT:
+- ❌ Create `.claude/config.json` or `.claude-code/settings.json`
+- ❌ Enable or configure Claude Code's built-in sandbox feature
+- ❌ Run `docker-compose up` or start containers
+- ❌ Modify Claude Code settings or configuration
+
+### After Creating Files:
+The user will use VS Code's "Dev Containers: Reopen in Container" command to start the environment. You only create the configuration files.
+
 ## Overview
 
 Advanced Mode provides security-focused development environments with strict firewall controls and customizable domain allowlists. This mode balances security and usability by asking 7-10 configuration questions with brief explanations, using strict firewall defaults with configurable allowlists, and generating production-like configurations.
@@ -406,6 +436,36 @@ For detailed information, refer to embedded documentation in `references/`:
 - Advanced provides brief explanations (YOLO provides detailed education)
 - Advanced uses template-based generation (YOLO walks through each file)
 - Advanced focuses on security balance (YOLO focuses on learning and full control)
+
+## Completion Checklist
+
+**Before finishing the setup, verify ALL these files exist:**
+
+**Required files checklist:**
+1. [ ] `docker-compose.yml` in project root (NOT in .devcontainer/)
+2. [ ] `.devcontainer/` directory exists
+3. [ ] `.devcontainer/devcontainer.json` exists with proper configuration
+4. [ ] `.devcontainer/init-firewall.sh` exists and is executable (`chmod +x`)
+5. [ ] `.devcontainer/setup-claude-credentials.sh` exists and is executable (`chmod +x`)
+6. [ ] `.devcontainer/Dockerfile` exists (Advanced mode uses custom Dockerfile)
+7. [ ] `.devcontainer/mcp.json` exists (if MCP servers configured)
+
+**Verify Configuration Content:**
+- [ ] `docker-compose.yml` includes credentials mount: `~/.claude:/tmp/host-claude:ro`
+- [ ] `devcontainer.json` references docker-compose and has proper postCreateCommand
+- [ ] `init-firewall.sh` contains STRICT mode with customized allowlist
+- [ ] `setup-claude-credentials.sh` handles credential copying from /tmp/host-claude
+
+### Files That Should NOT Exist:
+- ❌ `.claude/config.json` - This is Claude Code's sandbox config, NOT DevContainer
+- ❌ `.claude-code/settings.json` - This is Claude Code settings, NOT DevContainer
+
+**If ANY required file is missing, CREATE IT NOW before completing the skill.**
+
+**After File Creation:**
+1. Make init-firewall.sh and setup-claude-credentials.sh executable
+2. Inform user that files are ready
+3. Provide "Next Steps" with VS Code instructions (do NOT run containers yourself)
 
 ---
 

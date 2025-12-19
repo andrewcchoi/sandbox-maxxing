@@ -5,6 +5,35 @@ description: Use when user wants the simplest sandbox setup - uses sandbox templ
 
 # Sandbox Setup: Basic Mode
 
+## What This Skill Creates
+
+**⚠️ CRITICAL: THIS SKILL CREATES A DEVCONTAINER SETUP, NOT CLAUDE CODE'S SANDBOX FEATURE.**
+
+You will create VS Code DevContainer files in the project's `.devcontainer/` directory:
+- `.devcontainer/devcontainer.json` - DevContainer configuration for VS Code
+- `.devcontainer/init-firewall.sh` - Firewall initialization script (basic mode: no-op)
+- `.devcontainer/setup-claude-credentials.sh` - Claude credentials persistence (Issue #30)
+- `docker-compose.yml` - Docker services configuration (in project root)
+
+### What This Is:
+- A **file generation task** that creates DevContainer configuration files
+- Files that enable VS Code's "Reopen in Container" feature
+- Docker-based development environment configuration
+
+### What This Is NOT:
+- **NOT** Claude Code's built-in sandbox feature (`.claude/config.json`)
+- **NOT** a task that runs containers (user does that via VS Code)
+- **NOT** a configuration for Claude Code's execution sandbox
+
+### DO NOT:
+- ❌ Create `.claude/config.json` or `.claude-code/settings.json`
+- ❌ Enable or configure Claude Code's built-in sandbox feature
+- ❌ Run `docker-compose up` or start containers
+- ❌ Modify Claude Code settings or configuration
+
+### After Creating Files:
+The user will use VS Code's "Dev Containers: Reopen in Container" command to start the environment. You only create the configuration files.
+
 ## Overview
 
 The Basic mode provides the fastest path to a working sandbox environment. This mode is optimized for:
@@ -695,6 +724,39 @@ Basic mode relies on Docker sandbox isolation only. No firewall rules are config
 - Outbound traffic restrictions
 
 For production-like security, recommend Advanced or YOLO mode.
+
+## Completion Checklist
+
+**Before finishing the setup, verify ALL these files exist:**
+
+Run these verification commands:
+
+```bash
+# Check .devcontainer directory exists
+test -d .devcontainer && echo "✓ .devcontainer/ directory exists" || echo "✗ MISSING: .devcontainer/ directory"
+
+# Check each required file
+test -f docker-compose.yml && echo "✓ docker-compose.yml exists" || echo "✗ MISSING: docker-compose.yml"
+test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json exists" || echo "✗ MISSING: devcontainer.json"
+test -f .devcontainer/init-firewall.sh && echo "✓ init-firewall.sh exists" || echo "✗ MISSING: init-firewall.sh"
+test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh exists" || echo "✗ MISSING: setup-claude-credentials.sh"
+```
+
+**Required files checklist:**
+1. [ ] `docker-compose.yml` in project root (NOT in .devcontainer/)
+2. [ ] `.devcontainer/` directory exists
+3. [ ] `.devcontainer/devcontainer.json` exists with proper configuration
+4. [ ] `.devcontainer/init-firewall.sh` exists and is executable (`chmod +x`)
+5. [ ] `.devcontainer/setup-claude-credentials.sh` exists and is executable (`chmod +x`)
+
+**If ANY file is missing, CREATE IT NOW before completing.**
+
+### Files That Should NOT Exist:
+- ❌ `.claude/config.json` - This is Claude Code's sandbox config, NOT DevContainer
+- ❌ `.claude-code/settings.json` - This is Claude Code settings, NOT DevContainer
+- ❌ `/root/.claude-code/settings.json` - Wrong location entirely
+
+**If you created any of these files by mistake, DELETE THEM and create the correct DevContainer files instead.**
 
 ## Summary
 
