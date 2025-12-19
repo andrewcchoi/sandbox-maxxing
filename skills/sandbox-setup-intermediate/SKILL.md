@@ -145,6 +145,35 @@ All intermediate mode setups must include Claude credentials mounting:
    "postCreateCommand": ".devcontainer/setup-claude-credentials.sh && ..."
    ```
 
+## File Creation Location
+
+**CRITICAL**: All generated files must be created in the user's current working directory (project root).
+
+### Before generating files:
+
+1. **Verify you're in the user's project directory** (where their source code is)
+2. **Create the `.devcontainer/` directory**:
+   ```bash
+   mkdir -p .devcontainer
+   ```
+
+### Files to create (paths relative to project root):
+
+- `.devcontainer/Dockerfile` - Custom Dockerfile with language-specific tools
+- `docker-compose.yml` - Docker services configuration (in project root)
+- `.devcontainer/devcontainer.json` - DevContainer configuration
+- `.devcontainer/init-firewall.sh` - Firewall script (intermediate: permissive)
+- `.devcontainer/setup-claude-credentials.sh` - Credentials setup (Issue #30)
+- `.devcontainer/mcp.json` - MCP server configuration (optional)
+
+### DO NOT create files in:
+
+- `~/.claude-code/` or `~/.claude/` (home directory configs)
+- `/root/.claude-code/` or any user home directory
+- Any system directory like `/etc/` or `/var/`
+
+**Why this matters**: The DevContainer configuration MUST be in the project's `.devcontainer/` folder for VS Code and Claude Code to detect and use it. Creating files in the wrong location will result in a non-functional setup.
+
 ## Workflow
 
 ### Step 1: Project Detection

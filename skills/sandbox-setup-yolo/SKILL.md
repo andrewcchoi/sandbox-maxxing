@@ -139,6 +139,36 @@ YOLO mode allows any Docker image from any registry:
 - Security scan results
 - Dockerfile source (if available)
 
+## File Creation Location
+
+**CRITICAL**: All generated files must be created in the user's current working directory (project root).
+
+### Before generating files:
+
+1. **Verify you're in the user's project directory** (where their source code is)
+2. **Create the `.devcontainer/` directory**:
+   ```bash
+   mkdir -p .devcontainer
+   ```
+
+### Files to create (paths relative to project root):
+
+- `.devcontainer/Dockerfile` - Comprehensive custom Dockerfile with ALL language toolchains and tools
+- `docker-compose.yml` - Docker services configuration with full customization (in project root)
+- `.devcontainer/devcontainer.json` - DevContainer configuration with user-selected firewall mode
+- `.devcontainer/init-firewall.sh` - Firewall script (yolo: disabled/permissive/strict based on user choice)
+- `.devcontainer/setup-claude-credentials.sh` - Credentials setup (Issue #30)
+- `.devcontainer/mcp.json` - MCP server configuration with all selected servers
+- `.devcontainer/variables.json` - Custom build args and environment variables (optional)
+
+### DO NOT create files in:
+
+- `~/.claude-code/` or `~/.claude/` (home directory configs)
+- `/root/.claude-code/` or any user home directory
+- Any system directory like `/etc/` or `/var/`
+
+**Why this matters**: The DevContainer configuration MUST be in the project's `.devcontainer/` folder for VS Code and Claude Code to detect and use it. Creating files in the wrong location will result in a non-functional setup. YOLO mode gives users complete control, but this location requirement is non-negotiable.
+
 ## Workflow
 
 ### Phase 1: Image Selection
