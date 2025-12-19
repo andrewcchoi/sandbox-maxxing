@@ -1,4 +1,5 @@
 {
+  "description": "Master extensions file combining all extensions from all modes (basic, intermediate, advanced, yolo)",
   "extensions": [
     "anthropic.claude-code",
     "ms-azuretools.vscode-docker",
@@ -30,13 +31,42 @@
     "be5invis.vscode-custom-css"
   ],
   "platform_extensions": {
-    "python": ["ms-python.python", "ms-python.vscode-pylance", "ms-python.black-formatter", "charliermarsh.ruff", "ms-python.flake8", "ms-python.isort"],
-    "node": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "bradlc.vscode-tailwindcss", "christian-kohler.npm-intellisense"],
+    "python": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter",
+      "charliermarsh.ruff",
+      "ms-python.flake8",
+      "ms-python.isort"
+    ],
+    "node": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "christian-kohler.npm-intellisense"
+    ],
     "go": ["golang.go"],
     "rust": ["rust-lang.rust-analyzer"],
-    "java": ["redhat.java", "vscjava.vscode-maven", "vscjava.vscode-java-pack", "vscjava.vscode-gradle"],
-    "cpp": ["ms-vscode.cpptools", "ms-vscode.cmake-tools"],
-    "ruby": ["Shopify.ruby-lsp", "rebornix.ruby"],
+    "java": [
+      "redhat.java",
+      "vscjava.vscode-maven",
+      "vscjava.vscode-java-pack",
+      "vscjava.vscode-gradle"
+    ],
+    "cpp": [
+      "ms-vscode.cpptools",
+      "ms-vscode.cmake-tools"
+    ],
+    "ruby": [
+      "Shopify.ruby-lsp",
+      "rebornix.ruby"
+    ],
     "php": ["bmewburn.vscode-intelephense-client"]
+  },
+  "mode_breakdown": {
+    "basic": "6 extensions + platform-specific (minimal)",
+    "intermediate": "14 extensions + enhanced platform-specific",
+    "advanced": "23 extensions + enhanced platform-specific",
+    "yolo": "30 extensions + all platform-specific variations"
   }
 }

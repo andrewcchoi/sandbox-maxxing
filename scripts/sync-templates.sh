@@ -26,8 +26,8 @@ SHARED_FILES=(
 # All skill modes
 MODES=("basic" "intermediate" "advanced" "yolo")
 
-# Verify master-shared directory exists
-MASTER_SHARED="$REPO_ROOT/templates/master-shared"
+# Verify master/shared directory exists
+MASTER_SHARED="$REPO_ROOT/templates/master/shared"
 if [ ! -d "$MASTER_SHARED" ]; then
     echo "✗ ERROR: Master shared directory not found: $MASTER_SHARED"
     exit 1
@@ -82,7 +82,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "Summary:"
 echo "  • Synced ${#SHARED_FILES[@]} files to ${#MODES[@]} skill modes"
-echo "  • Source: templates/master-shared/"
+echo "  • Source: templates/master/shared/"
 echo "  • Targets: skills/sandbox-setup-{basic,intermediate,advanced,yolo}/templates/"
 echo ""
 echo "Next steps:"

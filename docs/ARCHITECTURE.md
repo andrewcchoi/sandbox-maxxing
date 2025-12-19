@@ -53,32 +53,43 @@ The plugin uses a fully self-contained template organization with master source 
 #### Directory Structure
 ```
 templates/
-├── master-shared/           # Master source files (synced to skills)
-│   ├── docker-compose.yml           # 2.4 KB - Source of truth
-│   ├── Dockerfile.python            # 3.3 KB - Source of truth (multi-stage build)
-│   ├── Dockerfile.node              # 3.0 KB - Source of truth (multi-stage build)
-│   └── setup-claude-credentials.sh  # 6.2 KB - Source of truth (credential persistence)
-├── master/                  # Master templates with all sections
-│   ├── devcontainer.json.master
-│   ├── Dockerfile.master
-│   ├── docker-compose.master.yml
-│   ├── init-firewall.master.sh
-│   └── setup-claude-credentials.master.sh
-├── compose/                 # Mode-specific compose variants
-├── env/                     # Mode-specific .env templates
-├── extensions/              # Mode-specific VS Code extensions
-├── mcp/                     # Mode-specific MCP configs
-├── variables/               # Mode-specific variable configs
+├── master/                  # Master source of truth for ALL templates
+│   ├── devcontainer.json.master     # 8.3 KB - All 37 sections
+│   ├── Dockerfile.master            # 12.8 KB - All 14 language toolchains
+│   ├── docker-compose.master.yml    # 17.6 KB - All services
+│   ├── init-firewall.master.sh      # 12.4 KB - All 200+ domains
+│   ├── setup-claude-credentials.master.sh  # 6.2 KB - Credential persistence
+│   ├── extensions.master.json       # Master VS Code extensions (all modes)
+│   ├── mcp.master.json              # Master MCP servers (all modes)
+│   ├── env.master.json              # Master environment variables (all modes)
+│   ├── variables.master.json        # Master build/runtime variables (all modes)
+│   ├── shared/                      # Shared files synced to all skill modes
+│   │   ├── docker-compose.yml       # 2.4 KB - Synced to skills
+│   │   ├── Dockerfile.python        # 3.3 KB - Multi-stage build (synced)
+│   │   ├── Dockerfile.node          # 3.0 KB - Multi-stage build (synced)
+│   │   └── setup-claude-credentials.sh  # 6.2 KB - (synced)
+│   └── dockerfiles/                 # Language-specific Dockerfiles
+│       ├── Dockerfile.python
+│       ├── Dockerfile.node
+│       ├── Dockerfile.go
+│       ├── Dockerfile.rust
+│       ├── Dockerfile.java
+│       ├── Dockerfile.ruby
+│       ├── Dockerfile.php
+│       ├── Dockerfile.cpp-gcc
+│       ├── Dockerfile.cpp-clang
+│       ├── Dockerfile.postgres
+│       └── Dockerfile.redis
 └── legacy/                  # Old monolithic templates (deprecated)
 
 skills/
 ├── sandbox-setup-basic/
 │   └── templates/           # ALL files needed for basic mode (self-contained)
 │       ├── devcontainer.json
-│       ├── docker-compose.yml        # Copied from master-shared
-│       ├── Dockerfile.python         # Copied from master-shared
-│       ├── Dockerfile.node           # Copied from master-shared
-│       ├── setup-claude-credentials.sh # Copied from master-shared
+│       ├── docker-compose.yml        # Synced from master/shared
+│       ├── Dockerfile.python         # Synced from master/shared
+│       ├── Dockerfile.node           # Synced from master/shared
+│       ├── setup-claude-credentials.sh # Synced from master/shared
 │       ├── .env.template
 │       ├── extensions.json
 │       ├── mcp.json
@@ -86,10 +97,10 @@ skills/
 ├── sandbox-setup-intermediate/
 │   └── templates/           # ALL files needed for intermediate mode
 │       ├── devcontainer.json
-│       ├── docker-compose.yml        # Copied from master-shared
-│       ├── Dockerfile.python         # Copied from master-shared
-│       ├── Dockerfile.node           # Copied from master-shared
-│       ├── setup-claude-credentials.sh # Copied from master-shared
+│       ├── docker-compose.yml        # Synced from master/shared
+│       ├── Dockerfile.python         # Synced from master/shared
+│       ├── Dockerfile.node           # Synced from master/shared
+│       ├── setup-claude-credentials.sh # Synced from master/shared
 │       ├── init-firewall.sh          # 2.3 KB (permissive firewall)
 │       ├── .env.template
 │       ├── extensions.json
@@ -98,10 +109,10 @@ skills/
 ├── sandbox-setup-advanced/
 │   └── templates/           # ALL files needed for advanced mode
 │       ├── devcontainer.json
-│       ├── docker-compose.yml        # Copied from master-shared
-│       ├── Dockerfile.python         # Copied from master-shared
-│       ├── Dockerfile.node           # Copied from master-shared
-│       ├── setup-claude-credentials.sh # Copied from master-shared
+│       ├── docker-compose.yml        # Synced from master/shared
+│       ├── Dockerfile.python         # Synced from master/shared
+│       ├── Dockerfile.node           # Synced from master/shared
+│       ├── setup-claude-credentials.sh # Synced from master/shared
 │       ├── init-firewall.sh          # 10.8 KB (strict firewall)
 │       ├── .env.template
 │       ├── extensions.json
@@ -110,10 +121,10 @@ skills/
 └── sandbox-setup-yolo/
     └── templates/           # ALL files needed for yolo mode
         ├── devcontainer.json
-        ├── docker-compose.yml        # Copied from master-shared
-        ├── Dockerfile.python         # Copied from master-shared
-        ├── Dockerfile.node           # Copied from master-shared
-        ├── setup-claude-credentials.sh # Copied from master-shared
+        ├── docker-compose.yml        # Synced from master/shared
+        ├── Dockerfile.python         # Synced from master/shared
+        ├── Dockerfile.node           # Synced from master/shared
+        ├── setup-claude-credentials.sh # Synced from master/shared
         ├── init-firewall.sh          # 17.9 KB (full firewall)
         ├── .env.template
         ├── extensions.json
@@ -123,8 +134,11 @@ skills/
 
 #### Organization Strategy
 
-**Master Shared Files** (`templates/master-shared/`):
-- Source of truth for files identical across all modes
+**Master Templates** (`templates/master/`):
+- Source of truth for ALL template files
+- Comprehensive "kitchen sink" versions with all options
+- Shared files in `templates/master/shared/` are synced to all skill modes
+- Language-specific Dockerfiles in `templates/master/dockerfiles/`
 - Updated using sync script: `./scripts/sync-templates.sh`
 - Changes propagate to all skill folders
 - Includes: Dockerfiles, docker-compose.yml, credentials script

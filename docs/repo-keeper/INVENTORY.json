@@ -16,10 +16,10 @@
       "related_example": "examples/demo-app-sandbox-basic/",
       "related_templates": [
         "skills/sandbox-setup-basic/templates/devcontainer.json",
-        "templates/shared/docker-compose.yml",
-        "templates/shared/Dockerfile.python",
-        "templates/shared/Dockerfile.node",
-        "templates/shared/setup-claude-credentials.sh"
+        "templates/master/shared/docker-compose.yml",
+        "templates/master/shared/Dockerfile.python",
+        "templates/master/shared/Dockerfile.node",
+        "templates/master/shared/setup-claude-credentials.sh"
       ]
     },
     {
@@ -33,10 +33,10 @@
       "related_templates": [
         "skills/sandbox-setup-intermediate/templates/devcontainer.json",
         "skills/sandbox-setup-intermediate/templates/init-firewall.sh",
-        "templates/shared/docker-compose.yml",
-        "templates/shared/Dockerfile.python",
-        "templates/shared/Dockerfile.node",
-        "templates/shared/setup-claude-credentials.sh"
+        "templates/master/shared/docker-compose.yml",
+        "templates/master/shared/Dockerfile.python",
+        "templates/master/shared/Dockerfile.node",
+        "templates/master/shared/setup-claude-credentials.sh"
       ]
     },
     {
@@ -50,15 +50,10 @@
       "related_templates": [
         "skills/sandbox-setup-advanced/templates/devcontainer.json",
         "skills/sandbox-setup-advanced/templates/init-firewall.sh",
-        "templates/shared/docker-compose.yml",
-        "templates/shared/Dockerfile.python",
-        "templates/shared/Dockerfile.node",
-        "templates/shared/setup-claude-credentials.sh"
-      ],
-      "references": [
-        "skills/sandbox-setup-advanced/references/customization.md",
-        "skills/sandbox-setup-advanced/references/security.md",
-        "skills/sandbox-setup-advanced/references/troubleshooting.md"
+        "templates/master/shared/docker-compose.yml",
+        "templates/master/shared/Dockerfile.python",
+        "templates/master/shared/Dockerfile.node",
+        "templates/master/shared/setup-claude-credentials.sh"
       ]
     },
     {
@@ -72,10 +67,10 @@
       "related_templates": [
         "skills/sandbox-setup-yolo/templates/devcontainer.json",
         "skills/sandbox-setup-yolo/templates/init-firewall.sh",
-        "templates/shared/docker-compose.yml",
-        "templates/shared/Dockerfile.python",
-        "templates/shared/Dockerfile.node",
-        "templates/shared/setup-claude-credentials.sh"
+        "templates/master/shared/docker-compose.yml",
+        "templates/master/shared/Dockerfile.python",
+        "templates/master/shared/Dockerfile.node",
+        "templates/master/shared/setup-claude-credentials.sh"
       ]
     },
     {
@@ -196,21 +191,62 @@
         "type": "master",
         "last_updated": "2025-12-19",
         "description": "Master credential setup script"
+      },
+      {
+        "name": "extensions.master.json",
+        "path": "templates/master/extensions.master.json",
+        "type": "master",
+        "last_updated": "2025-12-19",
+        "description": "Master VS Code extensions combining all modes"
+      },
+      {
+        "name": "mcp.master.json",
+        "path": "templates/master/mcp.master.json",
+        "type": "master",
+        "last_updated": "2025-12-19",
+        "description": "Master MCP configuration combining all modes"
+      },
+      {
+        "name": "env.master.json",
+        "path": "templates/master/env.master.json",
+        "type": "master",
+        "last_updated": "2025-12-19",
+        "description": "Master environment variables combining all modes"
+      },
+      {
+        "name": "variables.master.json",
+        "path": "templates/master/variables.master.json",
+        "type": "master",
+        "last_updated": "2025-12-19",
+        "description": "Master build/runtime variables combining all modes"
       }
     ],
     "master_shared": [
-      {"name": "docker-compose.yml", "path": "templates/master-shared/docker-compose.yml", "type": "master_shared", "description": "Docker Compose configuration - source of truth (synced to skills)"},
-      {"name": "Dockerfile.python", "path": "templates/master-shared/Dockerfile.python", "type": "master_shared", "language": "python", "description": "Multi-stage Python Dockerfile - source of truth (synced to skills)"},
-      {"name": "Dockerfile.node", "path": "templates/master-shared/Dockerfile.node", "type": "master_shared", "language": "node", "description": "Multi-stage Node.js Dockerfile - source of truth (synced to skills)"},
-      {"name": "setup-claude-credentials.sh", "path": "templates/master-shared/setup-claude-credentials.sh", "type": "master_shared", "description": "Claude credentials persistence script - source of truth (synced to skills)"}
+      {"name": "docker-compose.yml", "path": "templates/master/shared/docker-compose.yml", "type": "master_shared", "description": "Docker Compose configuration - source of truth (synced to skills)"},
+      {"name": "Dockerfile.python", "path": "templates/master/shared/Dockerfile.python", "type": "master_shared", "language": "python", "description": "Multi-stage Python Dockerfile - source of truth (synced to skills)"},
+      {"name": "Dockerfile.node", "path": "templates/master/shared/Dockerfile.node", "type": "master_shared", "language": "node", "description": "Multi-stage Node.js Dockerfile - source of truth (synced to skills)"},
+      {"name": "setup-claude-credentials.sh", "path": "templates/master/shared/setup-claude-credentials.sh", "type": "master_shared", "description": "Claude credentials persistence script - source of truth (synced to skills)"}
+    ],
+    "master_dockerfiles": [
+      {"name": "Dockerfile.python", "path": "templates/master/dockerfiles/Dockerfile.python", "language": "python", "description": "Language-specific Python Dockerfile"},
+      {"name": "Dockerfile.node", "path": "templates/master/dockerfiles/Dockerfile.node", "language": "node", "description": "Language-specific Node.js Dockerfile"},
+      {"name": "Dockerfile.go", "path": "templates/master/dockerfiles/Dockerfile.go", "language": "go", "description": "Language-specific Go Dockerfile"},
+      {"name": "Dockerfile.rust", "path": "templates/master/dockerfiles/Dockerfile.rust", "language": "rust", "description": "Language-specific Rust Dockerfile"},
+      {"name": "Dockerfile.java", "path": "templates/master/dockerfiles/Dockerfile.java", "language": "java", "description": "Language-specific Java Dockerfile"},
+      {"name": "Dockerfile.ruby", "path": "templates/master/dockerfiles/Dockerfile.ruby", "language": "ruby", "description": "Language-specific Ruby Dockerfile"},
+      {"name": "Dockerfile.php", "path": "templates/master/dockerfiles/Dockerfile.php", "language": "php", "description": "Language-specific PHP Dockerfile"},
+      {"name": "Dockerfile.cpp-gcc", "path": "templates/master/dockerfiles/Dockerfile.cpp-gcc", "language": "cpp", "description": "Language-specific C++ (GCC) Dockerfile"},
+      {"name": "Dockerfile.cpp-clang", "path": "templates/master/dockerfiles/Dockerfile.cpp-clang", "language": "cpp", "description": "Language-specific C++ (Clang) Dockerfile"},
+      {"name": "Dockerfile.postgres", "path": "templates/master/dockerfiles/Dockerfile.postgres", "service": "postgres", "description": "PostgreSQL service Dockerfile"},
+      {"name": "Dockerfile.redis", "path": "templates/master/dockerfiles/Dockerfile.redis", "service": "redis", "description": "Redis service Dockerfile"}
     ],
     "mode_specific": {
       "basic": [
         {"name": "devcontainer.json", "path": "skills/sandbox-setup-basic/templates/devcontainer.json", "mode": "basic", "description": "VS Code DevContainer configuration for Basic mode"},
-        {"name": "docker-compose.yml", "path": "skills/sandbox-setup-basic/templates/docker-compose.yml", "mode": "basic", "source": "templates/master-shared/", "description": "Docker Compose (copied from master-shared)"},
-        {"name": "Dockerfile.python", "path": "skills/sandbox-setup-basic/templates/Dockerfile.python", "mode": "basic", "source": "templates/master-shared/", "description": "Python Dockerfile (copied from master-shared)"},
-        {"name": "Dockerfile.node", "path": "skills/sandbox-setup-basic/templates/Dockerfile.node", "mode": "basic", "source": "templates/master-shared/", "description": "Node Dockerfile (copied from master-shared)"},
-        {"name": "setup-claude-credentials.sh", "path": "skills/sandbox-setup-basic/templates/setup-claude-credentials.sh", "mode": "basic", "source": "templates/master-shared/", "description": "Credentials script (copied from master-shared)"},
+        {"name": "docker-compose.yml", "path": "skills/sandbox-setup-basic/templates/docker-compose.yml", "mode": "basic", "source": "templates/master/shared/", "description": "Docker Compose (synced from master/shared)"},
+        {"name": "Dockerfile.python", "path": "skills/sandbox-setup-basic/templates/Dockerfile.python", "mode": "basic", "source": "templates/master/shared/", "description": "Python Dockerfile (synced from master/shared)"},
+        {"name": "Dockerfile.node", "path": "skills/sandbox-setup-basic/templates/Dockerfile.node", "mode": "basic", "source": "templates/master/shared/", "description": "Node Dockerfile (synced from master/shared)"},
+        {"name": "setup-claude-credentials.sh", "path": "skills/sandbox-setup-basic/templates/setup-claude-credentials.sh", "mode": "basic", "source": "templates/master/shared/", "description": "Credentials script (synced from master/shared)"},
         {"name": ".env.template", "path": "skills/sandbox-setup-basic/templates/.env.template", "mode": "basic", "description": "Environment variables template for Basic mode"},
         {"name": "extensions.json", "path": "skills/sandbox-setup-basic/templates/extensions.json", "mode": "basic", "description": "VS Code extensions for Basic mode"},
         {"name": "mcp.json", "path": "skills/sandbox-setup-basic/templates/mcp.json", "mode": "basic", "description": "MCP server configuration for Basic mode"},
@@ -219,10 +255,10 @@
       "intermediate": [
         {"name": "devcontainer.json", "path": "skills/sandbox-setup-intermediate/templates/devcontainer.json", "mode": "intermediate", "description": "VS Code DevContainer configuration for Intermediate mode"},
         {"name": "init-firewall.sh", "path": "skills/sandbox-setup-intermediate/templates/init-firewall.sh", "mode": "intermediate", "policy": "permissive", "description": "Permissive firewall script"},
-        {"name": "docker-compose.yml", "path": "skills/sandbox-setup-intermediate/templates/docker-compose.yml", "mode": "intermediate", "source": "templates/master-shared/", "description": "Docker Compose (copied from master-shared)"},
-        {"name": "Dockerfile.python", "path": "skills/sandbox-setup-intermediate/templates/Dockerfile.python", "mode": "intermediate", "source": "templates/master-shared/", "description": "Python Dockerfile (copied from master-shared)"},
-        {"name": "Dockerfile.node", "path": "skills/sandbox-setup-intermediate/templates/Dockerfile.node", "mode": "intermediate", "source": "templates/master-shared/", "description": "Node Dockerfile (copied from master-shared)"},
-        {"name": "setup-claude-credentials.sh", "path": "skills/sandbox-setup-intermediate/templates/setup-claude-credentials.sh", "mode": "intermediate", "source": "templates/master-shared/", "description": "Credentials script (copied from master-shared)"},
+        {"name": "docker-compose.yml", "path": "skills/sandbox-setup-intermediate/templates/docker-compose.yml", "mode": "intermediate", "source": "templates/master/shared/", "description": "Docker Compose (synced from master/shared)"},
+        {"name": "Dockerfile.python", "path": "skills/sandbox-setup-intermediate/templates/Dockerfile.python", "mode": "intermediate", "source": "templates/master/shared/", "description": "Python Dockerfile (synced from master/shared)"},
+        {"name": "Dockerfile.node", "path": "skills/sandbox-setup-intermediate/templates/Dockerfile.node", "mode": "intermediate", "source": "templates/master/shared/", "description": "Node Dockerfile (synced from master/shared)"},
+        {"name": "setup-claude-credentials.sh", "path": "skills/sandbox-setup-intermediate/templates/setup-claude-credentials.sh", "mode": "intermediate", "source": "templates/master/shared/", "description": "Credentials script (synced from master/shared)"},
         {"name": ".env.template", "path": "skills/sandbox-setup-intermediate/templates/.env.template", "mode": "intermediate", "description": "Environment variables template for Intermediate mode"},
         {"name": "extensions.json", "path": "skills/sandbox-setup-intermediate/templates/extensions.json", "mode": "intermediate", "description": "VS Code extensions for Intermediate mode"},
         {"name": "mcp.json", "path": "skills/sandbox-setup-intermediate/templates/mcp.json", "mode": "intermediate", "description": "MCP server configuration for Intermediate mode"},
@@ -231,10 +267,10 @@
       "advanced": [
         {"name": "devcontainer.json", "path": "skills/sandbox-setup-advanced/templates/devcontainer.json", "mode": "advanced", "description": "VS Code DevContainer configuration for Advanced mode"},
         {"name": "init-firewall.sh", "path": "skills/sandbox-setup-advanced/templates/init-firewall.sh", "mode": "advanced", "policy": "strict", "description": "Strict firewall script"},
-        {"name": "docker-compose.yml", "path": "skills/sandbox-setup-advanced/templates/docker-compose.yml", "mode": "advanced", "source": "templates/master-shared/", "description": "Docker Compose (copied from master-shared)"},
-        {"name": "Dockerfile.python", "path": "skills/sandbox-setup-advanced/templates/Dockerfile.python", "mode": "advanced", "source": "templates/master-shared/", "description": "Python Dockerfile (copied from master-shared)"},
-        {"name": "Dockerfile.node", "path": "skills/sandbox-setup-advanced/templates/Dockerfile.node", "mode": "advanced", "source": "templates/master-shared/", "description": "Node Dockerfile (copied from master-shared)"},
-        {"name": "setup-claude-credentials.sh", "path": "skills/sandbox-setup-advanced/templates/setup-claude-credentials.sh", "mode": "advanced", "source": "templates/master-shared/", "description": "Credentials script (copied from master-shared)"},
+        {"name": "docker-compose.yml", "path": "skills/sandbox-setup-advanced/templates/docker-compose.yml", "mode": "advanced", "source": "templates/master/shared/", "description": "Docker Compose (synced from master/shared)"},
+        {"name": "Dockerfile.python", "path": "skills/sandbox-setup-advanced/templates/Dockerfile.python", "mode": "advanced", "source": "templates/master/shared/", "description": "Python Dockerfile (synced from master/shared)"},
+        {"name": "Dockerfile.node", "path": "skills/sandbox-setup-advanced/templates/Dockerfile.node", "mode": "advanced", "source": "templates/master/shared/", "description": "Node Dockerfile (synced from master/shared)"},
+        {"name": "setup-claude-credentials.sh", "path": "skills/sandbox-setup-advanced/templates/setup-claude-credentials.sh", "mode": "advanced", "source": "templates/master/shared/", "description": "Credentials script (synced from master/shared)"},
         {"name": ".env.template", "path": "skills/sandbox-setup-advanced/templates/.env.template", "mode": "advanced", "description": "Environment variables template for Advanced mode"},
         {"name": "extensions.json", "path": "skills/sandbox-setup-advanced/templates/extensions.json", "mode": "advanced", "description": "VS Code extensions for Advanced mode"},
         {"name": "mcp.json", "path": "skills/sandbox-setup-advanced/templates/mcp.json", "mode": "advanced", "description": "MCP server configuration for Advanced mode"},
@@ -243,10 +279,10 @@
       "yolo": [
         {"name": "devcontainer.json", "path": "skills/sandbox-setup-yolo/templates/devcontainer.json", "mode": "yolo", "description": "VS Code DevContainer configuration for YOLO mode"},
         {"name": "init-firewall.sh", "path": "skills/sandbox-setup-yolo/templates/init-firewall.sh", "mode": "yolo", "policy": "configurable", "description": "Fully configurable firewall script"},
-        {"name": "docker-compose.yml", "path": "skills/sandbox-setup-yolo/templates/docker-compose.yml", "mode": "yolo", "source": "templates/master-shared/", "description": "Docker Compose (copied from master-shared)"},
-        {"name": "Dockerfile.python", "path": "skills/sandbox-setup-yolo/templates/Dockerfile.python", "mode": "yolo", "source": "templates/master-shared/", "description": "Python Dockerfile (copied from master-shared)"},
-        {"name": "Dockerfile.node", "path": "skills/sandbox-setup-yolo/templates/Dockerfile.node", "mode": "yolo", "source": "templates/master-shared/", "description": "Node Dockerfile (copied from master-shared)"},
-        {"name": "setup-claude-credentials.sh", "path": "skills/sandbox-setup-yolo/templates/setup-claude-credentials.sh", "mode": "yolo", "source": "templates/master-shared/", "description": "Credentials script (copied from master-shared)"},
+        {"name": "docker-compose.yml", "path": "skills/sandbox-setup-yolo/templates/docker-compose.yml", "mode": "yolo", "source": "templates/master/shared/", "description": "Docker Compose (synced from master/shared)"},
+        {"name": "Dockerfile.python", "path": "skills/sandbox-setup-yolo/templates/Dockerfile.python", "mode": "yolo", "source": "templates/master/shared/", "description": "Python Dockerfile (synced from master/shared)"},
+        {"name": "Dockerfile.node", "path": "skills/sandbox-setup-yolo/templates/Dockerfile.node", "mode": "yolo", "source": "templates/master/shared/", "description": "Node Dockerfile (synced from master/shared)"},
+        {"name": "setup-claude-credentials.sh", "path": "skills/sandbox-setup-yolo/templates/setup-claude-credentials.sh", "mode": "yolo", "source": "templates/master/shared/", "description": "Credentials script (synced from master/shared)"},
         {"name": ".env.template", "path": "skills/sandbox-setup-yolo/templates/.env.template", "mode": "yolo", "description": "Environment variables template for YOLO mode"},
         {"name": "extensions.json", "path": "skills/sandbox-setup-yolo/templates/extensions.json", "mode": "yolo", "description": "VS Code extensions for YOLO mode"},
         {"name": "mcp.json", "path": "skills/sandbox-setup-yolo/templates/mcp.json", "mode": "yolo", "description": "MCP server configuration for YOLO mode"},
@@ -411,6 +447,7 @@
       {"path": "docs/ARCHITECTURE.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/audits/CONSISTENCY_AUDIT_2025-12-16.md", "has_footer": false},
       {"path": "docs/audits/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "3.0.0"},
+      {"path": "docs/features/CUSTOMIZATION.md", "has_footer": false, "missing_footer": true},
       {"path": "docs/features/EXTENSIONS.md", "has_footer": false, "missing_footer": true},
       {"path": "docs/archive/LOW_PRIORITY_FIXES_v2.2.0.md", "has_footer": false},
       {"path": "docs/features/MCP.md", "has_footer": false, "missing_footer": true},
@@ -437,9 +474,6 @@
       {"path": "skills/README.md", "has_footer": true, "version": "3.0.0"},
       {"path": "skills/sandbox-security/SKILL.md", "has_footer": false, "missing_footer": true},
       {"path": "skills/sandbox-setup-advanced/SKILL.md", "has_footer": false, "missing_footer": true},
-      {"path": "skills/sandbox-setup-advanced/references/customization.md", "has_footer": false, "missing_footer": true},
-      {"path": "skills/sandbox-setup-advanced/references/security.md", "has_footer": false, "missing_footer": true},
-      {"path": "skills/sandbox-setup-advanced/references/troubleshooting.md", "has_footer": false, "missing_footer": true},
       {"path": "skills/sandbox-setup-basic/SKILL.md", "has_footer": false, "missing_footer": true},
       {"path": "skills/sandbox-setup-intermediate/SKILL.md", "has_footer": false, "missing_footer": true},
       {"path": "skills/sandbox-setup-yolo/SKILL.md", "has_footer": false, "missing_footer": true},
