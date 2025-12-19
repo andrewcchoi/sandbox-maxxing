@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.2",
   "description": "Master catalog of configuration variables for DevContainer setup",
   "categories": {
     "build": {

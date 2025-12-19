@@ -50,7 +50,7 @@ Choose your development experience:
 - **Advanced** - Security-first with strict firewall, 8-12 minutes
 - **YOLO** - Complete customization and control, 15-30 minutes
 
-See [MODES.md](MODES.md) for detailed comparison and selection guide.
+See [MODES.md](../features/MODES.md) for detailed comparison and selection guide.
 
 ### Quick Commands
 
@@ -61,7 +61,7 @@ See [MODES.md](MODES.md) for detailed comparison and selection guide.
 | `/sandbox:advanced` | Advanced | 8-12 min |
 | `/sandbox:yolo` | YOLO | 15-30 min |
 
-See [Commands Guide](../commands/README.md) for full command documentation.
+See [Commands Guide](../../commands/README.md) for full command documentation.
 ```
 
 **Benefits:**
@@ -100,7 +100,7 @@ See [Commands Guide](../commands/README.md) for full command documentation.
 - What variables are and how they work
 - Build ARGs vs Runtime ENV
 - Mode-specific variable configs
-- **Warning box:** "For sensitive data, see [SECRETS.md](SECRETS.md)"
+- **Warning box:** "For sensitive data, see [SECRETS.md](../features/SECRETS.md)"
 - Remove detailed password/API key examples (keep brief warnings)
 
 **SECRETS.md Focus:** Sensitive credentials only
@@ -109,7 +109,7 @@ See [Commands Guide](../commands/README.md) for full command documentation.
 - VS Code inputs for development credentials
 - Docker secrets for production
 - Build secrets for private registries
-- **Reference:** "For non-sensitive config, see [VARIABLES.md](VARIABLES.md)"
+- **Reference:** "For non-sensitive config, see [VARIABLES.md](../features/VARIABLES.md)"
 
 **Example VARIABLES.md Header:**
 ```markdown
@@ -117,7 +117,7 @@ See [Commands Guide](../commands/README.md) for full command documentation.
 
 This guide covers **non-sensitive** configuration using environment variables and build arguments.
 
-> **⚠️ For sensitive data (passwords, API keys, certificates):** See [Secrets Management Guide](SECRETS.md)
+> **⚠️ For sensitive data (passwords, API keys, certificates):** See [Secrets Management Guide](../features/SECRETS.md)
 
 ## Table of Contents
 1. [Build Arguments (ARG)](#build-arguments-arg)
@@ -248,9 +248,9 @@ All example READMEs duplicate the same comparison table with minor variations:
 
 ## References
 
-- [MODES.md](MODES.md) - Current mode comparison guide
-- [VARIABLES.md](VARIABLES.md) - Current variables guide
-- [SECRETS.md](SECRETS.md) - Current secrets guide
+- [MODES.md](../features/MODES.md) - Current mode comparison guide
+- [VARIABLES.md](../features/VARIABLES.md) - Current variables guide
+- [SECRETS.md](../features/SECRETS.md) - Current secrets guide
 
 ---
 

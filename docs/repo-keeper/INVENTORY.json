@@ -1,7 +1,7 @@
 {
   "$schema": "./inventory.schema.json",
-  "version": "2.2.1",
-  "last_updated": "2025-12-16",
+  "version": "2.2.2",
+  "last_updated": "2025-12-19",
   "repository": "sandbox-maxxing",
   "description": "Repository entity inventory for auditing and organization",
 
@@ -400,23 +400,23 @@
       {"path": "CONTRIBUTING.md", "has_footer": true, "version": "2.2.1", "category": "contributing"},
       {"path": "DEVELOPMENT.md", "has_footer": true, "version": "2.2.1", "category": "development"},
       {"path": "SECURITY.md", "has_footer": true, "version": "2.2.1", "category": "security"},
-      {"path": ".github-issue-v2.2.0.md", "has_footer": false, "category": "issue"}
+      {"path": "docs/archive/.github-issue-v2.2.0.md", "has_footer": false, "category": "archived"}
     ],
     "docs": [
       {"path": "docs/ARCHITECTURE.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/CONSISTENCY_AUDIT_2025-12-16.md", "has_footer": false},
-      {"path": "docs/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/EXTENSIONS.md", "has_footer": false, "missing_footer": true},
-      {"path": "docs/LOW_PRIORITY_FIXES_v2.2.0.md", "has_footer": false},
-      {"path": "docs/MCP.md", "has_footer": false, "missing_footer": true},
-      {"path": "docs/MODES.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/audits/CONSISTENCY_AUDIT_2025-12-16.md", "has_footer": false},
+      {"path": "docs/audits/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/EXTENSIONS.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/archive/LOW_PRIORITY_FIXES_v2.2.0.md", "has_footer": false},
+      {"path": "docs/features/MCP.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/features/MODES.md", "has_footer": true, "version": "2.2.1"},
       {"path": "docs/RELEASE_CHECKLIST.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/RELEASE_NOTES_v1.0.0.md", "has_footer": false},
-      {"path": "docs/SECRETS.md", "has_footer": false, "missing_footer": true},
-      {"path": "docs/security-model.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/TESTING.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/TROUBLESHOOTING.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/VARIABLES.md", "has_footer": false, "missing_footer": true}
+      {"path": "docs/archive/RELEASE_NOTES_v1.0.0.md", "has_footer": false},
+      {"path": "docs/features/SECRETS.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/features/security-model.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/TESTING.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/TROUBLESHOOTING.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/VARIABLES.md", "has_footer": false, "missing_footer": true}
     ],
     "commands": [
       {"path": "commands/README.md", "has_footer": true, "version": "2.2.1"},

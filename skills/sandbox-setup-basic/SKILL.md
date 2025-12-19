@@ -57,6 +57,19 @@ The user will use VS Code's "Dev Containers: Reopen in Container" command to sta
 **Self-Check:** "Does my file path start with `.devcontainer/` or is it `docker-compose.yml`?"
 If NO → STOP and re-read the TASK IDENTITY section.
 
+## MANDATORY FIRST STEP - READ TEMPLATES
+
+**STOP. BEFORE doing ANYTHING else, you MUST read these template files using the Read tool:**
+
+1. Extensions template: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.basic.json`
+2. Firewall template: `${CLAUDE_PLUGIN_ROOT}/templates/firewall/basic-no-firewall.sh`
+3. Compose template: `${CLAUDE_PLUGIN_ROOT}/templates/compose/docker-compose.basic.yml`
+4. Credentials template: `${CLAUDE_PLUGIN_ROOT}/templates/master/setup-claude-credentials.master.sh`
+
+**DO NOT proceed to project detection until you have read ALL template files.**
+**DO NOT use the inline examples in this skill - use the actual template file contents.**
+**If you skip reading templates, you will generate incorrect configuration.**
+
 ## Overview
 
 The Basic mode provides the fastest path to a working sandbox environment. This mode is optimized for:
@@ -761,10 +774,15 @@ test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-cred
 
 **If ANY file is missing, CREATE IT NOW before completing.**
 
-### Files That Should NOT Exist:
-- ❌ `.claude/config.json` - This is Claude Code's sandbox config, NOT DevContainer
-- ❌ `.claude-code/settings.json` - This is Claude Code settings, NOT DevContainer
-- ❌ `/root/.claude-code/settings.json` - Wrong location entirely
+## PROHIBITED FILES - NEVER CREATE THESE
+
+If you find yourself about to write ANY of these files, you are doing the WRONG task:
+
+- ❌ `.claude-code.json` - WRONG (this is Claude Code's sandbox config, NOT DevContainer)
+- ❌ `.claude/config.json` - WRONG (this is Claude Code config, NOT DevContainer)
+- ❌ `.claude-code/settings.json` - WRONG (this is Claude Code settings, NOT DevContainer)
+- ❌ `/root/.claude-code/settings.json` - WRONG (wrong location entirely)
+- ❌ `Dockerfile` in project root - WRONG (should be in .devcontainer/ for intermediate/advanced/yolo modes)
 
 **If you created any of these files by mistake, DELETE THEM and create the correct DevContainer files instead.**
 
