@@ -13,24 +13,21 @@ FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
 # ============================================================================
 FROM golang:1.22-bookworm
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    vim \
-    curl \
-    wget \
-    sudo \
-    build-essential \
-    ca-certificates \
-    gnupg \
-    gnupg2 \
-    jq \
+# Install system dependencies (mandatory base packages)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Core utilities
+    git vim nano less procps sudo unzip wget curl ca-certificates gnupg gnupg2 \
+    # JSON processing and manual pages
+    jq man-db \
+    # Shell and CLI enhancements
+    zsh fzf \
+    # GitHub CLI
     gh \
-    iptables \
-    ipset \
-    iproute2 \
-    dnsutils \
-    && rm -rf /var/lib/apt/lists/*
+    # Build tools
+    build-essential \
+    # Network security tools (firewall)
+    iptables ipset iproute2 dnsutils \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy Node.js from official image (Issue #29 - avoids NodeSource SSL issues)
 COPY --from=node-source /usr/local/bin/node /usr/local/bin/
@@ -67,6 +64,13 @@ RUN npm install -g @mermaid-js/mermaid-cli
 # Install DeepAgents + Tavily (AI/LLM Tools)
 RUN uv pip install --system deepagents tavily-python
 
+# Install git-delta (enhanced git diff)
+ARG GIT_DELTA_VERSION=0.18.2
+RUN ARCH=$(dpkg --print-architecture) && \
+    wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
+    dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
+    rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
+
 # Set Go environment variables
 ENV GOPATH=/home/node/go \
     GOBIN=/home/node/go/bin \
@@ -84,5 +88,14 @@ WORKDIR /workspace
 # Switch to non-root user
 USER node
 
+# Install ZSH with Powerlevel10k (as non-root user)
+ARG ZSH_IN_DOCKER_VERSION=1.2.0
+ENV SHELL=/bin/zsh
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
+    -p git -p fzf \
+    -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
+    -a "source /usr/share/doc/fzf/examples/completion.zsh" \
+    -x
+
 # Default command
-CMD ["/bin/bash"]
+CMD ["/bin/zsh"]

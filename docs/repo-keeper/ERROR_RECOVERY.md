@@ -1,7 +1,7 @@
 # Error Recovery Guide
 
 **Last Updated:** 2025-12-18
-**Version:** 2.2.1
+**Version:** 2.2.2
 
 This guide explains how to handle validation failures and recover from common errors detected by repo-keeper scripts.
 
@@ -84,10 +84,10 @@ This guide explains how to handle validation failures and recover from common er
    vim docs/GUIDE.md
 
    # Change line 45:
-   [Installation Guide](../guides/install.md)
+   [Installation Guide]\(../guides/install.md)
 
    # To:
-   [Installation Guide](setup/install.md)
+   [Installation Guide]\(setup/install.md)
    ```
 
 3. Re-run validation:

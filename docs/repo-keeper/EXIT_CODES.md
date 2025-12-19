@@ -1,7 +1,7 @@
 # Exit Codes Reference
 
 **Last Updated:** 2025-12-18
-**Version:** 2.2.1
+**Version:** 2.2.2
 
 This document describes the exit codes used by all repo-keeper validation scripts.
 

@@ -1720,7 +1720,7 @@ for file in $MD_FILES; do
     RELATIVE_PATH="${file#$REPO_ROOT/}"
     FILE_DIR=$(dirname "$file")
 
-    # Extract markdown links: [text](url)
+    # Extract markdown links: [text]\(url)
     LINKS=$(grep -oP '\[([^\]]+)\]\(([^\)]+)\)' "$file" 2>/dev/null || true)
 
     if [ -z "$LINKS" ]; then
@@ -1728,7 +1728,7 @@ for file in $MD_FILES; do
     fi
 
     echo "$LINKS" | while IFS= read -r match; do
-        # Extract URL from [text](url)
+        # Extract URL from [text]\(url)
         URL=$(echo "$match" | grep -oP '\]\(\K[^\)]+' || true)
         LINK_TEXT=$(echo "$match" | grep -oP '\[\K[^\]]+' || true)
 
@@ -2841,7 +2841,7 @@ None at this time.
 ---
 
 **Last Updated:** 2025-12-17
-**Version:** 2.2.1
+**Version:** 2.2.2
 ```
 
 **Step 2: Commit**

@@ -63,7 +63,7 @@ This example shows what the `sandbox-maxxing` plugin generates when run in Advan
    curl -fsSL https://claude.ai/install.sh | sh
    ```
 
-   > **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
+   > **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../docs/features/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
 
 4. **Start the Application**:
 
@@ -488,7 +488,7 @@ alembic init migrations
 ## Learn More
 
 - [Claude Code Sandbox Documentation](../../docs/)
-- [Security Model](../../docs/security-model.md)
+- [Security Model](../../docs/features/security-model.md)
 - [Development Guide](../../DEVELOPMENT.md)
 - [Contributing](../../CONTRIBUTING.md)
 
@@ -499,4 +499,4 @@ MIT
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2

@@ -226,4 +226,4 @@ For security-related questions that are not vulnerabilities:
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2

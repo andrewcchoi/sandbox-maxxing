@@ -12,6 +12,7 @@
 #   volumes:
 #     - ~/.claude:/tmp/host-claude:ro                  # Claude config
 #     - ~/.config/claude-env:/tmp/host-env:ro          # Environment secrets (optional)
+#     - ~/.config/gh:/tmp/host-gh:ro                   # GitHub CLI config (optional)
 #
 # ============================================================================
 
@@ -20,6 +21,8 @@ set -euo pipefail
 CLAUDE_DIR="$HOME/.claude"
 HOST_CLAUDE="/tmp/host-claude"
 HOST_ENV="/tmp/host-env"
+HOST_GH="/tmp/host-gh"
+GH_CONFIG_DIR="$HOME/.config/gh"
 
 echo "================================================================"
 echo "Setting up Claude Code environment..."
@@ -107,12 +110,40 @@ else
 fi
 
 # ============================================================================
-# 6. Fix Permissions
+# 6. GitHub CLI Authentication (Optional)
 # ============================================================================
 echo ""
-echo "[5/5] Setting permissions..."
+echo "[5/6] Setting up GitHub CLI authentication..."
+
+if [ -d "$HOST_GH" ]; then
+    mkdir -p "$GH_CONFIG_DIR"
+
+    # Copy GitHub CLI configuration
+    if [ -f "$HOST_GH/hosts.yml" ]; then
+        cp "$HOST_GH/hosts.yml" "$GH_CONFIG_DIR/"
+        chmod 600 "$GH_CONFIG_DIR/hosts.yml" 2>/dev/null || true
+        echo "  ✓ GitHub CLI authentication configured"
+    else
+        echo "  ℹ No GitHub CLI authentication found"
+    fi
+
+    # Copy config if exists
+    if [ -f "$HOST_GH/config.yml" ]; then
+        cp "$HOST_GH/config.yml" "$GH_CONFIG_DIR/"
+        echo "  ✓ GitHub CLI config copied"
+    fi
+else
+    echo "  ℹ GitHub CLI config not found (optional)"
+fi
+
+# ============================================================================
+# 7. Fix Permissions
+# ============================================================================
+echo ""
+echo "[6/6] Setting permissions..."
 
 chown -R "$(id -u):$(id -g)" "$CLAUDE_DIR" 2>/dev/null || true
+chown -R "$(id -u):$(id -g)" "$GH_CONFIG_DIR" 2>/dev/null || true
 echo "  ✓ Permissions set"
 
 # ============================================================================
@@ -120,10 +151,15 @@ echo "  ✓ Permissions set"
 # ============================================================================
 echo ""
 echo "================================================================"
-echo "✓ Claude Code environment ready!"
+echo "✓ Development environment ready!"
 echo "================================================================"
 echo "  Config directory: $CLAUDE_DIR"
 echo "  Plugins: $(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l) installed"
 echo "  MCP servers: $(ls -1 "$CLAUDE_DIR/mcp" 2>/dev/null | wc -l) configured"
+if [ -f "$GH_CONFIG_DIR/hosts.yml" ]; then
+    echo "  GitHub CLI: ✓ Authenticated"
+else
+    echo "  GitHub CLI: Not authenticated (run 'gh auth login' in container)"
+fi
 echo "================================================================"
 echo ""

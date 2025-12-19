@@ -16,6 +16,7 @@
 #       - .:/workspace:cached
 #       - ~/.claude:/tmp/host-claude:ro              # Host Claude config (read-only)
 #       - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
+#       - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)
 #
 # Then use .devcontainer/setup-claude-credentials.sh in postCreateCommand
 # =============================================================================

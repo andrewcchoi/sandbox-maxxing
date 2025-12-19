@@ -250,7 +250,7 @@ demo-app/
 
 ### Step 4: Documentation
 
-**Create `docs/DEVELOPMENT.md`**:
+**Create `../../DEVELOPMENT.md`**:
 - Prerequisites (Docker, VS Code, Claude Code CLI)
 - Quick Start (clone → open → reopen in container)
 - Running Examples (both basic and full)
@@ -277,7 +277,7 @@ demo-app/
 
 ## Documentation & Developer Experience
 
-### Getting Started Guide (`docs/DEVELOPMENT.md`)
+### Getting Started Guide (`../../DEVELOPMENT.md`)
 
 **Contents**:
 1. **Prerequisites**
@@ -350,7 +350,7 @@ Production-ready patterns: API, caching, testing.
 
 This plugin uses itself for development! Open in VS Code and reopen in the devcontainer for immediate setup.
 
-See [DEVELOPMENT.md](docs/DEVELOPMENT.md) for details.
+See [DEVELOPMENT.md](../../DEVELOPMENT.md) for details.
 ```
 
 2. **Examples** (after Features):
@@ -360,7 +360,7 @@ See [DEVELOPMENT.md](docs/DEVELOPMENT.md) for details.
 - **Basic Streamlit Demo**: Quick connectivity test
 - **Full Blogging Platform**: Production patterns with FastAPI + React
 
-[Explore Examples →](examples/)
+[Explore Examples →](../../examples/)
 ```
 
 ### Maintenance Considerations
@@ -433,7 +433,7 @@ Files to create:
 - [ ] `examples/demo-app/README.md`
 
 **Documentation**:
-- [ ] `docs/DEVELOPMENT.md`
+- [ ] `../../DEVELOPMENT.md`
 - [ ] Update root `README.md`
 - [ ] Update `CONTRIBUTING.md`
 

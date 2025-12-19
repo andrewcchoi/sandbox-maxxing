@@ -15,4 +15,4 @@ Perform comprehensive security review of:
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2

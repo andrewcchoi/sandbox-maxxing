@@ -94,6 +94,61 @@ If NO → STOP and re-read the TASK IDENTITY section.
 **DO NOT use the inline examples in this skill - use the actual template file contents.**
 **If you skip reading templates, you will generate incorrect configuration.**
 
+## MANDATORY DOCKERFILE REQUIREMENTS
+
+When generating a Dockerfile (not using docker-compose image directly), ALL Dockerfiles MUST include:
+
+### Multi-Stage Build (Required for Python projects)
+```dockerfile
+# Stage 1: Get Node.js from official image (Issue #29)
+FROM node:20-slim AS node-source
+
+# Stage 2: Get uv from official Astral image (Python projects)
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS uv-source
+
+# Stage 3: Main build
+FROM <base-image>
+```
+
+### Mandatory Base Packages (ALWAYS install these)
+```dockerfile
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  # Core utilities
+  git vim nano less procps sudo unzip wget curl ca-certificates gnupg gnupg2 \
+  # JSON processing and manual pages
+  jq man-db \
+  # Shell and CLI enhancements
+  zsh fzf \
+  # GitHub CLI
+  gh \
+  # Network security tools (firewall)
+  iptables ipset iproute2 dnsutils \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+```
+
+### Mandatory Tools (ALWAYS install these)
+1. **git-delta** - Enhanced git diff
+2. **ZSH with Powerlevel10k** - Full shell experience
+3. **Claude Code CLI** - `npm install -g @anthropic-ai/claude-code`
+4. **DeepAgents + Tavily** - AI/LLM tools (via uv/pip)
+5. **Mermaid CLI** - Diagram generation
+
+## CRITICAL: USE ACTUAL TEMPLATE FILES
+
+**DO NOT generate simplified Dockerfiles.** Always:
+1. READ `${CLAUDE_PLUGIN_ROOT}/templates/master/Dockerfile.master`
+2. COPY the template content EXACTLY (or appropriate language template)
+3. Only modify placeholder values (PROJECT_NAME, etc.)
+
+The templates contain:
+- Proper multi-stage builds
+- All mandatory packages
+- ZSH + Powerlevel10k configuration
+- AI tools (DeepAgents, Tavily)
+- Claude Code CLI
+
+**If you generate a Dockerfile with fewer than 50 lines, you are doing it wrong.** YOLO mode should have the MOST comprehensive setup, not the least.
+
 ## Overview
 
 YOLO mode provides **complete control with NO restrictions**. You get:
@@ -824,6 +879,28 @@ I will now configure your YOLO sandbox with this custom image.
 This will take approximately 5-10 minutes. Ready to proceed?
 ```
 
+## POST-GENERATION VALIDATION (MANDATORY)
+
+After generating files, verify these conditions:
+
+### Dockerfile Validation
+```bash
+# Check for multi-stage build
+grep -c "^FROM.*AS" .devcontainer/Dockerfile  # Should be >= 1
+
+# Check for mandatory packages
+grep -q "git vim nano less procps" .devcontainer/Dockerfile || echo "MISSING: Core utilities"
+grep -q "zsh fzf" .devcontainer/Dockerfile || echo "MISSING: Shell enhancements"
+grep -q "git-delta" .devcontainer/Dockerfile || echo "MISSING: git-delta"
+grep -q "powerlevel10k\|zsh-in-docker" .devcontainer/Dockerfile || echo "MISSING: ZSH theme"
+grep -q "claude-code" .devcontainer/Dockerfile || echo "MISSING: Claude Code CLI"
+
+# Check line count (should be substantial - YOLO should have the MOST comprehensive setup)
+wc -l .devcontainer/Dockerfile  # Should be >= 100 lines for YOLO mode
+```
+
+**If any check fails, RE-READ the template file and regenerate.** YOLO mode is about giving users full control, not generating minimal configurations.
+
 ## Completion Checklist
 
 **Before finishing the setup, verify ALL these files exist:**
@@ -867,4 +944,4 @@ If you find yourself about to write ANY of these files, you are doing the WRONG 
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2

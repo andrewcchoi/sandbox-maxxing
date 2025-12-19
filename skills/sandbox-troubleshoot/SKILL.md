@@ -9,6 +9,23 @@ description: Use when user encounters problems with Claude Code Docker sandbox -
 
 Diagnoses and resolves common issues with Claude Code Docker sandbox environments using systematic troubleshooting workflows.
 
+## Usage
+
+This skill is invoked via the `/sandboxxer:troubleshoot` command.
+
+**Command:**
+```
+/sandboxxer:troubleshoot
+```
+
+The skill will:
+1. Ask user to describe the issue
+2. Categorize the problem (container, network, service, firewall, etc.)
+3. Gather diagnostic information systematically
+4. Apply appropriate troubleshooting workflow
+5. Provide step-by-step resolution guidance
+6. Verify the fix and suggest preventive measures
+
 ## When to Use This Skill
 
 Use this skill when:
@@ -222,7 +239,45 @@ For detailed troubleshooting steps, refer to `references/troubleshooting.md` whi
 - **Document what worked** - Help user understand the fix
 - **Explain root cause** - Teach, don't just fix
 
+## Usage Examples
+
+### Example 1: Container Build Failure
+
+User reports container won't start:
+
+```
+User: My container won't build. It says "ERROR: failed to solve"
+Assistant: I'll help troubleshoot this build failure.
+/sandboxxer:troubleshoot
+```
+
+The skill guides through checking Docker logs, Dockerfile syntax, network connectivity during build, and provides specific fix for the identified issue.
+
+### Example 2: Service Connectivity Issue
+
+User can't connect to PostgreSQL:
+
+```
+User: My app can't connect to PostgreSQL. Connection refused on port 5432.
+Assistant: I'll diagnose this database connectivity issue.
+/sandboxxer:troubleshoot
+```
+
+The skill checks if PostgreSQL service is running, verifies port mappings, tests connectivity from container, and ensures connection string is correct.
+
+### Example 3: Firewall Blocking Issue
+
+User's API calls are being blocked:
+
+```
+User: I'm getting network errors when calling the OpenAI API. It works outside the container.
+Assistant: This sounds like a firewall configuration issue. Let me troubleshoot.
+/sandboxxer:troubleshoot
+```
+
+The skill checks firewall mode, reviews allowed domains list, tests connectivity to specific domain, and provides guidance on adding OpenAI domains to allowlist.
+
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2

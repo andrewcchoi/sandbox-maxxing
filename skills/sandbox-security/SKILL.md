@@ -9,6 +9,23 @@ description: Use when user wants to audit sandbox security, review firewall conf
 
 Performs comprehensive security audits of Claude Code Docker sandbox configurations and provides recommendations for hardening based on best practices.
 
+## Usage
+
+This skill is invoked via the `/sandboxxer:audit` command.
+
+**Command:**
+```
+/sandboxxer:audit
+```
+
+The skill will:
+1. Scan existing DevContainer configuration files
+2. Audit firewall configuration and domain allowlists
+3. Check for security best practices violations
+4. Review exposed ports and network configuration
+5. Provide prioritized security recommendations
+6. Suggest concrete remediation steps
+
 ## When to Use This Skill
 
 Use this skill when:
@@ -295,7 +312,45 @@ From `references/security.md`:
 - **Document security decisions** - Explain trade-offs
 - **Regular audits** - Security is ongoing process
 
+## Usage Examples
+
+### Example 1: Basic Security Audit
+
+User requests a security review of their existing DevContainer:
+
+```
+User: Can you audit my sandbox security?
+Assistant: I'll run the security auditor to review your configuration.
+/sandboxxer:audit
+```
+
+The skill scans configuration files, checks firewall settings, and provides a prioritized list of security recommendations.
+
+### Example 2: Pre-Production Security Check
+
+User preparing to deploy and wants to ensure security hardening:
+
+```
+User: We're about to go live. Can you check if our development environment is secure?
+Assistant: I'll perform a comprehensive security audit focusing on production readiness.
+/sandboxxer:audit
+```
+
+The skill performs deep security analysis, reviews all network configurations, and provides deployment-specific recommendations.
+
+### Example 3: Firewall Configuration Review
+
+User experiencing connectivity issues and wants to verify firewall is properly configured:
+
+```
+User: My API calls are being blocked. Can you check my firewall?
+Assistant: I'll audit your firewall configuration.
+/sandboxxer:audit
+```
+
+The skill reviews firewall mode, allowed domains, and provides guidance on adding necessary domains while maintaining security.
+
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2

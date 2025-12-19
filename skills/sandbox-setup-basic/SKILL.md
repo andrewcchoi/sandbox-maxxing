@@ -70,6 +70,45 @@ If NO → STOP and re-read the TASK IDENTITY section.
 **DO NOT use the inline examples in this skill - use the actual template file contents.**
 **If you skip reading templates, you will generate incorrect configuration.**
 
+## MANDATORY DOCKERFILE REQUIREMENTS
+
+When generating a Dockerfile (not using docker-compose image directly), ALL Dockerfiles MUST include:
+
+### Multi-Stage Build (Required for Python projects)
+```dockerfile
+# Stage 1: Get Node.js from official image (Issue #29)
+FROM node:20-slim AS node-source
+
+# Stage 2: Get uv from official Astral image (Python projects)
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS uv-source
+
+# Stage 3: Main build
+FROM <base-image>
+```
+
+### Mandatory Base Packages (ALWAYS install these)
+```dockerfile
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  # Core utilities
+  git vim nano less procps sudo unzip wget curl ca-certificates gnupg gnupg2 \
+  # JSON processing and manual pages
+  jq man-db \
+  # Shell and CLI enhancements
+  zsh fzf \
+  # GitHub CLI
+  gh \
+  # Network security tools (firewall)
+  iptables ipset iproute2 dnsutils \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+```
+
+### Mandatory Tools (ALWAYS install these)
+1. **git-delta** - Enhanced git diff
+2. **ZSH with Powerlevel10k** - Full shell experience
+3. **Claude Code CLI** - `npm install -g @anthropic-ai/claude-code`
+4. **DeepAgents + Tavily** - AI/LLM tools (via uv/pip)
+5. **Mermaid CLI** - Diagram generation
+
 ## Overview
 
 The Basic mode provides the fastest path to a working sandbox environment. This mode is optimized for:
@@ -81,6 +120,21 @@ The Basic mode provides the fastest path to a working sandbox environment. This 
 - 1-2 user questions maximum
 
 Basic mode gets developers up and running in minutes using battle-tested base images without custom security layers.
+
+## Usage
+
+This skill is invoked via the `/sandboxxer:basic` command or by selecting "Basic Mode" from the `/sandboxxer:setup` interactive mode selector.
+
+**Command:**
+```
+/sandboxxer:basic
+```
+
+The skill will:
+1. Detect your project type automatically
+2. Ask 1-2 minimal questions
+3. Generate DevContainer configuration files in `.devcontainer/`
+4. Configure docker-compose for multi-service projects
 
 ## When to Use This Skill
 
@@ -761,6 +815,28 @@ Basic mode relies on Docker sandbox isolation only. No firewall rules are config
 
 For production-like security, recommend Advanced or YOLO mode.
 
+## POST-GENERATION VALIDATION (MANDATORY)
+
+After generating files, verify these conditions:
+
+### Dockerfile Validation
+```bash
+# Check for multi-stage build
+grep -c "^FROM.*AS" .devcontainer/Dockerfile  # Should be >= 1
+
+# Check for mandatory packages
+grep -q "git vim nano less procps" .devcontainer/Dockerfile || echo "MISSING: Core utilities"
+grep -q "zsh fzf" .devcontainer/Dockerfile || echo "MISSING: Shell enhancements"
+grep -q "git-delta" .devcontainer/Dockerfile || echo "MISSING: git-delta"
+grep -q "powerlevel10k\|zsh-in-docker" .devcontainer/Dockerfile || echo "MISSING: ZSH theme"
+grep -q "claude-code" .devcontainer/Dockerfile || echo "MISSING: Claude Code CLI"
+
+# Check line count (should be substantial)
+wc -l .devcontainer/Dockerfile  # Should be >= 50 lines
+```
+
+**If any check fails, RE-READ the template file and regenerate.**
+
 ## Completion Checklist
 
 **Before finishing the setup, verify ALL these files exist:**
@@ -814,4 +890,4 @@ Total time: 2-5 minutes from start to working sandbox.
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2
