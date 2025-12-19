@@ -944,4 +944,4 @@ If you find yourself about to write ANY of these files, you are doing the WRONG 
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2

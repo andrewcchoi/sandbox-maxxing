@@ -753,4 +753,4 @@ For contributors and maintainers, see [`docs/repo-keeper/`](docs/repo-keeper/):
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Version:** 2.2.2

@@ -397,7 +397,7 @@ The [`INVENTORY.json`](./INVENTORY.json) tracks:
      ---
 
      **Last Updated:** 2025-12-16
-     **Version:** 2.2.1
+     **Version:** 2.2.2
      ```
 
 3. **Fix broken links (10 known):**
@@ -525,6 +525,6 @@ For general plugin support:
 
 ---
 
-**Version:** 2.2.1
+**Version:** 2.2.2
 **Last Updated:** 2025-12-17
 **Status:** ✅ Implemented and tested with comprehensive validation suite
