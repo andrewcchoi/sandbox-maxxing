@@ -623,7 +623,7 @@ manager    settings    .json         code    values    old key
 
 ### 3. .gitignore Configuration
 
-```gitignore
+```text
 # Environment files with secrets
 .env
 .env.local

@@ -48,36 +48,62 @@ Firewall domain whitelist organized by category:
 
 ### 4. Template System
 
-The plugin uses a modular template system with section markers:
+The plugin uses a hybrid template organization:
 
 #### Directory Structure
 ```
 templates/
+├── shared/                  # Shared files (identical across all modes)
+│   ├── docker-compose.yml           # 2.4 KB
+│   ├── Dockerfile.python            # 3.3 KB (multi-stage build)
+│   ├── Dockerfile.node              # 3.0 KB (multi-stage build)
+│   └── setup-claude-credentials.sh  # 6.2 KB (credential persistence)
 ├── master/                  # Master templates with all sections
 │   ├── devcontainer.json.master
 │   ├── Dockerfile.master
 │   ├── docker-compose.master.yml
-│   └── init-firewall.master.sh
-├── compose/                 # Service-specific docker-compose sections
-│   ├── postgres.yml
-│   ├── redis.yml
-│   ├── mysql.yml
-│   └── mongodb.yml
-├── dockerfiles/            # Language-specific Dockerfile sections
-│   ├── python.Dockerfile
-│   ├── node.Dockerfile
-│   ├── ruby.Dockerfile
-│   └── golang.Dockerfile
-├── firewall/               # Firewall configuration sections
-│   ├── basic.sh
-│   ├── intermediate.sh
-│   ├── advanced.sh
-│   └── yolo.sh
-└── legacy/                 # Old monolithic templates (deprecated)
+│   ├── init-firewall.master.sh
+│   └── setup-claude-credentials.master.sh
+└── legacy/                  # Old monolithic templates (deprecated)
     ├── python/
     ├── node/
     └── fullstack/
+
+skills/
+├── sandbox-setup-basic/
+│   └── templates/           # Mode-specific files
+│       └── devcontainer.json        # 908 bytes
+├── sandbox-setup-intermediate/
+│   └── templates/
+│       ├── devcontainer.json        # 965 bytes
+│       └── init-firewall.sh         # 2.3 KB (permissive firewall)
+├── sandbox-setup-advanced/
+│   └── templates/
+│       ├── devcontainer.json        # 957 bytes
+│       └── init-firewall.sh         # 10.8 KB (strict firewall)
+└── sandbox-setup-yolo/
+    └── templates/
+        ├── devcontainer.json        # 959 bytes
+        └── init-firewall.sh         # 17.9 KB (full firewall)
 ```
+
+#### Organization Strategy
+
+**Shared Templates** (`templates/shared/`):
+- Files that are identical across all modes
+- No duplication - single source of truth
+- Includes: Dockerfiles, docker-compose.yml, credentials script
+
+**Mode-Specific Templates** (in skill folders):
+- Files that differ by mode
+- Self-contained within each skill
+- Includes: devcontainer.json (all modes), init-firewall.sh (except Basic)
+
+**Benefits**:
+- Simple path discovery using skill-relative paths
+- No duplication of large shared files
+- Mode-specific files co-located with their skills
+- Works reliably from any execution directory
 
 #### Section Marker Format
 Templates use comments to mark extractable sections:

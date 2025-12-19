@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- **Template path discovery failure**: Fixed silent template copy failures when running from user projects
+  - Root cause: Plugin directory discovery using `find ~/.claude/plugins` was unreliable
+  - Solution: Reorganized templates with hybrid approach using skill-relative paths
+  - Changed: Mode-specific files moved to `skills/*/templates/` for self-contained discovery
+  - Changed: Shared files (Dockerfiles, compose, credentials) moved to `templates/shared/`
+  - Result: Templates now work reliably regardless of execution directory
+  - Updated all four skill files with simpler path discovery logic
+  - Updated INVENTORY.json and ARCHITECTURE.md with new structure
+
 ## [3.0.0] - 2025-12-19
 
 ### Major Breaking Changes

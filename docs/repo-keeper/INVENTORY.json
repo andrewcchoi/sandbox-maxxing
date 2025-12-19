@@ -15,12 +15,11 @@
       "related_command": "commands/basic.md",
       "related_example": "examples/demo-app-sandbox-basic/",
       "related_templates": [
-        "templates/compose/docker-compose.basic.yml",
-        "templates/firewall/basic-no-firewall.sh",
-        "templates/extensions/extensions.basic.json",
-        "templates/mcp/mcp.basic.json",
-        "templates/variables/variables.basic.json",
-        "templates/env/.env.basic.template"
+        "skills/sandbox-setup-basic/templates/devcontainer.json",
+        "templates/shared/docker-compose.yml",
+        "templates/shared/Dockerfile.python",
+        "templates/shared/Dockerfile.node",
+        "templates/shared/setup-claude-credentials.sh"
       ]
     },
     {
@@ -32,12 +31,12 @@
       "related_command": "commands/intermediate.md",
       "related_example": "examples/demo-app-sandbox-intermediate/",
       "related_templates": [
-        "templates/compose/docker-compose.intermediate.yml",
-        "templates/firewall/intermediate-permissive.sh",
-        "templates/extensions/extensions.intermediate.json",
-        "templates/mcp/mcp.intermediate.json",
-        "templates/variables/variables.intermediate.json",
-        "templates/env/.env.intermediate.template"
+        "skills/sandbox-setup-intermediate/templates/devcontainer.json",
+        "skills/sandbox-setup-intermediate/templates/init-firewall.sh",
+        "templates/shared/docker-compose.yml",
+        "templates/shared/Dockerfile.python",
+        "templates/shared/Dockerfile.node",
+        "templates/shared/setup-claude-credentials.sh"
       ]
     },
     {
@@ -49,12 +48,12 @@
       "related_command": "commands/advanced.md",
       "related_example": "examples/demo-app-sandbox-advanced/",
       "related_templates": [
-        "templates/compose/docker-compose.advanced.yml",
-        "templates/firewall/advanced-strict.sh",
-        "templates/extensions/extensions.advanced.json",
-        "templates/mcp/mcp.advanced.json",
-        "templates/variables/variables.advanced.json",
-        "templates/env/.env.advanced.template"
+        "skills/sandbox-setup-advanced/templates/devcontainer.json",
+        "skills/sandbox-setup-advanced/templates/init-firewall.sh",
+        "templates/shared/docker-compose.yml",
+        "templates/shared/Dockerfile.python",
+        "templates/shared/Dockerfile.node",
+        "templates/shared/setup-claude-credentials.sh"
       ],
       "references": [
         "skills/sandbox-setup-advanced/references/customization.md",
@@ -71,12 +70,12 @@
       "related_command": "commands/yolo.md",
       "related_example": "examples/demo-app-sandbox-yolo/",
       "related_templates": [
-        "templates/compose/docker-compose.yolo.yml",
-        "templates/firewall/yolo-configurable.sh",
-        "templates/extensions/extensions.yolo.json",
-        "templates/mcp/mcp.yolo.json",
-        "templates/variables/variables.yolo.json",
-        "templates/env/.env.yolo.template"
+        "skills/sandbox-setup-yolo/templates/devcontainer.json",
+        "skills/sandbox-setup-yolo/templates/init-firewall.sh",
+        "templates/shared/docker-compose.yml",
+        "templates/shared/Dockerfile.python",
+        "templates/shared/Dockerfile.node",
+        "templates/shared/setup-claude-credentials.sh"
       ]
     },
     {
@@ -199,55 +198,29 @@
         "description": "Master credential setup script"
       }
     ],
-    "dockerfiles": [
-      {"name": "Dockerfile.python", "path": "templates/dockerfiles/Dockerfile.python", "language": "python"},
-      {"name": "Dockerfile.node", "path": "templates/dockerfiles/Dockerfile.node", "language": "node"},
-      {"name": "Dockerfile.go", "path": "templates/dockerfiles/Dockerfile.go", "language": "go"},
-      {"name": "Dockerfile.rust", "path": "templates/dockerfiles/Dockerfile.rust", "language": "rust"},
-      {"name": "Dockerfile.java", "path": "templates/dockerfiles/Dockerfile.java", "language": "java"},
-      {"name": "Dockerfile.ruby", "path": "templates/dockerfiles/Dockerfile.ruby", "language": "ruby"},
-      {"name": "Dockerfile.php", "path": "templates/dockerfiles/Dockerfile.php", "language": "php"},
-      {"name": "Dockerfile.cpp-gcc", "path": "templates/dockerfiles/Dockerfile.cpp-gcc", "language": "cpp"},
-      {"name": "Dockerfile.cpp-clang", "path": "templates/dockerfiles/Dockerfile.cpp-clang", "language": "cpp"},
-      {"name": "Dockerfile.postgres", "path": "templates/dockerfiles/Dockerfile.postgres", "service": "postgres"},
-      {"name": "Dockerfile.redis", "path": "templates/dockerfiles/Dockerfile.redis", "service": "redis"}
+    "shared": [
+      {"name": "docker-compose.yml", "path": "templates/shared/docker-compose.yml", "type": "shared", "description": "Docker Compose configuration (identical across all modes)"},
+      {"name": "Dockerfile.python", "path": "templates/shared/Dockerfile.python", "type": "shared", "language": "python", "description": "Multi-stage Python Dockerfile (identical across all modes)"},
+      {"name": "Dockerfile.node", "path": "templates/shared/Dockerfile.node", "type": "shared", "language": "node", "description": "Multi-stage Node.js Dockerfile (identical across all modes)"},
+      {"name": "setup-claude-credentials.sh", "path": "templates/shared/setup-claude-credentials.sh", "type": "shared", "description": "Claude credentials persistence script (identical across all modes)"}
     ],
-    "compose": [
-      {"name": "docker-compose.basic.yml", "path": "templates/compose/docker-compose.basic.yml", "mode": "basic"},
-      {"name": "docker-compose.intermediate.yml", "path": "templates/compose/docker-compose.intermediate.yml", "mode": "intermediate"},
-      {"name": "docker-compose.advanced.yml", "path": "templates/compose/docker-compose.advanced.yml", "mode": "advanced"},
-      {"name": "docker-compose.yolo.yml", "path": "templates/compose/docker-compose.yolo.yml", "mode": "yolo"}
-    ],
-    "firewall": [
-      {"name": "basic-no-firewall.sh", "path": "templates/firewall/basic-no-firewall.sh", "mode": "basic", "policy": "none"},
-      {"name": "intermediate-permissive.sh", "path": "templates/firewall/intermediate-permissive.sh", "mode": "intermediate", "policy": "permissive"},
-      {"name": "advanced-strict.sh", "path": "templates/firewall/advanced-strict.sh", "mode": "advanced", "policy": "strict"},
-      {"name": "yolo-configurable.sh", "path": "templates/firewall/yolo-configurable.sh", "mode": "yolo", "policy": "configurable"}
-    ],
-    "extensions": [
-      {"name": "extensions.basic.json", "path": "templates/extensions/extensions.basic.json", "mode": "basic", "count": "6-8"},
-      {"name": "extensions.intermediate.json", "path": "templates/extensions/extensions.intermediate.json", "mode": "intermediate", "count": "15-20"},
-      {"name": "extensions.advanced.json", "path": "templates/extensions/extensions.advanced.json", "mode": "advanced", "count": "22-28"},
-      {"name": "extensions.yolo.json", "path": "templates/extensions/extensions.yolo.json", "mode": "yolo", "count": "35+"}
-    ],
-    "mcp": [
-      {"name": "mcp.basic.json", "path": "templates/mcp/mcp.basic.json", "mode": "basic"},
-      {"name": "mcp.intermediate.json", "path": "templates/mcp/mcp.intermediate.json", "mode": "intermediate"},
-      {"name": "mcp.advanced.json", "path": "templates/mcp/mcp.advanced.json", "mode": "advanced"},
-      {"name": "mcp.yolo.json", "path": "templates/mcp/mcp.yolo.json", "mode": "yolo"}
-    ],
-    "variables": [
-      {"name": "variables.basic.json", "path": "templates/variables/variables.basic.json", "mode": "basic"},
-      {"name": "variables.intermediate.json", "path": "templates/variables/variables.intermediate.json", "mode": "intermediate"},
-      {"name": "variables.advanced.json", "path": "templates/variables/variables.advanced.json", "mode": "advanced"},
-      {"name": "variables.yolo.json", "path": "templates/variables/variables.yolo.json", "mode": "yolo"}
-    ],
-    "env": [
-      {"name": ".env.basic.template", "path": "templates/env/.env.basic.template", "mode": "basic"},
-      {"name": ".env.intermediate.template", "path": "templates/env/.env.intermediate.template", "mode": "intermediate"},
-      {"name": ".env.advanced.template", "path": "templates/env/.env.advanced.template", "mode": "advanced"},
-      {"name": ".env.yolo.template", "path": "templates/env/.env.yolo.template", "mode": "yolo"}
-    ]
+    "mode_specific": {
+      "basic": [
+        {"name": "devcontainer.json", "path": "skills/sandbox-setup-basic/templates/devcontainer.json", "mode": "basic", "description": "VS Code DevContainer configuration for Basic mode"}
+      ],
+      "intermediate": [
+        {"name": "devcontainer.json", "path": "skills/sandbox-setup-intermediate/templates/devcontainer.json", "mode": "intermediate", "description": "VS Code DevContainer configuration for Intermediate mode"},
+        {"name": "init-firewall.sh", "path": "skills/sandbox-setup-intermediate/templates/init-firewall.sh", "mode": "intermediate", "policy": "permissive", "description": "Permissive firewall script"}
+      ],
+      "advanced": [
+        {"name": "devcontainer.json", "path": "skills/sandbox-setup-advanced/templates/devcontainer.json", "mode": "advanced", "description": "VS Code DevContainer configuration for Advanced mode"},
+        {"name": "init-firewall.sh", "path": "skills/sandbox-setup-advanced/templates/init-firewall.sh", "mode": "advanced", "policy": "strict", "description": "Strict firewall script"}
+      ],
+      "yolo": [
+        {"name": "devcontainer.json", "path": "skills/sandbox-setup-yolo/templates/devcontainer.json", "mode": "yolo", "description": "VS Code DevContainer configuration for YOLO mode"},
+        {"name": "init-firewall.sh", "path": "skills/sandbox-setup-yolo/templates/init-firewall.sh", "mode": "yolo", "policy": "configurable", "description": "Fully configurable firewall script"}
+      ]
+    }
   },
 
   "examples": [
@@ -560,18 +533,12 @@
   },
 
   "known_issues": {
-    "missing_footers": 39,
-    "broken_links": 10,
-    "outdated_versions": [
-      "data/secrets.json (2.1.0 -> 2.2.1)",
-      "data/variables.json (2.1.0 -> 2.2.1)"
-    ],
-    "undocumented_files": [
-      "data/mcp-servers.json"
-    ],
-    "naming_inconsistencies": [
-      "data/README.md uses 'Docker Sandbox Plugin' instead of 'Claude Code Sandbox Plugin'"
-    ]
+    "missing_footers": 17,
+    "broken_links": 0,
+    "outdated_versions": [],
+    "undocumented_files": [],
+    "naming_inconsistencies": [],
+    "notes": "All major issues resolved as of 2025-12-19"
   },
 
   "statistics": {
@@ -585,6 +552,6 @@
     "total_python_requirements": 8,
     "total_node_packages": 6,
     "documentation_with_footers": 12,
-    "documentation_without_footers": 39
+    "documentation_without_footers": 17
   }
 }

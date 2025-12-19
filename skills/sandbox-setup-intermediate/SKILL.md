@@ -59,31 +59,56 @@ The user will use VS Code's "Dev Containers: Reopen in Container" command to sta
 **Self-Check:** "Does my file path start with `.devcontainer/` or is it `docker-compose.yml`?"
 If NO → STOP and re-read the TASK IDENTITY section.
 
-## MANDATORY FIRST STEP - READ TEMPLATES
+## MANDATORY FIRST STEP - COPY TEMPLATES
 
 **⚠️ NEW WORKFLOW: Copy templates first, then customize.**
 
-### Step 1A: Find the Plugin Directory
+### Step 1A: Find Template Directories
+
+Templates are organized in two locations:
+- **Shared templates**: Common files used by all modes
+- **Mode-specific templates**: Unique files for this mode
 
 ```bash
-# Try marketplace install location first
-PLUGIN_ROOT=$(find ~/.claude/plugins -maxdepth 2 -name "sandboxxer" -o -name "devcontainer-setup" 2>/dev/null | head -1)
+# Find the skill directory (relative to this SKILL.md file)
+SKILL_DIR="$(dirname "${BASH_SOURCE[0]}")"
 
-# Fall back to local development
-if [ -z "$PLUGIN_ROOT" ]; then
-  PLUGIN_ROOT=$(find /workspace -name "sandbox-templates.json" -exec dirname {} \; 2>/dev/null | head -1 | sed 's|/data$||')
-fi
+# Shared templates are at plugin root
+PLUGIN_ROOT="$(cd "$SKILL_DIR/../.." && pwd)"
+SHARED_DIR="$PLUGIN_ROOT/templates/shared"
 
-echo "Plugin root: $PLUGIN_ROOT"
-ls -la "$PLUGIN_ROOT/templates/output-structures/intermediate/"
+# Mode-specific templates are in this skill folder
+MODE_DIR="$SKILL_DIR/templates"
+
+echo "Shared templates: $SHARED_DIR"
+echo "Mode templates: $MODE_DIR"
 ```
+
+**Verify templates exist:**
+```bash
+ls -la "$SHARED_DIR/"
+ls -la "$MODE_DIR/"
+```
+
+If either directory is missing, STOP and report the error.
 
 ### Step 1B: Copy Template Files
 
 ```bash
+# Create .devcontainer directory
 mkdir -p .devcontainer
-cp "$PLUGIN_ROOT/templates/output-structures/intermediate/docker-compose.yml" ./docker-compose.yml
-cp "$PLUGIN_ROOT/templates/output-structures/intermediate/.devcontainer/"* ./.devcontainer/
+
+# Copy shared files (Dockerfiles, compose, credentials)
+cp "$SHARED_DIR/docker-compose.yml" ./docker-compose.yml
+cp "$SHARED_DIR/Dockerfile.python" .devcontainer/Dockerfile.python
+cp "$SHARED_DIR/Dockerfile.node" .devcontainer/Dockerfile.node
+cp "$SHARED_DIR/setup-claude-credentials.sh" .devcontainer/setup-claude-credentials.sh
+
+# Copy mode-specific files (devcontainer.json, firewall)
+cp "$MODE_DIR/devcontainer.json" .devcontainer/devcontainer.json
+cp "$MODE_DIR/init-firewall.sh" .devcontainer/init-firewall.sh
+
+# Make scripts executable
 chmod +x .devcontainer/setup-claude-credentials.sh .devcontainer/init-firewall.sh
 ```
 

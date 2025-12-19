@@ -203,7 +203,7 @@ if [ "$QUIET" = false ]; then
 fi
 
 # Common valid language tags
-VALID_LANGS="bash|sh|shell|python|py|javascript|js|typescript|ts|json|yaml|yml|markdown|md|html|css|dockerfile|sql|go|rust|java|c|cpp|ruby|php|perl|powershell|ps1|text|txt|plaintext"
+VALID_LANGS="bash|sh|shell|python|py|javascript|js|typescript|ts|json|yaml|yml|markdown|md|html|css|dockerfile|sql|go|rust|java|c|cpp|ruby|php|perl|powershell|ps1|text|txt|plaintext|ini|gitignore|toml|xml|env|properties|conf|config"
 
 INVALID_CODE_BLOCKS=0
 MD_FILES_SUBSET=$(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null | head -100)
@@ -211,8 +211,8 @@ MD_FILES_SUBSET=$(find "$REPO_ROOT" -name "*.md" -type f ! -path "*/node_modules
 for md_file in $MD_FILES_SUBSET; do
     RELATIVE_PATH="${md_file#$REPO_ROOT/}"
 
-    # Find fenced code blocks with language tags
-    grep -n '^```[a-zA-Z]' "$md_file" 2>/dev/null | while IFS=: read -r line_num line_content; do
+    # Find fenced code blocks with language tags - use process substitution to avoid subshell
+    while IFS=: read -r line_num line_content; do
         # Extract language tag
         lang=$(echo "$line_content" | sed 's/^```\([a-zA-Z0-9_-]*\).*/\1/')
 
@@ -224,7 +224,7 @@ for md_file in $MD_FILES_SUBSET; do
             ((INVALID_CODE_BLOCKS++))
             ((WARNING_COUNT++))
         fi
-    done
+    done < <(grep -n '^```[a-zA-Z]' "$md_file" 2>/dev/null)
 done
 
 if [ "$QUIET" = false ]; then
