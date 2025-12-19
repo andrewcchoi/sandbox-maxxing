@@ -61,19 +61,56 @@ If NO → STOP and re-read the TASK IDENTITY section.
 
 ## MANDATORY FIRST STEP - READ TEMPLATES
 
-**STOP. BEFORE doing ANYTHING else, you MUST read these template files using the Read tool:**
+**⚠️ NEW WORKFLOW: Copy templates first, then customize.**
 
-1. Extensions template: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.advanced.json`
-2. Firewall template: `${CLAUDE_PLUGIN_ROOT}/templates/firewall/advanced-strict.sh`
-3. Compose template: `${CLAUDE_PLUGIN_ROOT}/templates/compose/docker-compose.advanced.yml`
-4. Credentials template: `${CLAUDE_PLUGIN_ROOT}/templates/master/setup-claude-credentials.master.sh`
-5. MCP template: `${CLAUDE_PLUGIN_ROOT}/templates/mcp/mcp.advanced.json`
-6. Variables template: `${CLAUDE_PLUGIN_ROOT}/templates/variables/variables.advanced.json`
-7. Dockerfile template: `${CLAUDE_PLUGIN_ROOT}/templates/dockerfiles/Dockerfile.python` (or appropriate language)
+### Step 1A: Find the Plugin Directory
 
-**DO NOT proceed to project detection until you have read ALL template files.**
-**DO NOT use the inline examples in this skill - use the actual template file contents.**
-**If you skip reading templates, you will generate incorrect configuration.**
+```bash
+PLUGIN_ROOT=$(find ~/.claude/plugins -maxdepth 2 -name "sandboxxer" -o -name "devcontainer-setup" 2>/dev/null | head -1)
+if [ -z "$PLUGIN_ROOT" ]; then
+  PLUGIN_ROOT=$(find /workspace -name "sandbox-templates.json" -exec dirname {} \; 2>/dev/null | head -1 | sed 's|/data$||')
+fi
+echo "Plugin root: $PLUGIN_ROOT"
+ls -la "$PLUGIN_ROOT/templates/output-structures/advanced/"
+```
+
+### Step 1B: Copy Template Files
+
+```bash
+mkdir -p .devcontainer
+cp "$PLUGIN_ROOT/templates/output-structures/advanced/docker-compose.yml" ./docker-compose.yml
+cp "$PLUGIN_ROOT/templates/output-structures/advanced/.devcontainer/"* ./.devcontainer/
+chmod +x .devcontainer/setup-claude-credentials.sh .devcontainer/init-firewall.sh
+```
+
+**NOTE:** Advanced mode INCLUDES strict firewall script.
+
+### Step 1C: Verify Files
+
+```bash
+echo "=== File Verification ==="
+test -f docker-compose.yml && echo "✓ docker-compose.yml" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile.python && echo "✓ Dockerfile.python" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile.node && echo "✓ Dockerfile.node" || echo "✗ MISSING"
+test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json" || echo "✗ MISSING"
+test -f .devcontainer/init-firewall.sh && echo "✓ init-firewall.sh (strict)" || echo "✗ MISSING"
+test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh" || echo "✗ MISSING"
+```
+
+**If ANY file is missing, STOP.**
+
+## STEP 2: CUSTOMIZE TEMPLATE FILES
+
+### Step 2A: Detect Project Type & Rename Dockerfile
+
+```bash
+# For Python: mv .devcontainer/Dockerfile.python .devcontainer/Dockerfile && rm .devcontainer/Dockerfile.node
+# For Node.js: mv .devcontainer/Dockerfile.node .devcontainer/Dockerfile && rm .devcontainer/Dockerfile.python
+```
+
+### Step 2B: Customize Placeholders
+
+Use Edit tool to replace `{{PROJECT_NAME}}` and add language-specific extensions.
 
 ## MANDATORY DOCKERFILE REQUIREMENTS
 
@@ -599,4 +636,4 @@ If you find yourself about to write ANY of these files, you are doing the WRONG 
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.2
+**Version:** 3.0.0

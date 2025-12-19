@@ -1,6 +1,6 @@
 {
   "$schema": "./inventory.schema.json",
-  "version": "2.2.2",
+  "version": "3.0.0",
   "last_updated": "2025-12-19",
   "repository": "sandbox-maxxing",
   "description": "Repository entity inventory for auditing and organization",
@@ -9,8 +9,8 @@
     {
       "name": "sandbox-setup-basic",
       "path": "skills/sandbox-setup-basic/SKILL.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "mode": "basic",
       "related_command": "commands/basic.md",
       "related_example": "examples/demo-app-sandbox-basic/",
@@ -26,8 +26,8 @@
     {
       "name": "sandbox-setup-intermediate",
       "path": "skills/sandbox-setup-intermediate/SKILL.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "mode": "intermediate",
       "related_command": "commands/intermediate.md",
       "related_example": "examples/demo-app-sandbox-intermediate/",
@@ -43,8 +43,8 @@
     {
       "name": "sandbox-setup-advanced",
       "path": "skills/sandbox-setup-advanced/SKILL.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "mode": "advanced",
       "related_command": "commands/advanced.md",
       "related_example": "examples/demo-app-sandbox-advanced/",
@@ -65,8 +65,8 @@
     {
       "name": "sandbox-setup-yolo",
       "path": "skills/sandbox-setup-yolo/SKILL.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "mode": "yolo",
       "related_command": "commands/yolo.md",
       "related_example": "examples/demo-app-sandbox-yolo/",
@@ -82,8 +82,8 @@
     {
       "name": "sandbox-troubleshoot",
       "path": "skills/sandbox-troubleshoot/SKILL.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "mode": "utility",
       "related_command": "commands/troubleshoot.md",
       "related_example": null
@@ -91,8 +91,8 @@
     {
       "name": "sandbox-security",
       "path": "skills/sandbox-security/SKILL.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "mode": "utility",
       "related_command": "commands/audit.md",
       "related_example": null
@@ -103,56 +103,56 @@
     {
       "name": "setup",
       "path": "commands/setup.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "invokes_skill": "interactive",
       "description": "Main setup command with interactive mode selection"
     },
     {
       "name": "basic",
       "path": "commands/basic.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "invokes_skill": "sandbox-setup-basic",
       "description": "Basic mode setup"
     },
     {
       "name": "intermediate",
       "path": "commands/intermediate.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "invokes_skill": "sandbox-setup-intermediate",
       "description": "Intermediate mode setup"
     },
     {
       "name": "advanced",
       "path": "commands/advanced.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "invokes_skill": "sandbox-setup-advanced",
       "description": "Advanced mode setup with strict security"
     },
     {
       "name": "yolo",
       "path": "commands/yolo.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "invokes_skill": "sandbox-setup-yolo",
       "description": "YOLO mode setup with maximum control"
     },
     {
       "name": "troubleshoot",
       "path": "commands/troubleshoot.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "invokes_skill": "sandbox-troubleshoot",
       "description": "Troubleshooting and diagnostics"
     },
     {
       "name": "audit",
       "path": "commands/audit.md",
-      "version": "2.2.1",
-      "last_updated": "2025-12-16",
+      "version": "3.0.0",
+      "last_updated": "2025-12-19",
       "invokes_skill": "sandbox-security",
       "description": "Security audit and best practices validation"
     }
@@ -164,7 +164,7 @@
         "name": "devcontainer.json.master",
         "path": "templates/master/devcontainer.json.master",
         "type": "master",
-        "last_updated": "2025-12-16",
+        "last_updated": "2025-12-19",
         "sections": 37,
         "description": "Master devcontainer template with all options"
       },
@@ -172,7 +172,7 @@
         "name": "Dockerfile.master",
         "path": "templates/master/Dockerfile.master",
         "type": "master",
-        "last_updated": "2025-12-16",
+        "last_updated": "2025-12-19",
         "sections": 14,
         "description": "Master Dockerfile with all language toolchains"
       },
@@ -180,14 +180,14 @@
         "name": "docker-compose.master.yml",
         "path": "templates/master/docker-compose.master.yml",
         "type": "master",
-        "last_updated": "2025-12-16",
+        "last_updated": "2025-12-19",
         "description": "Master compose file with all services"
       },
       {
         "name": "init-firewall.master.sh",
         "path": "templates/master/init-firewall.master.sh",
         "type": "master",
-        "last_updated": "2025-12-16",
+        "last_updated": "2025-12-19",
         "domain_categories": 200,
         "description": "Master firewall script with all modes and domains"
       },
@@ -195,7 +195,7 @@
         "name": "setup-claude-credentials.master.sh",
         "path": "templates/master/setup-claude-credentials.master.sh",
         "type": "master",
-        "last_updated": "2025-12-16",
+        "last_updated": "2025-12-19",
         "description": "Master credential setup script"
       }
     ],
@@ -395,31 +395,31 @@
 
   "documentation": {
     "root": [
-      {"path": "README.md", "has_footer": true, "version": "2.2.1", "category": "main"},
-      {"path": "CHANGELOG.md", "has_footer": true, "version": "2.2.1", "category": "changelog"},
-      {"path": "CONTRIBUTING.md", "has_footer": true, "version": "2.2.1", "category": "contributing"},
-      {"path": "DEVELOPMENT.md", "has_footer": true, "version": "2.2.1", "category": "development"},
-      {"path": "SECURITY.md", "has_footer": true, "version": "2.2.1", "category": "security"},
+      {"path": "README.md", "has_footer": true, "version": "3.0.0", "category": "main"},
+      {"path": "CHANGELOG.md", "has_footer": true, "version": "3.0.0", "category": "changelog"},
+      {"path": "CONTRIBUTING.md", "has_footer": true, "version": "3.0.0", "category": "contributing"},
+      {"path": "DEVELOPMENT.md", "has_footer": true, "version": "3.0.0", "category": "development"},
+      {"path": "SECURITY.md", "has_footer": true, "version": "3.0.0", "category": "security"},
       {"path": "docs/archive/.github-issue-v2.2.0.md", "has_footer": false, "category": "archived"}
     ],
     "docs": [
-      {"path": "docs/ARCHITECTURE.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/ARCHITECTURE.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/audits/CONSISTENCY_AUDIT_2025-12-16.md", "has_footer": false},
-      {"path": "docs/audits/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/audits/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/EXTENSIONS.md", "has_footer": false, "missing_footer": true},
       {"path": "docs/archive/LOW_PRIORITY_FIXES_v2.2.0.md", "has_footer": false},
       {"path": "docs/features/MCP.md", "has_footer": false, "missing_footer": true},
-      {"path": "docs/features/MODES.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/RELEASE_CHECKLIST.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/MODES.md", "has_footer": true, "version": "3.0.0"},
+      {"path": "docs/RELEASE_CHECKLIST.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/archive/RELEASE_NOTES_v1.0.0.md", "has_footer": false},
       {"path": "docs/features/SECRETS.md", "has_footer": false, "missing_footer": true},
-      {"path": "docs/features/security-model.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/features/TESTING.md", "has_footer": true, "version": "2.2.1"},
-      {"path": "docs/features/TROUBLESHOOTING.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "docs/features/security-model.md", "has_footer": true, "version": "3.0.0"},
+      {"path": "docs/features/TESTING.md", "has_footer": true, "version": "3.0.0"},
+      {"path": "docs/features/TROUBLESHOOTING.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/VARIABLES.md", "has_footer": false, "missing_footer": true}
     ],
     "commands": [
-      {"path": "commands/README.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "commands/README.md", "has_footer": true, "version": "3.0.0"},
       {"path": "commands/advanced.md", "has_footer": false, "missing_footer": true},
       {"path": "commands/audit.md", "has_footer": false, "missing_footer": true},
       {"path": "commands/basic.md", "has_footer": false, "missing_footer": true},
@@ -429,7 +429,7 @@
       {"path": "commands/yolo.md", "has_footer": false, "missing_footer": true}
     ],
     "skills": [
-      {"path": "skills/README.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "skills/README.md", "has_footer": true, "version": "3.0.0"},
       {"path": "skills/sandbox-security/SKILL.md", "has_footer": false, "missing_footer": true},
       {"path": "skills/sandbox-setup-advanced/SKILL.md", "has_footer": false, "missing_footer": true},
       {"path": "skills/sandbox-setup-advanced/references/customization.md", "has_footer": false, "missing_footer": true},
@@ -441,7 +441,7 @@
       {"path": "skills/sandbox-troubleshoot/SKILL.md", "has_footer": false, "missing_footer": true}
     ],
     "templates": [
-      {"path": "templates/README.md", "has_footer": true, "version": "2.2.1"},
+      {"path": "templates/README.md", "has_footer": true, "version": "3.0.0"},
       {"path": "templates/legacy/README.md", "has_footer": false, "missing_footer": true},
       {"path": "templates/legacy/fullstack/EXAMPLE.md", "has_footer": false, "missing_footer": true},
       {"path": "templates/legacy/node/EXAMPLE.md", "has_footer": false, "missing_footer": true},
@@ -464,7 +464,7 @@
       {"path": "tests/README.md", "has_footer": false, "missing_footer": true}
     ],
     "repo-keeper": [
-      {"path": "docs/repo-keeper/ORGANIZATION_CHECKLIST.md", "has_footer": true, "version": "2.2.1"}
+      {"path": "docs/repo-keeper/ORGANIZATION_CHECKLIST.md", "has_footer": true, "version": "3.0.0"}
     ]
   },
 

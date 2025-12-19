@@ -77,22 +77,86 @@ The user will use VS Code's "Dev Containers: Reopen in Container" command to sta
 **Self-Check:** "Does my file path start with `.devcontainer/` or is it `docker-compose.yml`?"
 If NO → STOP and re-read the TASK IDENTITY section.
 
-## MANDATORY FIRST STEP - READ TEMPLATES
+## MANDATORY FIRST STEP - COPY TEMPLATES
 
-**STOP. BEFORE doing ANYTHING else, you MUST read these template files using the Read tool:**
+**⚠️ NEW WORKFLOW: Copy templates first, then customize.**
 
-1. Extensions template: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.yolo.json`
-2. Firewall template: `${CLAUDE_PLUGIN_ROOT}/templates/firewall/yolo-configurable.sh`
-3. Compose template (master): `${CLAUDE_PLUGIN_ROOT}/templates/master/docker-compose.master.yml`
-4. Credentials template: `${CLAUDE_PLUGIN_ROOT}/templates/master/setup-claude-credentials.master.sh`
-5. MCP template: `${CLAUDE_PLUGIN_ROOT}/templates/mcp/mcp.yolo.json`
-6. Variables template: `${CLAUDE_PLUGIN_ROOT}/templates/variables/variables.yolo.json`
-7. Dockerfile master: `${CLAUDE_PLUGIN_ROOT}/templates/master/Dockerfile.master`
-8. DevContainer master: `${CLAUDE_PLUGIN_ROOT}/templates/master/devcontainer.json.master`
+Instead of reading templates and generating similar files, you will:
+1. Copy complete template files from the plugin directory
+2. Customize placeholders and add project-specific values
 
-**DO NOT proceed to user configuration until you have read ALL template files.**
-**DO NOT use the inline examples in this skill - use the actual template file contents.**
-**If you skip reading templates, you will generate incorrect configuration.**
+This ensures all files have complete content with multi-stage builds, credentials persistence, and all required tools.
+
+### Step 1A: Find the Plugin Directory
+
+Use Bash to locate the sandboxxer/devcontainer-setup plugin:
+
+```bash
+# Find plugin root (marketplace or local development)
+PLUGIN_ROOT=$(find ~/.claude/plugins -maxdepth 2 -name "sandboxxer" -o -name "devcontainer-setup" 2>/dev/null | head -1)
+
+# Fallback for local development
+if [ -z "$PLUGIN_ROOT" ]; then
+  PLUGIN_ROOT=$(find /workspace -name "sandbox-templates.json" -exec dirname {} \; 2>/dev/null | head -1 | sed 's|/data$||')
+fi
+
+echo "Plugin root: $PLUGIN_ROOT"
+```
+
+### Step 1B: Copy Template Files
+
+Use Bash to copy all YOLO mode template files:
+
+```bash
+# Create .devcontainer directory
+mkdir -p .devcontainer
+
+# Copy all template files for YOLO mode
+cp "$PLUGIN_ROOT/templates/output-structures/yolo/docker-compose.yml" ./docker-compose.yml
+cp "$PLUGIN_ROOT/templates/output-structures/yolo/.devcontainer/"* ./.devcontainer/
+
+# Make scripts executable
+chmod +x .devcontainer/init-firewall.sh
+chmod +x .devcontainer/setup-claude-credentials.sh
+```
+
+### Step 1C: Verify Files Were Copied
+
+Use Bash to verify all required files exist:
+
+```bash
+echo "=== File Verification ==="
+test -f docker-compose.yml && echo "✓ docker-compose.yml" || echo "✗ MISSING: docker-compose.yml"
+test -d .devcontainer && echo "✓ .devcontainer/" || echo "✗ MISSING: .devcontainer/"
+test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile.python && echo "✓ Dockerfile.python" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile.node && echo "✓ Dockerfile.node" || echo "✗ MISSING"
+test -f .devcontainer/init-firewall.sh && echo "✓ init-firewall.sh" || echo "✗ MISSING"
+test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh" || echo "✗ MISSING"
+
+# Verify Dockerfile has multi-stage build (should be 80+ lines)
+echo ""
+echo "Dockerfile.python line count: $(wc -l < .devcontainer/Dockerfile.python)"
+echo "Dockerfile.node line count: $(wc -l < .devcontainer/Dockerfile.node)"
+grep -c "^FROM.*AS" .devcontainer/Dockerfile.python && echo "✓ Multi-stage build detected in Dockerfile.python" || echo "✗ WARNING: No multi-stage build"
+
+# Verify firewall script exists and has content (YOLO has configurable firewall)
+if [ -f .devcontainer/init-firewall.sh ]; then
+  lines=$(wc -l < .devcontainer/init-firewall.sh)
+  echo "init-firewall.sh line count: $lines"
+  if [ "$lines" -gt 50 ]; then
+    echo "✓ Firewall script has substantial content (configurable mode)"
+  else
+    echo "✗ WARNING: Firewall script seems incomplete"
+  fi
+fi
+```
+
+**If ANY required file is missing, STOP. Debug the copy operation. DO NOT proceed.**
+
+## STEP 2: CUSTOMIZE TEMPLATE FILES
+
+After copying, customize the templates with project-specific values.
 
 ## MANDATORY DOCKERFILE REQUIREMENTS
 
@@ -944,4 +1008,4 @@ If you find yourself about to write ANY of these files, you are doing the WRONG 
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.2
+**Version:** 3.0.0

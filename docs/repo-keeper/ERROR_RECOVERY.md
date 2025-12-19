@@ -1,7 +1,7 @@
 # Error Recovery Guide
 
 **Last Updated:** 2025-12-18
-**Version:** 2.2.2
+**Version:** 3.0.0
 
 This guide explains how to handle validation failures and recover from common errors detected by repo-keeper scripts.
 

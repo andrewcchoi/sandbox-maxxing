@@ -1,5 +1,5 @@
 ---
-description: Diagnose and fix common Claude Code sandbox issues
+description: Diagnose and fix common VS Code DevContainer issues
 ---
 
 Use and follow the sandbox-troubleshoot skill exactly as written.
@@ -15,4 +15,4 @@ Focus on identifying and resolving:
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.2
+**Version:** 3.0.0

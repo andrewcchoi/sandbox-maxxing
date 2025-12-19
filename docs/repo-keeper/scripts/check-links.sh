@@ -185,7 +185,7 @@ for file in "${MD_FILES[@]}"; do
         fi
     done
 done
-ANCHOR_ERRORS=$(wc -l < "$ANCHOR_ERROR_FILE" 2>/dev/null || echo 0)
+ANCHOR_ERRORS=$(wc -l < "$ANCHOR_ERROR_FILE" 2>/dev/null | tr -d '\n' || echo 0)
 
 # V9: Check image references
 IMAGE_ERRORS=0
@@ -220,13 +220,13 @@ for file in "${MD_FILES[@]}"; do
         fi
     done
 done
-IMAGE_ERRORS=$(wc -l < "$IMAGE_ERROR_FILE" 2>/dev/null || echo 0)
+IMAGE_ERRORS=$(wc -l < "$IMAGE_ERROR_FILE" 2>/dev/null | tr -d '\n' || echo 0)
 
 # Count results from temp file
-TOTAL_LINKS=$(grep -c '^LINK|' "$LINKS_FILE" 2>/dev/null || echo 0)
-EXTERNAL_LINKS=$(grep -c '^EXTERNAL|' "$LINKS_FILE" 2>/dev/null || echo 0)
-VALID_LINKS=$(grep -c '^VALID|' "$LINKS_FILE" 2>/dev/null || echo 0)
-BROKEN_LINKS=$(grep -c '^BROKEN|' "$LINKS_FILE" 2>/dev/null || echo 0)
+TOTAL_LINKS=$(grep -c '^LINK|' "$LINKS_FILE" 2>/dev/null | tr -d '\n' || echo 0)
+EXTERNAL_LINKS=$(grep -c '^EXTERNAL|' "$LINKS_FILE" 2>/dev/null | tr -d '\n' || echo 0)
+VALID_LINKS=$(grep -c '^VALID|' "$LINKS_FILE" 2>/dev/null | tr -d '\n' || echo 0)
+BROKEN_LINKS=$(grep -c '^BROKEN|' "$LINKS_FILE" 2>/dev/null | tr -d '\n' || echo 0)
 
 # Summary
 if [ "$QUIET" = false ]; then
@@ -236,17 +236,17 @@ if [ "$QUIET" = false ]; then
     echo "Total links found:     $TOTAL_LINKS"
     echo -e "${GREEN}Valid internal links:  $VALID_LINKS${NC}"
     echo -e "${GRAY}External links:        $EXTERNAL_LINKS${NC}"
-    if [ $BROKEN_LINKS -eq 0 ]; then
+    if [ "$BROKEN_LINKS" -eq 0 ]; then
         echo -e "${GREEN}Broken links:          $BROKEN_LINKS${NC}"
     else
         echo -e "${RED}Broken links:          $BROKEN_LINKS${NC}"
     fi
-    if [ $ANCHOR_ERRORS -eq 0 ]; then
+    if [ "$ANCHOR_ERRORS" -eq 0 ]; then
         echo -e "${GREEN}Broken anchors:        $ANCHOR_ERRORS${NC}"
     else
         echo -e "${YELLOW}Broken anchors:        $ANCHOR_ERRORS${NC}"
     fi
-    if [ $IMAGE_ERRORS -eq 0 ]; then
+    if [ "$IMAGE_ERRORS" -eq 0 ]; then
         echo -e "${GREEN}Missing images:        $IMAGE_ERRORS${NC}"
     else
         echo -e "${YELLOW}Missing images:        $IMAGE_ERRORS${NC}"
@@ -254,7 +254,7 @@ if [ "$QUIET" = false ]; then
 fi
 
 # Detailed error report
-if [ $BROKEN_LINKS -gt 0 ] && [ -s "$ERROR_FILE" ]; then
+if [ "$BROKEN_LINKS" -gt 0 ] && [ -s "$ERROR_FILE" ]; then
     echo ""
     echo -e "${RED}=== Broken Links Details ===${NC}"
     echo ""
@@ -285,7 +285,7 @@ if [ "$QUIET" = false ]; then
 fi
 
 # Exit with appropriate code for CI/CD
-if [ $BROKEN_LINKS -eq 0 ]; then
+if [ "$BROKEN_LINKS" -eq 0 ]; then
     if [ "$QUIET" = false ]; then
         echo -e "${GREEN}✓ All internal links are valid!${NC}"
     fi

@@ -1,7 +1,7 @@
 {
-  "name": "sandboxxer",
-  "version": "2.2.2",
-  "description": "Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments with four-mode system (Basic, Intermediate, Advanced, YOLO)",
+  "name": "devcontainer-setup",
+  "version": "3.0.0",
+  "description": "Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Four-mode system (Basic, Intermediate, Advanced, YOLO) with security firewall options and comprehensive tooling.",
   "author": {
     "name": "shadow developer"
   },

@@ -18,10 +18,12 @@ You are a **DevContainer Configuration Generator**. This is a file generation ta
 **⚠️ CRITICAL: THIS SKILL CREATES A DEVCONTAINER SETUP, NOT CLAUDE CODE'S SANDBOX FEATURE.**
 
 You will create VS Code DevContainer files in the project's `.devcontainer/` directory:
+- `.devcontainer/Dockerfile` - Multi-stage Dockerfile with all required tools
 - `.devcontainer/devcontainer.json` - DevContainer configuration for VS Code
-- `.devcontainer/init-firewall.sh` - Firewall initialization script (basic mode: no-op)
 - `.devcontainer/setup-claude-credentials.sh` - Claude credentials persistence (Issue #30)
 - `docker-compose.yml` - Docker services configuration (in project root)
+
+**NOTE:** Basic mode has NO firewall script (relies on container isolation only)
 
 ### What This Is:
 - A **file generation task** that creates DevContainer configuration files
@@ -32,8 +34,8 @@ You will create VS Code DevContainer files in the project's `.devcontainer/` dir
 
 | File | Location | Purpose |
 |------|----------|---------|
+| `Dockerfile` | `.devcontainer/Dockerfile` | Multi-stage Docker image |
 | `devcontainer.json` | `.devcontainer/devcontainer.json` | VS Code DevContainer config |
-| `init-firewall.sh` | `.devcontainer/init-firewall.sh` | Firewall script (basic: no-op) |
 | `setup-claude-credentials.sh` | `.devcontainer/setup-claude-credentials.sh` | Credentials helper |
 | `docker-compose.yml` | `./docker-compose.yml` | Docker services |
 
@@ -57,18 +59,131 @@ The user will use VS Code's "Dev Containers: Reopen in Container" command to sta
 **Self-Check:** "Does my file path start with `.devcontainer/` or is it `docker-compose.yml`?"
 If NO → STOP and re-read the TASK IDENTITY section.
 
-## MANDATORY FIRST STEP - READ TEMPLATES
+## MANDATORY FIRST STEP - COPY TEMPLATES
 
-**STOP. BEFORE doing ANYTHING else, you MUST read these template files using the Read tool:**
+**⚠️ NEW WORKFLOW: Copy templates first, then customize.**
 
-1. Extensions template: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.basic.json`
-2. Firewall template: `${CLAUDE_PLUGIN_ROOT}/templates/firewall/basic-no-firewall.sh`
-3. Compose template: `${CLAUDE_PLUGIN_ROOT}/templates/compose/docker-compose.basic.yml`
-4. Credentials template: `${CLAUDE_PLUGIN_ROOT}/templates/master/setup-claude-credentials.master.sh`
+### Step 1A: Find the Plugin Directory
 
-**DO NOT proceed to project detection until you have read ALL template files.**
-**DO NOT use the inline examples in this skill - use the actual template file contents.**
-**If you skip reading templates, you will generate incorrect configuration.**
+Locate the sandboxxer plugin (being renamed to devcontainer-setup):
+
+```bash
+# Try marketplace install location first
+PLUGIN_ROOT=$(find ~/.claude/plugins -maxdepth 2 -name "sandboxxer" -o -name "devcontainer-setup" 2>/dev/null | head -1)
+
+# Fall back to local development (look for sandbox-templates.json)
+if [ -z "$PLUGIN_ROOT" ]; then
+  PLUGIN_ROOT=$(find /workspace -name "sandbox-templates.json" -exec dirname {} \; 2>/dev/null | head -1 | sed 's|/data$||')
+fi
+
+echo "Plugin root: $PLUGIN_ROOT"
+```
+
+**Verify templates exist:**
+```bash
+ls -la "$PLUGIN_ROOT/templates/output-structures/basic/"
+```
+
+If this fails, STOP and ask the user for help.
+
+### Step 1B: Copy Template Files
+
+**Use Bash to copy the complete template structure:**
+
+```bash
+# Create .devcontainer directory
+mkdir -p .devcontainer
+
+# Copy docker-compose.yml to project root
+cp "$PLUGIN_ROOT/templates/output-structures/basic/docker-compose.yml" ./docker-compose.yml
+
+# Copy all .devcontainer files
+cp "$PLUGIN_ROOT/templates/output-structures/basic/.devcontainer/"* ./.devcontainer/
+
+# Make scripts executable
+chmod +x .devcontainer/setup-claude-credentials.sh
+```
+
+**NOTE:** Basic mode has NO firewall script. Only credentials + Dockerfiles + devcontainer.json.
+
+### Step 1C: Verify Files Were Copied
+
+**MANDATORY verification - run these commands:**
+
+```bash
+echo "=== File Verification ==="
+test -f docker-compose.yml && echo "✓ docker-compose.yml" || echo "✗ MISSING: docker-compose.yml"
+test -d .devcontainer && echo "✓ .devcontainer/" || echo "✗ MISSING: .devcontainer/"
+test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json" || echo "✗ MISSING"
+test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile.python && echo "✓ Dockerfile.python" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile.node && echo "✓ Dockerfile.node" || echo "✗ MISSING"
+
+# Verify Dockerfile has multi-stage build
+echo "Dockerfile.python lines: $(wc -l < .devcontainer/Dockerfile.python)"
+grep -c "^FROM.*AS" .devcontainer/Dockerfile.python && echo "✓ Multi-stage build" || echo "✗ WARNING: No multi-stage"
+```
+
+**If ANY required file is missing, STOP. Debug the copy step before continuing.**
+
+## STEP 2: CUSTOMIZE TEMPLATE FILES
+
+After copying templates, customize them for the user's project:
+
+### Step 2A: Detect Project Type
+
+```bash
+# Detect language from project files
+ls -la requirements.txt package.json Gemfile go.mod Cargo.toml composer.json pom.xml
+```
+
+**Detection Logic:**
+- `requirements.txt` or `pyproject.toml` → Python (use Dockerfile.python)
+- `package.json` → Node.js (use Dockerfile.node)
+- Others → Ask user for language
+
+### Step 2B: Rename Dockerfile for Detected Language
+
+```bash
+# For Python projects:
+mv .devcontainer/Dockerfile.python .devcontainer/Dockerfile
+rm .devcontainer/Dockerfile.node
+
+# For Node.js projects:
+mv .devcontainer/Dockerfile.node .devcontainer/Dockerfile
+rm .devcontainer/Dockerfile.python
+```
+
+### Step 2C: Customize docker-compose.yml
+
+Use the Edit tool to replace placeholders:
+
+```
+{{PROJECT_NAME}} → actual-project-name
+{{NETWORK_NAME}} → actual-project-name-network
+```
+
+### Step 2D: Customize devcontainer.json
+
+Use the Edit tool to:
+1. Replace `{{PROJECT_NAME}}` with actual project name
+2. Add language-specific extensions
+
+**For Python**, add to extensions array:
+```json
+"ms-python.python",
+"ms-python.vscode-pylance"
+```
+
+**For Node.js**, add to extensions array:
+```json
+"dbaeumer.vscode-eslint",
+"esbenp.prettier-vscode"
+```
+
+### Step 2E: Update docker-compose.yml build context
+
+The template uses `build:` with Dockerfile. Verify this is correct in docker-compose.yml.
 
 ## MANDATORY DOCKERFILE REQUIREMENTS
 
@@ -877,4 +992,4 @@ Total time: 2-5 minutes from start to working sandbox.
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.2
+**Version:** 3.0.0

@@ -1,8 +1,8 @@
 ---
-description: Set up a new Claude Code Docker sandbox environment - routes to mode-specific setup
+description: Set up a new VS Code DevContainer environment - routes to mode-specific setup
 ---
 
-# Sandbox Setup Router
+# DevContainer Setup Router
 
 This command helps you choose the right setup mode for your needs.
 
@@ -51,4 +51,4 @@ Based on selection, invoke the appropriate skill using the Skill tool:
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.2
+**Version:** 3.0.0

@@ -1,0 +1,39 @@
+{
+  "name": "{{PROJECT_NAME}} - Basic",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "node",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "/bin/zsh"
+          }
+        }
+      },
+      "extensions": [
+        "anthropic.claude-code",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "eamodio.gitlens",
+        "PKief.material-icon-theme",
+        "johnpapa.vscode-peacock"
+      ]
+    }
+  },
+
+  "features": {},
+
+  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
+  "postStartCommand": "echo 'Basic DevContainer ready!'",
+
+  "forwardPorts": [8000, 3000],
+
+  "remoteEnv": {
+    "PATH": "/usr/local/bin:${containerEnv:PATH}"
+  }
+}

@@ -2,14 +2,49 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.2.2] - 2025-12-18
+## [3.0.0] - 2025-12-19
+
+### Major Breaking Changes
+- **Plugin renamed**: `sandboxxer` → `devcontainer-setup`
+  - All slash commands updated: `/sandboxxer:*` → `/devcontainer-setup:*`
+  - Updated plugin.json and marketplace.json with new name
+  - Clarified purpose: Creates VS Code DevContainer configurations (not Claude Code's sandbox feature)
+  - Repository name remains "sandbox-maxxing" for backwards compatibility
+
+### Added
+- **Copy-first workflow**: Complete template structure redesign
+  - New `/templates/output-structures/` directory with complete file hierarchies
+  - Four mode-specific template directories: basic/, intermediate/, advanced/, yolo/
+  - Each mode includes: Dockerfile (multi-stage), devcontainer.json, docker-compose.yml, credentials script, firewall script (where applicable)
+  - Templates are copied directly, then customized with placeholders
+  - Ensures complete files with all features (multi-stage builds, credentials persistence, comprehensive tooling)
 
 ### Changed
-- **Plugin name**: Renamed from "sandbox-maxxing" to "sandboxxer"
-  - Updated plugin.json and marketplace.json with new plugin name
-  - Repository and marketplace name remain "sandbox-maxxing"
-  - Updated documentation to clarify naming convention
-  - Commands and skills continue to use "sandbox" shorthand
+- **Workflow methodology**: From "read-and-generate" to "copy-first"
+  - All four skill files updated with new copy-first workflow instructions
+  - Added plugin root discovery using find commands
+  - Added mandatory verification checkpoints for copied files
+  - Ensures Dockerfiles have 80+ lines with multi-stage builds
+- **File generation accuracy**: Fixed all four reported issues
+  - ✅ Missing files - Now copies complete template structures
+  - ✅ Wrong locations - Explicit file paths in copy commands
+  - ✅ Minimal/incorrect content - Complete templates with all features
+  - ✅ Wrong file types - Clear distinction between DevContainer and Claude Code configs
+- **Descriptions updated**: All command files and README
+  - Clarified "VS Code DevContainer setup" vs "sandbox setup"
+  - Updated command descriptions to reflect DevContainer focus
+  - Removed ambiguous references to "Claude Code sandbox"
+
+### Fixed
+- **Template reading issues**: Claude was not using template files at all
+  - Root cause: `${CLAUDE_PLUGIN_ROOT}` variable not being resolved
+  - Solution: Direct file copy operations via Bash instead of read-and-generate
+- **Dockerfile requirements**: Now enforced for ALL modes
+  - Basic mode: Multi-stage Dockerfile required (was previously optional)
+  - All modes: 80+ line Dockerfiles with comprehensive tooling
+- **Firewall configuration**: Clarified mode-specific firewall behavior
+  - Basic: NO firewall script (relies on container isolation only)
+  - Intermediate/Advanced/YOLO: Appropriate firewall scripts included
 
 ## [2.2.1] - 2025-12-16
 
@@ -133,5 +168,5 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-**Last Updated:** 2025-12-16
-**Version:** 2.2.1
+**Last Updated:** 2025-12-19
+**Version:** 3.0.0

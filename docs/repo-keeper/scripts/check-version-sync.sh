@@ -96,7 +96,7 @@ declare -a ERRORS=()
 # Check marketplace.json
 if [ "$MARKETPLACE_VERSION" != "$EXPECTED_VERSION" ]; then
     ERRORS+=(".claude-plugin/marketplace.json|$MARKETPLACE_VERSION|Config")
-    ((ERROR_COUNT++))
+    ((ERROR_COUNT++)) || true
     echo -e "${RED}[ERROR] marketplace.json version mismatch: $MARKETPLACE_VERSION${NC}"
     echo -e "${YELLOW}  How to fix: Update version field in .claude-plugin/marketplace.json to $EXPECTED_VERSION${NC}"
 else
@@ -108,7 +108,7 @@ fi
 # Check INVENTORY.json
 if [ "$INVENTORY_VERSION" != "$EXPECTED_VERSION" ]; then
     ERRORS+=("docs/repo-keeper/INVENTORY.json|$INVENTORY_VERSION|Inventory")
-    ((ERROR_COUNT++))
+    ((ERROR_COUNT++)) || true
     echo -e "${RED}[ERROR] INVENTORY.json version mismatch: $INVENTORY_VERSION${NC}"
     echo -e "${YELLOW}  How to fix: Update version field in docs/repo-keeper/INVENTORY.json to $EXPECTED_VERSION${NC}"
 else
@@ -124,7 +124,7 @@ fi
 
 # Find all markdown files (excluding node_modules, .git, and CHANGELOG.md)
 while IFS= read -r -d '' file; do
-    ((TOTAL_FILES++))
+    ((TOTAL_FILES++)) || true
     RELATIVE_PATH="${file#$REPO_ROOT/}"
 
     # Check for version footer pattern: **Version:** X.Y.Z
@@ -132,19 +132,19 @@ while IFS= read -r -d '' file; do
         FOUND_VERSION=$(grep -oP '\*\*Version:\*\*\s+\K[\d\.]+' "$file" | head -1)
 
         if [ "$FOUND_VERSION" = "$EXPECTED_VERSION" ]; then
-            ((MATCHING_FILES++))
+            ((MATCHING_FILES++)) || true
             if [ "$VERBOSE" = true ]; then
                 echo -e "  ${GRAY}[OK] $RELATIVE_PATH${NC}"
             fi
         else
-            ((WRONG_VERSIONS++))
-            ((ERROR_COUNT++))
+            ((WRONG_VERSIONS++)) || true
+            ((ERROR_COUNT++)) || true
             ERRORS+=("$RELATIVE_PATH|$FOUND_VERSION|Footer")
             echo -e "  ${YELLOW}[MISMATCH] $RELATIVE_PATH - Found: $FOUND_VERSION${NC}"
             echo -e "    ${YELLOW}How to fix: Update **Version:** footer in $RELATIVE_PATH to $EXPECTED_VERSION${NC}"
         fi
     else
-        ((MISSING_FOOTERS++))
+        ((MISSING_FOOTERS++)) || true
         if [ "$VERBOSE" = true ]; then
             echo -e "  ${GRAY}[NO FOOTER] $RELATIVE_PATH${NC}"
         fi
@@ -152,6 +152,7 @@ while IFS= read -r -d '' file; do
 done < <(find "$REPO_ROOT" -name "*.md" -type f \
     ! -path "*/node_modules/*" \
     ! -path "*/.git/*" \
+    ! -path "*/docs/archive/*" \
     ! -name "CHANGELOG.md" \
     -print0)
 
@@ -170,7 +171,7 @@ check_data_file() {
 
         if [ "$DATA_VERSION" != "$EXPECTED_VERSION" ]; then
             ERRORS+=("$file_path|$DATA_VERSION|Data")
-            ((ERROR_COUNT++))
+            ((ERROR_COUNT++)) || true
             echo -e "  ${RED}[ERROR] $file_path version mismatch: $DATA_VERSION${NC}"
             echo -e "    ${YELLOW}How to fix: Update version field in $file_path to $EXPECTED_VERSION${NC}"
         else

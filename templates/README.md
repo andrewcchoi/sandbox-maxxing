@@ -708,4 +708,4 @@ All fixes are included by default when using templates since version 2.2.1.
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.2
+**Version:** 3.0.0

@@ -55,13 +55,13 @@ fi
 
 for script in "$SCRIPT_DIR"/*.sh; do
     [ -e "$script" ] || continue
-    ((TOTAL_SCRIPTS++))
+    ((TOTAL_SCRIPTS++)) || true
 
     script_name=$(basename "$script")
 
     if [ ! -x "$script" ]; then
         echo -e "  ${YELLOW}[WARNING] Not executable: $script_name${NC}"
-        ((WARNING_COUNT++))
+        ((WARNING_COUNT++)) || true
     elif [ "$VERBOSE" = true ]; then
         echo -e "  ${GRAY}[OK] $script_name is executable${NC}"
     fi
@@ -71,13 +71,13 @@ done
 if [ -d "$SCRIPT_DIR/lib" ]; then
     for script in "$SCRIPT_DIR/lib"/*.sh; do
         [ -e "$script" ] || continue
-        ((TOTAL_SCRIPTS++))
+        ((TOTAL_SCRIPTS++)) || true
 
         script_name="lib/$(basename "$script")"
 
         if [ ! -x "$script" ]; then
             echo -e "  ${YELLOW}[WARNING] Not executable: $script_name${NC}"
-            ((WARNING_COUNT++))
+            ((WARNING_COUNT++)) || true
         elif [ "$VERBOSE" = true ]; then
             echo -e "  ${GRAY}[OK] $script_name is executable${NC}"
         fi

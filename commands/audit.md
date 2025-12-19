@@ -1,5 +1,5 @@
 ---
-description: Audit sandbox configuration for security best practices
+description: Audit DevContainer configuration for security best practices
 ---
 
 Use and follow the sandbox-security skill exactly as written.
@@ -15,4 +15,4 @@ Perform comprehensive security review of:
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.2
+**Version:** 3.0.0

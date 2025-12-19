@@ -1,9 +1,9 @@
-# Claude Code Sandbox Plugin
+# DevContainer Setup Plugin
 
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
-> **Plugin Name:** sandboxxer (used in commands: /sandboxxer:basic, /sandboxxer:advanced, etc.)
+> **Plugin Name:** devcontainer-setup (used in commands: /devcontainer-setup:basic, /devcontainer-setup:advanced, etc.)
 
-Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments with a four-mode system (Basic, Intermediate, Advanced, YOLO).
+Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Four-mode system (Basic, Intermediate, Advanced, YOLO) with security firewall options and comprehensive tooling.
 
 ## Features
 
@@ -30,22 +30,22 @@ claude plugins list
 
 ```bash
 # Quick setup with auto-detection (Basic mode)
-/sandboxxer:basic
+/devcontainer-setup:basic
 
 # Balanced control and convenience (Intermediate mode)
-/sandboxxer:intermediate
+/devcontainer-setup:intermediate
 
 # Security-focused minimal setup (Advanced mode)
-/sandboxxer:advanced
+/devcontainer-setup:advanced
 
 # Full customization and control (YOLO mode)
-/sandboxxer:yolo
+/devcontainer-setup:yolo
 
-# Troubleshoot existing sandbox
-/sandboxxer:troubleshoot
+# Troubleshoot existing DevContainer
+/devcontainer-setup:troubleshoot
 
 # Security audit
-/sandboxxer:audit
+/devcontainer-setup:audit
 ```
 
 ### Claude Code Installation
@@ -91,7 +91,7 @@ See [MODES.md](docs/features/MODES.md) for comprehensive comparison guide.
 
 **Example**:
 ```
-You: /sandboxxer:basic
+You: /devcontainer-setup:basic
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -114,7 +114,7 @@ Claude: I detected a Python FastAPI project. Setting up with:
 
 **Example**:
 ```
-You: /sandboxxer:intermediate
+You: /devcontainer-setup:intermediate
 Claude: What's your primary language?
         • Python • Node.js • Ruby • Go • PHP
 You: Python
@@ -140,7 +140,7 @@ Claude: What database?
 
 **Example**:
 ```
-You: /sandboxxer:advanced
+You: /devcontainer-setup:advanced
 Claude: This mode creates security-hardened configurations.
 
         **Step 1: Base Configuration**
@@ -169,7 +169,7 @@ Claude: This mode creates security-hardened configurations.
 
 **Example**:
 ```
-You: /sandboxxer:yolo
+You: /devcontainer-setup:yolo
 Claude: YOLO mode - You're in control!
 
         ⚠️  Warning: Maximum flexibility, minimal safety rails.
@@ -189,13 +189,13 @@ Claude: sandbox-templates tag?
 
 | Command                 | Description                                                           | Mode         |
 | ----------------------- | --------------------------------------------------------------------- | ------------ |
-| `/sandboxxer:basic`        | Quick automatic setup with auto-detection                             | Basic        |
-| `/sandboxxer:intermediate` | Balanced control and convenience                                      | Intermediate |
-| `/sandboxxer:advanced`     | Security-focused minimal setup                                        | Advanced     |
-| `/sandboxxer:yolo`         | Full customization and control                                        | YOLO         |
-| `/sandboxxer:setup`        | Interactive mode selection (or use `--basic`, `--intermediate`, etc.) | All          |
-| `/sandboxxer:troubleshoot` | Diagnose and fix sandbox issues                                       | All          |
-| `/sandboxxer:audit`        | Security audit and recommendations                                    | All          |
+| `/devcontainer-setup:basic`        | Quick automatic setup with auto-detection                             | Basic        |
+| `/devcontainer-setup:intermediate` | Balanced control and convenience                                      | Intermediate |
+| `/devcontainer-setup:advanced`     | Security-focused minimal setup                                        | Advanced     |
+| `/devcontainer-setup:yolo`         | Full customization and control                                        | YOLO         |
+| `/devcontainer-setup:setup`        | Interactive mode selection (or use `--basic`, `--intermediate`, etc.) | All          |
+| `/devcontainer-setup:troubleshoot` | Diagnose and fix sandbox issues                                       | All          |
+| `/devcontainer-setup:audit`        | Security audit and recommendations                                    | All          |
 
 ## Auto-Detection
 
@@ -283,7 +283,7 @@ The troubleshooter handles:
 ### Example Troubleshooting Session
 
 ```
-You: /sandboxxer:troubleshoot
+You: /devcontainer-setup:troubleshoot
 Claude: What issue are you experiencing?
 You: Can't connect to PostgreSQL
 Claude: Let me diagnose...
@@ -394,17 +394,17 @@ This plugin uses consistent naming across different contexts:
 
 | Context | Name | Example |
 |---------|------|---------|
-| Plugin name | sandboxxer | Plugin installation and management |
+| Plugin name | devcontainer-setup | Plugin installation and management |
 | GitHub repository | sandbox-maxxing | github.com/andrewcchoi/sandbox-maxxing |
-| Slash commands | /sandboxxer:* | /sandboxxer:basic, /sandboxxer:yolo |
+| Slash commands | /devcontainer-setup:* | /devcontainer-setup:basic, /devcontainer-setup:yolo |
 | Skills | sandbox-* | sandbox-setup-basic |
-| User-facing title | Claude Code Sandbox Plugin | In documentation headers |
+| User-facing title | DevContainer Setup Plugin | In documentation headers |
 
 **Why different names?**
-- **sandboxxer**: Official plugin name used for installation and management
+- **devcontainer-setup**: Official plugin name used for installation and management
 - **sandbox-maxxing**: Repository and marketplace name (reflects Windows WSL 2 compatibility)
-- **sandbox**: Shorthand used in commands and skills for brevity
-- **Claude Code Sandbox Plugin**: Full descriptive name for user-facing documentation
+- **sandbox**: Shorthand used in internal skills for brevity (skill files remain unchanged for backwards compatibility)
+- **DevContainer Setup Plugin**: Full descriptive name for user-facing documentation
 
 ## Development
 
@@ -438,13 +438,13 @@ sandbox-maxxing/
 │   ├── sandbox-troubleshoot/    # Troubleshooting assistant
 │   └── sandbox-security/        # Security auditor
 ├── commands/
-│   ├── basic.md                 # /sandboxxer:basic
-│   ├── intermediate.md          # /sandboxxer:intermediate
-│   ├── advanced.md              # /sandboxxer:advanced
-│   ├── yolo.md                  # /sandboxxer:yolo
-│   ├── setup.md                 # /sandboxxer:setup (router)
-│   ├── troubleshoot.md          # /sandboxxer:troubleshoot
-│   └── audit.md                 # /sandboxxer:audit
+│   ├── basic.md                 # /devcontainer-setup:basic
+│   ├── intermediate.md          # /devcontainer-setup:intermediate
+│   ├── advanced.md              # /devcontainer-setup:advanced
+│   ├── yolo.md                  # /devcontainer-setup:yolo
+│   ├── setup.md                 # /devcontainer-setup:setup (router)
+│   ├── troubleshoot.md          # /devcontainer-setup:troubleshoot
+│   └── audit.md                 # /devcontainer-setup:audit
 ├── templates/
 │   ├── master/                  # Master templates with section markers
 │   │   ├── devcontainer.json.master
@@ -468,7 +468,7 @@ sandbox-maxxing/
 ### Example 1: Quick Python Setup (Basic Mode)
 
 ```
-You: /sandboxxer:basic
+You: /devcontainer-setup:basic
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -490,7 +490,7 @@ Claude: I detected a Python FastAPI project. Setting up with:
 ### Example 2: Node.js with Customization (Intermediate Mode)
 
 ```
-You: /sandboxxer:intermediate
+You: /devcontainer-setup:intermediate
 Claude: What's your primary language?
 You: Node.js
 Claude: Node.js version?
@@ -512,7 +512,7 @@ Claude: Generating configuration for Node.js 20 + MongoDB 7 + Redis...
 ### Example 3: Security Audit
 
 ```
-You: /sandboxxer:audit
+You: /devcontainer-setup:audit
 Claude: Running security audit...
 
         # Security Audit Report
@@ -739,7 +739,7 @@ For contributors and maintainers, see [`docs/repo-keeper/`](docs/repo-keeper/):
   - `allowable-domains.json`: Mode-specific firewall whitelists
 - Modular template system with section markers
 - Enhanced firewall with mode-specific domain sets (30-100+ domains)
-- Updated slash commands: `/sandboxxer:basic`, `/sandboxxer:intermediate`, `/sandboxxer:advanced`, `/sandboxxer:yolo`
+- Updated slash commands: `/devcontainer-setup:basic`, `/devcontainer-setup:intermediate`, `/devcontainer-setup:advanced`, `/devcontainer-setup:yolo`
 - Comprehensive mode comparison guide (MODES.md)
 - Migration from Basic/Advanced/YOLO to new four-mode system
 
@@ -753,4 +753,4 @@ For contributors and maintainers, see [`docs/repo-keeper/`](docs/repo-keeper/):
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 2.2.2
+**Version:** 3.0.0
