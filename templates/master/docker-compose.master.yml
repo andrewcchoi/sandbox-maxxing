@@ -36,6 +36,8 @@ services:
       - ~/.claude:/tmp/host-claude:ro
       # Environment secrets (Issue #30 Extended - optional, read-only)
       - ~/.config/claude-env:/tmp/host-env:ro
+      # GitHub CLI config (optional, read-only)
+      - ~/.config/gh:/tmp/host-gh:ro
     environment:
       # Database connections
       - DATABASE_URL=${DATABASE_URL:-postgresql://${POSTGRES_USER:-{{DB_USER}}}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-{{DB_NAME}}}}
