@@ -533,18 +533,12 @@
   },
 
   "known_issues": {
-    "missing_footers": 39,
-    "broken_links": 10,
-    "outdated_versions": [
-      "data/secrets.json (2.1.0 -> 2.2.1)",
-      "data/variables.json (2.1.0 -> 2.2.1)"
-    ],
-    "undocumented_files": [
-      "data/mcp-servers.json"
-    ],
-    "naming_inconsistencies": [
-      "data/README.md uses 'Docker Sandbox Plugin' instead of 'Claude Code Sandbox Plugin'"
-    ]
+    "missing_footers": 17,
+    "broken_links": 0,
+    "outdated_versions": [],
+    "undocumented_files": [],
+    "naming_inconsistencies": [],
+    "notes": "All major issues resolved as of 2025-12-19"
   },
 
   "statistics": {
@@ -558,6 +552,6 @@
     "total_python_requirements": 8,
     "total_node_packages": 6,
     "documentation_with_footers": 12,
-    "documentation_without_footers": 39
+    "documentation_without_footers": 17
   }
 }

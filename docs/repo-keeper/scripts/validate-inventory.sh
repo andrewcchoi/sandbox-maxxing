@@ -151,15 +151,37 @@ const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
 });
 ")
 
-# Other template categories
+# Other template categories (shared, mode_specific)
+while IFS= read -r path; do
+    [ -n "$path" ] && validate_path "$path" "Template (shared)"
+done < <(node -e "
+const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
+((data.templates || {}).shared || []).forEach(template => {
+    console.log(template.path);
+});
+")
+
+# Mode-specific templates
+while IFS= read -r path; do
+    [ -n "$path" ] && validate_path "$path" "Template (mode_specific)"
+done < <(node -e "
+const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
+const modeSpecific = (data.templates || {}).mode_specific || {};
+Object.values(modeSpecific).flat().forEach(template => {
+    console.log(template.path);
+});
+")
+
+# Legacy template categories (if they exist)
 for category in dockerfiles compose firewall extensions mcp variables env; do
     while IFS= read -r path; do
         [ -n "$path" ] && validate_path "$path" "Template ($category)"
     done < <(node -e "
 const data = JSON.parse(require('fs').readFileSync('$INVENTORY'));
-((data.templates || {})['$category'] || []).forEach(template => {
-    console.log(template.path);
-});
+const templates = (data.templates || {})['$category'];
+if (Array.isArray(templates)) {
+    templates.forEach(template => console.log(template.path));
+}
 ")
 done
 
@@ -411,7 +433,15 @@ const paths = [];
 });
 (data.commands || []).forEach(c => paths.push({path: c.path, type: 'Command'}));
 Object.entries(data.templates || {}).forEach(([category, templates]) => {
-    (templates || []).forEach(t => paths.push({path: t.path, type: \`Template (\${category})\`}));
+    if (Array.isArray(templates)) {
+        // Direct array (master, shared, etc.)
+        templates.forEach(t => paths.push({path: t.path, type: \`Template (\${category})\`}));
+    } else if (typeof templates === 'object' && templates !== null) {
+        // Nested object (mode_specific)
+        Object.entries(templates).forEach(([mode, modeTemplates]) => {
+            (modeTemplates || []).forEach(t => paths.push({path: t.path, type: \`Template (\${category}/\${mode})\`}));
+        });
+    }
 });
 (data.examples || []).forEach(e => {
     paths.push({path: e.path, type: 'Example'});
