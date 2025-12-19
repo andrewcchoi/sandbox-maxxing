@@ -1,7 +1,7 @@
 # Claude Code Sandbox Plugin
 
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
-> **Short Name:** "sandbox" (used in documentation)
+> **Plugin Name:** sandboxxer (used in commands: /sandboxxer:basic, /sandboxxer:advanced, etc.)
 
 Interactive assistant for setting up, troubleshooting, and securing Claude Code Docker sandbox environments with a four-mode system (Basic, Intermediate, Advanced, YOLO).
 
@@ -30,22 +30,22 @@ claude plugins list
 
 ```bash
 # Quick setup with auto-detection (Basic mode)
-/sandbox:basic
+/sandboxxer:basic
 
 # Balanced control and convenience (Intermediate mode)
-/sandbox:intermediate
+/sandboxxer:intermediate
 
 # Security-focused minimal setup (Advanced mode)
-/sandbox:advanced
+/sandboxxer:advanced
 
 # Full customization and control (YOLO mode)
-/sandbox:yolo
+/sandboxxer:yolo
 
 # Troubleshoot existing sandbox
-/sandbox:troubleshoot
+/sandboxxer:troubleshoot
 
 # Security audit
-/sandbox:audit
+/sandboxxer:audit
 ```
 
 ### Claude Code Installation
@@ -91,7 +91,7 @@ See [MODES.md](docs/features/MODES.md) for comprehensive comparison guide.
 
 **Example**:
 ```
-You: /sandbox:basic
+You: /sandboxxer:basic
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -114,7 +114,7 @@ Claude: I detected a Python FastAPI project. Setting up with:
 
 **Example**:
 ```
-You: /sandbox:intermediate
+You: /sandboxxer:intermediate
 Claude: What's your primary language?
         • Python • Node.js • Ruby • Go • PHP
 You: Python
@@ -140,7 +140,7 @@ Claude: What database?
 
 **Example**:
 ```
-You: /sandbox:advanced
+You: /sandboxxer:advanced
 Claude: This mode creates security-hardened configurations.
 
         **Step 1: Base Configuration**
@@ -169,7 +169,7 @@ Claude: This mode creates security-hardened configurations.
 
 **Example**:
 ```
-You: /sandbox:yolo
+You: /sandboxxer:yolo
 Claude: YOLO mode - You're in control!
 
         ⚠️  Warning: Maximum flexibility, minimal safety rails.
@@ -189,13 +189,13 @@ Claude: sandbox-templates tag?
 
 | Command                 | Description                                                           | Mode         |
 | ----------------------- | --------------------------------------------------------------------- | ------------ |
-| `/sandbox:basic`        | Quick automatic setup with auto-detection                             | Basic        |
-| `/sandbox:intermediate` | Balanced control and convenience                                      | Intermediate |
-| `/sandbox:advanced`     | Security-focused minimal setup                                        | Advanced     |
-| `/sandbox:yolo`         | Full customization and control                                        | YOLO         |
-| `/sandbox:setup`        | Interactive mode selection (or use `--basic`, `--intermediate`, etc.) | All          |
-| `/sandbox:troubleshoot` | Diagnose and fix sandbox issues                                       | All          |
-| `/sandbox:audit`        | Security audit and recommendations                                    | All          |
+| `/sandboxxer:basic`        | Quick automatic setup with auto-detection                             | Basic        |
+| `/sandboxxer:intermediate` | Balanced control and convenience                                      | Intermediate |
+| `/sandboxxer:advanced`     | Security-focused minimal setup                                        | Advanced     |
+| `/sandboxxer:yolo`         | Full customization and control                                        | YOLO         |
+| `/sandboxxer:setup`        | Interactive mode selection (or use `--basic`, `--intermediate`, etc.) | All          |
+| `/sandboxxer:troubleshoot` | Diagnose and fix sandbox issues                                       | All          |
+| `/sandboxxer:audit`        | Security audit and recommendations                                    | All          |
 
 ## Auto-Detection
 
@@ -283,7 +283,7 @@ The troubleshooter handles:
 ### Example Troubleshooting Session
 
 ```
-You: /sandbox:troubleshoot
+You: /sandboxxer:troubleshoot
 Claude: What issue are you experiencing?
 You: Can't connect to PostgreSQL
 Claude: Let me diagnose...
@@ -396,7 +396,7 @@ This plugin uses consistent naming across different contexts:
 |---------|------|---------|
 | Plugin name | sandboxxer | Plugin installation and management |
 | GitHub repository | sandbox-maxxing | github.com/andrewcchoi/sandbox-maxxing |
-| Slash commands | /sandbox:* | /sandbox:basic, /sandbox:yolo |
+| Slash commands | /sandboxxer:* | /sandboxxer:basic, /sandboxxer:yolo |
 | Skills | sandbox-* | sandbox-setup-basic |
 | User-facing title | Claude Code Sandbox Plugin | In documentation headers |
 
@@ -438,13 +438,13 @@ sandbox-maxxing/
 │   ├── sandbox-troubleshoot/    # Troubleshooting assistant
 │   └── sandbox-security/        # Security auditor
 ├── commands/
-│   ├── basic.md                 # /sandbox:basic
-│   ├── intermediate.md          # /sandbox:intermediate
-│   ├── advanced.md              # /sandbox:advanced
-│   ├── yolo.md                  # /sandbox:yolo
-│   ├── setup.md                 # /sandbox:setup (router)
-│   ├── troubleshoot.md          # /sandbox:troubleshoot
-│   └── audit.md                 # /sandbox:audit
+│   ├── basic.md                 # /sandboxxer:basic
+│   ├── intermediate.md          # /sandboxxer:intermediate
+│   ├── advanced.md              # /sandboxxer:advanced
+│   ├── yolo.md                  # /sandboxxer:yolo
+│   ├── setup.md                 # /sandboxxer:setup (router)
+│   ├── troubleshoot.md          # /sandboxxer:troubleshoot
+│   └── audit.md                 # /sandboxxer:audit
 ├── templates/
 │   ├── master/                  # Master templates with section markers
 │   │   ├── devcontainer.json.master
@@ -468,7 +468,7 @@ sandbox-maxxing/
 ### Example 1: Quick Python Setup (Basic Mode)
 
 ```
-You: /sandbox:basic
+You: /sandboxxer:basic
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -490,7 +490,7 @@ Claude: I detected a Python FastAPI project. Setting up with:
 ### Example 2: Node.js with Customization (Intermediate Mode)
 
 ```
-You: /sandbox:intermediate
+You: /sandboxxer:intermediate
 Claude: What's your primary language?
 You: Node.js
 Claude: Node.js version?
@@ -512,7 +512,7 @@ Claude: Generating configuration for Node.js 20 + MongoDB 7 + Redis...
 ### Example 3: Security Audit
 
 ```
-You: /sandbox:audit
+You: /sandboxxer:audit
 Claude: Running security audit...
 
         # Security Audit Report
@@ -739,7 +739,7 @@ For contributors and maintainers, see [`docs/repo-keeper/`](docs/repo-keeper/):
   - `allowable-domains.json`: Mode-specific firewall whitelists
 - Modular template system with section markers
 - Enhanced firewall with mode-specific domain sets (30-100+ domains)
-- Updated slash commands: `/sandbox:basic`, `/sandbox:intermediate`, `/sandbox:advanced`, `/sandbox:yolo`
+- Updated slash commands: `/sandboxxer:basic`, `/sandboxxer:intermediate`, `/sandboxxer:advanced`, `/sandboxxer:yolo`
 - Comprehensive mode comparison guide (MODES.md)
 - Migration from Basic/Advanced/YOLO to new four-mode system
 

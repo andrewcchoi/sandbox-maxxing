@@ -1,6 +1,6 @@
 {
-  "name": "sandbox-maxxing",
-  "description": "Local development marketplace for createing and managing sandbox environments",
+  "name": "sandboxxer",
+  "description": "Local development marketplace for creating and managing sandbox environments",
   "owner": {
     "name": "shadow developer",
     "email": "github-sandbox@shadowenvironment.com"
