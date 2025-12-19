@@ -2,7 +2,7 @@
 
 **Date:** 2025-12-17
 **Repository:** sandbox-maxxing
-**Version:** 2.2.1
+**Version:** 3.0.0
 
 ---
 
