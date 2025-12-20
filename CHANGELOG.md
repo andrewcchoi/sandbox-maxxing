@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### Major Breaking Changes
 - **Plugin renamed**: `sandboxxer` → `devcontainer-setup`
-  - All slash commands updated: `/sandboxxer:*` → `/devcontainer-setup:*`
+  - All slash commands updated: `/devcontainer-setup:*` → `/devcontainer-setup:*`
   - Updated plugin.json and marketplace.json with new name
   - Clarified purpose: Creates VS Code DevContainer configurations (not Claude Code's sandbox feature)
   - Repository name remains "sandbox-maxxing" for backwards compatibility
@@ -113,7 +113,7 @@ All notable changes to this project will be documented in this file.
 ## [2.1.0] - 2025-12-16
 
 ### Changed
-- Simplified command names: `/sandbox:basic` (was `/sandbox:setup-basic`)
+- Simplified command names: `/devcontainer:basic` (was `/devcontainer:setup-basic`)
 - Updated repo devcontainer to Intermediate mode with PostgreSQL, Redis, RabbitMQ
 - Fixed all "Pro" → "YOLO" terminology (~50 occurrences)
 - Fixed all "sandbox-maxxing" → "sandbox" naming (~35 occurrences)
@@ -122,7 +122,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Consistent four-mode terminology throughout documentation
-- Skill cross-reference corrections (sandbox-setup-troubleshoot → sandbox-troubleshoot)
+- Skill cross-reference corrections (devcontainer-setup-troubleshoot → sandbox-troubleshoot)
 - Command reference standardization
 - Archived completed plan documents
 
@@ -145,7 +145,7 @@ All notable changes to this project will be documented in this file.
 - `templates/firewall/` with mode-specific firewall scripts
 - `templates/dockerfiles/` with 11 platform-specific Dockerfiles
 - `docs/MODES.md` - 26 KB mode comparison guide
-- New skills: sandbox-setup-basic, sandbox-setup-intermediate, sandbox-setup-yolo
+- New skills: devcontainer-setup-basic, devcontainer-setup-intermediate, devcontainer-setup-yolo
 - Four examples covering all modes
 
 ### Removed

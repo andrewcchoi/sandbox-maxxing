@@ -269,7 +269,7 @@ The test harness handles various failure modes:
 
 Feeds all responses at once via stdin:
 ```bash
-echo -e "demo-app\npython\nyes\n" | claude skill sandbox-setup-basic
+echo -e "demo-app\npython\nyes\n" | claude skill devcontainer-setup-basic
 ```
 
 Pros:
@@ -421,7 +421,7 @@ cat reports/failed-basic-*/test-harness.log
 2. Generate reference files:
    ```bash
    cd /workspace/examples/demo-app-sandbox-newmode
-   claude skill sandbox-setup-newmode
+   claude skill devcontainer-setup-newmode
    # Answer questions manually to create reference
    ```
 
@@ -600,5 +600,5 @@ Part of the devcontainer-setup plugin (v3.0.0) for Claude Code.
 ## See Also
 
 - [Automated Skill Testing Design](../../docs/plans/2025-12-20-automated-skill-testing-design.md)
-- [Sandboxxer Plugin Documentation](../../skills/setup/README.md)
+- [Sandboxxer Plugin Documentation](../../skills/README.md)
 - [Claude Code Documentation](https://docs.anthropic.com/claude-code)

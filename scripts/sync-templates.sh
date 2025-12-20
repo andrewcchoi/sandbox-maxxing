@@ -39,7 +39,7 @@ echo ""
 
 # Sync to each skill mode
 for mode in "${MODES[@]}"; do
-    DEST="$REPO_ROOT/skills/sandbox-setup-$mode/templates"
+    DEST="$REPO_ROOT/skills/devcontainer-setup-$mode/templates"
 
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Mode: $mode"
@@ -83,7 +83,7 @@ echo ""
 echo "Summary:"
 echo "  • Synced ${#SHARED_FILES[@]} files to ${#MODES[@]} skill modes"
 echo "  • Source: templates/master/shared/"
-echo "  • Targets: skills/sandbox-setup-{basic,intermediate,advanced,yolo}/templates/"
+echo "  • Targets: skills/devcontainer-setup-{basic,intermediate,advanced,yolo}/templates/"
 echo ""
 echo "Next steps:"
 echo "  1. Review changes: git diff"

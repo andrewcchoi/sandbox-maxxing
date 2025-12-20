@@ -164,9 +164,9 @@ This document compares the results of a manual repository scan using grep/jq/bas
 **Manual Scan Results:**
 - 5 SKILL.md files with missing sections:
   - sandbox-security: missing Usage, Examples
-  - sandbox-setup-advanced: missing Usage
-  - sandbox-setup-basic: missing Usage
-  - sandbox-setup-intermediate: missing Usage
+  - devcontainer-setup-advanced: missing Usage
+  - devcontainer-setup-basic: missing Usage
+  - devcontainer-setup-intermediate: missing Usage
   - sandbox-troubleshoot: missing Usage, Examples
 
 **Repo-Keeper Results:**

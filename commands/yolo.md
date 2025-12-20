@@ -2,7 +2,7 @@
 description: Full control VS Code DevContainer setup with no restrictions
 ---
 
-Use and follow the sandbox-setup-yolo skill exactly as written.
+Use and follow the devcontainer-setup-yolo skill exactly as written.
 
 Display warning about security implications before proceeding.
 

@@ -112,7 +112,7 @@ feed_responses_interactive() {
   mkfifo skill_output skill_input
 
   # Launch skill in background with pipes
-  claude skill sandbox-setup-$mode < skill_input > skill_output 2>&1 &
+  claude skill devcontainer-setup-$mode < skill_input > skill_output 2>&1 &
   local skill_pid=$!
 
   # Set 1-minute timeout
@@ -173,16 +173,16 @@ feed_responses_prepipe() {
     # Fallback: Default response sequences
     case "$mode" in
         basic)
-            echo -e "demo-app\npython\nyes\n" | claude skill sandbox-setup-basic
+            echo -e "demo-app\npython\nyes\n" | claude skill devcontainer-setup-basic
             ;;
         intermediate)
-            echo -e "demo-app\npython\npostgres\nyes\n" | claude skill sandbox-setup-intermediate
+            echo -e "demo-app\npython\npostgres\nyes\n" | claude skill devcontainer-setup-intermediate
             ;;
         advanced)
-            echo -e "demo-app\npython\npostgres\n443,8080\nyes\n" | claude skill sandbox-setup-advanced
+            echo -e "demo-app\npython\npostgres\n443,8080\nyes\n" | claude skill devcontainer-setup-advanced
             ;;
         yolo)
-            echo -e "demo-app\npython\nyes\n" | claude skill sandbox-setup-yolo
+            echo -e "demo-app\npython\nyes\n" | claude skill devcontainer-setup-yolo
             ;;
     esac
 }
@@ -607,6 +607,6 @@ After implementation:
 
 ---
 
-**Version:** 1.0.0
+**Version:** 3.0.0
 **Date:** 2025-12-20
 **Status:** Design Complete, Ready for Implementation

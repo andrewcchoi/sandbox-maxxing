@@ -90,10 +90,10 @@ Commands (7) → Skills (6) → Templates (by mode) → Examples (5)
 
 | Mode | Command | Skill | Templates | Example |
 |------|---------|-------|-----------|---------|
-| Basic | `commands/basic.md` | `skills/sandbox-setup-basic/` | `templates/*/*.basic.*` | `examples/demo-app-sandbox-basic/` |
-| Intermediate | `commands/intermediate.md` | `skills/sandbox-setup-intermediate/` | `templates/*/*.intermediate.*` | `examples/demo-app-sandbox-intermediate/` |
-| Advanced | `commands/advanced.md` | `skills/sandbox-setup-advanced/` | `templates/*/*.advanced.*` | `examples/demo-app-sandbox-advanced/` |
-| YOLO | `commands/yolo.md` | `skills/sandbox-setup-yolo/` | `templates/*/*.yolo.*` | `examples/demo-app-sandbox-yolo/` |
+| Basic | `commands/basic.md` | `skills/devcontainer-setup-basic/` | `templates/*/*.basic.*` | `examples/demo-app-sandbox-basic/` |
+| Intermediate | `commands/intermediate.md` | `skills/devcontainer-setup-intermediate/` | `templates/*/*.intermediate.*` | `examples/demo-app-sandbox-intermediate/` |
+| Advanced | `commands/advanced.md` | `skills/devcontainer-setup-advanced/` | `templates/*/*.advanced.*` | `examples/demo-app-sandbox-advanced/` |
+| YOLO | `commands/yolo.md` | `skills/devcontainer-setup-yolo/` | `templates/*/*.yolo.*` | `examples/demo-app-sandbox-yolo/` |
 
 - [ ] **Utility skills have matching commands:**
   - `sandbox-troubleshoot` → `commands/troubleshoot.md`
@@ -170,8 +170,8 @@ Commands (7) → Skills (6) → Templates (by mode) → Examples (5)
 
 **Known Issues (as of v2.2.1):**
 - `docs/CONSOLIDATION_RECOMMENDATIONS.md` (3 broken links)
-- `skills/sandbox-setup-advanced/references/customization.md` (1 link)
-- `skills/sandbox-setup-advanced/references/troubleshooting.md` (1 link)
+- `skills/devcontainer-setup-advanced/references/customization.md` (1 link)
+- `skills/devcontainer-setup-advanced/references/troubleshooting.md` (1 link)
 - `templates/legacy/README.md` (3 links - uses absolute paths)
 
 **Automation:** Use `scripts/check-links.ps1` to find broken links
@@ -234,12 +234,12 @@ README.md (entry point, summaries)
 ## 9. Naming Conventions
 
 **Commands:**
-- [ ] Format: `/sandbox:{action}` (lowercase, hyphenated for multi-word)
-- [ ] Examples: `/sandbox:setup`, `/sandbox:troubleshoot`, `/sandbox:audit`
+- [ ] Format: `/devcontainer:{action}` (lowercase, hyphenated for multi-word)
+- [ ] Examples: `/devcontainer:setup`, `/devcontainer:troubleshoot`, `/devcontainer:audit`
 
 **Skills:**
 - [ ] Format: `sandbox-{action}[-mode]` with `SKILL.md` files
-- [ ] Examples: `sandbox-setup-basic/SKILL.md`, `sandbox-troubleshoot/SKILL.md`
+- [ ] Examples: `devcontainer-setup-basic/SKILL.md`, `sandbox-troubleshoot/SKILL.md`
 
 **Templates:**
 - [ ] Format: `{component}.{mode}.{ext}` or `{mode}-{description}.{ext}`

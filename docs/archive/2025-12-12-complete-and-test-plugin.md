@@ -176,7 +176,7 @@ Expected: Python project created
 claude
 ```
 
-Then type: `/sandbox:setup --basic`
+Then type: `/devcontainer:setup --basic`
 
 Expected:
 - Claude detects Python project
@@ -377,7 +377,7 @@ Expected: Python files created
 claude
 ```
 
-In Claude session, type: `/sandbox:setup --basic`
+In Claude session, type: `/devcontainer:setup --basic`
 
 Expected:
 - Skill activates
@@ -509,7 +509,7 @@ echo 'console.log("Hello");' > index.js
 claude
 ```
 
-Type: `/sandbox:setup --advanced`
+Type: `/devcontainer:setup --advanced`
 
 Expected:
 - Asks 5-7 customization questions
@@ -616,7 +616,7 @@ echo '{"name": "frontend"}' > frontend/package.json
 claude
 ```
 
-Type: `/sandbox:setup --pro`
+Type: `/devcontainer:setup --pro`
 
 Expected:
 - Step-by-step wizard
@@ -713,7 +713,7 @@ Copy working setup from previous test, then introduce issues:
 claude
 ```
 
-Type: `/sandbox:troubleshoot`
+Type: `/devcontainer:troubleshoot`
 
 Expected: Skill asks what problem you're experiencing
 
@@ -803,7 +803,7 @@ Use basic setup, then intentionally add security issues:
 claude
 ```
 
-Type: `/sandbox:audit`
+Type: `/devcontainer:audit`
 
 Expected: Skill starts security scan
 
@@ -846,7 +846,7 @@ Follow Claude's recommendations to fix security issues.
 
 **Step 9: Re-run audit**
 
-Run `/sandbox:audit` again.
+Run `/devcontainer:audit` again.
 
 Expected: All issues resolved, risk level Low
 
@@ -1065,9 +1065,9 @@ The Claude Code Sandbox plugin uses a skills-based architecture with three main 
 - `sandbox-security` - Security auditor
 
 ### 2. Commands
-- `/sandbox:setup` - Invokes setup skill
-- `/sandbox:troubleshoot` - Invokes troubleshoot skill
-- `/sandbox:audit` - Invokes security skill
+- `/devcontainer:setup` - Invokes setup skill
+- `/devcontainer:troubleshoot` - Invokes troubleshoot skill
+- `/devcontainer:audit` - Invokes security skill
 
 ### 3. Templates
 - `base/` - Flexible templates for Basic/Advanced modes
@@ -1123,7 +1123,7 @@ echo "print('test')" > main.py
 
 # 3. Run setup
 claude
-/sandbox:setup --basic
+/devcontainer:setup --basic
 
 # 4. Verify
 ls .devcontainer/
@@ -1324,7 +1324,7 @@ claude plugins add https://github.com/andrewcchoi/sandbox-maxxing
 ```bash
 cd your-project
 claude
-/sandbox:setup --basic
+/devcontainer:setup --basic
 ```
 
 ## Breaking Changes

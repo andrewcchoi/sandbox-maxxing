@@ -297,11 +297,11 @@ Sample Broken Links:
     [text](url)
     -> docs/plans/url (NOT FOUND)
 
-  skills/sandbox-setup-advanced/references/customization.md:597
+  skills/devcontainer-setup-advanced/references/customization.md:597
     [examples/](../../../../examples/)
     -> /examples (NOT FOUND)
 
-  skills/sandbox-setup-advanced/references/troubleshooting.md:617
+  skills/devcontainer-setup-advanced/references/troubleshooting.md:617
     [examples](../../../../examples/)
     -> /examples (NOT FOUND)
 
@@ -413,13 +413,13 @@ Missing Required Sections in SKILL.md Files:
      ❌ Missing: Usage
      ❌ Missing: Examples
 
-  2. skills/sandbox-setup-advanced/SKILL.md
+  2. skills/devcontainer-setup-advanced/SKILL.md
      ❌ Missing: Usage
 
-  3. skills/sandbox-setup-basic/SKILL.md
+  3. skills/devcontainer-setup-basic/SKILL.md
      ❌ Missing: Usage
 
-  4. skills/sandbox-setup-intermediate/SKILL.md
+  4. skills/devcontainer-setup-intermediate/SKILL.md
      ❌ Missing: Usage
 
   5. skills/sandbox-troubleshoot/SKILL.md
@@ -484,9 +484,9 @@ HIGH PRIORITY (Breaking Issues)
 
    Files affected:
    • skills/sandbox-security/SKILL.md (Usage, Examples)
-   • skills/sandbox-setup-advanced/SKILL.md (Usage)
-   • skills/sandbox-setup-basic/SKILL.md (Usage)
-   • skills/sandbox-setup-intermediate/SKILL.md (Usage)
+   • skills/devcontainer-setup-advanced/SKILL.md (Usage)
+   • skills/devcontainer-setup-basic/SKILL.md (Usage)
+   • skills/devcontainer-setup-intermediate/SKILL.md (Usage)
    • skills/sandbox-troubleshoot/SKILL.md (Usage, Examples)
 
 MEDIUM PRIORITY (Tool Issues)

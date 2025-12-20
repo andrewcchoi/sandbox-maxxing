@@ -125,9 +125,9 @@
 
 **Missing Sections (both runs):**
 - sandbox-security: Usage, Examples
-- sandbox-setup-advanced: Usage
-- sandbox-setup-basic: Usage
-- sandbox-setup-intermediate: Usage
+- devcontainer-setup-advanced: Usage
+- devcontainer-setup-basic: Usage
+- devcontainer-setup-intermediate: Usage
 - sandbox-troubleshoot: Usage, Examples
 
 **No Change:** Same 5 SKILL.md files need sections

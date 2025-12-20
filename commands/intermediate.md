@@ -2,7 +2,7 @@
 description: Standard VS Code DevContainer setup with Dockerfile and permissive firewall
 ---
 
-Use and follow the sandbox-setup-intermediate skill exactly as written.
+Use and follow the devcontainer-setup-intermediate skill exactly as written.
 
 ---
 

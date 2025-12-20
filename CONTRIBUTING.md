@@ -55,10 +55,10 @@ Note: Without the devcontainer, you won't be able to fully test the example appl
 ### Working on Skills
 
 Skills are located in the `skills/` directory:
-- `sandbox-setup-basic/SKILL.md` - Basic mode setup
-- `sandbox-setup-intermediate/SKILL.md` - Intermediate mode setup
-- `sandbox-setup-advanced/SKILL.md` - Advanced mode setup
-- `sandbox-setup-yolo/SKILL.md` - YOLO mode setup
+- `devcontainer-setup-basic/SKILL.md` - Basic mode setup
+- `devcontainer-setup-intermediate/SKILL.md` - Intermediate mode setup
+- `devcontainer-setup-advanced/SKILL.md` - Advanced mode setup
+- `devcontainer-setup-yolo/SKILL.md` - YOLO mode setup
 - `sandbox-troubleshoot/SKILL.md` - Troubleshooting assistant
 - `sandbox-security/SKILL.md` - Security auditor
 
@@ -214,7 +214,7 @@ Before submitting changes, please review the [`docs/repo-keeper/ORGANIZATION_CHE
 3. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
 
 4. **Naming Conventions**:
-   - Commands: `/sandboxxer:{action}`
+   - Commands: `/devcontainer-setup:{action}`
    - Skills: `sandbox-{action}[-mode]/SKILL.md`
    - Templates: `{component}.{mode}.{ext}`
 

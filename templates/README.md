@@ -427,7 +427,7 @@ Setup skills follow this workflow:
 5. **Write Files:** Create `.devcontainer/` directory with generated files
 6. **Verify:** Validate generated configuration
 
-**Example Workflow (sandbox-setup-advanced):**
+**Example Workflow (devcontainer-setup-advanced):**
 
 ```python
 # 1. Detect Python project
@@ -583,7 +583,7 @@ The `legacy/` directory contains deprecated v1.x templates from the original thr
 - `legacy/node/` - Node.js templates
 - `legacy/python/` - Python templates
 
-**Migration:** Projects using legacy templates should migrate to the new mode-specific templates using `/sandbox:setup`.
+**Migration:** Projects using legacy templates should migrate to the new mode-specific templates using `/devcontainer:setup`.
 
 ## Templates vs Examples
 
@@ -592,7 +592,7 @@ The `legacy/` directory contains deprecated v1.x templates from the original thr
 - **Templates** (this directory): Source templates used to generate DevContainer configurations
 - **Examples** (`../examples/`): Complete working projects generated from templates
 
-When you run `/sandbox:setup`, the system:
+When you run `/devcontainer:setup`, the system:
 1. Reads templates from this directory
 2. Applies variable substitutions
 3. Strips unused sections based on mode

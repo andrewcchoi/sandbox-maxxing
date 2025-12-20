@@ -23,10 +23,10 @@ All four skill files have been updated with mandatory requirements and validatio
 
 | Skill File | Status | Changes |
 |-----------|--------|---------|
-| `/workspace/skills/sandbox-setup-basic/SKILL.md` | ✅ Complete | Added mandatory requirements + validation |
-| `/workspace/skills/sandbox-setup-intermediate/SKILL.md` | ✅ Complete | Added mandatory requirements + template enforcement + validation |
-| `/workspace/skills/sandbox-setup-advanced/SKILL.md` | ✅ Complete | Added mandatory requirements + template enforcement + validation |
-| `/workspace/skills/sandbox-setup-yolo/SKILL.md` | ✅ Complete | Added mandatory requirements + template enforcement + validation (100+ lines requirement) |
+| `/workspace/skills/devcontainer-setup-basic/SKILL.md` | ✅ Complete | Added mandatory requirements + validation |
+| `/workspace/skills/devcontainer-setup-intermediate/SKILL.md` | ✅ Complete | Added mandatory requirements + template enforcement + validation |
+| `/workspace/skills/devcontainer-setup-advanced/SKILL.md` | ✅ Complete | Added mandatory requirements + template enforcement + validation |
+| `/workspace/skills/devcontainer-setup-yolo/SKILL.md` | ✅ Complete | Added mandatory requirements + template enforcement + validation (100+ lines requirement) |
 
 #### What Was Added
 
@@ -218,7 +218,7 @@ After completing all phases, verify:
 1. **Test Intermediate Mode** (the original issue):
    ```bash
    cd /path/to/test-project
-   # Run: /sandbox:intermediate
+   # Run: /devcontainer:intermediate
    # Verify generated Dockerfile has:
    # - Multi-stage build
    # - All mandatory packages
@@ -230,21 +230,21 @@ After completing all phases, verify:
 2. **Test Basic Mode:**
    ```bash
    cd /path/to/test-project
-   # Run: /sandbox:basic
+   # Run: /devcontainer:basic
    # Verify similar requirements
    ```
 
 3. **Test Advanced Mode:**
    ```bash
    cd /path/to/test-project
-   # Run: /sandbox:advanced
+   # Run: /devcontainer:advanced
    # Verify comprehensive setup
    ```
 
 4. **Test YOLO Mode:**
    ```bash
    cd /path/to/test-project
-   # Run: /sandbox:yolo
+   # Run: /devcontainer:yolo
    # Verify >= 100 line Dockerfile
    ```
 
@@ -257,10 +257,10 @@ Run the validation script from Phase 4 on all examples.
 ## Files Modified
 
 ### Skills (✅ Complete)
-- `/workspace/skills/sandbox-setup-basic/SKILL.md`
-- `/workspace/skills/sandbox-setup-intermediate/SKILL.md`
-- `/workspace/skills/sandbox-setup-advanced/SKILL.md`
-- `/workspace/skills/sandbox-setup-yolo/SKILL.md`
+- `/workspace/skills/devcontainer-setup-basic/SKILL.md`
+- `/workspace/skills/devcontainer-setup-intermediate/SKILL.md`
+- `/workspace/skills/devcontainer-setup-advanced/SKILL.md`
+- `/workspace/skills/devcontainer-setup-yolo/SKILL.md`
 
 ### Templates (🟡 Partial)
 - ✅ `/workspace/templates/dockerfiles/Dockerfile.python`

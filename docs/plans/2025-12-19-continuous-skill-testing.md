@@ -13,10 +13,10 @@
 ## Overview
 
 This plan implements a continuous testing loop for the 4 sandbox setup skills:
-- `/sandboxxer:basic`
-- `/sandboxxer:intermediate`
-- `/sandboxxer:advanced`
-- `/sandboxxer:yolo`
+- `/devcontainer-setup:basic`
+- `/devcontainer-setup:intermediate`
+- `/devcontainer-setup:advanced`
+- `/devcontainer-setup:yolo`
 
 Each skill will be tested independently with the following cycle:
 1. **Generate** - Run skill to create container files
@@ -796,7 +796,7 @@ analyze_failures() {
 # Apply automated fixes to skill
 apply_fixes() {
     local mode="$1"
-    local skill_file="/workspace/skills/sandbox-setup-$mode/SKILL.md"
+    local skill_file="/workspace/skills/devcontainer-setup-$mode/SKILL.md"
     local issues_count="$2"
 
     if [ ! -f "$skill_file" ]; then
@@ -984,10 +984,10 @@ Automated testing framework for sandbox setup skills that validates generated co
 ## Overview
 
 This framework tests 4 skills:
-- **Basic** - `/sandboxxer:basic`
-- **Intermediate** - `/sandboxxer:intermediate`
-- **Advanced** - `/sandboxxer:advanced`
-- **YOLO** - `/sandboxxer:yolo`
+- **Basic** - `/devcontainer-setup:basic`
+- **Intermediate** - `/devcontainer-setup:intermediate`
+- **Advanced** - `/devcontainer-setup:advanced`
+- **YOLO** - `/devcontainer-setup:yolo`
 
 ## Test Cycle
 
@@ -1169,7 +1169,7 @@ The continuous test runner will:
 
 Currently, skill fixes must be done manually:
 1. Review failure report in `reports/{mode}-iteration-{N}.txt`
-2. Edit skill file: `skills/sandbox-setup-{mode}/SKILL.md`
+2. Edit skill file: `skills/devcontainer-setup-{mode}/SKILL.md`
 3. Re-run test: `./run-continuous.sh`
 
 ### Success Criteria

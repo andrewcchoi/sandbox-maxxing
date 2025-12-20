@@ -2,7 +2,7 @@
 description: Secure VS Code DevContainer setup with strict firewall and customizable allowlist
 ---
 
-Use and follow the sandbox-setup-advanced skill exactly as written.
+Use and follow the devcontainer-setup-advanced skill exactly as written.
 
 ---
 

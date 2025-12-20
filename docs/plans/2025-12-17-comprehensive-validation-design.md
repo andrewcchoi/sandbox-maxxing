@@ -81,11 +81,11 @@ docs/repo-keeper/scripts/
 === Relationship Validation ===
 
 Checking skill → template relationships...
-  ✓ sandbox-setup-basic → 6 templates (all exist)
-  ✗ sandbox-setup-advanced → templates/firewall/advanced-strict.sh (NOT FOUND)
+  ✓ devcontainer-setup-basic → 6 templates (all exist)
+  ✗ devcontainer-setup-advanced → templates/firewall/advanced-strict.sh (NOT FOUND)
 
 Checking skill → command relationships...
-  ✓ sandbox-setup-basic ↔ commands/basic.md (bidirectional)
+  ✓ devcontainer-setup-basic ↔ commands/basic.md (bidirectional)
 
 Summary: 18 relationships checked, 1 error
 ```
@@ -152,7 +152,7 @@ Summary: 1 completeness issue found
 
 **Mode Consistency:**
 - Mode-specific files must mention their mode (case-insensitive)
-- Example: `skills/sandbox-setup-basic/SKILL.md` must contain "basic"
+- Example: `skills/devcontainer-setup-basic/SKILL.md` must contain "basic"
 
 **Step Completeness:**
 - Verify numbered steps (1., 2., 3...) have no gaps
@@ -168,7 +168,7 @@ Summary: 1 completeness issue found
 === Content Validation ===
 
 Required Sections:
-  ✓ skills/sandbox-setup-basic/SKILL.md has all sections
+  ✓ skills/devcontainer-setup-basic/SKILL.md has all sections
   ✗ skills/sandbox-security/SKILL.md missing "Examples" section
 
 Mode Consistency:
@@ -265,7 +265,7 @@ Errors: 2
 Warnings: 2
 
 Details:
-  ✗ Relationship: sandbox-setup-advanced → templates/firewall/advanced-strict.sh (NOT FOUND)
+  ✗ Relationship: devcontainer-setup-advanced → templates/firewall/advanced-strict.sh (NOT FOUND)
   ✗ Completeness: data/mcp-servers.json missing from data/README.md
   ⚠ Version: data/secrets.json version 2.1.0 (expected 2.2.1)
   ⚠ Version: data/variables.json version 2.1.0 (expected 2.2.1)

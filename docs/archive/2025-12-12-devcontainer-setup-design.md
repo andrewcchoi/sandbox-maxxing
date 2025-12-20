@@ -193,7 +193,7 @@ Simple CRUD blogging platform demonstrating real-world patterns:
 
 ### Step 1: Generate Base Configuration
 
-1. Run plugin's `/sandbox:setup --basic` in repository root
+1. Run plugin's `/devcontainer:setup --basic` in repository root
 2. Auto-detects Python from existing template files
 3. Generates `.devcontainer/`, `docker-compose.yml`, firewall scripts
 4. Accept defaults, change firewall to permissive mode

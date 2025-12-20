@@ -136,16 +136,16 @@ SKILL.md files with missing required sections:
   ✗ skills/sandbox-security/SKILL.md
     - Missing: Usage, Examples
 
-  ✗ skills/sandbox-setup-advanced/SKILL.md
+  ✗ skills/devcontainer-setup-advanced/SKILL.md
     - Missing: Usage
 
-  ✗ skills/sandbox-setup-basic/SKILL.md
+  ✗ skills/devcontainer-setup-basic/SKILL.md
     - Missing: Usage
 
-  ✗ skills/sandbox-setup-intermediate/SKILL.md
+  ✗ skills/devcontainer-setup-intermediate/SKILL.md
     - Missing: Usage
 
-  ✓ skills/sandbox-setup-yolo/SKILL.md
+  ✓ skills/devcontainer-setup-yolo/SKILL.md
     - All sections present
 
   ✗ skills/sandbox-troubleshoot/SKILL.md

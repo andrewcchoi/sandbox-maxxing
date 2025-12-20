@@ -4,14 +4,14 @@ This directory contains specialized skills for setting up, securing, and trouble
 
 ## Overview
 
-Skills are invoked through slash commands in Claude Code. When you use a command like `/sandbox:setup`, Claude loads the corresponding skill and follows its structured workflow to ensure consistent, high-quality results.
+Skills are invoked through slash commands in Claude Code. When you use a command like `/devcontainer:setup`, Claude loads the corresponding skill and follows its structured workflow to ensure consistent, high-quality results.
 
 ## Available Skills
 
 ### Setup Skills
 
-#### sandbox-setup-basic
-**Command:** `/sandbox:setup` (Basic mode)
+#### devcontainer-setup-basic
+**Command:** `/devcontainer:setup` (Basic mode)
 **When to use:** You want the simplest sandbox setup with minimal configuration.
 
 **Features:**
@@ -27,12 +27,12 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - Learning and tutorials
 - Solo developers
 
-**Location:** `skills/sandbox-setup-basic/SKILL.md`
+**Location:** `skills/devcontainer-setup-basic/SKILL.md`
 
 ---
 
-#### sandbox-setup-intermediate
-**Command:** `/sandbox:setup` (Intermediate mode)
+#### devcontainer-setup-intermediate
+**Command:** `/devcontainer:setup` (Intermediate mode)
 **When to use:** You want a standard sandbox with good balance of flexibility and simplicity.
 
 **Features:**
@@ -48,12 +48,12 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - Projects requiring authentication
 - Moderate customization needs
 
-**Location:** `skills/sandbox-setup-intermediate/SKILL.md`
+**Location:** `skills/devcontainer-setup-intermediate/SKILL.md`
 
 ---
 
-#### sandbox-setup-advanced
-**Command:** `/sandbox:setup` (Advanced mode)
+#### devcontainer-setup-advanced
+**Command:** `/devcontainer:setup` (Advanced mode)
 **When to use:** You need security-focused development with strict controls.
 
 **Features:**
@@ -69,17 +69,17 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - Evaluating untrusted packages
 - Compliance requirements
 
-**Location:** `skills/sandbox-setup-advanced/SKILL.md`
+**Location:** `skills/devcontainer-setup-advanced/SKILL.md`
 
 **Reference Documentation:**
-- `skills/sandbox-setup-advanced/references/customization.md` - Customization guide
-- `skills/sandbox-setup-advanced/references/security.md` - Security best practices
-- `skills/sandbox-setup-advanced/references/troubleshooting.md` - Common issues
+- `skills/devcontainer-setup-advanced/references/customization.md` - Customization guide
+- `skills/devcontainer-setup-advanced/references/security.md` - Security best practices
+- `skills/devcontainer-setup-advanced/references/troubleshooting.md` - Common issues
 
 ---
 
-#### sandbox-setup-yolo
-**Command:** `/sandbox:setup` (YOLO mode)
+#### devcontainer-setup-yolo
+**Command:** `/devcontainer:setup` (YOLO mode)
 **When to use:** You want complete control with no restrictions.
 
 **Features:**
@@ -95,14 +95,14 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - Custom security policies
 - Experimental configurations
 
-**Location:** `skills/sandbox-setup-yolo/SKILL.md`
+**Location:** `skills/devcontainer-setup-yolo/SKILL.md`
 
 ---
 
 ### Maintenance Skills
 
 #### sandbox-troubleshoot
-**Command:** `/sandbox:troubleshoot`
+**Command:** `/devcontainer:troubleshoot`
 **When to use:** You're experiencing problems with your sandbox environment.
 
 **Handles:**
@@ -134,7 +134,7 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 ---
 
 #### sandbox-security
-**Command:** `/sandbox:audit` (or manually invoked)
+**Command:** `/devcontainer:audit` (or manually invoked)
 **When to use:** You want to audit or harden your sandbox security.
 
 **Handles:**
@@ -170,17 +170,17 @@ Each skill follows a consistent structure:
 ```
 skills/
 ├── README.md                          # This file
-├── sandbox-setup-basic/
+├── devcontainer-setup-basic/
 │   └── SKILL.md                       # Skill definition and workflow
-├── sandbox-setup-intermediate/
+├── devcontainer-setup-intermediate/
 │   └── SKILL.md
-├── sandbox-setup-advanced/
+├── devcontainer-setup-advanced/
 │   ├── SKILL.md
 │   └── references/                    # Additional documentation
 │       ├── customization.md
 │       ├── security.md
 │       └── troubleshooting.md
-├── sandbox-setup-yolo/
+├── devcontainer-setup-yolo/
 │   └── SKILL.md
 ├── sandbox-troubleshoot/
 │   └── SKILL.md
@@ -213,13 +213,13 @@ Skills are typically invoked through slash commands defined in `/commands/`:
 
 ```bash
 # Setup commands (choose mode interactively)
-/sandbox:setup
+/devcontainer:setup
 
 # Troubleshooting
-/sandbox:troubleshoot
+/devcontainer:troubleshoot
 
 # Security audit
-/sandbox:audit
+/devcontainer:audit
 ```
 
 See [Commands README](../commands/README.md) for full command list.
@@ -233,7 +233,7 @@ User: "I'm getting a connection refused error from PostgreSQL"
 Claude: [Automatically uses sandbox-troubleshoot skill]
 
 User: "Set up a secure development environment"
-Claude: [Automatically uses sandbox-setup-advanced skill]
+Claude: [Automatically uses devcontainer-setup-advanced skill]
 ```
 
 ### Skill Workflow
@@ -248,10 +248,10 @@ Claude: [Automatically uses sandbox-setup-advanced skill]
 
 | Skill | Complexity | Questions | Time | Security | Customization |
 |-------|-----------|-----------|------|----------|---------------|
-| sandbox-setup-basic | Low | 2-3 | 1-2 min | Low | Minimal |
-| sandbox-setup-intermediate | Medium | 5-8 | 3-5 min | Medium | Moderate |
-| sandbox-setup-advanced | High | 10-15 | 8-12 min | High | High |
-| sandbox-setup-yolo | Expert | 15-20+ | 15-30 min | User-controlled | Complete |
+| devcontainer-setup-basic | Low | 2-3 | 1-2 min | Low | Minimal |
+| devcontainer-setup-intermediate | Medium | 5-8 | 3-5 min | Medium | Moderate |
+| devcontainer-setup-advanced | High | 10-15 | 8-12 min | High | High |
+| devcontainer-setup-yolo | Expert | 15-20+ | 15-30 min | User-controlled | Complete |
 | sandbox-troubleshoot | Varies | Diagnostic | Varies | N/A | N/A |
 | sandbox-security | Medium | Audit-based | 5-10 min | N/A | N/A |
 
@@ -348,9 +348,9 @@ See [Examples README](../examples/README.md) for detailed walkthroughs.
 
 | Command | Skill Used | Purpose |
 |---------|-----------|---------|
-| `/sandbox:setup` | sandbox-setup-* | Create/update sandbox configuration |
-| `/sandbox:troubleshoot` | sandbox-troubleshoot | Diagnose and fix issues |
-| `/sandbox:audit` | sandbox-security | Security audit and hardening |
+| `/devcontainer:setup` | devcontainer-setup-* | Create/update sandbox configuration |
+| `/devcontainer:troubleshoot` | sandbox-troubleshoot | Diagnose and fix issues |
+| `/devcontainer:audit` | sandbox-security | Security audit and hardening |
 
 See [Commands README](../commands/README.md) for full command documentation.
 
@@ -358,7 +358,7 @@ See [Commands README](../commands/README.md) for full command documentation.
 
 ### Getting Help
 
-1. **Interactive Commands**: Use `/sandbox:troubleshoot` for problems
+1. **Interactive Commands**: Use `/devcontainer:troubleshoot` for problems
 2. **Documentation**: Check relevant guides in `docs/`
 3. **Examples**: Review example projects in `examples/`
 4. **GitHub Issues**: Report bugs or request features

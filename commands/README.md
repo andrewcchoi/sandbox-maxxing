@@ -4,12 +4,12 @@ This directory contains slash commands for the Claude Code Sandbox Plugin. Comma
 
 ## Overview
 
-Commands are invoked with the `/sandbox:` prefix in Claude Code:
+Commands are invoked with the `/devcontainer:` prefix in Claude Code:
 
 ```
-/sandbox:setup         # Set up a new sandbox (interactive mode selection)
-/sandbox:troubleshoot  # Diagnose and fix issues
-/sandbox:audit         # Security audit
+/devcontainer:setup         # Set up a new sandbox (interactive mode selection)
+/devcontainer:troubleshoot  # Diagnose and fix issues
+/devcontainer:audit         # Security audit
 ```
 
 Each command loads and executes the corresponding skill with user-friendly prompts and guidance.
@@ -18,7 +18,7 @@ Each command loads and executes the corresponding skill with user-friendly promp
 
 ### Primary Commands
 
-#### `/sandbox:setup`
+#### `/devcontainer:setup`
 **File:** `commands/setup.md`
 **Skill:** Routes to mode-specific setup skill
 **Description:** Set up a new Claude Code Docker sandbox environment
@@ -26,22 +26,22 @@ Each command loads and executes the corresponding skill with user-friendly promp
 **Usage:**
 ```bash
 # Interactive mode selection
-/sandbox:setup
+/devcontainer:setup
 
 # Quick setup with flags
-/sandbox:setup --basic          # Fastest setup
-/sandbox:setup --intermediate   # Standard setup
-/sandbox:setup --advanced       # Secure setup
-/sandbox:setup --yolo           # Full control
+/devcontainer:setup --basic          # Fastest setup
+/devcontainer:setup --intermediate   # Standard setup
+/devcontainer:setup --advanced       # Secure setup
+/devcontainer:setup --yolo           # Full control
 ```
 
 **What it does:**
 1. Asks user to choose setup mode (or uses flag)
 2. Routes to appropriate mode-specific skill:
-   - `--basic` → sandbox-setup-basic skill
-   - `--intermediate` → sandbox-setup-intermediate skill
-   - `--advanced` → sandbox-setup-advanced skill
-   - `--yolo` → sandbox-setup-yolo skill
+   - `--basic` → devcontainer-setup-basic skill
+   - `--intermediate` → devcontainer-setup-intermediate skill
+   - `--advanced` → devcontainer-setup-advanced skill
+   - `--yolo` → devcontainer-setup-yolo skill
 
 **When to use:**
 - Creating a new sandbox environment
@@ -50,14 +50,14 @@ Each command loads and executes the corresponding skill with user-friendly promp
 
 ---
 
-#### `/sandbox:troubleshoot`
+#### `/devcontainer:troubleshoot`
 **File:** `commands/troubleshoot.md`
 **Skill:** sandbox-troubleshoot
 **Description:** Diagnose and fix common Claude Code sandbox issues
 
 **Usage:**
 ```bash
-/sandbox:troubleshoot
+/devcontainer:troubleshoot
 ```
 
 **What it does:**
@@ -84,14 +84,14 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 
 ---
 
-#### `/sandbox:audit`
+#### `/devcontainer:audit`
 **File:** `commands/audit.md`
 **Skill:** sandbox-security
 **Description:** Audit sandbox configuration for security best practices
 
 **Usage:**
 ```bash
-/sandbox:audit
+/devcontainer:audit
 ```
 
 **What it does:**
@@ -113,72 +113,72 @@ See also: [Security Model](../docs/features/security-model.md)
 
 ### Mode-Specific Setup Commands
 
-These commands directly invoke mode-specific setup skills. Most users should use `/sandbox:setup` instead, which provides interactive mode selection.
+These commands directly invoke mode-specific setup skills. Most users should use `/devcontainer:setup` instead, which provides interactive mode selection.
 
-#### `/sandbox:basic`
+#### `/devcontainer:basic`
 **File:** `commands/basic.md`
-**Skill:** sandbox-setup-basic
+**Skill:** devcontainer-setup-basic
 **Description:** Quick sandbox setup using sandbox templates, no firewall
 
 **Usage:**
 ```bash
-/sandbox:basic
+/devcontainer:basic
 ```
 
 **Equivalent to:**
 ```bash
-/sandbox:setup --basic
+/devcontainer:setup --basic
 ```
 
 ---
 
-#### `/sandbox:intermediate`
+#### `/devcontainer:intermediate`
 **File:** `commands/intermediate.md`
-**Skill:** sandbox-setup-intermediate
+**Skill:** devcontainer-setup-intermediate
 **Description:** Standard sandbox setup with Dockerfile and permissive firewall
 
 **Usage:**
 ```bash
-/sandbox:intermediate
+/devcontainer:intermediate
 ```
 
 **Equivalent to:**
 ```bash
-/sandbox:setup --intermediate
+/devcontainer:setup --intermediate
 ```
 
 ---
 
-#### `/sandbox:advanced`
+#### `/devcontainer:advanced`
 **File:** `commands/advanced.md`
-**Skill:** sandbox-setup-advanced
+**Skill:** devcontainer-setup-advanced
 **Description:** Secure sandbox setup with strict firewall and customizable allowlist
 
 **Usage:**
 ```bash
-/sandbox:advanced
+/devcontainer:advanced
 ```
 
 **Equivalent to:**
 ```bash
-/sandbox:setup --advanced
+/devcontainer:setup --advanced
 ```
 
 ---
 
-#### `/sandbox:yolo`
+#### `/devcontainer:yolo`
 **File:** `commands/yolo.md`
-**Skill:** sandbox-setup-yolo
+**Skill:** devcontainer-setup-yolo
 **Description:** Full control sandbox setup with no restrictions
 
 **Usage:**
 ```bash
-/sandbox:yolo
+/devcontainer:yolo
 ```
 
 **Equivalent to:**
 ```bash
-/sandbox:setup --yolo
+/devcontainer:setup --yolo
 ```
 
 ---
@@ -209,20 +209,20 @@ Commands follow the pattern:
 - **Primary commands**: `setup`, `troubleshoot`, `audit`
 - **Mode-specific**: `basic`, `intermediate`, `advanced`, `yolo`
 
-All commands use the `/sandbox:` namespace prefix when invoked.
+All commands use the `/devcontainer:` namespace prefix when invoked.
 
 ## How Commands Invoke Skills
 
 Commands serve as user-friendly entry points that delegate to skills:
 
 ```
-User types: /sandbox:setup --advanced
+User types: /devcontainer:setup --advanced
     ↓
 Command file: commands/advanced.md loaded
     ↓
-Command delegates to: sandbox-setup-advanced skill
+Command delegates to: devcontainer-setup-advanced skill
     ↓
-Skill executes: skills/sandbox-setup-advanced/SKILL.md
+Skill executes: skills/devcontainer-setup-advanced/SKILL.md
     ↓
 Result: DevContainer configuration created
 ```
@@ -233,7 +233,7 @@ Result: DevContainer configuration created
 |--------|---------|-------|
 | **Purpose** | User interface | Implementation |
 | **Location** | `commands/*.md` | `skills/*/SKILL.md` |
-| **Invocation** | `/sandbox:command` | Via command or directly |
+| **Invocation** | `/devcontainer:command` | Via command or directly |
 | **Content** | Brief, delegates to skill | Detailed workflow |
 | **User-facing** | Yes | Sometimes (expert users) |
 
@@ -241,13 +241,13 @@ Result: DevContainer configuration created
 
 | Command | Mode | Questions | Time | Security | Best For |
 |---------|------|-----------|------|----------|----------|
-| `/sandbox:setup` | Interactive | Varies | Varies | Varies | Most users (choose mode) |
-| `/sandbox:basic` | Basic | 2-3 | 1-2 min | Low | Quick start, learning |
-| `/sandbox:intermediate` | Intermediate | 5-8 | 3-5 min | Medium | Regular development |
-| `/sandbox:advanced` | Advanced | 10-15 | 8-12 min | High | Security-conscious |
-| `/sandbox:yolo` | YOLO | 15-20+ | 15-30 min | User-controlled | Expert customization |
-| `/sandbox:troubleshoot` | N/A | Diagnostic | Varies | N/A | Problem solving |
-| `/sandbox:audit` | N/A | Audit | 5-10 min | N/A | Security review |
+| `/devcontainer:setup` | Interactive | Varies | Varies | Varies | Most users (choose mode) |
+| `/devcontainer:basic` | Basic | 2-3 | 1-2 min | Low | Quick start, learning |
+| `/devcontainer:intermediate` | Intermediate | 5-8 | 3-5 min | Medium | Regular development |
+| `/devcontainer:advanced` | Advanced | 10-15 | 8-12 min | High | Security-conscious |
+| `/devcontainer:yolo` | YOLO | 15-20+ | 15-30 min | User-controlled | Expert customization |
+| `/devcontainer:troubleshoot` | N/A | Diagnostic | Varies | N/A | Problem solving |
+| `/devcontainer:audit` | N/A | Audit | 5-10 min | N/A | Security review |
 
 ## Usage Examples
 
@@ -255,29 +255,29 @@ Result: DevContainer configuration created
 
 **Beginner (Interactive):**
 ```
-User: /sandbox:setup
+User: /devcontainer:setup
 Claude: Which setup mode do you prefer?
         [Shows mode comparison]
 User: Intermediate
-Claude: [Executes sandbox-setup-intermediate skill]
+Claude: [Executes devcontainer-setup-intermediate skill]
 ```
 
 **Experienced (Direct):**
 ```
-User: /sandbox:setup --advanced
-Claude: [Executes sandbox-setup-advanced skill directly]
+User: /devcontainer:setup --advanced
+Claude: [Executes devcontainer-setup-advanced skill directly]
 ```
 
 **Expert (Mode-Specific Command):**
 ```
-User: /sandbox:yolo
-Claude: [Executes sandbox-setup-yolo skill directly]
+User: /devcontainer:yolo
+Claude: [Executes devcontainer-setup-yolo skill directly]
 ```
 
 ### Troubleshooting
 
 ```
-User: /sandbox:troubleshoot
+User: /devcontainer:troubleshoot
 Claude: What problem are you experiencing?
 User: Container won't start
 Claude: [Runs diagnostics, applies fixes]
@@ -286,7 +286,7 @@ Claude: [Runs diagnostics, applies fixes]
 ### Security Audit
 
 ```
-User: /sandbox:audit
+User: /devcontainer:audit
 Claude: [Reviews configuration]
         Security Assessment:
         ✓ Firewall: Strict mode active
@@ -382,14 +382,14 @@ Claude Code automatically discovers commands in the `commands/` directory when:
 
 1. **Command Issues**: Check command file for description and usage
 2. **Skill Issues**: See [Skills README](../skills/README.md)
-3. **General Problems**: Use `/sandbox:troubleshoot`
-4. **Security Questions**: Use `/sandbox:audit`
+3. **General Problems**: Use `/devcontainer:troubleshoot`
+4. **Security Questions**: Use `/devcontainer:audit`
 5. **Documentation**: Review [Core Documentation](#related-documentation)
 
 ### Reporting Issues
 
 When reporting command-related issues, include:
-- Command used (e.g., `/sandbox:setup --advanced`)
+- Command used (e.g., `/devcontainer:setup --advanced`)
 - Expected vs actual behavior
 - Error messages or logs
 - Project context (language, services, etc.)

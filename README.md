@@ -330,10 +330,10 @@ Templates use these placeholders:
 Interactive setup wizard with four experience modes.
 
 **Note:** This is a router skill that delegates to mode-specific skills:
-- `sandbox-setup-basic` - Basic mode setup
-- `sandbox-setup-intermediate` - Intermediate mode setup
-- `sandbox-setup-advanced` - Advanced mode setup
-- `sandbox-setup-yolo` - YOLO mode setup
+- `devcontainer-setup-basic` - Basic mode setup
+- `devcontainer-setup-intermediate` - Intermediate mode setup
+- `devcontainer-setup-advanced` - Advanced mode setup
+- `devcontainer-setup-yolo` - YOLO mode setup
 
 **Triggers**:
 - User mentions "devcontainer", "docker sandbox"
@@ -384,9 +384,9 @@ Performs comprehensive security audits.
 ## Reference Documentation
 
 The plugin includes comprehensive reference documentation:
-- `skills/sandbox-setup-advanced/references/customization.md` - Customization guide
-- `skills/sandbox-setup-advanced/references/security.md` - Security model and best practices
-- `skills/sandbox-setup-advanced/references/troubleshooting.md` - Detailed troubleshooting guide
+- `skills/devcontainer-setup-advanced/references/customization.md` - Customization guide
+- `skills/devcontainer-setup-advanced/references/security.md` - Security model and best practices
+- `skills/devcontainer-setup-advanced/references/troubleshooting.md` - Detailed troubleshooting guide
 
 ## Naming Convention
 
@@ -397,7 +397,7 @@ This plugin uses consistent naming across different contexts:
 | Plugin name | devcontainer-setup | Plugin installation and management |
 | GitHub repository | sandbox-maxxing | github.com/andrewcchoi/sandbox-maxxing |
 | Slash commands | /devcontainer-setup:* | /devcontainer-setup:basic, /devcontainer-setup:yolo |
-| Skills | sandbox-* | sandbox-setup-basic |
+| Skills | sandbox-* | devcontainer-setup-basic |
 | User-facing title | DevContainer Setup Plugin | In documentation headers |
 
 **Why different names?**
@@ -431,10 +431,10 @@ sandbox-maxxing/
 │   ├── official-images.json     # Docker Hub official images registry
 │   └── allowable-domains.json   # Firewall domain whitelists
 ├── skills/
-│   ├── sandbox-setup-basic/     # Basic mode setup
-│   ├── sandbox-setup-intermediate/  # Intermediate mode setup
-│   ├── sandbox-setup-advanced/  # Advanced mode setup
-│   ├── sandbox-setup-yolo/      # YOLO mode setup
+│   ├── devcontainer-setup-basic/     # Basic mode setup
+│   ├── devcontainer-setup-intermediate/  # Intermediate mode setup
+│   ├── devcontainer-setup-advanced/  # Advanced mode setup
+│   ├── devcontainer-setup-yolo/      # YOLO mode setup
 │   ├── sandbox-troubleshoot/    # Troubleshooting assistant
 │   └── sandbox-security/        # Security auditor
 ├── commands/

@@ -56,10 +56,10 @@ See [MODES.md](../features/MODES.md) for detailed comparison and selection guide
 
 | Command | Mode | Setup Time |
 |---------|------|------------|
-| `/sandbox:basic` | Basic | 1-2 min |
-| `/sandbox:intermediate` | Intermediate | 3-5 min |
-| `/sandbox:advanced` | Advanced | 8-12 min |
-| `/sandbox:yolo` | YOLO | 15-30 min |
+| `/devcontainer:basic` | Basic | 1-2 min |
+| `/devcontainer:intermediate` | Intermediate | 3-5 min |
+| `/devcontainer:advanced` | Advanced | 8-12 min |
+| `/devcontainer:yolo` | YOLO | 15-30 min |
 
 See [Commands Guide](../../commands/README.md) for full command documentation.
 ```

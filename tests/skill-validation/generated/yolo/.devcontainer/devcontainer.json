@@ -1,0 +1,28 @@
+{
+  "name": "demo-app (YOLO Mode)",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.formatting.provider": "black"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "charliermarsh.ruff"
+      ]
+    }
+  },
+  "remoteUser": "vscode",
+  "features": {},
+  "postCreateCommand": "echo 'YOLO mode: No firewall restrictions. Full control enabled.'",
+  "remoteEnv": {
+    "FIREWALL_MODE": "disabled"
+  }
+}

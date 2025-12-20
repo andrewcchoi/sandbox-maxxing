@@ -57,7 +57,7 @@ analyze_failures() {
 # Apply automated fixes to skill
 apply_fixes() {
     local mode="$1"
-    local skill_file="/workspace/skills/sandbox-setup-$mode/SKILL.md"
+    local skill_file="/workspace/skills/devcontainer-setup-$mode/SKILL.md"
     local issues_count="$2"
 
     if [ ! -f "$skill_file" ]; then

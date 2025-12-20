@@ -130,7 +130,7 @@ docs/repo-keeper/
 3. **Broken links (10 known):**
    - From previous audit in `docs/CONSISTENCY_AUDIT_2025-12-16.md`
    - `docs/CONSOLIDATION_RECOMMENDATIONS.md` (3 links)
-   - `skills/sandbox-setup-advanced/references/` (2 links)
+   - `skills/devcontainer-setup-advanced/references/` (2 links)
    - `templates/legacy/README.md` (3 links)
    - Archive files (2 links)
 

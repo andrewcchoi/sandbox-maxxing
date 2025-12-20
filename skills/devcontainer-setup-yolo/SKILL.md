@@ -1,9 +1,45 @@
 ---
-name: sandbox-setup-yolo
+name: devcontainer-setup-yolo
 description: Use when user wants full customization with no restrictions - unofficial images allowed, optional firewall, complete control over all settings
 ---
 
 # Sandbox Setup YOLO Mode
+
+## NON-INTERACTIVE MODE (Automated Testing)
+
+**CRITICAL: Check for automated test mode FIRST before any other action.**
+
+If the user's message contains responses in this format:
+```
+AUTOMATED_TEST_MODE
+RESPONSES:
+response1
+response2
+response3
+...
+```
+
+Then:
+1. **DO NOT call AskUserQuestion** - use provided responses instead
+2. Extract responses into an array
+3. Use responses sequentially when questions would normally be asked
+4. Execute the entire skill workflow without interaction
+
+**Response order for yolo mode:**
+1. Project name (e.g., "demo-app")
+2. Programming language (e.g., "python", "node")
+3. Confirmation (e.g., "yes", "y")
+
+**Example automated invocation:**
+```
+AUTOMATED_TEST_MODE
+RESPONSES:
+demo-app
+python
+yes
+```
+
+When in automated mode, proceed directly to file generation without any interaction.
 
 ## WARNING - READ THIS FIRST
 
@@ -911,7 +947,7 @@ All YOLO mode setups must include Claude credentials mounting:
 
 **Via slash command**:
 ```
-/sandbox:yolo
+/devcontainer:yolo
 ```
 
 **Via natural language**:

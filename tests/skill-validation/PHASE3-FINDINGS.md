@@ -84,13 +84,13 @@ This is because:
 
 1. **Direct stdin piping** (Phase 1)
    ```bash
-   echo -e "demo-app\npython\nyes\n" | claude skill sandbox-setup-basic
+   echo -e "demo-app\npython\nyes\n" | claude skill devcontainer-setup-basic
    ```
    - Works for simple cases but not reliable for complex interactions
 
 2. **Named pipes with subprocess** (Phase 3)
    ```bash
-   claude skill sandbox-setup-basic < skill_input > skill_output 2>&1 &
+   claude skill devcontainer-setup-basic < skill_input > skill_output 2>&1 &
    ```
    - Pipes created successfully
    - Monitoring loop implemented
@@ -133,7 +133,7 @@ Use `expect` (or Python's `pexpect`) to control a pseudo-terminal:
 
 ```bash
 expect << 'EOF'
-spawn claude skill sandbox-setup-basic
+spawn claude skill devcontainer-setup-basic
 expect "project name?"
 send "demo-app\r"
 expect "language"
@@ -159,7 +159,7 @@ EOF
 Use tmux to create a detached session and send keystrokes:
 
 ```bash
-tmux new-session -d -s skill-test "claude skill sandbox-setup-basic"
+tmux new-session -d -s skill-test "claude skill devcontainer-setup-basic"
 tmux send-keys -t skill-test "demo-app" C-m
 tmux send-keys -t skill-test "python" C-m
 tmux send-keys -t skill-test "yes" C-m

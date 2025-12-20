@@ -20,10 +20,10 @@ cd tests/skill-validation
 ### What Gets Tested
 
 The framework validates 4 sandbox setup modes:
-- `sandbox-setup-basic` - Simple Docker Compose setup
-- `sandbox-setup-intermediate` - Dockerfile-based with firewall
-- `sandbox-setup-advanced` - Custom network isolation
-- `sandbox-setup-yolo` - Full control with allowlists
+- `devcontainer-setup-basic` - Simple Docker Compose setup
+- `devcontainer-setup-intermediate` - Dockerfile-based with firewall
+- `devcontainer-setup-advanced` - Custom network isolation
+- `devcontainer-setup-yolo` - Full control with allowlists
 
 ### Requirements
 
@@ -136,7 +136,7 @@ echo '{"name": "test"}' > package.json
 
 2. Run the skill:
 ```bash
-# Use the correct skill name (e.g., sandbox-setup-basic)
+# Use the correct skill name (e.g., devcontainer-setup-basic)
 ```
 
 3. Verify generated files:
@@ -179,7 +179,7 @@ python3 -c "import yaml; yaml.safe_load(open('tests/skill-validation/generated/{
 ### Step 4: Fix the Skill
 Edit the skill file:
 ```bash
-vim skills/sandbox-setup-{mode}/SKILL.md
+vim skills/devcontainer-setup-{mode}/SKILL.md
 ```
 
 Focus on:
@@ -265,7 +265,7 @@ For issues with testing:
 4. Run in dry-run mode to validate setup
 
 For skill-specific issues:
-- Review skill file: `skills/sandbox-setup-{mode}/SKILL.md`
+- Review skill file: `skills/devcontainer-setup-{mode}/SKILL.md`
 - Check skill documentation in skill frontmatter
 - Test skill manually in isolation
 - Compare with working skills for patterns

@@ -84,13 +84,13 @@ This audit reviews the repository for consistency, completeness, and consolidati
 **Skills (10):**
 ```
 ✗ ./skills/sandbox-security/SKILL.md
-✗ ./skills/sandbox-setup-advanced/SKILL.md
-✗ ./skills/sandbox-setup-advanced/references/customization.md
-✗ ./skills/sandbox-setup-advanced/references/security.md
-✗ ./skills/sandbox-setup-advanced/references/troubleshooting.md
-✗ ./skills/sandbox-setup-basic/SKILL.md
-✗ ./skills/sandbox-setup-intermediate/SKILL.md
-✗ ./skills/sandbox-setup-yolo/SKILL.md
+✗ ./skills/devcontainer-setup-advanced/SKILL.md
+✗ ./skills/devcontainer-setup-advanced/references/customization.md
+✗ ./skills/devcontainer-setup-advanced/references/security.md
+✗ ./skills/devcontainer-setup-advanced/references/troubleshooting.md
+✗ ./skills/devcontainer-setup-basic/SKILL.md
+✗ ./skills/devcontainer-setup-intermediate/SKILL.md
+✗ ./skills/devcontainer-setup-yolo/SKILL.md
 ✗ ./skills/sandbox-troubleshoot/SKILL.md
 ```
 
@@ -188,7 +188,7 @@ Leave archive files without footers (frozen in time).
   Expected: ../../examples/
 ```
 
-#### skills/sandbox-setup-advanced/references/ (2 broken links)
+#### skills/devcontainer-setup-advanced/references/ (2 broken links)
 
 **customization.md:**
 ```
@@ -221,8 +221,8 @@ Leave archive files without footers (frozen in time).
 
 Files to fix immediately:
 1. `docs/CONSOLIDATION_RECOMMENDATIONS.md` (3 fixes)
-2. `skills/sandbox-setup-advanced/references/customization.md` (1 fix)
-3. `skills/sandbox-setup-advanced/references/troubleshooting.md` (1 fix)
+2. `skills/devcontainer-setup-advanced/references/customization.md` (1 fix)
+3. `skills/devcontainer-setup-advanced/references/troubleshooting.md` (1 fix)
 4. `templates/legacy/README.md` (3 fixes - change absolute to relative paths)
 
 **Priority 2: Fix or annotate archive files (Medium)**
@@ -325,10 +325,10 @@ docs/MODES.md
 docs/TROUBLESHOOTING.md
 docs/security-model.md
 skills/sandbox-security/SKILL.md
-skills/sandbox-setup-advanced/SKILL.md
-skills/sandbox-setup-basic/SKILL.md
-skills/sandbox-setup-intermediate/SKILL.md
-skills/sandbox-setup-yolo/SKILL.md
+skills/devcontainer-setup-advanced/SKILL.md
+skills/devcontainer-setup-basic/SKILL.md
+skills/devcontainer-setup-intermediate/SKILL.md
+skills/devcontainer-setup-yolo/SKILL.md
 skills/sandbox-troubleshoot/SKILL.md
 ```
 
@@ -359,7 +359,7 @@ skills/sandbox-troubleshoot/SKILL.md
 **Files with security content (14):**
 - Primary: `docs/security-model.md`, `SECURITY.md`
 - Skills: All setup skills mention security
-- References: `skills/sandbox-setup-advanced/references/security.md`
+- References: `skills/devcontainer-setup-advanced/references/security.md`
 
 **Analysis:**
 - Clear hierarchy exists:
@@ -403,7 +403,7 @@ skills/sandbox-troubleshoot/SKILL.md
 
 Only reference found was in CHANGELOG.md documenting the change itself:
 ```
-./CHANGELOG.md:- Simplified command names: `/sandbox:basic` (was `/sandbox:setup-basic`)
+./CHANGELOG.md:- Simplified command names: `/devcontainer:basic` (was `/devcontainer:setup-basic`)
 ```
 
 ### 4.2 "Pro Mode" References
@@ -459,7 +459,7 @@ cd sandbox-maxxing    # ← Should this be standardized?
   ## Naming Convention
 
   - **Repository:** sandbox-maxxing (official GitHub name)
-  - **Commands:** /sandbox:* (short form)
+  - **Commands:** /devcontainer:* (short form)
   - **Skills:** sandbox-* (short form)
   - **Plugin name:** "Claude Code Sandbox Plugin" (user-facing)
   ```
@@ -521,10 +521,10 @@ All skill files follow consistent frontmatter format:
 | Skill | Lines | Header | name: | description: | Footer |
 |-------|-------|--------|-------|--------------|--------|
 | sandbox-security | 259 | ✅ | ✅ | ✅ | ❌ |
-| sandbox-setup-advanced | 316 | ✅ | ✅ | ✅ | ❌ |
-| sandbox-setup-basic | 533 | ✅ | ✅ | ✅ | ❌ |
-| sandbox-setup-intermediate | 462 | ✅ | ✅ | ✅ | ❌ |
-| sandbox-setup-yolo | 671 | ✅ | ✅ | ✅ | ❌ |
+| devcontainer-setup-advanced | 316 | ✅ | ✅ | ✅ | ❌ |
+| devcontainer-setup-basic | 533 | ✅ | ✅ | ✅ | ❌ |
+| devcontainer-setup-intermediate | 462 | ✅ | ✅ | ✅ | ❌ |
+| devcontainer-setup-yolo | 671 | ✅ | ✅ | ✅ | ❌ |
 | sandbox-troubleshoot | 179 | ✅ | ✅ | ✅ | ❌ |
 
 **Recommendation:**
@@ -634,7 +634,7 @@ data/vscode-extensions.json    (6.9K)
 
 2. **Fix broken cross-references (10 links)**
    - docs/CONSOLIDATION_RECOMMENDATIONS.md (3 fixes)
-   - skills/sandbox-setup-advanced/references/*.md (2 fixes)
+   - skills/devcontainer-setup-advanced/references/*.md (2 fixes)
    - templates/legacy/README.md (3 fixes)
    - Add archive warning to docs/archive/*.md (2 files)
 

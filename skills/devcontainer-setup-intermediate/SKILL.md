@@ -1,9 +1,47 @@
 ---
-name: sandbox-setup-intermediate
+name: devcontainer-setup-intermediate
 description: Use when user wants standard sandbox with Dockerfile, permissive firewall for convenience, and common service options - good balance of flexibility and simplicity
 ---
 
 # Sandbox Setup - Intermediate Mode
+
+## NON-INTERACTIVE MODE (Automated Testing)
+
+**CRITICAL: Check for automated test mode FIRST before any other action.**
+
+If the user's message contains responses in this format:
+```
+AUTOMATED_TEST_MODE
+RESPONSES:
+response1
+response2
+response3
+...
+```
+
+Then:
+1. **DO NOT call AskUserQuestion** - use provided responses instead
+2. Extract responses into an array
+3. Use responses sequentially when questions would normally be asked
+4. Execute the entire skill workflow without interaction
+
+**Response order for intermediate mode:**
+1. Project name (e.g., "demo-app")
+2. Programming language (e.g., "python", "node")
+3. Services needed (e.g., "postgres", "redis", "mysql", or comma-separated)
+4. Confirmation (e.g., "yes", "y")
+
+**Example automated invocation:**
+```
+AUTOMATED_TEST_MODE
+RESPONSES:
+demo-app
+python
+postgres
+yes
+```
+
+When in automated mode, proceed directly to file generation without any interaction.
 
 ## TASK IDENTITY
 
@@ -209,11 +247,11 @@ Intermediate mode provides a standard Dockerfile-based development sandbox with 
 
 ## Usage
 
-This skill is invoked via the `/sandboxxer:intermediate` command or by selecting "Intermediate Mode" from the `/sandboxxer:setup` interactive mode selector.
+This skill is invoked via the `/devcontainer-setup:intermediate` command or by selecting "Intermediate Mode" from the `/devcontainer-setup:setup` interactive mode selector.
 
 **Command:**
 ```
-/sandboxxer:intermediate
+/devcontainer-setup:intermediate
 ```
 
 The skill will:
@@ -234,16 +272,16 @@ The skill will:
 - User wants quick setup with some customization options
 
 **Do NOT Use Intermediate Mode When:**
-- User wants minimal setup with no Dockerfile → Use `sandbox-setup-basic` instead
-- User needs custom firewall rules or specific network restrictions → Use `sandbox-setup-advanced` instead
-- User wants complete control over all configuration → Use `sandbox-setup-yolo` instead
-- User needs production-grade security → Use `sandbox-setup-advanced` with restricted firewall
+- User wants minimal setup with no Dockerfile → Use `devcontainer-setup-basic` instead
+- User needs custom firewall rules or specific network restrictions → Use `devcontainer-setup-advanced` instead
+- User wants complete control over all configuration → Use `devcontainer-setup-yolo` instead
+- User needs production-grade security → Use `devcontainer-setup-advanced` with restricted firewall
 
 ## Usage
 
 **Via slash command:**
 ```
-/sandbox:intermediate
+/devcontainer:intermediate
 ```
 
 **Via natural language:**
@@ -626,7 +664,7 @@ Your sandbox is configured with PERMISSIVE firewall mode, which means:
 - ✗ Not suitable for production-like environments
 
 For production-like environments with network restrictions:
-→ Use Advanced Mode: sandbox-setup-advanced
+→ Use Advanced Mode: devcontainer-setup-advanced
 
 To review firewall settings:
 → Check: .devcontainer/init-firewall.sh

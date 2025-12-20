@@ -94,7 +94,7 @@ See [Secrets Management Guide](SECRETS.md) for details.
 
 **Setup Experience**:
 ```
-You: /sandbox:basic
+You: /devcontainer:basic
 
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
@@ -153,7 +153,7 @@ Claude: I detected a Python FastAPI project. Setting up with:
 
 **Setup Experience**:
 ```
-You: /sandbox:intermediate
+You: /devcontainer:intermediate
 
 Claude: What's your primary language?
         • Python • Node.js • Ruby • Go • PHP
@@ -249,7 +249,7 @@ You: Expanded
 
 **Setup Experience**:
 ```
-You: /sandbox:advanced
+You: /devcontainer:advanced
 
 Claude: This mode creates security-hardened configurations.
 
@@ -377,7 +377,7 @@ services:
 
 **Setup Experience**:
 ```
-You: /sandbox:yolo
+You: /devcontainer:yolo
 
 Claude: YOLO mode - You're in control!
 
@@ -612,7 +612,7 @@ START: What's your primary goal?
 
 **Setup**:
 ```bash
-/sandbox:basic
+/devcontainer:basic
 # Auto-detects Python + FastAPI
 # Creates PostgreSQL + Redis
 # Ready in 90 seconds
@@ -635,7 +635,7 @@ START: What's your primary goal?
 
 **Setup**:
 ```bash
-/sandbox:intermediate
+/devcontainer:intermediate
 # Choose: Node.js 20
 # Choose: MongoDB
 # Choose: Expanded firewall (for AWS)
@@ -659,7 +659,7 @@ START: What's your primary goal?
 
 **Setup**:
 ```bash
-/sandbox:advanced
+/devcontainer:advanced
 # Answer security questions
 # Review firewall whitelist
 # Document choices for audit
@@ -683,7 +683,7 @@ START: What's your primary goal?
 
 **Setup**:
 ```bash
-/sandbox:yolo
+/devcontainer:yolo
 # Base: docker/sandbox-templates:gemini
 # Firewall: Disabled
 # Services: Ollama + ChromaDB + PostgreSQL
@@ -709,10 +709,10 @@ START: What's your primary goal?
 ## Development Setup
 
 ### Quick Start (Recommended for Contributors)
-/sandbox:intermediate
+/devcontainer:intermediate
 
 ### Security-Focused Setup (For Maintainers)
-/sandbox:advanced
+/devcontainer:advanced
 ```
 
 ---
@@ -731,7 +731,7 @@ START: What's your primary goal?
 
 **Setup**:
 ```bash
-/sandbox:yolo
+/devcontainer:yolo
 # Base: internal.company.com/python-dev:latest
 # Firewall: Custom corporate whitelist
 # Extensions: Company-standard set
@@ -748,7 +748,7 @@ START: What's your primary goal?
 
 **Steps**:
 1. Note your current config (PostgreSQL version, etc.)
-2. Run `/sandbox:intermediate`
+2. Run `/devcontainer:intermediate`
 3. Choose same services but with version control
 4. Migrate data from old volumes to new
 5. Test thoroughly
@@ -764,7 +764,7 @@ START: What's your primary goal?
 **Steps**:
 1. Audit current setup (what's actually needed?)
 2. Document security requirements
-3. Run `/sandbox:advanced`
+3. Run `/devcontainer:advanced`
 4. Review firewall whitelist (add project-specific domains)
 5. Test with strict firewall (may need iterations)
 6. Update CI/CD to use new config
@@ -782,7 +782,7 @@ START: What's your primary goal?
 1. List all current functionality
 2. Document data that must be preserved
 3. Review security requirements
-4. Run `/sandbox:advanced`
+4. Run `/devcontainer:advanced`
 5. Methodically test each feature (firewall may block)
 6. Add domains as needed (one by one, document each)
 7. Performance test
@@ -800,7 +800,7 @@ START: What's your primary goal?
 1. Export current config
 2. Document what works and what doesn't
 3. List exact customizations needed
-4. Run `/sandbox:yolo`
+4. Run `/devcontainer:yolo`
 5. Replicate working config
 6. Add customizations
 7. Extensive testing

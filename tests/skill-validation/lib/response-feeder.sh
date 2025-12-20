@@ -87,19 +87,19 @@ feed_responses_prepipe() {
 
     log_info "Using pre-pipe fallback for $mode mode"
 
-    # Fallback: Default response sequences
+    # Fallback: Default response sequences formatted for non-interactive mode
     case "$mode" in
         basic)
-            echo -e "demo-app\npython\nyes\n" | claude skill sandbox-setup-basic
+            echo -e "AUTOMATED_TEST_MODE\nRESPONSES:\ndemo-app\npython\nnone\nyes" | claude skill devcontainer-setup-basic
             ;;
         intermediate)
-            echo -e "demo-app\npython\npostgres\nyes\n" | claude skill sandbox-setup-intermediate
+            echo -e "AUTOMATED_TEST_MODE\nRESPONSES:\ndemo-app\npython\npostgres\nyes" | claude skill devcontainer-setup-intermediate
             ;;
         advanced)
-            echo -e "demo-app\npython\npostgres\n443,8080\nyes\n" | claude skill sandbox-setup-advanced
+            echo -e "AUTOMATED_TEST_MODE\nRESPONSES:\ndemo-app\npython\npostgres\n443,8080\nyes" | claude skill devcontainer-setup-advanced
             ;;
         yolo)
-            echo -e "demo-app\npython\nyes\n" | claude skill sandbox-setup-yolo
+            echo -e "AUTOMATED_TEST_MODE\nRESPONSES:\ndemo-app\npython\nyes" | claude skill devcontainer-setup-yolo
             ;;
         *)
             log_error "Unknown mode: $mode"

@@ -44,7 +44,7 @@ claude plugins add https://github.com/andrewcchoi/sandbox-maxxing
 ```bash
 cd your-project
 claude
-/sandbox:basic
+/devcontainer:basic
 ```
 
 ## Breaking Changes

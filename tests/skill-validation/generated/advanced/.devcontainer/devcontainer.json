@@ -1,0 +1,22 @@
+{
+  "name": "demo-app",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ]
+    }
+  },
+  "postStartCommand": "sudo bash .devcontainer/init-firewall.sh",
+  "remoteEnv": {
+    "FIREWALL_MODE": "strict"
+  },
+  "remoteUser": "vscode"
+}

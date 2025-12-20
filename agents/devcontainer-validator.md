@@ -16,10 +16,10 @@ This agent automatically validates that DevContainer setup skills created files 
 ## When to Run
 
 **Automatically trigger after:**
-- `sandbox-setup-basic` skill completes
-- `sandbox-setup-intermediate` skill completes
-- `sandbox-setup-advanced` skill completes
-- `sandbox-setup-yolo` skill completes
+- `devcontainer-setup-basic` skill completes
+- `devcontainer-setup-intermediate` skill completes
+- `devcontainer-setup-advanced` skill completes
+- `devcontainer-setup-yolo` skill completes
 - `devcontainer-basic` skill completes (after renaming)
 - `devcontainer-intermediate` skill completes (after renaming)
 - `devcontainer-advanced` skill completes (after renaming)

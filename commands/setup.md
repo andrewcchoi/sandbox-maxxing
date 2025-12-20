@@ -43,10 +43,10 @@ Ask the user:
 ## Route to Mode Skill
 
 Based on selection, invoke the appropriate skill using the Skill tool:
-- Basic → Use sandbox-setup-basic skill
-- Intermediate → Use sandbox-setup-intermediate skill
-- Advanced → Use sandbox-setup-advanced skill
-- YOLO → Use sandbox-setup-yolo skill
+- Basic → Use devcontainer-setup-basic skill
+- Intermediate → Use devcontainer-setup-intermediate skill
+- Advanced → Use devcontainer-setup-advanced skill
+- YOLO → Use devcontainer-setup-yolo skill
 
 ---
 

@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-This guide helps diagnose and resolve common issues with Claude Code sandbox environments. For interactive troubleshooting assistance, use the `/sandbox:troubleshoot` command.
+This guide helps diagnose and resolve common issues with Claude Code sandbox environments. For interactive troubleshooting assistance, use the `/devcontainer:troubleshoot` command.
 
 ## Table of Contents
 
@@ -1289,7 +1289,7 @@ If you're still stuck:
 
 1. **Use Interactive Troubleshooting:**
    ```
-   /sandbox:troubleshoot
+   /devcontainer:troubleshoot
    ```
 
 2. **Check Logs:**

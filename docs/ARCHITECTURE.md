@@ -7,21 +7,21 @@ The Claude Code Sandbox plugin uses a skills-based architecture with a data-driv
 ## Components
 
 ### 1. Skills
-- `sandbox-setup-basic` - Basic mode setup (quick automatic)
-- `sandbox-setup-intermediate` - Intermediate mode setup (balanced)
-- `sandbox-setup-advanced` - Advanced mode setup (secure minimal)
-- `sandbox-setup-yolo` - YOLO mode setup (full control)
+- `devcontainer-setup-basic` - Basic mode setup (quick automatic)
+- `devcontainer-setup-intermediate` - Intermediate mode setup (balanced)
+- `devcontainer-setup-advanced` - Advanced mode setup (secure minimal)
+- `devcontainer-setup-yolo` - YOLO mode setup (full control)
 - `sandbox-troubleshoot` - Diagnostic assistant
 - `sandbox-security` - Security auditor
 
 ### 2. Commands
-- `/sandbox:basic` - Invokes Basic mode setup (quick automatic)
-- `/sandbox:intermediate` - Invokes Intermediate mode setup (balanced)
-- `/sandbox:advanced` - Invokes Advanced mode setup (secure minimal)
-- `/sandbox:yolo` - Invokes YOLO mode setup (full control)
-- `/sandbox:setup` - Interactive mode selection (or use `--basic`, `--intermediate`, etc.)
-- `/sandbox:troubleshoot` - Invokes troubleshoot skill
-- `/sandbox:audit` - Invokes security skill
+- `/devcontainer:basic` - Invokes Basic mode setup (quick automatic)
+- `/devcontainer:intermediate` - Invokes Intermediate mode setup (balanced)
+- `/devcontainer:advanced` - Invokes Advanced mode setup (secure minimal)
+- `/devcontainer:yolo` - Invokes YOLO mode setup (full control)
+- `/devcontainer:setup` - Interactive mode selection (or use `--basic`, `--intermediate`, etc.)
+- `/devcontainer:troubleshoot` - Invokes troubleshoot skill
+- `/devcontainer:audit` - Invokes security skill
 
 ### 3. Data Files
 The plugin uses JSON data files for configuration-driven setup:
@@ -83,7 +83,7 @@ templates/
 └── legacy/                  # Old monolithic templates (deprecated)
 
 skills/
-├── sandbox-setup-basic/
+├── devcontainer-setup-basic/
 │   └── templates/           # ALL files needed for basic mode (self-contained)
 │       ├── devcontainer.json
 │       ├── docker-compose.yml        # Synced from master/shared
@@ -94,7 +94,7 @@ skills/
 │       ├── extensions.json
 │       ├── mcp.json
 │       └── variables.json
-├── sandbox-setup-intermediate/
+├── devcontainer-setup-intermediate/
 │   └── templates/           # ALL files needed for intermediate mode
 │       ├── devcontainer.json
 │       ├── docker-compose.yml        # Synced from master/shared
@@ -106,7 +106,7 @@ skills/
 │       ├── extensions.json
 │       ├── mcp.json
 │       └── variables.json
-├── sandbox-setup-advanced/
+├── devcontainer-setup-advanced/
 │   └── templates/           # ALL files needed for advanced mode
 │       ├── devcontainer.json
 │       ├── docker-compose.yml        # Synced from master/shared
@@ -118,7 +118,7 @@ skills/
 │       ├── extensions.json
 │       ├── mcp.json
 │       └── variables.json
-└── sandbox-setup-yolo/
+└── devcontainer-setup-yolo/
     └── templates/           # ALL files needed for yolo mode
         ├── devcontainer.json
         ├── docker-compose.yml        # Synced from master/shared
@@ -225,7 +225,7 @@ Example markers:
 
 ## Data Flow
 
-1. User invokes mode-specific command (e.g., `/sandbox:basic`)
+1. User invokes mode-specific command (e.g., `/devcontainer:basic`)
 2. Command activates skill with mode parameter
 3. Skill queries data files for mode-appropriate options:
    - `sandbox-templates.json` for base images

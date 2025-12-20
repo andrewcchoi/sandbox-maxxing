@@ -166,13 +166,13 @@ All identified "issues" are either:
 **Status:** ✅ **RESOLVED - Contextual**
 
 **Analysis:**
-- User-facing commands: Always use `/sandbox:` prefix
+- User-facing commands: Always use `/devcontainer:` prefix
 - Skill-to-skill references: Use skill name only
 - Internal documentation: Context-appropriate
 
 **Examples:**
-- User docs: `/sandbox:basic`
-- Skill references: `sandbox-setup-basic`
+- User docs: `/devcontainer:basic`
+- Skill references: `devcontainer-setup-basic`
 
 **Conclusion:** Appropriate variation by context. No change needed.
 

@@ -195,17 +195,17 @@ All 13 "missing" files were found at NEW locations after documentation reorganiz
 - Note: Has "When to Use This Skill" but not explicit "Usage" heading
 - **Status:** TRUE POSITIVE
 
-#### File 2: `skills/sandbox-setup-advanced/SKILL.md`
+#### File 2: `skills/devcontainer-setup-advanced/SKILL.md`
 - ❌ Missing section: "Usage"
 - Note: Has "When to Use This Skill" but not explicit "Usage" heading
 - **Status:** TRUE POSITIVE
 
-#### File 3: `skills/sandbox-setup-basic/SKILL.md`
+#### File 3: `skills/devcontainer-setup-basic/SKILL.md`
 - ❌ Missing section: "Usage"
 - Note: Has "When to Use This Skill" but not explicit "Usage" heading
 - **Status:** TRUE POSITIVE
 
-#### File 4: `skills/sandbox-setup-intermediate/SKILL.md`
+#### File 4: `skills/devcontainer-setup-intermediate/SKILL.md`
 - ❌ Missing section: "Usage"
 - Note: Has "When to Use This Skill" but not explicit "Usage" heading
 - **Status:** TRUE POSITIVE

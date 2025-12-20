@@ -16,7 +16,7 @@ echo "print('test')" > main.py
 
 # 3. Run setup
 claude
-/sandbox:basic
+/devcontainer:basic
 
 # 4. Verify
 ls .devcontainer/

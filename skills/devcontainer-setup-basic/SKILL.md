@@ -1,9 +1,47 @@
 ---
-name: sandbox-setup-basic
+name: devcontainer-setup-basic
 description: Use when user wants the simplest sandbox setup - uses sandbox templates or official images only, docker-compose when appropriate, no firewall (relies on sandbox isolation)
 ---
 
 # Sandbox Setup: Basic Mode
+
+## NON-INTERACTIVE MODE (Automated Testing)
+
+**CRITICAL: Check for automated test mode FIRST before any other action.**
+
+If the user's message contains responses in this format:
+```
+AUTOMATED_TEST_MODE
+RESPONSES:
+response1
+response2
+response3
+...
+```
+
+Then:
+1. **DO NOT call AskUserQuestion** - use provided responses instead
+2. Extract responses into an array
+3. Use responses sequentially when questions would normally be asked
+4. Execute the entire skill workflow without interaction
+
+**Response order for basic mode:**
+1. Project name (e.g., "demo-app")
+2. Programming language (e.g., "python", "node")
+3. Services needed (e.g., "none", "postgres", "redis", or comma-separated)
+4. Confirmation (e.g., "yes", "y")
+
+**Example automated invocation:**
+```
+AUTOMATED_TEST_MODE
+RESPONSES:
+demo-app
+python
+none
+yes
+```
+
+When in automated mode, proceed directly to file generation without any interaction.
 
 ## TASK IDENTITY
 
@@ -76,7 +114,7 @@ echo "Templates directory: $TEMPLATES"
 ls -la "$TEMPLATES/"
 ```
 
-**NOTE:** All templates are in `skills/sandbox-setup-basic/templates/` - no external dependencies!
+**NOTE:** All templates are in `skills/devcontainer-setup-basic/templates/` - no external dependencies!
 
 ### Step 1B: Copy Template Files
 
@@ -235,11 +273,11 @@ Basic mode gets developers up and running in minutes using battle-tested base im
 
 ## Usage
 
-This skill is invoked via the `/sandboxxer:basic` command or by selecting "Basic Mode" from the `/sandboxxer:setup` interactive mode selector.
+This skill is invoked via the `/devcontainer-setup:basic` command or by selecting "Basic Mode" from the `/devcontainer-setup:setup` interactive mode selector.
 
 **Command:**
 ```
-/sandboxxer:basic
+/devcontainer-setup:basic
 ```
 
 The skill will:
@@ -273,7 +311,7 @@ The skill will:
 
 **Via slash command:**
 ```
-/sandbox:basic
+/devcontainer:basic
 ```
 
 **Via natural language:**
@@ -813,7 +851,7 @@ Need more control?
 - Advanced mode: Custom Dockerfile + firewall rules
 - YOLO mode: Full security hardening + network policies
 
-Run `/sandbox:advanced` or `/sandbox:yolo` to upgrade.
+Run `/devcontainer:advanced` or `/devcontainer:yolo` to upgrade.
 ```
 
 ### On Errors
@@ -823,12 +861,12 @@ If setup fails or user encounters issues:
 ```
 Encountered an error during setup. For troubleshooting assistance, invoke:
 
-/sandbox:troubleshoot
+/devcontainer:troubleshoot
 
 Or switch to Advanced/YOLO mode for more control:
 
-/sandbox:advanced
-/sandbox:yolo
+/devcontainer:advanced
+/devcontainer:yolo
 ```
 
 Automatically invoke `sandbox-troubleshoot` skill if:

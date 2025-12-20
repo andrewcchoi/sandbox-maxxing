@@ -1,9 +1,49 @@
 ---
-name: sandbox-setup-advanced
+name: devcontainer-setup-advanced
 description: Use when user wants security-focused development setup with strict firewall controls and customizable domain allowlists - ideal for production-like configurations, security-conscious teams, and scenarios requiring explicit network control
 ---
 
 # Sandbox Setup: Advanced Mode
+
+## NON-INTERACTIVE MODE (Automated Testing)
+
+**CRITICAL: Check for automated test mode FIRST before any other action.**
+
+If the user's message contains responses in this format:
+```
+AUTOMATED_TEST_MODE
+RESPONSES:
+response1
+response2
+response3
+...
+```
+
+Then:
+1. **DO NOT call AskUserQuestion** - use provided responses instead
+2. Extract responses into an array
+3. Use responses sequentially when questions would normally be asked
+4. Execute the entire skill workflow without interaction
+
+**Response order for advanced mode:**
+1. Project name (e.g., "demo-app")
+2. Programming language (e.g., "python", "node")
+3. Services needed (e.g., "postgres", "redis", or comma-separated)
+4. Firewall ports to allow (e.g., "443,8080" or "80,443,8000")
+5. Confirmation (e.g., "yes", "y")
+
+**Example automated invocation:**
+```
+AUTOMATED_TEST_MODE
+RESPONSES:
+demo-app
+python
+postgres
+443,8080
+yes
+```
+
+When in automated mode, proceed directly to file generation without any interaction.
 
 ## TASK IDENTITY
 
@@ -199,11 +239,11 @@ Advanced Mode provides security-focused development environments with strict fir
 
 ## Usage
 
-This skill is invoked via the `/sandboxxer:advanced` command or by selecting "Advanced Mode" from the `/sandboxxer:setup` interactive mode selector.
+This skill is invoked via the `/devcontainer-setup:advanced` command or by selecting "Advanced Mode" from the `/devcontainer-setup:setup` interactive mode selector.
 
 **Command:**
 ```
-/sandboxxer:advanced
+/devcontainer-setup:advanced
 ```
 
 The skill will:
@@ -224,9 +264,9 @@ Use this skill when:
 - User is working on team projects requiring network control
 
 Do NOT use this skill when:
-- User wants quickest setup (use `sandbox-setup-basic` instead)
-- User wants maximum automation (use `sandbox-setup-basic` instead)
-- User needs full control and step-by-step guidance (use `sandbox-setup-yolo` instead)
+- User wants quickest setup (use `devcontainer-setup-basic` instead)
+- User wants maximum automation (use `devcontainer-setup-basic` instead)
+- User needs full control and step-by-step guidance (use `devcontainer-setup-yolo` instead)
 - User is troubleshooting an existing sandbox (use `sandbox-troubleshoot` instead)
 - User wants to audit security of existing setup (use `sandbox-security` instead)
 
@@ -234,7 +274,7 @@ Do NOT use this skill when:
 
 **Via slash command:**
 ```
-/sandbox:advanced
+/devcontainer:advanced
 ```
 
 **Via natural language:**
@@ -455,7 +495,7 @@ After generation, perform automated security checks:
 ✓ Allowlist: Minimal (8 domains)
 ⚠ Consider removing 'cdn.example.com' if not actively used
 
-For comprehensive security audit, run: /sandbox:audit
+For comprehensive security audit, run: /devcontainer:audit
 ```
 
 ### 5. Next Steps
@@ -568,10 +608,10 @@ For detailed information, refer to embedded documentation in `references/`:
 
 ## Integration with Other Skills
 
-- **After setup**: Suggest running `/sandbox:audit` for comprehensive security review
+- **After setup**: Suggest running `/devcontainer:audit` for comprehensive security review
 - **During errors**: Automatically invoke `sandbox-troubleshoot` skill if setup fails
-- **For simpler setups**: Suggest `sandbox-setup-basic` if user seems overwhelmed
-- **For more control**: Suggest `sandbox-setup-yolo` if user wants step-by-step guidance
+- **For simpler setups**: Suggest `devcontainer-setup-basic` if user seems overwhelmed
+- **For more control**: Suggest `devcontainer-setup-yolo` if user wants step-by-step guidance
 - **Updating configs**: Warn about overwriting and offer to backup existing files
 
 ## Key Principles
@@ -588,7 +628,7 @@ For detailed information, refer to embedded documentation in `references/`:
 
 **Via slash command**:
 ```
-/sandbox:advanced
+/devcontainer:advanced
 ```
 
 **Via natural language**:
