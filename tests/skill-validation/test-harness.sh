@@ -171,4 +171,7 @@ main() {
     log_info "All skill testing complete"
 }
 
-main "$@"
+# Only run main if not being sourced
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    main "$@"
+fi
