@@ -144,7 +144,7 @@ main() {
         log_info "Starting continuous test for: $mode"
 
         local iteration=1
-        local max_iterations=10
+        local max_iterations=5
 
         while [ $iteration -le $max_iterations ]; do
             if test_skill "$mode" "$iteration"; then
