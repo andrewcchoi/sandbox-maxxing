@@ -37,6 +37,9 @@ source "$SCRIPT_DIR/test-harness.sh"
 # Source skill fixer functions
 source "$SCRIPT_DIR/lib/skill-fixer.sh"
 
+# Source report generator functions
+source "$SCRIPT_DIR/lib/report-generator.sh"
+
 # Override main to run continuously
 continuous_main() {
     local modes=("basic" "intermediate" "advanced" "yolo")
@@ -91,6 +94,9 @@ continuous_main() {
     log_info "========================================="
     log_info "Continuous testing complete"
     log_info "========================================="
+
+    # Generate summary report
+    generate_summary_report
 }
 
 # Run continuous tests
