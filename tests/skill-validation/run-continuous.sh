@@ -34,6 +34,9 @@ fi
 # Source test harness functions
 source "$SCRIPT_DIR/test-harness.sh"
 
+# Source skill fixer functions
+source "$SCRIPT_DIR/lib/skill-fixer.sh"
+
 # Override main to run continuously
 continuous_main() {
     local modes=("basic" "intermediate" "advanced" "yolo")
@@ -59,8 +62,18 @@ continuous_main() {
             else
                 log_warn "✗ $mode FAILED iteration $iteration"
 
-                # Auto-fix attempt (placeholder - actual fix logic in next task)
-                log_info "Attempting auto-fix..."
+                # Analyze failures
+                local report_file="$REPORTS_DIR/${mode}-iteration-${iteration}.txt"
+                local issues_count
+                issues_count=$(analyze_failures "$mode" "$GENERATED_DIR/$mode" "$report_file")
+
+                log_info "Found $issues_count issues"
+
+                # Attempt auto-fix (currently just logs)
+                if ! apply_fixes "$mode" "$issues_count"; then
+                    log_warn "Auto-fix failed - continuing to next iteration"
+                fi
+
                 sleep 2
             fi
         done
