@@ -4,6 +4,11 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Load Python fallbacks for jq and bc if not available
+if ! command -v jq >/dev/null 2>&1 || ! command -v bc >/dev/null 2>&1; then
+    source "$SCRIPT_DIR/lib/python-fallbacks.sh"
+fi
+
 # Dry run mode (just validate setup)
 DRY_RUN="${DRY_RUN:-false}"
 
@@ -17,10 +22,24 @@ if [ "$DRY_RUN" = "true" ]; then
 
     log_info "DRY RUN MODE - validating test setup only"
 
-    # Check dependencies
-    command -v jq >/dev/null || log_error "jq not found"
-    command -v python3 >/dev/null || log_error "python3 not found"
-    command -v bc >/dev/null || log_error "bc not found"
+    # Check dependencies (jq and bc can use Python fallbacks)
+    if ! command -v jq >/dev/null && ! declare -f jq >/dev/null; then
+        log_error "jq not found and Python fallback not loaded"
+    else
+        log_info "jq available (native or Python fallback)"
+    fi
+
+    if ! command -v python3 >/dev/null; then
+        log_error "python3 not found"
+    else
+        log_info "python3 available"
+    fi
+
+    if ! command -v bc >/dev/null && ! declare -f bc >/dev/null; then
+        log_error "bc not found and Python fallback not loaded"
+    else
+        log_info "bc available (native or Python fallback)"
+    fi
 
     # Check directories exist
     [ -d "$SCRIPT_DIR/fixtures" ] || log_error "fixtures/ not found"

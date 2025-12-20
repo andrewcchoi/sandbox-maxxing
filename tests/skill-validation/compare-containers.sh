@@ -3,6 +3,12 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Load Python fallbacks for jq and bc if not available
+if ! command -v jq >/dev/null 2>&1 || ! command -v bc >/dev/null 2>&1; then
+    source "$SCRIPT_DIR/lib/python-fallbacks.sh"
+fi
+
 source "$SCRIPT_DIR/lib/section-parser.sh"
 source "$SCRIPT_DIR/lib/diff-analyzer.sh"
 

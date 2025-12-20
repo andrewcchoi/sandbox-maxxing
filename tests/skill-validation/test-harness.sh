@@ -8,6 +8,11 @@ GENERATED_DIR="$TEST_DIR/generated"
 REPORTS_DIR="$TEST_DIR/reports"
 ACCURACY_THRESHOLD=95
 
+# Load Python fallbacks for jq and bc if not available
+if ! command -v jq >/dev/null 2>&1 || ! command -v bc >/dev/null 2>&1; then
+    source "$TEST_DIR/lib/python-fallbacks.sh"
+fi
+
 # Load comparison engine
 source "$TEST_DIR/compare-containers.sh"
 
