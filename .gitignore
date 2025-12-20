@@ -1,5 +1,6 @@
 # Test directories
 test-*
+!test-config.yml
 tests/results/
 
 # Build artifacts

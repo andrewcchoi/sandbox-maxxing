@@ -1,0 +1,25 @@
+metadata:
+  mode: advanced
+  description: "Advanced mode with Python backend, PostgreSQL database, strict firewall with custom ports"
+  expected_files:
+    - .devcontainer/devcontainer.json
+    - .devcontainer/Dockerfile
+    - docker-compose.yml
+    - .devcontainer/init-firewall.sh
+    - .devcontainer/setup-claude-credentials.sh
+
+responses:
+  - prompt_pattern: "project.*name|what.*call"
+    response: "demo-app"
+
+  - prompt_pattern: "language|stack"
+    response: "python"
+
+  - prompt_pattern: "database|services"
+    response: "postgres"
+
+  - prompt_pattern: "firewall.*port|allowed.*port|port.*allow"
+    response: "443,8080"
+
+  - prompt_pattern: "confirm|proceed"
+    response: "yes"
