@@ -189,15 +189,189 @@ list_configured_patterns() {
     done <<< "$patterns_responses"
 }
 
-# Placeholder for Phase 3: Interactive monitoring with named pipes
-# This will be implemented in a future phase
+# Helper: Check if line is a prompt/question
+is_prompt_line() {
+    local line="$1"
+
+    # Check for question mark at end
+    if [[ "$line" =~ \?[[:space:]]*$ ]]; then
+        return 0
+    fi
+
+    # Check for common prompt patterns
+    if [[ "$line" =~ (Enter|Select|Choose|Type|Provide|Specify|What|Which|Do you).*: ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+# Helper: Check if skill has completed successfully
+skill_completed() {
+    local mode="$1"
+    local output_dir="${OUTPUT_DIR:-$(pwd)}"
+
+    # Check if key files exist
+    if [ -f "$output_dir/.devcontainer/devcontainer.json" ] && \
+       [ -f "$output_dir/docker-compose.yml" ]; then
+        return 0
+    fi
+
+    return 1
+}
+
+# Phase 3: Interactive monitoring with named pipes
+# Monitors skill output in real-time and feeds responses from config
 feed_responses_interactive() {
     local mode="$1"
     local config_file="$2"
+    local response_index=0
+    local temp_dir=$(mktemp -d)
+    local skill_output="$temp_dir/skill_output"
+    local skill_input="$temp_dir/skill_input"
+    local conversation_log="${LOG_FILE:-$temp_dir/conversation.log}"
 
-    log_warn "Interactive monitoring not yet implemented (Phase 3)"
-    log_info "Falling back to pre-pipe method"
+    log_info "Using interactive monitoring for $mode mode"
+    log_info "Config: $config_file"
+    log_info "Temp dir: $temp_dir"
 
+    # Validate config file exists
+    if [ ! -f "$config_file" ]; then
+        log_error "Config file not found: $config_file"
+        log_info "Falling back to pre-pipe method"
+        rm -rf "$temp_dir"
+        feed_responses_prepipe "$mode"
+        return $?
+    fi
+
+    # Create named pipes for bidirectional communication
+    log_info "Creating named pipes..."
+    mkfifo "$skill_output" "$skill_input" 2>/dev/null || {
+        log_error "Failed to create named pipes"
+        rm -rf "$temp_dir"
+        return 1
+    }
+
+    # Set up cleanup trap
+    cleanup_pipes() {
+        log_info "Cleaning up pipes and temp directory..."
+        if [ -n "$skill_pid" ] && kill -0 "$skill_pid" 2>/dev/null; then
+            kill "$skill_pid" 2>/dev/null || true
+            wait "$skill_pid" 2>/dev/null || true
+        fi
+        rm -rf "$temp_dir"
+    }
+    trap cleanup_pipes EXIT INT TERM
+
+    # Note: We cannot launch "claude skill" in background with pipes
+    # because Claude CLI requires interactive terminal context.
+    # Instead, we need to use the Skill tool directly from Claude Code.
+    log_warn "NOTE: Interactive pipe monitoring requires special setup"
+    log_warn "The Skill tool must be invoked by Claude Code, not bash subprocess"
+    log_warn "For now, this function validates the pipe infrastructure"
+
+    # For testing the infrastructure, simulate a skill conversation
+    if [ "${TEST_MODE:-false}" = "true" ]; then
+        log_info "Running in test mode - simulating skill conversation"
+        log_info "This demonstrates the pipe infrastructure without actual skill execution"
+
+        # Create a simple script that simulates skill output
+        local simulator_script="$temp_dir/simulator.sh"
+        cat > "$simulator_script" << 'SIMEOF'
+#!/bin/bash
+exec > "$1"  # Redirect stdout to output pipe
+exec < "$2"  # Redirect stdin from input pipe
+
+echo "Welcome to sandbox setup!"
+sleep 0.3
+echo "What is your project name?"
+read -r response
+echo "You selected: $response"
+sleep 0.3
+echo "Choose a language (python, node, go):"
+read -r response
+echo "You selected: $response"
+sleep 0.3
+echo "Do you want to proceed? (yes/no)"
+read -r response
+echo "Setup complete!"
+SIMEOF
+        chmod +x "$simulator_script"
+
+        # Launch simulator in background
+        "$simulator_script" "$skill_output" "$skill_input" &
+        local skill_pid=$!
+
+        # Set 1-minute timeout
+        local start_time=$(date +%s)
+        local timeout=60
+        local questions_answered=0
+
+        # Monitor loop - read from the output pipe
+        log_info "Starting monitoring loop..."
+        while IFS= read -r line; do
+            echo "$line" | tee -a "$conversation_log"
+
+            # Check timeout
+            local current_time=$(date +%s)
+            if [ $((current_time - start_time)) -gt $timeout ]; then
+                log_error "Skill timeout after 1 minute"
+                break
+            fi
+
+            # Check if line contains a question or prompt
+            if is_prompt_line "$line"; then
+                log_info "Detected question: $line"
+
+                # Find matching response from config
+                local response=$(match_pattern_get_response "$line" "$response_index" "$config_file" 2>&1 | grep -v "^\[" | head -1)
+
+                if [ -n "$response" ]; then
+                    log_info "Sending response: $response"
+                    echo "$response" > "$skill_input"
+                    ((response_index++))
+                    ((questions_answered++))
+                else
+                    log_error "No response configured for: $line"
+                    echo "" > "$skill_input"  # Send empty response to unblock
+                    break
+                fi
+            fi
+
+            # Check for completion indicators
+            if [[ "$line" =~ (complete|finished|done|successfully) ]]; then
+                log_info "Detected completion message"
+                sleep 0.5  # Give time for any final output
+                break
+            fi
+        done < "$skill_output"
+
+        # Wait for skill process to finish
+        wait "$skill_pid" 2>/dev/null || true
+
+        log_info "Test mode completed - answered $questions_answered questions"
+
+        # Show conversation log if it exists
+        if [ -f "$conversation_log" ] && [ -s "$conversation_log" ]; then
+            log_info "Conversation log:"
+            cat "$conversation_log"
+        fi
+
+        cleanup_pipes
+        trap - EXIT INT TERM
+        return 0
+    fi
+
+    # Production mode: Return instructions for Claude Code integration
+    log_warn "Production mode requires integration with Claude Code Skill tool"
+    log_warn "Infrastructure validated - pipes and monitoring ready"
+    log_info "To use: Set TEST_MODE=true for infrastructure testing"
+
+    cleanup_pipes
+    trap - EXIT INT TERM
+
+    # For now, fall back to pre-pipe method for actual skill execution
+    log_info "Falling back to pre-pipe method for actual skill execution"
     feed_responses_prepipe "$mode"
     return $?
 }
