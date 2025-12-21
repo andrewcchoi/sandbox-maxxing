@@ -60,6 +60,10 @@ echo "[2/7] Syncing hooks directory..."
 if [ -d "$HOST_CLAUDE/hooks" ] && [ "$(ls -A "$HOST_CLAUDE/hooks" 2>/dev/null)" ]; then
     cp -r "$HOST_CLAUDE/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
     chmod +x "$CLAUDE_DIR/hooks/"*.sh 2>/dev/null || true
+    # Fix line endings (convert CRLF to LF)
+    for hook in "$CLAUDE_DIR/hooks/"*.sh; do
+        [ -f "$hook" ] && sed -i 's/\r$//' "$hook" 2>/dev/null || true
+    done
     HOOKS_COUNT=$(ls -1 "$CLAUDE_DIR/hooks" 2>/dev/null | wc -l)
     echo "  ✓ $HOOKS_COUNT hook(s) synced from host"
 else
@@ -67,6 +71,10 @@ else
     if [ -d "$DEFAULTS_DIR/hooks" ]; then
         cp -r "$DEFAULTS_DIR/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
         chmod +x "$CLAUDE_DIR/hooks/"*.sh 2>/dev/null || true
+        # Fix line endings (convert CRLF to LF)
+        for hook in "$CLAUDE_DIR/hooks/"*.sh; do
+            [ -f "$hook" ] && sed -i 's/\r$//' "$hook" 2>/dev/null || true
+        done
         echo "  ✓ Created default hooks (LangSmith tracing)"
     else
         echo "  ⚠ No hooks found and no defaults available"
