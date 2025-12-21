@@ -50,6 +50,57 @@ Reference: `${CLAUDE_PLUGIN_ROOT}/data/official-images.json`
 4. Update `metadata.last_updated` date
 5. Test pull commands are valid
 
+### `uv-images.json`
+Astral UV Docker images registry - Python package manager with fast dependency resolution.
+
+**Structure:**
+- `metadata`: Registry information, API endpoint, and update date
+- `categories`: Image categories (alpine, debian-slim, bookworm, trixie) with:
+  - Description
+  - Recommended modes
+- `tags`: Array of filtered image tags with:
+  - Tag name, category, Python version
+  - Base image type
+  - Size (MB) per architecture
+  - Last updated timestamp
+  - Digest and architectures
+  - Recommended tier
+  - Pull command
+- `mode_defaults`: Which tags are included per mode
+
+**Usage in skills:**
+```markdown
+Reference: `${CLAUDE_PLUGIN_ROOT}/data/uv-images.json`
+
+# Get recommended tags for a mode
+Use `mode_defaults.<mode_name>` array
+```
+
+**Update procedure:**
+1. Run `/workspace/scripts/update-uv-images.sh` (Python script)
+2. Script automatically:
+   - Fetches all tags from Docker Hub API
+   - Filters to floating tags (excludes version-pinned like 0.9.18-)
+   - Deduplicates by Python version + base image
+   - Updates `metadata.last_updated` date
+3. Verify JSON output is valid
+4. Commit changes
+
+**Mode-Specific Tag Selection:**
+
+| Mode | Tag Strategy | Tags Included |
+|------|-------------|---------------|
+| **Basic** | Alpine only, Python 3.12+ | python3.12-alpine, python3.13-alpine |
+| **Intermediate** | Alpine + slim, Python 3.11+ | Alpine tags + slim variants |
+| **Advanced** | All stable Python versions | Python 3.10-3.13 across all base images |
+| **YOLO** | All tags including experimental | All filtered tags including Python 3.8, 3.14, trixie |
+
+**About UV:**
+- Fast Python package manager written in Rust
+- Drop-in replacement for pip with 10-100x faster dependency resolution
+- Images include uv pre-installed with various Python versions
+- Alpine variants are smallest (~40MB), Debian variants offer better compatibility
+
 ### `allowable-domains.json`
 Firewall domain allowlist organized by category for different mode defaults.
 
@@ -270,5 +321,5 @@ For questions about data file structure or usage, see:
 
 ---
 
-**Last Updated:** 2025-12-16
+**Last Updated:** 2025-12-21
 **Version:** 3.0.0
