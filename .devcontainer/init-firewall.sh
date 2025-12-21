@@ -32,8 +32,9 @@ echo ""
 echo "Clearing any existing firewall rules..."
 iptables -F 2>/dev/null || true
 iptables -X 2>/dev/null || true
-iptables -t nat -F 2>/dev/null || true
-iptables -t nat -X 2>/dev/null || true
+# Don't flush NAT table - Docker needs these rules for DNS and routing
+# iptables -t nat -F 2>/dev/null || true
+# iptables -t nat -X 2>/dev/null || true
 iptables -t mangle -F 2>/dev/null || true
 iptables -t mangle -X 2>/dev/null || true
 ipset destroy allowed-domains 2>/dev/null || true

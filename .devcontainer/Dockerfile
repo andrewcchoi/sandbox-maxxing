@@ -1,14 +1,11 @@
-# Generated using sandbox-maxxing plugin Intermediate mode
+# Generated using sandboxxer-maxxing plugin Intermediate mode
 # Development container for plugin development with services
 # Includes PostgreSQL, Redis, RabbitMQ for testing examples
 
-# Stage 1: Get Node.js from official image (Issue #29)
-FROM node:20-slim AS node-source
+# Stage 1: Get Python + uv from official Astral image
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
 
-# Stage 2: Get Python + uv from official Astral image
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
-
-# Stage 3: Main build
+# Stage 2: Main build
 FROM node:20-bookworm-slim
 
 # Timezeone configuration
@@ -30,12 +27,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   iptables ipset iproute2 dnsutils \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy Node.js from official image (Issue #29 - avoids NodeSource SSL issues)
-COPY --from=node-source /usr/local/bin/node /usr/local/bin/
-COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
-RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
-    ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
-
 # Copy Python 3.12 binaries
 COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/
 COPY --from=python-uv-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
@@ -47,17 +38,10 @@ RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
 COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/
 COPY --from=python-uv-source /usr/local/bin/uvx /usr/local/bin/
 
-# Python packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  python3-full \
-  python3-pip \
-  python3-venv \
-  && apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Database clients
 RUN apt-get update && apt-get install -y --no-install-recommends \
   postgresql-client \
-  mysql-client \
+  default-mysql-client \
   sqlite3 \
   redis-tools \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -91,9 +75,11 @@ RUN ARCH=$(dpkg --print-architecture) && \
   dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
   rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
 
-# Setup npm registry allowlist for Claude Code updates (Issue #32)
-RUN echo "registry.npmjs.org" >> /etc/claude-allowed-domains.txt && \
-    echo "npmjs.org" >> /etc/claude-allowed-domains.txt
+# Copy domain allowlist and extract all domains (Issue #32)
+COPY data/allowable-domains.json /tmp/allowable-domains.json
+RUN jq -r '[.categories | to_entries[] | .value | ((.domains // []), (.wildcard_domains // []), (.sub_categories // {} | to_entries[] | .value | (.domains // []), (.wildcard_domains // [])))] | flatten | unique | .[]' \
+    /tmp/allowable-domains.json > /etc/claude-allowed-domains.txt && \
+    rm /tmp/allowable-domains.json
 
 USER node
 
@@ -106,11 +92,15 @@ ARG ZSH_IN_DOCKER_VERSION=1.2.0
 ENV SHELL=/bin/zsh
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
-  -p git -p fzf \
-  -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
-  -a "source /usr/share/doc/fzf/examples/completion.zsh" \
+  -p git \
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -x
+
+# Pre-download gitstatusd for powerlevel10k (avoid runtime download failure)
+ARG GITSTATUSD_VERSION=v1.5.4
+RUN mkdir -p ~/.cache/gitstatus && \
+    wget -qO- "https://github.com/romkatv/gitstatus/releases/download/${GITSTATUSD_VERSION}/gitstatusd-linux-x86_64.tar.gz" | \
+    tar -xz -C ~/.cache/gitstatus
 
 # Editor configuration
 ENV EDITOR=nano
@@ -120,14 +110,18 @@ ENV VISUAL=nano
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV PATH="/workspace/.venv/bin:$PATH"
-RUN uv add --system deepagents tavily-python
-RUN uv add --no-cache-dir \
-  pytest \
-  black \
-  flake8 \
-  mypy \
-  ipython \
-  requests
+
+# Initialize uv project and install Python packages to .venv
+RUN uv init --name workspace-env && \
+    uv add --no-cache \
+      deepagents \
+      tavily-python \
+      pytest \
+      black \
+      flake8 \
+      mypy \
+      ipython \
+      requests
 
 # Install Claude Code
 ARG CLAUDE_CODE_VERSION=latest

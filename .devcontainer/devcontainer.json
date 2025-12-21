@@ -1,5 +1,5 @@
 {
-  "name": "sandbox-plugin",
+  "name": "sandboxxer-plugin",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
@@ -24,13 +24,13 @@
   },
   "remoteUser": "node",
   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
-  "postStartCommand": "sudo .devcontainer/init-firewall.sh",
+  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
 
   "forwardPorts": [8000, 3000, 5432, 6379],
 
   "remoteEnv": {
     "PATH": "/usr/local/bin:${containerEnv:PATH}",
-    "FIREWALL_MODE": "strict"
+    "FIREWALL_MODE": "permissive"
   },
 
   "features": {}

@@ -23,6 +23,7 @@ HOST_CLAUDE="/tmp/host-claude"
 HOST_ENV="/tmp/host-env"
 HOST_GH="/tmp/host-gh"
 GH_CONFIG_DIR="$HOME/.config/gh"
+DEFAULTS_DIR="/workspace/.devcontainer/defaults"
 
 echo "================================================================"
 echo "Setting up Claude Code environment..."
@@ -32,14 +33,15 @@ echo "================================================================"
 # 1. Create Directory Structure
 # ============================================================================
 mkdir -p "$CLAUDE_DIR"
-mkdir -p "$CLAUDE_DIR/plugins"
+mkdir -p "$CLAUDE_DIR/hooks"
+mkdir -p "$CLAUDE_DIR/state"
 mkdir -p "$CLAUDE_DIR/mcp"
 
 # ============================================================================
 # 2. Core Configuration Files
 # ============================================================================
 echo ""
-echo "[1/5] Copying core configuration files..."
+echo "[1/7] Copying core configuration files..."
 
 for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json" ".mcp.json"; do
     if [ -f "$HOST_CLAUDE/$config_file" ]; then
@@ -50,29 +52,55 @@ for config_file in ".credentials.json" "settings.json" "settings.local.json" "pr
 done
 
 # ============================================================================
-# 3. Plugins Directory
+# 3. Hooks Directory
 # ============================================================================
 echo ""
-echo "[2/5] Syncing plugins directory..."
+echo "[2/7] Syncing hooks directory..."
 
-if [ -d "$HOST_CLAUDE/plugins" ]; then
-    # Copy all plugins
-    if [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
-        cp -r "$HOST_CLAUDE/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
-        PLUGIN_COUNT=$(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l)
-        echo "  ✓ $PLUGIN_COUNT plugin(s) synced"
-    else
-        echo "  ℹ No plugins found"
-    fi
+if [ -d "$HOST_CLAUDE/hooks" ] && [ "$(ls -A "$HOST_CLAUDE/hooks" 2>/dev/null)" ]; then
+    cp -r "$HOST_CLAUDE/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
+    chmod +x "$CLAUDE_DIR/hooks/"*.sh 2>/dev/null || true
+    HOOKS_COUNT=$(ls -1 "$CLAUDE_DIR/hooks" 2>/dev/null | wc -l)
+    echo "  ✓ $HOOKS_COUNT hook(s) synced from host"
 else
-    echo "  ℹ Plugins directory not found"
+    # Copy default hooks from devcontainer defaults
+    if [ -d "$DEFAULTS_DIR/hooks" ]; then
+        cp -r "$DEFAULTS_DIR/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
+        chmod +x "$CLAUDE_DIR/hooks/"*.sh 2>/dev/null || true
+        echo "  ✓ Created default hooks (LangSmith tracing)"
+    else
+        echo "  ⚠ No hooks found and no defaults available"
+    fi
 fi
 
 # ============================================================================
-# 4. MCP Configuration
+# 4. State Directory
 # ============================================================================
 echo ""
-echo "[3/5] Syncing MCP configuration..."
+echo "[3/7] Syncing state directory..."
+
+if [ -d "$HOST_CLAUDE/state" ] && [ "$(ls -A "$HOST_CLAUDE/state" 2>/dev/null)" ]; then
+    cp -r "$HOST_CLAUDE/state/"* "$CLAUDE_DIR/state/" 2>/dev/null || true
+    STATE_COUNT=$(ls -1 "$CLAUDE_DIR/state" 2>/dev/null | wc -l)
+    echo "  ✓ $STATE_COUNT state file(s) synced from host"
+else
+    # Copy default state files from devcontainer defaults
+    if [ -d "$DEFAULTS_DIR/state" ]; then
+        cp -r "$DEFAULTS_DIR/state/"* "$CLAUDE_DIR/state/" 2>/dev/null || true
+        echo "  ✓ Created default state files (hook.log, langsmith_state.json)"
+    else
+        # Fallback: create minimal state files
+        touch "$CLAUDE_DIR/state/hook.log"
+        echo "{}" > "$CLAUDE_DIR/state/langsmith_state.json"
+        echo "  ✓ Created minimal state files"
+    fi
+fi
+
+# ============================================================================
+# 5. MCP Configuration
+# ============================================================================
+echo ""
+echo "[4/7] Syncing MCP configuration..."
 
 # Copy .mcp.json if exists (already handled above, but check for mcp/ dir)
 if [ -d "$HOST_CLAUDE/mcp" ]; then
@@ -88,10 +116,10 @@ else
 fi
 
 # ============================================================================
-# 5. Environment Variables (Optional)
+# 6. Environment Variables (Optional)
 # ============================================================================
 echo ""
-echo "[4/5] Loading environment variables..."
+echo "[5/7] Loading environment variables..."
 
 if [ -f "$HOST_ENV/.env.claude" ]; then
     # Source environment variables
@@ -110,10 +138,10 @@ else
 fi
 
 # ============================================================================
-# 6. GitHub CLI Authentication (Optional)
+# 7. GitHub CLI Authentication (Optional)
 # ============================================================================
 echo ""
-echo "[5/6] Setting up GitHub CLI authentication..."
+echo "[6/7] Setting up GitHub CLI authentication..."
 
 if [ -d "$HOST_GH" ]; then
     mkdir -p "$GH_CONFIG_DIR"
@@ -137,10 +165,10 @@ else
 fi
 
 # ============================================================================
-# 7. Fix Permissions
+# 8. Fix Permissions
 # ============================================================================
 echo ""
-echo "[6/6] Setting permissions..."
+echo "[7/7] Setting permissions..."
 
 chown -R "$(id -u):$(id -g)" "$CLAUDE_DIR" 2>/dev/null || true
 chown -R "$(id -u):$(id -g)" "$GH_CONFIG_DIR" 2>/dev/null || true
@@ -154,7 +182,8 @@ echo "================================================================"
 echo "✓ Development environment ready!"
 echo "================================================================"
 echo "  Config directory: $CLAUDE_DIR"
-echo "  Plugins: $(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l) installed"
+echo "  Hooks: $(ls -1 "$CLAUDE_DIR/hooks" 2>/dev/null | wc -l) installed"
+echo "  State files: $(ls -1 "$CLAUDE_DIR/state" 2>/dev/null | wc -l) configured"
 echo "  MCP servers: $(ls -1 "$CLAUDE_DIR/mcp" 2>/dev/null | wc -l) configured"
 if [ -f "$GH_CONFIG_DIR/hosts.yml" ]; then
     echo "  GitHub CLI: ✓ Authenticated"

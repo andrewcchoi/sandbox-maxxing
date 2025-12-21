@@ -2,18 +2,12 @@
 ###
 # Claude Code Stop Hook - LangSmith Tracing Integration
 # Sends Claude Code traces to LangSmith after each response.
-# stop_hook.sh processes Claude Code’s generated conversation 
-# transcripts and sends traces to LangSmith. Create the 
-# file ~/.claude/hooks/stop_hook.sh with the following script:
-# Make it executable:
-# chmod +x ~/.claude/hooks/stop_hook.sh
-# https://docs.langchain.com/langsmith/trace-claude-code
 ###
 
 set -e
 
 # Config (needed early for logging)
-LOG_FILE=".claude/state/hook.log"
+LOG_FILE="$HOME/.claude/state/hook.log"
 DEBUG="$(echo "$CC_LANGSMITH_DEBUG" | tr '[:upper:]' '[:lower:]')"
 
 # Logging functions
