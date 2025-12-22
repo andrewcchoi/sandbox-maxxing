@@ -602,3 +602,9 @@ Part of the devcontainer-setup plugin (v3.0.0) for Claude Code.
 - [Automated Skill Testing Design](../../docs/plans/2025-12-20-automated-skill-testing-design.md)
 - [Sandboxxer Plugin Documentation](../../skills/README.md)
 - [Claude Code Documentation](https://docs.anthropic.com/claude-code)
+
+
+---
+
+**Last Updated:** 2025-12-21
+**Version:** 3.0.0

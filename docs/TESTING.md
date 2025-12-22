@@ -269,3 +269,9 @@ For skill-specific issues:
 - Check skill documentation in skill frontmatter
 - Test skill manually in isolation
 - Compare with working skills for patterns
+
+
+---
+
+**Last Updated:** 2025-12-21
+**Version:** 3.0.0

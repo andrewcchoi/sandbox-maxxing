@@ -171,3 +171,9 @@ Action Required: Delete wrong files, verify DevContainer setup
 - Users can manually invoke this agent with `/devcontainer-validator` to check their setup
 - The agent uses haiku model for fast execution
 - Orange color indicates validation/checking task
+
+
+---
+
+**Last Updated:** 2025-12-21
+**Version:** 3.0.0

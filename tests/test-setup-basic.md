@@ -102,3 +102,9 @@ docker compose down -v
 cd ..
 rm -rf D:\!wip\test-sandbox-basic
 ```
+
+
+---
+
+**Last Updated:** 2025-12-21
+**Version:** 3.0.0

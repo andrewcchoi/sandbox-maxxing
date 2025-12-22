@@ -37,3 +37,9 @@ assignees: ''
 - [ ] I have searched existing issues and feature requests to ensure this is not a duplicate
 - [ ] I have clearly described the problem or use case
 - [ ] I have provided a potential solution or approach
+
+
+---
+
+**Last Updated:** 2025-12-21
+**Version:** 3.0.0

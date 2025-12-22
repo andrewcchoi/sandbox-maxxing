@@ -54,3 +54,9 @@ assignees: ''
 - [ ] I have searched existing issues to ensure this is not a duplicate
 - [ ] I have provided all requested information
 - [ ] I have included relevant logs or error messages
+
+
+---
+
+**Last Updated:** 2025-12-21
+**Version:** 3.0.0

@@ -114,3 +114,9 @@ This error comes from Claude Code trying to use `/bin/bash` before the hook runs
 5. The bash script sends traces to LangSmith
 
 This chain avoids the `/bin/bash` error completely.
+
+
+---
+
+**Last Updated:** 2025-12-21
+**Version:** 3.0.0

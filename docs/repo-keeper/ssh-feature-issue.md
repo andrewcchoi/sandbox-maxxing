@@ -89,3 +89,9 @@ gh issue create \
 ```
 
 Or manually create at: https://github.com/andrewcchoi/sandbox-maxxing/issues/new
+
+
+---
+
+**Last Updated:** 2025-12-21
+**Version:** 3.0.0
