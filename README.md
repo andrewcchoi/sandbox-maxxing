@@ -67,7 +67,7 @@ claude --version
 If the installation script cannot be downloaded or the Anthropic servers are unreachable:
 1. Pre-download the installation script on a connected machine
 2. Include it in your project or mount it as a volume
-3. Run the local script instead: `sh ./scripts/install-claude.sh`
+3. Run the local script instead: `sh ./.internal/scripts/install-claude.sh`
 
 See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installation) for details.
 
@@ -455,7 +455,7 @@ sandbox-maxxing/
 │   ├── dockerfiles/            # Language-specific Dockerfile sections
 │   ├── firewall/               # Mode-specific firewall configs
 │   └── legacy/                 # Deprecated monolithic templates
-└── examples/                    # Working example applications
+└── docs/examples/                    # Working example applications
     ├── streamlit-sandbox-basic/
     ├── demo-app-sandbox-basic/
     ├── demo-app-sandbox-intermediate/
@@ -540,12 +540,12 @@ Claude: Running security audit...
 
 ## Example Applications
 
-The plugin includes comprehensive working examples in the `examples/` directory, demonstrating all four experience modes (Basic, Intermediate, Advanced, YOLO) with real applications.
+The plugin includes comprehensive working examples in the `docs/examples/` directory, demonstrating all four experience modes (Basic, Intermediate, Advanced, YOLO) with real applications.
 
 ### Example Structure
 
 ```
-examples/
+docs/examples/
 ├── README.md                        # Comprehensive examples guide
 ├── docker-compose.yml               # Shared PostgreSQL + Redis services
 │
@@ -561,8 +561,8 @@ examples/
 
 ### Quick Validation: Streamlit App
 
-**Shared Code**: `examples/streamlit-shared/`
-**Sandbox Example**: `examples/streamlit-sandbox-basic/` (Basic mode)
+**Shared Code**: `docs/examples/streamlit-shared/`
+**Sandbox Example**: `docs/examples/streamlit-sandbox-basic/` (Basic mode)
 
 Minimal Python Streamlit app for 30-second environment validation:
 - PostgreSQL connection test with visual feedback
@@ -575,13 +575,13 @@ cd examples && docker compose up -d
 cd streamlit-shared && uv add -r requirements.txt && streamlit run app.py
 
 # Option 2: Self-contained DevContainer
-code examples/streamlit-sandbox-basic  # Open in VS Code
+code docs/examples/streamlit-sandbox-basic  # Open in VS Code
 # Reopen in Container → Auto-starts all services
 ```
 
 ### Production Demo: Blog Application
 
-**Shared Code**: `examples/demo-app-shared/`
+**Shared Code**: `docs/examples/demo-app-shared/`
 
 A complete full-stack blogging platform with:
 - **Backend**: FastAPI + SQLAlchemy + PostgreSQL + Redis
@@ -592,7 +592,7 @@ A complete full-stack blogging platform with:
 **Four Example Sandbox Modes Available**:
 
 #### 1. Basic Mode - Quick Start
-**Location**: `examples/demo-app-sandbox-basic/`
+**Location**: `docs/examples/demo-app-sandbox-basic/`
 
 **What's included**:
 - Auto-detected Python + Node.js stack
@@ -604,7 +604,7 @@ A complete full-stack blogging platform with:
 **Best for**: Prototypes, solo developers, quick start
 
 #### 2. Advanced Mode - Balanced
-**Location**: `examples/demo-app-sandbox-advanced/`
+**Location**: `docs/examples/demo-app-sandbox-advanced/`
 
 **What's included**:
 - Configurable Python/Node.js versions (build args)
@@ -616,7 +616,7 @@ A complete full-stack blogging platform with:
 **Best for**: Team development, active projects, customization needs
 
 #### 3. YOLO Mode - Full Control
-**Location**: `examples/demo-app-sandbox-yolo/`
+**Location**: `docs/examples/demo-app-sandbox-yolo/`
 
 **What's included**:
 - Multi-stage optimized Dockerfile (7 stages)
@@ -633,14 +633,14 @@ A complete full-stack blogging platform with:
 
 **Quick validation** (Streamlit):
 ```bash
-cd examples/streamlit-sandbox-basic
+cd docs/examples/streamlit-sandbox-basic
 # Open in VS Code → Reopen in Container
 streamlit run app.py
 ```
 
 **Full-stack demo** (any mode):
 ```bash
-cd examples/demo-app-sandbox-basic  # or -advanced or -yolo
+cd docs/examples/demo-app-sandbox-basic  # or -advanced or -yolo
 # Open in VS Code → Reopen in Container
 
 # Terminal 1: Backend
@@ -666,7 +666,7 @@ cd frontend && npm run dev
 3. **Explore features**: `demo-app-sandbox-advanced/` - See customization options
 4. **Study production**: `demo-app-sandbox-yolo/` - Learn best practices
 
-See `examples/README.md` for detailed comparison and customization guides
+See `docs/examples/README.md` for detailed comparison and customization guides
 
 ### Dogfooding Approach
 
@@ -721,13 +721,13 @@ MIT License - See LICENSE file for details
 
 ## Repository Maintenance
 
-For contributors and maintainers, see [`docs/repo-keeper/`](docs/repo-keeper/):
+For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-keeper/):
 
-- **Organization Checklist**: [`ORGANIZATION_CHECKLIST.md`](docs/repo-keeper/ORGANIZATION_CHECKLIST.md) - 18-category maintenance checklist
-- **Inventory**: [`INVENTORY.json`](docs/repo-keeper/INVENTORY.json) - Entity inventory for auditing
-- **Automation Scripts**: [`scripts/`](docs/repo-keeper/scripts/) - Version sync, link checking, inventory validation
-- **GitHub Workflows**: [`workflows/`](docs/repo-keeper/workflows/) - CI/CD templates for automated validation
-- **Issue/PR Templates**: [`templates/`](docs/repo-keeper/templates/) - Standardized templates for contributors
+- **Organization Checklist**: [`ORGANIZATION_CHECKLIST.md`](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) - 18-category maintenance checklist
+- **Inventory**: [`INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) - Entity inventory for auditing
+- **Automation Scripts**: [`scripts/`](.internal/repo-keeper/.internal/scripts/) - Version sync, link checking, inventory validation
+- **GitHub Workflows**: [`workflows/`](.internal/repo-keeper/workflows/) - CI/CD templates for automated validation
+- **Issue/PR Templates**: [`templates/`](.internal/repo-keeper/templates/) - Standardized templates for contributors
 
 ## Changelog
 

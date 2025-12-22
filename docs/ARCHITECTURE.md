@@ -139,7 +139,7 @@ skills/
 - Comprehensive "kitchen sink" versions with all options
 - Shared files in `templates/master/shared/` are synced to all skill modes
 - Language-specific Dockerfiles in `templates/master/dockerfiles/`
-- Updated using sync script: `./scripts/sync-templates.sh`
+- Updated using sync script: `./.internal/scripts/sync-templates.sh`
 - Changes propagate to all skill folders
 - Includes: Dockerfiles, docker-compose.yml, credentials script
 
@@ -151,7 +151,7 @@ skills/
 
 **Sync Workflow**:
 1. Edit files in `templates/master-shared/` (source of truth)
-2. Run `./scripts/sync-templates.sh` to copy to all skills
+2. Run `./.internal/scripts/sync-templates.sh` to copy to all skills
 3. Commit both master and synced copies
 
 **Benefits**:
@@ -268,7 +268,7 @@ Skills can invoke each other and share context:
 
 ### Migration from 1.x
 - Old `templates/base/` → Now dynamically generated from `templates/master/`
-- Old `templates/python/`, `templates/node/`, `templates/fullstack/` → Moved to `templates/legacy/`
+- Old `templates/python/`, `templates/node/`, `templates/fullstack/` → Moved to `.internal/legacy-templates/`
 - Old Basic mode → New Basic mode (similar)
 - Old Advanced mode → New Intermediate mode (similar functionality)
 - Old YOLO mode → New Advanced mode (security-focused) or YOLO mode (flexibility-focused)

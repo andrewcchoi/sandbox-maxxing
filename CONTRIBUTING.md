@@ -197,7 +197,7 @@ Run all tests before submitting:
 
 ## Repository Organization
 
-Before submitting changes, please review the [`docs/repo-keeper/ORGANIZATION_CHECKLIST.md`](docs/repo-keeper/ORGANIZATION_CHECKLIST.md) to ensure your contribution maintains repository consistency.
+Before submitting changes, please review the [`.internal/repo-keeper/ORGANIZATION_CHECKLIST.md`](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) to ensure your contribution maintains repository consistency.
 
 **Key guidelines:**
 
@@ -209,7 +209,7 @@ Before submitting changes, please review the [`docs/repo-keeper/ORGANIZATION_CHE
    **Version:** X.Y.Z
    ```
 
-2. **Inventory**: Update [`docs/repo-keeper/INVENTORY.json`](docs/repo-keeper/INVENTORY.json) when adding/removing files
+2. **Inventory**: Update [`.internal/repo-keeper/INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) when adding/removing files
 
 3. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
 
@@ -230,7 +230,7 @@ Before submitting changes, please review the [`docs/repo-keeper/ORGANIZATION_CHE
    .\docs\repo-keeper\scripts\validate-inventory.ps1
    ```
 
-See the full [Organization Checklist](docs/repo-keeper/ORGANIZATION_CHECKLIST.md) for complete guidelines.
+See the full [Organization Checklist](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) for complete guidelines.
 
 ---
 

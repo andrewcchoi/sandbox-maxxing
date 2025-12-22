@@ -89,7 +89,7 @@ sandbox/
 │   ├── node/
 │   └── fullstack/
 │
-├── examples/                   # Demo applications
+├── docs/examples/                   # Demo applications
 │   ├── docker-compose.yml      # Services for examples ONLY
 │   ├── streamlit-shared/       # Quick validation (shared services)
 │   ├── streamlit-sandbox-basic/ # Self-contained Streamlit
@@ -223,8 +223,8 @@ The `.devcontainer/` in this repository was created using the plugin itself:
 # Plugin detection output:
 # ✓ Scanning repository...
 # ✓ Found: 24 .md files (primary content)
-# ✓ Found: 9 .py files (in examples/)
-# ✓ Found: 4 .js files (in examples/)
+# ✓ Found: 9 .py files (in docs/examples/)
+# ✓ Found: 4 .js files (in docs/examples/)
 # ✓ No database imports in root code
 #
 # Assessment: Documentation/Template repository
@@ -245,7 +245,7 @@ When plugin templates change, regenerate the devcontainer to stay current:
 
 ```bash
 # Use the regeneration script
-./scripts/regenerate-devcontainer.sh
+./.internal/scripts/regenerate-devcontainer.sh
 
 # Or manually:
 # 1. Backup current config
@@ -312,7 +312,7 @@ lsof -i :5432
 lsof -i :6379
 
 # Option 1: Stop conflicting service
-# Option 2: Change port in examples/docker-compose.yml
+# Option 2: Change port in docs/examples/docker-compose.yml
 ```
 
 ### Claude Code Plugin Not Loading
@@ -340,12 +340,12 @@ The devcontainer sets minimal environment variables:
 | `UV_LINK_MODE`        | `copy`                          | Ensure dependencies are copied |
 | `PATH`                | Includes npm global and uv bins | Tool availability              |
 
-**No database variables** - these are only needed when running examples, set in `examples/docker-compose.yml`.
+**No database variables** - these are only needed when running examples, set in `docs/examples/docker-compose.yml`.
 
 ## Best Practices
 
 1. **Keep the devcontainer minimal** - Don't add services unless the plugin itself needs them
-2. **Use examples/docker-compose.yml** - Keep example services separate
+2. **Use docs/examples/docker-compose.yml** - Keep example services separate
 3. **Test with the plugin** - Use `/devcontainer:basic` to validate changes
 4. **Document changes** - Update this file when modifying the development workflow
 5. **Regenerate periodically** - Keep the devcontainer in sync with plugin templates
@@ -353,7 +353,7 @@ The devcontainer sets minimal environment variables:
 ## Next Steps
 
 1. Read [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines
-2. Explore [examples/README.md](examples/README.md) for example applications
+2. Explore [docs/examples/README.md](docs/examples/README.md) for example applications
 3. Check [skills/README.md](skills/README.md) for skill documentation
 4. Review [ARCHITECTURE.md](docs/ARCHITECTURE.md) for plugin design
 

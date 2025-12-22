@@ -32,37 +32,37 @@ Repo-Keeper is a comprehensive system for maintaining the sandbox-maxxing reposi
 **Tier 1: Structural Validation** (Fast, ~10 seconds)
 | File | Purpose | Platform |
 |------|---------|----------|
-| `scripts/check-version-sync.sh/.ps1` | Validates version consistency across 50+ files | Bash / PowerShell |
-| `scripts/check-links.sh/.ps1` | Scans markdown files for broken internal links | Bash / PowerShell |
-| `scripts/validate-inventory.sh/.ps1` | Verifies inventory matches filesystem (orphan detection: PowerShell only) | Bash / PowerShell |
-| `scripts/validate-relationships.sh/.ps1` | Validates skill ↔ command ↔ template relationships | Bash / PowerShell |
-| `scripts/validate-schemas.sh/.ps1` | Validates JSON files against JSON schemas | Bash / PowerShell |
+| `.internal/repo-keeper/scripts/check-version-sync.sh/.ps1` | Validates version consistency across 50+ files | Bash / PowerShell |
+| `.internal/repo-keeper/scripts/check-links.sh/.ps1` | Scans markdown files for broken internal links | Bash / PowerShell |
+| `.internal/repo-keeper/scripts/validate-inventory.sh/.ps1` | Verifies inventory matches filesystem (orphan detection: PowerShell only) | Bash / PowerShell |
+| `.internal/repo-keeper/scripts/validate-relationships.sh/.ps1` | Validates skill ↔ command ↔ template relationships | Bash / PowerShell |
+| `.internal/repo-keeper/scripts/validate-schemas.sh/.ps1` | Validates JSON files against JSON schemas | Bash / PowerShell |
 
 **Tier 2: Completeness Validation** (Medium, ~30 seconds)
 | File | Purpose | Platform |
 |------|---------|----------|
-| `scripts/validate-completeness.sh/.ps1` | Ensures all features have documentation, all modes complete | Bash / PowerShell |
+| `.internal/repo-keeper/scripts/validate-completeness.sh/.ps1` | Ensures all features have documentation, all modes complete | Bash / PowerShell |
 
 **Tier 3: Content Validation** (Thorough, ~2-5 minutes)
 | File | Purpose | Platform |
 |------|---------|----------|
-| `scripts/validate-content.sh/.ps1` | Checks required sections, mode consistency, step sequences | Bash / PowerShell |
+| `.internal/repo-keeper/scripts/validate-content.sh/.ps1` | Checks required sections, mode consistency, step sequences | Bash / PowerShell |
 
 **Orchestrators**
 | File | Purpose | Platform |
 |------|---------|----------|
-| `scripts/run-all-checks.sh/.ps1` | Runs all validation scripts in tiers with progress tracking | Bash / PowerShell |
+| `.internal/repo-keeper/scripts/run-all-checks.sh/.ps1` | Runs all validation scripts in tiers with progress tracking | Bash / PowerShell |
 
 ### ✅ Phase 3: GitHub Integration
 
 | File | Purpose |
 |------|---------|
-| `workflows/validate-versions.yml` | GitHub Action for automated version checking on PRs |
-| `workflows/validate-links.yml` | Weekly link validation with PR comments |
-| `templates/ISSUE_TEMPLATE/bug_report.md` | Mode-specific bug report template |
-| `templates/ISSUE_TEMPLATE/feature_request.md` | Structured feature proposal template |
-| `templates/ISSUE_TEMPLATE/config.yml` | Issue template configuration |
-| `templates/PULL_REQUEST_TEMPLATE.md` | Comprehensive PR checklist |
+| `.internal/repo-keeper/workflows/validate-versions.yml` | GitHub Action for automated version checking on PRs |
+| `.internal/repo-keeper/workflows/validate-links.yml` | Weekly link validation with PR comments |
+| `.internal/repo-keeper/templates/ISSUE_TEMPLATE/bug_report.md` | Mode-specific bug report template |
+| `.internal/repo-keeper/templates/ISSUE_TEMPLATE/feature_request.md` | Structured feature proposal template |
+| `.internal/repo-keeper/templates/ISSUE_TEMPLATE/config.yml` | Issue template configuration |
+| `.internal/repo-keeper/templates/PULL_REQUEST_TEMPLATE.md` | Comprehensive PR checklist |
 
 ### ✅ Phase 4: Documentation Updates
 
@@ -78,7 +78,7 @@ docs/repo-keeper/
 ├── README.md                          # This file
 ├── ORGANIZATION_CHECKLIST.md          # 18-category checklist
 ├── INVENTORY.json                     # Entity inventory
-├── scripts/
+├── .internal/repo-keeper/scripts/
 │   ├── run-all-checks.sh/.ps1         # Orchestrator - runs all checks in tiers
 │   ├── check-version-sync.sh/.ps1     # Tier 1: Version validation
 │   ├── check-links.sh/.ps1            # Tier 1: Link integrity
@@ -87,13 +87,13 @@ docs/repo-keeper/
 │   ├── validate-schemas.sh/.ps1       # Tier 1: Schema validation
 │   ├── validate-completeness.sh/.ps1  # Tier 2: Feature coverage
 │   └── validate-content.sh/.ps1       # Tier 3: Content validation
-├── schemas/
+├── .internal/repo-keeper/schemas/
 │   ├── inventory.schema.json          # JSON schema for INVENTORY.json
 │   └── data-file.schema.json          # JSON schema for data/*.json files
-├── workflows/
+├── .internal/repo-keeper/workflows/
 │   ├── validate-versions.yml          # GitHub Action for versions
 │   └── validate-links.yml             # GitHub Action for links
-└── templates/
+└── .internal/repo-keeper/templates/
     ├── ISSUE_TEMPLATE/
     │   ├── bug_report.md
     │   ├── feature_request.md
@@ -131,7 +131,7 @@ docs/repo-keeper/
    - From previous audit in `docs/CONSISTENCY_AUDIT_2025-12-16.md`
    - `docs/CONSOLIDATION_RECOMMENDATIONS.md` (3 links)
    - `skills/devcontainer-setup-advanced/references/` (2 links)
-   - `templates/legacy/README.md` (3 links)
+   - `.internal/repo-keeper/templates/legacy/README.md` (3 links)
    - Archive files (2 links)
 
 ---
@@ -180,19 +180,19 @@ Run all checks in tiers with a single command:
 cd /workspace  # or your repo location
 
 # Quick check (Tier 1 only - ~10 seconds)
-./docs/repo-keeper/scripts/run-all-checks.sh --quick
+./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh --quick
 
 # Standard check (Tier 1 + 2 - ~30 seconds) - DEFAULT
-./docs/repo-keeper/scripts/run-all-checks.sh
+./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh
 
 # Full check (All tiers including external links - ~2-5 minutes)
-./docs/repo-keeper/scripts/run-all-checks.sh --full
+./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh --full
 
 # With verbose output
-./docs/repo-keeper/scripts/run-all-checks.sh --verbose
+./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh --verbose
 
 # Auto-fix line endings
-./docs/repo-keeper/scripts/run-all-checks.sh --fix-crlf
+./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh --fix-crlf
 ```
 
 ```powershell
@@ -221,16 +221,16 @@ For targeted validation:
 
 ```bash
 # Bash
-./docs/repo-keeper/scripts/check-version-sync.sh
-./docs/repo-keeper/scripts/check-links.sh
-./docs/repo-keeper/scripts/validate-inventory.sh
-./docs/repo-keeper/scripts/validate-relationships.sh
-./docs/repo-keeper/scripts/validate-schemas.sh
-./docs/repo-keeper/scripts/validate-completeness.sh
-./docs/repo-keeper/scripts/validate-content.sh
+./docs/repo-keeper/.internal/repo-keeper/scripts/check-version-sync.sh
+./docs/repo-keeper/.internal/repo-keeper/scripts/check-links.sh
+./docs/repo-keeper/.internal/repo-keeper/scripts/validate-inventory.sh
+./docs/repo-keeper/.internal/repo-keeper/scripts/validate-relationships.sh
+./docs/repo-keeper/.internal/repo-keeper/scripts/validate-schemas.sh
+./docs/repo-keeper/.internal/repo-keeper/scripts/validate-completeness.sh
+./docs/repo-keeper/.internal/repo-keeper/scripts/validate-content.sh
 
 # With verbose output
-./docs/repo-keeper/scripts/check-version-sync.sh --verbose
+./docs/repo-keeper/.internal/repo-keeper/scripts/check-version-sync.sh --verbose
 ```
 
 ```powershell
@@ -342,7 +342,7 @@ The [`INVENTORY.json`](./INVENTORY.json) tracks:
 ## Maintenance Schedule
 
 ### On Every Commit
-- Run `./docs/repo-keeper/scripts/run-all-checks.sh --quick` before pushing
+- Run `./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh --quick` before pushing
 - Verify no broken references
 - Fix any Tier 1 failures immediately
 
@@ -352,15 +352,15 @@ The [`INVENTORY.json`](./INVENTORY.json) tracks:
 3. Update `plugin.json` and `marketplace.json`
 4. Update `INVENTORY.json` version
 5. Update `data/secrets.json` and `variables.json` versions
-6. Run `./docs/repo-keeper/scripts/run-all-checks.sh` (standard) to verify
+6. Run `./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh` (standard) to verify
 7. Fix any validation failures before releasing
 
 ### Weekly
-- Run `./docs/repo-keeper/scripts/run-all-checks.sh` (standard check)
+- Run `./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh` (standard check)
 - Address any Tier 2 completeness issues
 
 ### Monthly
-- Run `./docs/repo-keeper/scripts/run-all-checks.sh --full` (comprehensive)
+- Run `./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh --full` (comprehensive)
 - Review and update `data/official-images.json` tags
 - Check for security updates in dependencies
 - Address any Tier 3 content issues
@@ -375,7 +375,7 @@ The [`INVENTORY.json`](./INVENTORY.json) tracks:
 ### Before Each Release
 - Review ORGANIZATION_CHECKLIST.md
 - Review `docs/RELEASE_CHECKLIST.md`
-- Run `./docs/repo-keeper/scripts/run-all-checks.sh --full`
+- Run `./docs/repo-keeper/.internal/repo-keeper/scripts/run-all-checks.sh --full`
 - Test manual procedures
 - All validation checks must pass
 
@@ -408,7 +408,7 @@ The [`INVENTORY.json`](./INVENTORY.json) tracks:
 ### Optional Enhancements
 
 4. **Activate CI/CD:**
-   - [ ] Copy workflows to `.github/workflows/`
+   - [ ] Copy workflows to `.github/.internal/repo-keeper/workflows/`
    - [ ] Test workflows on a feature branch
    - [ ] Adjust paths if needed (D:\!wip\sandbox-maxxing vs /workspace)
 
@@ -419,7 +419,7 @@ The [`INVENTORY.json`](./INVENTORY.json) tracks:
 
 6. **Create bash version of link checker:**
    - [ ] Port `check-links.ps1` to bash
-   - [ ] Save as `scripts/check-links.sh`
+   - [ ] Save as `.internal/repo-keeper/scripts/check-links.sh`
    - [ ] Test on Linux/macOS
 
 ### Long-term Improvements

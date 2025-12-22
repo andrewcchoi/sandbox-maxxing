@@ -2,18 +2,18 @@
 # Syntax: gitignore-style patterns (glob patterns, comments with #)
 
 # Archive and legacy documentation
-docs/archive/
-docs/audits/
+.internal/archive/
+.internal/audits/
 
 # Test directories
 test-*/
-tests/results/
+.internal/tests/results/
 
 # Build artifacts
 .venv/
 __pycache__/
 *.pyc
-bin/
+.internal/bin/
 
 # IDE and OS files
 .vscode/
