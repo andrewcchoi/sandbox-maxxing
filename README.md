@@ -29,16 +29,13 @@ claude plugins list
 ### Basic Usage
 
 ```bash
-# Quick setup with auto-detection (Basic mode)
+# Quick setup with auto-detection (Basic mode - recommended)
 /devcontainer:basic
 
-# Balanced control and convenience (Intermediate mode)
-/devcontainer:intermediate
-
-# Security-focused minimal setup (Advanced mode)
+# Security-focused setup with strict firewall (Advanced mode)
 /devcontainer:advanced
 
-# Full customization and control (YOLO mode)
+# Full customization and control (YOLO mode - expert users)
 /devcontainer:yolo
 
 # Troubleshoot existing DevContainer
@@ -47,6 +44,8 @@ claude plugins list
 # Security audit
 /devcontainer:audit
 ```
+
+**Note:** v4.0.0 introduces planning mode for all setup commands - Claude scans your project, creates a plan, and gets your approval before implementing.
 
 ### Claude Code Installation
 
@@ -114,9 +113,6 @@ Claude: I detected a Python FastAPI project. Setting up with:
 
 **Example**:
 ```
-You: /devcontainer:intermediate
-Claude: What's your primary language?
-        • Python • Node.js • Ruby • Go • PHP
 You: Python
 Claude: Python version?
         • 3.13 (latest) • 3.12 (stable, recommended) • 3.11 (LTS)
@@ -189,13 +185,14 @@ Claude: sandbox-templates tag?
 
 | Command                            | Description                                                           | Mode         |
 | ---------------------------------- | --------------------------------------------------------------------- | ------------ |
-| `/devcontainer:basic`        | Quick automatic setup with auto-detection                             | Basic        |
-| `/devcontainer:intermediate` | Balanced control and convenience                                      | Intermediate |
-| `/devcontainer:advanced`     | Security-focused minimal setup                                        | Advanced     |
-| `/devcontainer:yolo`         | Full customization and control                                        | YOLO         |
-| `/devcontainer:setup`        | Interactive mode selection (or use `--basic`, `--intermediate`, etc.) | All          |
+| `/devcontainer:basic`        | Quick setup with planning mode (auto-detection)                       | Basic        |
+| `/devcontainer:advanced`     | Security-focused setup with planning mode (strict firewall)           | Advanced     |
+| `/devcontainer:yolo`         | Full customization with planning mode (expert users)                  | YOLO         |
+| `/devcontainer:setup`        | Interactive mode selection (or use `--basic`, `--advanced`, etc.)     | All          |
 | `/devcontainer:troubleshoot` | Diagnose and fix sandbox issues                                       | All          |
 | `/devcontainer:audit`        | Security audit and recommendations                                    | All          |
+
+**v4.0.0:** All setup commands now include a mandatory planning phase.
 
 ## Auto-Detection
 
@@ -331,7 +328,6 @@ Interactive setup wizard with four experience modes.
 
 **Note:** This is a router command that delegates to mode-specific skills:
 - `devcontainer-setup-basic` - Basic mode setup
-- `devcontainer-setup-intermediate` - Intermediate mode setup
 - `devcontainer-setup-advanced` - Advanced mode setup
 - `devcontainer-setup-yolo` - YOLO mode setup
 
@@ -432,14 +428,13 @@ sandbox-maxxing/
 │   └── allowable-domains.json   # Firewall domain whitelists
 ├── skills/
 │   ├── devcontainer-setup-basic/     # Basic mode setup
-│   ├── devcontainer-setup-intermediate/  # Intermediate mode setup
 │   ├── devcontainer-setup-advanced/  # Advanced mode setup
 │   ├── devcontainer-setup-yolo/      # YOLO mode setup
 │   ├── sandbox-troubleshoot/    # Troubleshooting assistant
 │   └── sandbox-security/        # Security auditor
 ├── commands/
 │   ├── basic.md                 # /devcontainer:basic
-│   ├── intermediate.md          # /devcontainer:intermediate
+│   ├── intermediate.md          # /devcontainer:intermediate [DEPRECATED v4.0.0]
 │   ├── advanced.md              # /devcontainer:advanced
 │   ├── yolo.md                  # /devcontainer:yolo
 │   ├── setup.md                 # /devcontainer:setup (router)
@@ -458,7 +453,6 @@ sandbox-maxxing/
 └── docs/examples/                    # Working example applications
     ├── streamlit-sandbox-basic/
     ├── demo-app-sandbox-basic/
-    ├── demo-app-sandbox-intermediate/
     ├── demo-app-sandbox-advanced/
     └── demo-app-sandbox-yolo/
 ```
@@ -490,9 +484,6 @@ Claude: I detected a Python FastAPI project. Setting up with:
 ### Example 2: Node.js with Customization (Intermediate Mode)
 
 ```
-You: /devcontainer:intermediate
-Claude: What's your primary language?
-You: Node.js
 Claude: Node.js version?
         • 22 (latest) • 20 (LTS, recommended) • 18 (maintenance)
 You: 20
@@ -554,7 +545,6 @@ docs/examples/
 │
 ├── demo-app-shared/                 # Shared: Full-stack blog application
 ├── demo-app-sandbox-basic/          # Demo app with Basic mode DevContainer
-├── demo-app-sandbox-intermediate/   # Demo app with Intermediate mode DevContainer
 ├── demo-app-sandbox-advanced/       # Demo app with Advanced mode DevContainer
 └── demo-app-sandbox-yolo/            # Demo app with YOLO mode DevContainer
 ```
@@ -739,7 +729,7 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
   - `allowable-domains.json`: Mode-specific firewall whitelists
 - Modular template system with section markers
 - Enhanced firewall with mode-specific domain sets (30-100+ domains)
-- Updated slash commands: `/devcontainer:basic`, `/devcontainer:intermediate`, `/devcontainer:advanced`, `/devcontainer:yolo`
+- Updated slash commands: `/devcontainer:basic`, `/devcontainer:advanced`, `/devcontainer:yolo`
 - Comprehensive mode comparison guide (MODES.md)
 - Migration from Basic/Advanced/YOLO to new four-mode system
 

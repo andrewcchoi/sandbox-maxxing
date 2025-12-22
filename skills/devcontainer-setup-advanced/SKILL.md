@@ -5,6 +5,18 @@ description: Use when user wants security-focused development setup with strict 
 
 # Sandbox Setup: Advanced Mode
 
+## MANDATORY PLANNING PHASE
+
+**Reference:** `skills/_shared/planning-phase.md`
+
+Before executing any implementation steps, Claude MUST follow the shared planning workflow defined in `skills/_shared/planning-phase.md`. This includes:
+
+1. **Project Discovery** - Scan directory, detect languages, check existing config, analyze proxy environment
+2. **Create Plan Document** - Write plan to `docs/plans/YYYY-MM-DD-devcontainer-setup.md`
+3. **User Approval** - Present plan with security recommendations, ask questions, get approval
+
+**After plan approval**, proceed to implementation below.
+
 ## NON-INTERACTIVE MODE (Automated Testing)
 
 **CRITICAL: Check for automated test mode FIRST before any other action.**
@@ -15,7 +27,6 @@ AUTOMATED_TEST_MODE
 RESPONSES:
 response1
 response2
-response3
 ...
 ```
 
@@ -34,18 +45,13 @@ Then:
 6. Firewall ports to allow (e.g., "443,8080" or "80,443,8000")
 7. Confirmation (e.g., "yes", "y")
 
-**Example automated invocation:**
-```
-AUTOMATED_TEST_MODE
-RESPONSES:
-demo-app
-python
-postgres
-443,8080
-yes
-```
+## MODE CHARACTERISTICS
 
-When in automated mode, proceed directly to file generation without any interaction.
+Advanced mode is optimized for:
+- **Security** - Strict firewall with curated domain allowlist
+- **Control** - Customizable allowlist for project-specific needs
+- **Production-like** - Configurations suitable for production environments
+- **Transparency** - Brief explanations for each security decision
 
 ## TASK IDENTITY
 
@@ -55,145 +61,76 @@ You are a **DevContainer Configuration Generator**. This is a file generation ta
 **Technology:** Docker, VS Code Dev Containers
 **NOT related to:** Claude Code settings, Claude Code sandbox, `.claude/` configs
 
-## What This Skill Creates
+## MODE-SPECIFIC CONFIGURATION
 
-**⚠️ CRITICAL: THIS SKILL CREATES A DEVCONTAINER SETUP, NOT CLAUDE CODE'S SANDBOX FEATURE.**
+### Firewall
+**Template:** `skills/_shared/templates/init-firewall/strict.sh`
 
-You will create VS Code DevContainer files in the project's `.devcontainer/` directory:
-- `.devcontainer/Dockerfile` - Custom Dockerfile with security hardening
-- `.devcontainer/devcontainer.json` - DevContainer configuration for VS Code
-- `.devcontainer/init-firewall.sh` - Firewall initialization script (advanced: strict with allowlist)
-- `.devcontainer/setup-claude-credentials.sh` - Claude credentials persistence (Issue #30)
-- `docker-compose.yml` - Docker services configuration with production-like settings (in project root)
+Advanced mode uses STRICT firewall by default with a curated allowlist of essential development domains. Users can add project-specific domains during planning.
 
-### What This Is:
-- A **file generation task** that creates DevContainer configuration files
-- Files that enable VS Code's "Reopen in Container" feature
-- Docker-based development environment with strict firewall controls
+**Default Allowlist Categories:**
+- Anthropic services (API, statsig, claude.ai)
+- Version control (GitHub, GitLab, Bitbucket)
+- Container registries (Docker Hub, GHCR)
+- Package managers (npm, PyPI)
+- Linux distributions (Ubuntu, Debian)
 
-### YOUR EXCLUSIVE OUTPUT FILES:
+### User Questions (Planning Phase)
+During planning, ask these 7-10 questions with brief explanations:
 
-| File | Location | Purpose |
-|------|----------|---------|
-| `Dockerfile` | `.devcontainer/Dockerfile` | Security-hardened container image |
-| `devcontainer.json` | `.devcontainer/devcontainer.json` | VS Code DevContainer config |
-| `init-firewall.sh` | `.devcontainer/init-firewall.sh` | Firewall script (advanced: strict with allowlist) |
-| `setup-claude-credentials.sh` | `.devcontainer/setup-claude-credentials.sh` | Credentials helper |
-| `docker-compose.yml` | `./docker-compose.yml` | Docker services with production-like settings |
+1. **Project type confirmation** - "I detected [type]. Is this correct?"
+2. **Primary language** - "What's your primary programming language?"
+   - Brief: "This determines base image and package manager allowlist"
+3. **Proxy environment** - "Are you behind a corporate proxy?"
+   - Brief: "Enables proxy-friendly build (skips GitHub downloads)"
+4. **Database selection** - "What database do you need?"
+   - Options: PostgreSQL, MySQL, MongoDB, Redis, None, Multiple
+   - Brief: "PostgreSQL recommended for relational data"
+5. **Firewall mode confirmation** - "Use STRICT firewall mode (recommended)?"
+   - Options: Yes (strict with allowlist), Switch to Permissive
+   - Brief: "Strict blocks all except allowlist; Permissive allows all"
+6. **Review default allowlist** - Show default domains for detected project type
+7. **Additional domains** - "Need to allow additional domains?"
+   - Examples: "api.mycompany.com, cdn.example.com"
+   - Brief: "Add project-specific APIs, CDNs, or private registries"
 
-**Task Boundary:** This skill generates DevContainer files ONLY. Claude Code configuration is a different feature.
+### Defaults
+- **Base image:** Official images (python, node, etc.)
+- **Extensions:** Comprehensive set from `skills/_shared/templates/extensions.json`
+- **Firewall:** Strict (whitelist only)
+- **Services:** Ask for each service with recommendations
 
-### After Creating Files:
-The user will use VS Code's "Dev Containers: Reopen in Container" command to start the environment. You only create the configuration files.
+## IMPLEMENTATION WORKFLOW
 
-## PRE-WRITE VALIDATION (MANDATORY)
+After planning phase approval:
 
-**BEFORE creating ANY file, verify the path:**
-
-| Path Pattern | Valid? | Action |
-|--------------|--------|--------|
-| `.devcontainer/*` | ✓ YES | Proceed |
-| `docker-compose.yml` | ✓ YES | Proceed |
-| `.claude/*` | ✗ NO | STOP - Wrong task |
-| `.claude-code/*` | ✗ NO | STOP - Wrong task |
-| `~/.claude*` | ✗ NO | STOP - Wrong location |
-
-**Self-Check:** "Does my file path start with `.devcontainer/` or is it `docker-compose.yml`?"
-If NO → STOP and re-read the TASK IDENTITY section.
-
-## MANDATORY FIRST STEP - COPY TEMPLATES
-
-**⚠️ NEW WORKFLOW: Copy templates first, then customize.**
-
-### Step 1A: Find Template Directory
-
-All templates for this mode are in the skill's `templates/` folder (self-contained).
+### Step 1: Copy Templates
 
 ```bash
-# Find the skill directory (relative to this SKILL.md file)
-SKILL_DIR="$(dirname "${BASH_SOURCE[0]}")"
-TEMPLATES="$SKILL_DIR/templates"
+# Template location
+TEMPLATES="skills/_shared/templates"
 
-echo "Templates location: $TEMPLATES"
-```
-
-**Verify templates exist:**
-```bash
-ls -la "$TEMPLATES/"
-```
-
-If the directory is missing, STOP and report the error.
-
-### Step 1B: Copy Template Files
-
-```bash
 # Create .devcontainer directory
 mkdir -p .devcontainer
 
-# Copy configuration files from skill folder
+# Copy configuration files
 cp "$TEMPLATES/docker-compose.yml" ./docker-compose.yml
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/setup-claude-credentials.sh
 cp "$TEMPLATES/devcontainer.json" .devcontainer/devcontainer.json
-cp "$TEMPLATES/init-firewall.sh" .devcontainer/init-firewall.sh
 cp "$TEMPLATES/.env.template" ./.env.template
 cp "$TEMPLATES/extensions.json" .devcontainer/extensions.json
 cp "$TEMPLATES/mcp.json" .devcontainer/mcp.json
 cp "$TEMPLATES/variables.json" .devcontainer/variables.json
+cp "$TEMPLATES/init-firewall/strict.sh" .devcontainer/init-firewall.sh
 
 # Make scripts executable
 chmod +x .devcontainer/setup-claude-credentials.sh .devcontainer/init-firewall.sh
 ```
 
-**NOTE:** Dockerfile will be composed from base + partials. Advanced mode INCLUDES firewall script (permissive or strict).
+### Step 2: Configure Proxy-Friendly Build (if needed)
 
-### Step 1C: Verify Files
+If user is behind proxy, configure build args in docker-compose.yml:
 
-```bash
-echo "=== File Verification ==="
-test -f docker-compose.yml && echo "✓ docker-compose.yml" || echo "✗ MISSING"
-test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json" || echo "✗ MISSING"
-test -f .devcontainer/init-firewall.sh && echo "✓ init-firewall.sh" || echo "✗ MISSING"
-test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh" || echo "✗ MISSING"
-test -f "$TEMPLATES/base.dockerfile" && echo "✓ base.dockerfile available" || echo "✗ MISSING"
-
-# Verify base template
-grep -c "# === LANGUAGE PARTIALS ===" "$TEMPLATES/base.dockerfile" && echo "✓ Composition marker found" || echo "✗ WARNING"
-```
-
-**If ANY file is missing, STOP.**
-
-## STEP 2: DETECT LANGUAGES, SELECT FIREWALL MODE, AND COMPOSE DOCKERFILE
-
-The base Dockerfile includes Python 3.12 + Node 20 + common tools. Now detect additional languages and compose with firewall configuration.
-
-### Step 2A: Auto-Detect Additional Languages
-
-```bash
-# Same detection logic as Basic mode
-DETECTED_LANGUAGES=()
-[ -f go.mod ] || [ -f go.sum ] && DETECTED_LANGUAGES+=("go")
-[ -f Cargo.toml ] && DETECTED_LANGUAGES+=("rust")
-[ -f pom.xml ] || [ -f build.gradle ] || [ -f build.gradle.kts ] && DETECTED_LANGUAGES+=("java")
-[ -f Gemfile ] && DETECTED_LANGUAGES+=("ruby")
-[ -f composer.json ] && DETECTED_LANGUAGES+=("php")
-[ -f CMakeLists.txt ] || [ -f Makefile ] && DETECTED_LANGUAGES+=("cpp-gcc")
-grep -q "postgresql\|psycopg\|pgvector" package.json requirements.txt 2>/dev/null && DETECTED_LANGUAGES+=("postgres")
-echo "Auto-detected languages: ${DETECTED_LANGUAGES[*]:-none}"
-```
-
-### Step 2B: Ask User Questions
-
-**Question 1: Proxy-Friendly Mode**
-```
-Use AskUserQuestion tool:
-
-Question: "Are you behind a corporate proxy?"
-Options:
-- No: Install all dev tools and shell extras (default)
-- Yes: Minimal build - skip GitHub downloads (git-delta, zsh plugins, dev tools)
-```
-
-If "Yes", configure build args in docker-compose.yml:
 ```yaml
 services:
   app:
@@ -203,24 +140,7 @@ services:
         INSTALL_DEV_TOOLS: "false"
 ```
 
-**Question 2: Firewall Mode**
-```
-Question: "Select firewall mode:"
-Options:
-- Permissive: Allow all outbound traffic (development convenience)
-- Strict: Only allow domains in allowlist (security-focused) [Recommended]
-```
-
-**Question 3: Additional Languages**
-```
-Question: "Additional languages to include?"
-Options:
-- Use detected: [list] (if any detected)
-- Add specific: go, rust, java, ruby, php, cpp-gcc, cpp-clang, postgres
-- None (Python + Node only)
-```
-
-### Step 2C: Compose Dockerfile from Base + Partials
+### Step 3: Compose Dockerfile
 
 ```bash
 # Same composition function as Basic mode
@@ -241,539 +161,148 @@ compose_dockerfile() {
         if [ -f "$partial_file" ]; then
             cat "$partial_file" >> "$output_file"
             echo "" >> "$output_file"
-            echo "  ✓ Added $partial partial"
         fi
     done
 
     # Append everything after marker
     tail -n +$((marker_line + 1)) "$base_file" >> "$output_file"
-    echo "✓ Dockerfile composed ($(wc -l < "$output_file") lines)"
 }
 
 # Compose with selected languages
 compose_dockerfile "${DETECTED_LANGUAGES[@]}"
 ```
 
-### Step 2D: Configure Firewall Mode
+### Step 4: Customize Firewall Allowlist
 
-Edit `.devcontainer/init-firewall.sh` to set firewall mode based on user selection:
-
-```bash
-# Set FIREWALL_MODE environment variable in init-firewall.sh
-# FIREWALL_MODE="permissive" or FIREWALL_MODE="strict"
-```
-
-### Step 2E: Customize Placeholders
-
-Use Edit tool to replace `{{PROJECT_NAME}}` in configuration files and add language-specific extensions to devcontainer.json.
-
-## BASE DOCKERFILE INCLUDES
-
-The base.dockerfile template automatically includes all standard development tools and security configurations:
-
-### Multi-Stage Build
-- Stage 1: Python 3.12 + uv from `ghcr.io/astral-sh/uv:python3.12-bookworm-slim`
-- Stage 2: Main build from `node:20-bookworm-slim`
-
-### Pre-installed Tools
-- **Languages**: Python 3.12, Node 20 (always included)
-- **Package Managers**: uv, pip, npm, yarn, pnpm, poetry, ruff
-- **Database Clients**: postgresql-client, mysql-client, sqlite3, redis-tools, pgcli
-- **Core Utilities**: git, vim, nano, curl, wget, jq, gh (GitHub CLI)
-- **Shell**: ZSH with Powerlevel10k theme
-- **Development**: git-delta, Claude Code CLI, Mermaid CLI, DeepAgents, Tavily
-- **Build Tools**: build-essential, gcc, g++
-- **Network Tools**: iptables, ipset, iproute2, dnsutils (for firewall)
-
-### Language Partials
-Additional languages are added via partials:
-- Go, Rust, Java, Ruby, PHP, C++ (GCC or Clang), PostgreSQL dev tools
-
-### Security Features
-- Firewall initialization script (permissive or strict mode)
-- Domain allowlist integration
-- Non-root user with sudo access
-
-## Overview
-
-Advanced Mode provides security-focused development environments with strict firewall controls and customizable domain allowlists. This mode balances security and usability by asking 7-10 configuration questions with brief explanations, using strict firewall defaults with configurable allowlists, and generating production-like configurations.
-
-## Usage
-
-This skill is invoked via the `/devcontainer:advanced` command or by selecting "Advanced Mode" from the `/devcontainer:setup` interactive mode selector.
-
-**Command:**
-```
-/devcontainer:advanced
-```
-
-The skill will:
-1. Ask 7-10 configuration questions with security explanations
-2. Generate a custom Dockerfile with security-hardened settings
-3. Create strict firewall configuration with customizable domain allowlists
-4. Set up DevContainer configuration in `.devcontainer/`
-5. Configure docker-compose with selected services
-6. Generate production-like network isolation
-
-## When to Use This Skill
-
-Use this skill when:
-- User explicitly requests "Advanced mode" or "security-focused" setup
-- User needs strict firewall with customizable domain allowlists
-- User wants production-like configuration with some automation
-- User needs balance between security and convenience
-- User is working on team projects requiring network control
-
-Do NOT use this skill when:
-- User wants quickest setup (use `devcontainer-setup-basic` instead)
-- User wants maximum automation (use `devcontainer-setup-basic` instead)
-- User needs full control and step-by-step guidance (use `devcontainer-setup-yolo` instead)
-- User is troubleshooting an existing sandbox (use `sandbox-troubleshoot` instead)
-- User wants to audit security of existing setup (use `sandbox-security` instead)
-
-## Usage
-
-**Via slash command:**
-```
-/devcontainer:advanced
-```
-
-**Via natural language:**
-- "Set up advanced mode with firewall"
-- "I need a secure sandbox with strict network controls"
-- "Create a sandbox for production-like environment"
-- "Set up advanced sandbox with custom domain allowlist"
-
-## Key Characteristics
-
-**Advanced Mode Configuration**:
-
-- **Base Images**: Official Docker images (python, node, etc.) as starting point
-- **Dockerfile**: Language-specific templates provided as starting point (fully editable)
-- **Firewall**: STRICT mode with default allowlist from `mode_defaults.advanced` (customizable)
-- **Services**: Full selection available with production-like configurations
-- **User Interaction**: 7-10 questions with brief explanations of trade-offs
-- **Customization**: Offers to review and customize domain allowlist before generation
-- **Security**: Mini-audit performed after generation with recommendations
-
-**Best for**:
-- Security-conscious development teams
-- Projects requiring explicit network control
-- Production-like development environments
-- Users who understand Docker but want guided security setup
-- Scenarios where firewall allowlist needs customization
-
-## Firewall Configuration
-
-Advanced Mode uses **STRICT firewall** by default with a curated allowlist of domains.
-
-### Default Allowlist
-
-The default allowlist is defined in `${CLAUDE_PLUGIN_ROOT}/data/allowable-domains.json` under `mode_defaults.advanced`:
-
-```json
-{
-  "mode_defaults": {
-    "advanced": [
-      "pypi.org",           // [PKG] Python packages
-      "files.pythonhosted.org",  // [PKG] Python package files
-      "registry.npmjs.org",  // [PKG] npm packages
-      "registry.yarnpkg.com", // [PKG] Yarn packages
-      "github.com",         // [CODE] Source code repositories
-      "gitlab.com",         // [CODE] Source code repositories
-      "bitbucket.org"       // [CODE] Source code repositories
-    ]
-  }
-}
-```
-
-### Category Markers
-
-Domains are annotated with category markers for clarity:
-- `[PKG]` - Package managers (pip, npm, yarn, cargo, etc.)
-- `[CODE]` - Source code repositories (GitHub, GitLab, etc.)
-- `[CDN]` - Content delivery networks
-- `[API]` - External APIs and services
-- `[AI]` - AI/ML model repositories
-- `[DB]` - Database-related services
-- `[TOOL]` - Development tools and utilities
-
-### Customization
-
-During setup, the wizard will:
-1. Show the default allowlist for your project type
-2. Ask: "Do you need to allow additional domains?" (e.g., company APIs, private registries)
-3. Allow you to add project-specific domains with category markers
-4. Generate `init-firewall.sh` with your customized allowlist
-
-### Example Customization
+Edit `.devcontainer/init-firewall.sh` to add project-specific domains to ALLOWED_DOMAINS array:
 
 ```bash
-# Default allowlist (Advanced mode)
-ALLOWABLE_DOMAINS=(
-    "pypi.org"              # [PKG] Python packages
-    "files.pythonhosted.org" # [PKG] Python package files
-    "github.com"            # [CODE] Source code
-
-    # Project-specific additions
-    "api.company.com"       # [API] Company internal API
-    "cdn.company.com"       # [CDN] Company CDN
+# Add user-provided domains
+ALLOWED_DOMAINS+=(
+    "api.mycompany.com"      # [API] Company internal API
+    "cdn.mycompany.com"      # [CDN] Company CDN
 )
 ```
 
-## File Creation Location
+### Step 5: Customize Placeholders
 
-**CRITICAL**: All generated files must be created in the user's current working directory (project root).
+Use Edit tool to replace:
+- `{{PROJECT_NAME}}` → actual project name
+- `{{NETWORK_NAME}}` → `{project-name}-network`
 
-### Before generating files:
+In files:
+- `docker-compose.yml`
+- `.devcontainer/devcontainer.json`
 
-1. **Verify you're in the user's project directory** (where their source code is)
-2. **Create the `.devcontainer/` directory**:
-   ```bash
-   mkdir -p .devcontainer
-   ```
+### Step 6: Verify Files Created
 
-### Files to create (paths relative to project root):
+```bash
+echo "=== File Verification ==="
+test -f docker-compose.yml && echo "✓ docker-compose.yml" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile && echo "✓ Dockerfile" || echo "✗ MISSING"
+test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json" || echo "✗ MISSING"
+test -f .devcontainer/init-firewall.sh && echo "✓ init-firewall.sh" || echo "✗ MISSING"
+test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh" || echo "✗ MISSING"
+```
 
-- `.devcontainer/Dockerfile` - Custom Dockerfile with language-specific tools and security hardening
-- `docker-compose.yml` - Docker services configuration with production-like settings (in project root)
-- `.devcontainer/devcontainer.json` - DevContainer configuration with strict firewall
-- `.devcontainer/init-firewall.sh` - Firewall script (advanced: strict with customizable allowlist)
-- `.devcontainer/setup-claude-credentials.sh` - Credentials setup (Issue #30)
-- `.devcontainer/mcp.json` - MCP server configuration (optional)
+## REQUIRED OUTPUT FILES
 
-### DO NOT create files in:
+| File | Location | Purpose |
+|------|----------|---------|
+| `Dockerfile` | `.devcontainer/Dockerfile` | Security-hardened container image |
+| `devcontainer.json` | `.devcontainer/devcontainer.json` | VS Code DevContainer config |
+| `init-firewall.sh` | `.devcontainer/init-firewall.sh` | Strict firewall with allowlist |
+| `setup-claude-credentials.sh` | `.devcontainer/setup-claude-credentials.sh` | Credentials helper (Issue #30) |
+| `docker-compose.yml` | `./docker-compose.yml` | Docker services with production-like settings |
 
-- `~/.claude-code/` or `~/.claude/` (home directory configs)
-- `/root/.claude-code/` or any user home directory
-- Any system directory like `/etc/` or `/var/`
+## PROHIBITED FILES
 
-**Why this matters**: The DevContainer configuration MUST be in the project's `.devcontainer/` folder for VS Code and Claude Code to detect and use it. Creating files in the wrong location will result in a non-functional setup.
+Never create these files (wrong task):
+- ❌ `.claude-code.json` - Claude Code config, NOT DevContainer
+- ❌ `.claude/config.json` - Claude Code config, NOT DevContainer
+- ❌ `Dockerfile` in project root - Should be in `.devcontainer/`
 
-## Workflow
+## DATA REFERENCES
 
-### 1. Project Analysis
+Available data files in `skills/_shared/data/`:
+- `allowable-domains.json` - Domain allowlist database with categories
+- `sandbox-templates.json` - Docker Hub image catalog
+- `official-images.json` - Official Docker images reference
 
-Thoroughly analyze the current workspace:
-- Check for existing `.devcontainer/` directory (warn if exists, offer to backup)
-- Detect project type from files:
-  - Python: `requirements.txt`, `pyproject.toml`, `*.py`
-  - Node.js: `package.json`, `*.js`, `*.ts`
-  - Go: `go.mod`, `*.go`
-  - Rust: `Cargo.toml`, `*.rs`
-  - Fullstack: Multiple of the above
-- Scan for dependencies that might need network access (API clients, CDNs, etc.)
+## POST-GENERATION VALIDATION
 
-### 2. Configuration Questions (7-10 total)
+```bash
+# Verify Dockerfile composition
+grep -c "^FROM.*AS" .devcontainer/Dockerfile  # Should be >= 1
+grep -q "git vim nano" .devcontainer/Dockerfile || echo "⚠ Missing core utilities"
+grep -q "claude-code" .devcontainer/Dockerfile || echo "⚠ Missing Claude Code CLI"
+wc -l .devcontainer/Dockerfile  # Should be >= 50 lines
 
-Ask these questions with brief explanations:
+# Verify firewall configuration
+grep -q "FIREWALL_MODE=\"strict\"" .devcontainer/init-firewall.sh || echo "⚠ Firewall not strict"
+grep -q "ALLOWED_DOMAINS" .devcontainer/init-firewall.sh || echo "⚠ No allowlist"
+```
 
-1. **Project type confirmation**: "I detected a [Python/Node/etc] project. Is this correct?"
-   - Brief: Shows detected frameworks/dependencies
-
-2. **Primary language**: "What's your primary programming language?"
-   - Options: Python, Node.js, Go, Rust, Java, Other
-   - Brief: "This determines base image and package manager allowlist"
-
-3. **Database selection**: "What database do you need?"
-   - Options: PostgreSQL, MySQL, MongoDB, Redis, None, Multiple
-   - Brief: "PostgreSQL recommended for relational data, MongoDB for documents"
-
-4. **Caching layer**: "Do you need caching?"
-   - Options: Redis (recommended), Memcached, None
-   - Brief: "Redis provides fast in-memory data store for sessions/caching"
-
-5. **Additional services**: "Any other services needed?"
-   - Options: Elasticsearch, RabbitMQ, Kafka, Ollama (AI), Custom
-   - Brief: "Ollama requires GPU support for local AI models"
-
-6. **Firewall mode confirmation**: "Use STRICT firewall mode (recommended for Advanced mode)?"
-   - Options: Yes (strict with allowlist), Switch to Permissive
-   - Brief: "Strict blocks all except allowlist; Permissive allows all except blocklist"
-
-7. **Review default allowlist**: Show default domains for detected project type
-   - "These domains will be allowed by default. Review?"
-
-8. **Additional domains**: "Need to allow additional domains?"
-   - Examples: "api.mycompany.com, cdn.example.com, registry.company.local"
-   - Brief: "Add project-specific APIs, CDNs, or private registries"
-
-9. **Pre-install dependencies**: "Pre-install dependencies from requirements.txt/package.json?"
-   - Options: Yes (slower build, faster container startup), No (faster build)
-   - Brief: "Pre-installing improves Docker layer caching"
-
-10. **Auto-pull images**: "Pull Docker images now?"
-    - Options: Yes (recommended), No (pull manually later)
-    - Brief: "Downloads base images and services (~500MB-2GB)"
-
-### 3. Template Generation
-
-Use templates from `${CLAUDE_PLUGIN_ROOT}/templates/`:
-
-**Dockerfile**:
-- Source: `skills/devcontainer-setup-advanced/templates/Dockerfile.<language>` (e.g., `Dockerfile.python`, `Dockerfile.node`)
-- Customize with selected base image and pre-install options
-
-**Firewall Script**:
-- Source: `skills/devcontainer-setup-advanced/templates/init-firewall.sh`
-- Customize allowlist based on user selections and additional domains
-
-**Docker Compose**:
-- Source: Extract relevant services from `templates/master/docker-compose.master.yml`
-- Include only selected services with production-like configurations
-
-**Generated Files**:
-1. `.devcontainer/devcontainer.json` - VS Code devcontainer configuration
-2. `.devcontainer/Dockerfile` - Container build instructions
-3. `.devcontainer/init-firewall.sh` - Firewall initialization with custom allowlist
-4. `docker-compose.yml` - Multi-service orchestration
-5. Language-specific configs (if pre-install enabled)
-
-### 4. Security Review (Mini-Audit)
+## SECURITY MINI-AUDIT
 
 After generation, perform automated security checks:
 
-**Firewall Verification**:
+**Firewall Verification:**
 - ✓ Confirm firewall mode is `strict`
 - ✓ Verify `init-firewall.sh` exists and has execute permissions
 - ✓ Check allowlist contains only necessary domains
 - ⚠ Warn if allowlist is too permissive (>20 domains)
 
-**Credential Safety**:
+**Credential Safety:**
 - ✓ Verify no hardcoded passwords in `docker-compose.yml`
 - ✓ Check secrets use `${localEnv:VAR}` or `.env` files
 - ✓ Confirm `.env` is in `.gitignore`
 
-**Minimal Allowlist Verification**:
+**Minimal Allowlist Verification:**
 - ✓ Review each allowed domain has category marker
 - ✓ Suggest removing unused domains based on project analysis
 - ⚠ Flag generic wildcards or overly broad domains
 
-**Security Recommendations**:
+## COMPLETION CHECKLIST
+
+Before finishing:
+- [ ] Plan document created and approved
+- [ ] All 5 files created in correct locations
+- [ ] Scripts are executable (`chmod +x`)
+- [ ] Placeholders replaced with actual values
+- [ ] Dockerfile composed with correct language partials
+- [ ] Firewall configured with user-approved allowlist
+- [ ] Security mini-audit passed
+- [ ] Post-validation passed
+
+## NEXT STEPS FOR USER
+
+After setup complete, inform user:
+
 ```
-✓ Firewall: STRICT mode enabled
-✓ Credentials: Environment variables used
-✓ Allowlist: Minimal (8 domains)
-⚠ Consider removing 'cdn.example.com' if not actively used
+Setup complete! Next steps:
+
+1. Open project in Dev Container:
+   - VS Code: Cmd/Ctrl+Shift+P → "Dev Containers: Reopen in Container"
+   - Or: docker compose up -d
+
+2. Verify firewall is active:
+   docker exec <container-name> iptables -L DOCKER-USER
+
+3. Test connectivity (inside container):
+   # Should succeed (in allowlist)
+   curl https://pypi.org
+
+   # Should fail (not in allowlist)
+   curl https://example.com
 
 For comprehensive security audit, run: /devcontainer:audit
+
+Your secure sandbox is ready!
 ```
-
-### 5. Next Steps
-
-Provide verification commands and confirm auto-execution:
-
-```bash
-# Start services (if auto-pull was enabled)
-docker compose up -d
-
-# Verify firewall is active
-docker exec <container-name> iptables -L DOCKER-USER
-
-# Open in DevContainer
-code .
-# Then: Ctrl+Shift+P → "Dev Containers: Reopen in Container"
-
-# Test connectivity (inside container)
-# For PostgreSQL:
-psql postgresql://user:pass@postgres:5432/db
-
-# For Redis:
-redis-cli -h redis ping
-
-# Test firewall (should succeed)
-curl https://pypi.org
-
-# Test firewall (should fail if not in allowlist)
-curl https://example.com
-```
-
-Ask: "Would you like me to run the startup commands now?"
-
-## Templates Used
-
-Advanced Mode uses these template sources:
-
-1. **Dockerfile**: `skills/devcontainer-setup-advanced/templates/Dockerfile.<language>`
-   - Examples: `Dockerfile.python`, `Dockerfile.node`, `Dockerfile.go`
-   - Multi-stage build with Node.js for corporate proxy support (Issue #29)
-   - Customized with base image and pre-install options
-
-2. **Extensions**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/extensions.json`
-   - Read this file and merge with platform-specific extensions
-   - Includes ~22-28 extensions covering comprehensive development tools
-   - Base + language-specific + productivity + themes
-
-3. **MCP Configuration**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/mcp.json`
-   - Includes 8 MCP servers: filesystem, memory, sqlite, fetch, github, postgres, docker, brave-search
-   - Copy to `.devcontainer/mcp.json`
-
-4. **Variables**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/variables.json`
-   - Build args and container environment variables
-   - Production-like configuration settings
-
-5. **Firewall Script**: `skills/devcontainer-setup-advanced/templates/init-firewall.sh`
-   - Starts with `mode_defaults.advanced` allowlist
-   - Customized with user-provided additional domains
-   - Category markers added for documentation
-
-6. **Docker Compose**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/docker-compose.yml`
-   - Production-like service configurations
-   - Includes health checks, resource limits, restart policies
-   - Must include credentials mount for Issue #30
-
-7. **DevContainer Config**: `skills/devcontainer-setup-advanced/templates/devcontainer.json`
-   - Customized with project name, network name, firewall mode
-   - Must include credentials setup in postCreateCommand
-
-8. **Credentials Setup**: Create `.devcontainer/setup-claude-credentials.sh` for Issue #30
-   - Copies Claude credentials from host mount to container
-   - Essential for credentials persistence across container rebuilds
-
-### Credentials Persistence (Issue #30)
-
-All advanced mode setups must include Claude credentials mounting:
-
-1. **In docker-compose.yml**, add volume mount to app service:
-   ```yaml
-   app:
-     volumes:
-       - .:/workspace:cached
-       - ~/.claude:/tmp/host-claude:ro  # Issue #30: credentials mount
-   ```
-
-2. **Create setup script** `.devcontainer/setup-claude-credentials.sh`:
-   ```bash
-   #!/bin/bash
-   if [ -d "/tmp/host-claude" ]; then
-     mkdir -p ~/.claude
-     cp -r /tmp/host-claude/* ~/.claude/ 2>/dev/null || true
-     echo "Claude credentials copied successfully"
-   fi
-   ```
-
-3. **In devcontainer.json**, add to postCreateCommand:
-   ```json
-   "postStartCommand": ".devcontainer/init-firewall.sh",
-   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh && ..."
-   ```
-
-**Important**: Always read template files and use them as the source of truth. DO NOT use inline configuration examples without reading templates first.
-
-## Reference Documentation
-
-For detailed information, refer to documentation in `docs/features/`:
-- `customization.md` - Full customization guide
-- `security.md` - Security model and best practices
-- `troubleshooting.md` - Common issues and solutions
-
-## Integration with Other Skills
-
-- **After setup**: Suggest running `/devcontainer:audit` for comprehensive security review
-- **During errors**: Automatically invoke `sandbox-troubleshoot` skill if setup fails
-- **For simpler setups**: Suggest `devcontainer-setup-basic` if user seems overwhelmed
-- **For more control**: Suggest `devcontainer-setup-yolo` if user wants step-by-step guidance
-- **Updating configs**: Warn about overwriting and offer to backup existing files
-
-## Key Principles
-
-- **Security by default** - Always recommend STRICT firewall with minimal allowlist
-- **Brief explanations** - One sentence per decision to inform without overwhelming
-- **Curated allowlist** - Start with mode-appropriate defaults, customize as needed
-- **Production-like configs** - Include health checks, resource limits, restart policies
-- **Verify before overwriting** - Always check for existing files and offer backup
-- **Balance automation and control** - Ask key questions but automate the rest
-- **Document allowlist** - Use category markers to explain why each domain is allowed
-
-## Example Invocations
-
-**Via slash command**:
-```
-/devcontainer:advanced
-```
-
-**Via natural language**:
-- "Set up a secure Docker sandbox with firewall for my Python project"
-- "I need Advanced mode setup with strict firewall"
-- "Configure devcontainer with customizable domain allowlist"
-- "Set up production-like development environment with security controls"
-- "Create Docker sandbox with PostgreSQL and strict network rules"
-
-## Comparison with Other Modes
-
-**vs. Basic Mode**:
-- Advanced asks 7-10 questions (Basic asks 1-3)
-- Advanced allows firewall customization (Basic uses fixed defaults)
-- Advanced provides brief explanations (Basic minimizes interaction)
-- Advanced offers allowlist review (Basic auto-generates)
-
-**vs. YOLO Mode**:
-- Advanced asks 7-10 questions (YOLO asks 10-15+)
-- Advanced provides brief explanations (YOLO provides detailed education)
-- Advanced uses template-based generation (YOLO walks through each file)
-- Advanced focuses on security balance (YOLO focuses on learning and full control)
-
-## POST-GENERATION VALIDATION (MANDATORY)
-
-After generating files, verify these conditions:
-
-### Dockerfile Validation
-```bash
-# Check for multi-stage build
-grep -c "^FROM.*AS" .devcontainer/Dockerfile  # Should be >= 1
-
-# Check for mandatory packages
-grep -q "git vim nano less procps" .devcontainer/Dockerfile || echo "MISSING: Core utilities"
-grep -q "zsh fzf" .devcontainer/Dockerfile || echo "MISSING: Shell enhancements"
-grep -q "git-delta" .devcontainer/Dockerfile || echo "MISSING: git-delta"
-grep -q "powerlevel10k\|zsh-in-docker" .devcontainer/Dockerfile || echo "MISSING: ZSH theme"
-grep -q "claude-code" .devcontainer/Dockerfile || echo "MISSING: Claude Code CLI"
-
-# Check line count (should be substantial)
-wc -l .devcontainer/Dockerfile  # Should be >= 50 lines
-```
-
-**If any check fails, RE-READ the template file and regenerate.**
-
-## Completion Checklist
-
-**Before finishing the setup, verify ALL these files exist:**
-
-**Required files checklist:**
-1. [ ] `docker-compose.yml` in project root (NOT in .devcontainer/)
-2. [ ] `.devcontainer/` directory exists
-3. [ ] `.devcontainer/devcontainer.json` exists with proper configuration
-4. [ ] `.devcontainer/init-firewall.sh` exists and is executable (`chmod +x`)
-5. [ ] `.devcontainer/setup-claude-credentials.sh` exists and is executable (`chmod +x`)
-6. [ ] `.devcontainer/Dockerfile` exists (Advanced mode uses custom Dockerfile)
-7. [ ] `.devcontainer/mcp.json` exists (if MCP servers configured)
-
-**Verify Configuration Content:**
-- [ ] `docker-compose.yml` includes credentials mount: `~/.claude:/tmp/host-claude:ro`
-- [ ] `devcontainer.json` references docker-compose and has proper postCreateCommand
-- [ ] `init-firewall.sh` contains STRICT mode with customized allowlist
-- [ ] `setup-claude-credentials.sh` handles credential copying from /tmp/host-claude
-
-## PROHIBITED FILES - NEVER CREATE THESE
-
-If you find yourself about to write ANY of these files, you are doing the WRONG task:
-
-- ❌ `.claude-code.json` - WRONG (this is Claude Code's sandbox config, NOT DevContainer)
-- ❌ `.claude/config.json` - WRONG (this is Claude Code config, NOT DevContainer)
-- ❌ `.claude-code/settings.json` - WRONG (this is Claude Code settings, NOT DevContainer)
-- ❌ `/root/.claude-code/settings.json` - WRONG (wrong location entirely)
-- ❌ `Dockerfile` in project root - WRONG (should be in .devcontainer/)
-
-**If you created any of these files by mistake, DELETE THEM and create the correct DevContainer files instead.**
-
-**If ANY required file is missing, CREATE IT NOW before completing the skill.**
-
-**After File Creation:**
-1. Make init-firewall.sh and setup-claude-credentials.sh executable
-2. Inform user that files are ready
-3. Provide "Next Steps" with VS Code instructions (do NOT run containers yourself)
 
 ---
 
-**Last Updated:** 2025-12-16
-**Version:** 3.0.0
+**Last Updated:** 2025-12-22
+**Version:** 4.0.0 (Planning Mode Integration)
+**Related Issue:** #49

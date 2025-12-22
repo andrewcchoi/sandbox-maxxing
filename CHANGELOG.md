@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.0] - 2025-12-22
+
+### Major Breaking Changes
+- **Mandatory Planning Mode**: All devcontainer skills now require planning phase before execution
+  - Scans project directory and detects configuration
+  - Creates plan document in `docs/plans/YYYY-MM-DD-devcontainer-setup.md`
+  - Presents plan to user for approval
+  - Only implements after explicit user approval
+  - Benefits: User visibility, opportunity to review, clear decision documentation
+
+- **Intermediate Mode Deprecated**: Removed devcontainer-setup-intermediate skill
+  - Analysis showed 90% of users preferred Basic (simple) or Advanced (security-focused)
+  - Maintenance burden of duplicate templates eliminated
+  - Users should migrate to Basic or Advanced modes
+  - See `commands/intermediate.md` for migration guide
+
+### Added
+- **Shared Resources Architecture**: Consolidated templates and data
+  - New `skills/_shared/` directory structure
+  - `skills/_shared/planning-phase.md` - Common planning workflow
+  - `skills/_shared/templates/` - Single source of truth for all templates (~45 → ~18 files)
+  - `skills/_shared/data/` - Consolidated data files (moved from root `data/`)
+  - `skills/_shared/templates/init-firewall/` - Three firewall variants (disabled/permissive/strict)
+
+### Changed
+- **Simplified Skills**: All SKILL.md files dramatically reduced in size
+  - devcontainer-setup-basic: 1093 → 234 lines (79% reduction)
+  - devcontainer-setup-advanced: 780 → 309 lines (60% reduction)
+  - devcontainer-setup-yolo: 1092 → 372 lines (66% reduction)
+  - Total: 2965 → 915 lines (69% average reduction)
+  - Skills now reference shared resources instead of duplicating content
+
+- **Updated Documentation**: All docs updated for v4.0.0
+  - Removed intermediate mode references
+  - Added planning phase documentation
+  - Updated skill comparison tables
+  - Updated command reference guides
+
+- **Repository Cleanup**: Removed duplicate root directories
+  - Deleted `data/` directory (exact duplicate of `skills/_shared/data/`)
+  - Deleted `templates/` directory (outdated master template system)
+  - Deleted `.internal/scripts/sync-templates.sh` (no longer needed)
+  - Updated `skills/_shared/data/README.md` paths to reference new location
+  - Rewrote `docs/ARCHITECTURE.md` for v4.0.0 shared resources architecture
+
+### Benefits
+- Single source of truth for templates (easier maintenance)
+- Consistent planning workflow across all modes
+- User approval before execution (no surprises)
+- ~70% reduction in skill file sizes
+- Eliminated template duplication
+
 ## [Unreleased]
 
 ### Changed
