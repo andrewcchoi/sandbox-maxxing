@@ -1,0 +1,314 @@
+# ============================================================================
+# CLAUDE CODE SANDBOX - Master Dockerfile Template
+# ============================================================================
+# This is the comprehensive master template containing ALL possible
+# configurations. Generator scripts will strip sections based on requirements.
+#
+# Section markers format: # ===SECTION_START:name=== / # ===SECTION_END:name===
+# ============================================================================
+
+# ============================================================================
+# Stage 1: Get Node.js from official image (Issue #29)
+# ============================================================================
+# Avoids NodeSource SSL certificate issues with corporate proxies
+FROM node:20-slim AS node-source
+
+# ===SECTION_START:python_uv_source===
+# ============================================================================
+# Stage 2: Get Python + uv from official Astral image
+# ============================================================================
+# Contains Python 3.12 and uv pre-installed (official Astral Docker image)
+# Fallback: Use curl or pip to install uv if different Python version needed
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
+# ===SECTION_END:python_uv_source===
+
+# ============================================================================
+# Stage 3: Main Build
+# ============================================================================
+ARG BASE_IMAGE=node:20-bookworm-slim
+FROM ${BASE_IMAGE}
+
+# ============================================================================
+# BUILD ARGUMENTS
+# ============================================================================
+ARG TZ=America/Los_Angeles
+ARG CLAUDE_CODE_VERSION=latest
+ARG GIT_DELTA_VERSION=0.18.2
+ARG ZSH_IN_DOCKER_VERSION=1.2.0
+
+ENV TZ="$TZ"
+
+# ============================================================================
+# SYSTEM PACKAGES - Base (always installed)
+# ============================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  # Core utilities
+  git vim nano less procps sudo unzip wget curl ca-certificates gnupg gnupg2 \
+  # JSON processing and manual pages
+  jq man-db \
+  # Shell and CLI enhancements
+  zsh fzf \
+  # GitHub CLI
+  gh \
+  # Network security tools (firewall)
+  iptables ipset iproute2 dnsutils \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# ============================================================================
+# NODE.JS - Copy from official image (Issue #29)
+# ============================================================================
+# Avoids NodeSource SSL certificate issues with corporate proxies
+COPY --from=node-source /usr/local/bin/node /usr/local/bin/
+COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
+# ===SECTION_START:python_uv_copy===
+# ============================================================================
+# PYTHON + UV - Copy from Astral uv image (for non-Python base images)
+# ============================================================================
+# Copy Python 3.12 binaries
+COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/
+COPY --from=python-uv-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=python-uv-source /usr/local/bin/pip* /usr/local/bin/
+RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
+    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3
+
+# Copy uv and uvx binaries
+COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/
+COPY --from=python-uv-source /usr/local/bin/uvx /usr/local/bin/
+# ===SECTION_END:python_uv_copy===
+
+# ===SECTION_START:packages_python===
+# ============================================================================
+# PYTHON PACKAGES
+# ============================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  python3-full \
+  python3-pip \
+  python3-venv \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+# ===SECTION_END:packages_python===
+
+# ===SECTION_START:packages_build===
+# ============================================================================
+# BUILD TOOLS (C/C++, compilers)
+# ============================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  gcc \
+  g++ \
+  make \
+  cmake \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+# ===SECTION_END:packages_build===
+
+# ===SECTION_START:packages_go===
+# ============================================================================
+# GO LANGUAGE
+# ============================================================================
+RUN wget -O go.tar.gz "https://go.dev/dl/go1.21.5.linux-amd64.tar.gz" && \
+  tar -C /usr/local -xzf go.tar.gz && \
+  rm go.tar.gz
+
+ENV PATH=$PATH:/usr/local/go/bin:/go/bin
+ENV GOPATH=/go
+# ===SECTION_END:packages_go===
+
+# ===SECTION_START:packages_rust===
+# ============================================================================
+# RUST LANGUAGE
+# ============================================================================
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+
+ENV PATH="/usr/local/cargo/bin:${PATH}"
+ENV CARGO_HOME=/usr/local/cargo
+ENV RUSTUP_HOME=/usr/local/rustup
+# ===SECTION_END:packages_rust===
+
+# ===SECTION_START:packages_java===
+# ============================================================================
+# JAVA DEVELOPMENT KIT
+# ============================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  openjdk-17-jdk \
+  maven \
+  gradle \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+# ===SECTION_END:packages_java===
+
+# ===SECTION_START:packages_ruby===
+# ============================================================================
+# RUBY LANGUAGE
+# ============================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ruby-full \
+  ruby-dev \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN gem install bundler
+# ===SECTION_END:packages_ruby===
+
+# ===SECTION_START:packages_php===
+# ============================================================================
+# PHP LANGUAGE
+# ============================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  php-cli \
+  php-mbstring \
+  php-xml \
+  php-curl \
+  php-zip \
+  composer \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+# ===SECTION_END:packages_php===
+
+# ===SECTION_START:packages_database===
+# ============================================================================
+# DATABASE CLIENTS
+# ============================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  postgresql-client \
+  mysql-client \
+  sqlite3 \
+  redis-tools \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+# ===SECTION_END:packages_database===
+
+# ===SECTION_START:packages_docker===
+# ============================================================================
+# DOCKER CLI (for Docker-in-Docker scenarios)
+# ============================================================================
+RUN curl -fsSL https://get.docker.com -o get-docker.sh && \
+  sh get-docker.sh && \
+  rm get-docker.sh
+# ===SECTION_END:packages_docker===
+
+# ============================================================================
+# USER SETUP
+# ============================================================================
+# Create node user if it doesn't exist (may already exist in base image)
+RUN if ! id -u node > /dev/null 2>&1; then \
+  groupadd --gid 1000 node && \
+  useradd --uid 1000 --gid node --shell /bin/bash --create-home node; \
+fi
+
+RUN mkdir -p /usr/local/share/npm-global && \
+  chown -R node:node /usr/local/share
+
+# Persistent bash history
+RUN mkdir /commandhistory && \
+  touch /commandhistory/.bash_history && \
+  chown -R node /commandhistory
+
+ENV DEVCONTAINER=true
+
+# Create workspace and config directories
+RUN mkdir -p /workspace /home/node/.claude && \
+  chown -R node:node /workspace /home/node/.claude
+
+WORKDIR /workspace
+
+# ============================================================================
+# INSTALL GIT-DELTA (enhanced git diff)
+# ============================================================================
+RUN ARCH=$(dpkg --print-architecture) && \
+  wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
+  dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
+  rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
+
+# ============================================================================
+# SWITCH TO NODE USER
+# ============================================================================
+USER node
+
+# ===SECTION_START:npm_config===
+# ============================================================================
+# NPM CONFIGURATION
+# ============================================================================
+ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
+ENV PATH=$PATH:/usr/local/share/npm-global/bin
+# ===SECTION_END:npm_config===
+
+# ============================================================================
+# ZSH WITH POWERLEVEL10K
+# ============================================================================
+ENV SHELL=/bin/zsh
+
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
+  -p git -p fzf \
+  -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
+  -a "source /usr/share/doc/fzf/examples/completion.zsh" \
+  -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+  -x
+
+# ============================================================================
+# EDITOR CONFIGURATION
+# ============================================================================
+ENV EDITOR=nano
+ENV VISUAL=nano
+
+# ===SECTION_START:claude_code===
+# ============================================================================
+# INSTALL CLAUDE CODE CLI
+# ============================================================================
+RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
+# ===SECTION_END:claude_code===
+
+# ===SECTION_START:deepagents_tavily===
+# ============================================================================
+# INSTALL DEEPAGENTS + TAVILY (AI/LLM Tools)
+# ============================================================================
+# Install via uv for fast, reliable installation
+RUN uv add --system deepagents tavily-python
+# ===SECTION_END:deepagents_tavily===
+
+# ===SECTION_START:mermaid_cli===
+# ============================================================================
+# INSTALL MERMAID CLI (Diagram Generation)
+# ============================================================================
+RUN npm install -g @mermaid-js/mermaid-cli
+# ===SECTION_END:mermaid_cli===
+
+# ===SECTION_START:python_packages===
+# ============================================================================
+# PYTHON COMMON PACKAGES
+# ============================================================================
+RUN uv add --no-cache-dir \
+  pytest \
+  black \
+  flake8 \
+  mypy \
+  ipython \
+  requests
+# ===SECTION_END:python_packages===
+
+# ===SECTION_START:node_packages===
+# ============================================================================
+# NODE.JS COMMON PACKAGES
+# ============================================================================
+RUN npm install -g \
+  typescript \
+  ts-node \
+  eslint \
+  prettier \
+  nodemon
+# ===SECTION_END:node_packages===
+
+# ============================================================================
+# FIREWALL SCRIPT SETUP
+# ============================================================================
+COPY .devcontainer/init-firewall.sh /usr/local/bin/
+USER root
+RUN chmod +x /usr/local/bin/init-firewall.sh && \
+  echo "node ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
+  chmod 0440 /etc/sudoers.d/node-firewall
+USER node
+
+# ============================================================================
+# FINAL CONFIGURATION
+# ============================================================================
+# Set the default command
+CMD ["/bin/zsh"]

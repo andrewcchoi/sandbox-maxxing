@@ -1,0 +1,259 @@
+{
+  "name": "{{PROJECT_NAME}} Sandbox",
+  // ===SECTION_START:build===
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "TZ": "${localEnv:TZ:America/Los_Angeles}",
+      "CLAUDE_CODE_VERSION": "latest",
+      "GIT_DELTA_VERSION": "0.18.2",
+      "ZSH_IN_DOCKER_VERSION": "1.2.0",
+      // ===SECTION_START:base_image===
+      "BASE_IMAGE": "{{BASE_IMAGE}}"
+      // ===SECTION_END:base_image===
+    }
+  },
+  // ===SECTION_END:build===
+  // ===SECTION_START:image===
+  "image": "{{IMAGE_NAME}}",
+  // ===SECTION_END:image===
+  "runArgs": [
+    "--cap-add=NET_ADMIN",
+    "--cap-add=NET_RAW",
+    // ===SECTION_START:ptrace===
+    "--cap-add=SYS_PTRACE",
+    // ===SECTION_END:ptrace===
+    "--network={{NETWORK_NAME}}"
+  ],
+  "containerUser": "node",
+  "remoteUser": "node",
+  "mounts": [
+    {
+      "source": "claude-code-bashhistory-${devcontainerId}",
+      "target": "/home/node/.bash_history_dir",
+      "type": "volume"
+    },
+    {
+      "source": "claude-code-config-${devcontainerId}",
+      "target": "/home/node/.claude",
+      "type": "volume"
+    }
+  ],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+  "workspaceFolder": "/workspace",
+  // ===SECTION_START:lifecycle===
+  "postStartCommand": "/usr/local/bin/init-firewall.sh",
+  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh && echo 'Container ready'",
+  // ===SECTION_END:lifecycle===
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        // ===SECTION_START:extensions_git===
+        "eamodio.gitlens",
+        // ===SECTION_END:extensions_git===
+        // ===SECTION_START:extensions_javascript===
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        // ===SECTION_END:extensions_javascript===
+        // ===SECTION_START:extensions_python===
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "ms-python.flake8",
+        "ms-python.isort",
+        // ===SECTION_END:extensions_python===
+        // ===SECTION_START:extensions_go===
+        "golang.go",
+        // ===SECTION_END:extensions_go===
+        // ===SECTION_START:extensions_rust===
+        "rust-lang.rust-analyzer",
+        // ===SECTION_END:extensions_rust===
+        // ===SECTION_START:extensions_cpp===
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        // ===SECTION_END:extensions_cpp===
+        // ===SECTION_START:extensions_java===
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-maven",
+        "vscjava.vscode-gradle",
+        // ===SECTION_END:extensions_java===
+        // ===SECTION_START:extensions_ruby===
+        "rebornix.ruby",
+        "Shopify.ruby-lsp",
+        // ===SECTION_END:extensions_ruby===
+        // ===SECTION_START:extensions_php===
+        "bmewburn.vscode-intelephense-client",
+        // ===SECTION_END:extensions_php===
+        // ===SECTION_START:extensions_docker===
+        "ms-azuretools.vscode-docker",
+        // ===SECTION_END:extensions_docker===
+        // ===SECTION_START:extensions_yaml===
+        "redhat.vscode-yaml"
+        // ===SECTION_END:extensions_yaml===
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "editor.formatOnSave": true,
+        // ===SECTION_START:settings_python===
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "python.linting.enabled": true,
+        "python.linting.flake8Enabled": true,
+        "python.formatting.provider": "black",
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+          }
+        },
+        // ===SECTION_END:settings_python===
+        // ===SECTION_START:settings_javascript===
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        // ===SECTION_END:settings_javascript===
+        // ===SECTION_START:settings_go===
+        "go.useLanguageServer": true,
+        "go.toolsManagement.autoUpdate": true,
+        // ===SECTION_END:settings_go===
+        // ===SECTION_START:settings_rust===
+        "rust-analyzer.checkOnSave.command": "clippy",
+        // ===SECTION_END:settings_rust===
+        "files.watcherExclude": {
+          "**/target/**": true,
+          "**/node_modules/**": true,
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/dist/**": true,
+          "**/build/**": true
+        }
+      }
+    }
+  },
+  // ===SECTION_START:features===
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": false,
+      "username": "node",
+      "userUid": "1000",
+      "userGid": "1000"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": false
+    }
+  },
+  // ===SECTION_END:features===
+  // ===SECTION_START:ports===
+  "forwardPorts": [
+    // ===SECTION_START:ports_backend===
+    8000,
+    // ===SECTION_END:ports_backend===
+    // ===SECTION_START:ports_frontend===
+    3000,
+    // ===SECTION_END:ports_frontend===
+    // ===SECTION_START:ports_database===
+    5432,
+    3306,
+    27017,
+    // ===SECTION_END:ports_database===
+    // ===SECTION_START:ports_cache===
+    6379,
+    11211,
+    // ===SECTION_END:ports_cache===
+    // ===SECTION_START:ports_other===
+    8080,
+    9000
+    // ===SECTION_END:ports_other===
+  ],
+  "portsAttributes": {
+    // ===SECTION_START:ports_attributes_backend===
+    "8000": {
+      "label": "Backend API",
+      "protocol": "http",
+      "onAutoForward": "notify"
+    },
+    // ===SECTION_END:ports_attributes_backend===
+    // ===SECTION_START:ports_attributes_frontend===
+    "3000": {
+      "label": "Frontend",
+      "protocol": "http",
+      "onAutoForward": "openBrowser"
+    },
+    // ===SECTION_END:ports_attributes_frontend===
+    // ===SECTION_START:ports_attributes_database===
+    "5432": {
+      "label": "PostgreSQL",
+      "protocol": "tcp",
+      "onAutoForward": "silent"
+    },
+    "3306": {
+      "label": "MySQL",
+      "protocol": "tcp",
+      "onAutoForward": "silent"
+    },
+    "27017": {
+      "label": "MongoDB",
+      "protocol": "tcp",
+      "onAutoForward": "silent"
+    },
+    // ===SECTION_END:ports_attributes_database===
+    // ===SECTION_START:ports_attributes_cache===
+    "6379": {
+      "label": "Redis",
+      "protocol": "tcp",
+      "onAutoForward": "silent"
+    },
+    "11211": {
+      "label": "Memcached",
+      "protocol": "tcp",
+      "onAutoForward": "silent"
+    },
+    // ===SECTION_END:ports_attributes_cache===
+    // ===SECTION_START:ports_attributes_other===
+    "8080": {
+      "label": "Alt HTTP",
+      "protocol": "http",
+      "onAutoForward": "notify"
+    },
+    "9000": {
+      "label": "Debug Port",
+      "protocol": "tcp",
+      "onAutoForward": "silent"
+    }
+    // ===SECTION_END:ports_attributes_other===
+  },
+  // ===SECTION_END:ports===
+  "containerEnv": {
+    "HISTFILE": "/home/node/.bash_history_dir/.bash_history",
+    "FIREWALL_MODE": "{{FIREWALL_MODE}}",
+    // ===SECTION_START:env_node===
+    "NODE_ENV": "development",
+    // ===SECTION_END:env_node===
+    // ===SECTION_START:env_python===
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    // ===SECTION_END:env_python===
+    // ===SECTION_START:env_go===
+    "GOPATH": "/go",
+    "GO111MODULE": "on",
+    // ===SECTION_END:env_go===
+    // ===SECTION_START:env_rust===
+    "CARGO_HOME": "/usr/local/cargo",
+    "RUSTUP_HOME": "/usr/local/rustup",
+    // ===SECTION_END:env_rust===
+    // ===SECTION_START:env_docker===
+    "DOCKER_HOST": "unix:///var/run/docker.sock"
+    // ===SECTION_END:env_docker===
+  }
+}
