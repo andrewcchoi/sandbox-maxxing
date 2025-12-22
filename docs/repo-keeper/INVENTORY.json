@@ -447,18 +447,18 @@
       {"path": "docs/ARCHITECTURE.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/audits/CONSISTENCY_AUDIT_2025-12-16.md", "has_footer": false},
       {"path": "docs/audits/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "3.0.0"},
-      {"path": "docs/features/CUSTOMIZATION.md", "has_footer": false, "missing_footer": true},
-      {"path": "docs/features/EXTENSIONS.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/features/CUSTOMIZATION.md", "has_footer": true, "version": "3.0.0"},
+      {"path": "docs/features/EXTENSIONS.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/archive/LOW_PRIORITY_FIXES_v2.2.0.md", "has_footer": false},
-      {"path": "docs/features/MCP.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/features/MCP.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/MODES.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/RELEASE_CHECKLIST.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/archive/RELEASE_NOTES_v1.0.0.md", "has_footer": false},
-      {"path": "docs/features/SECRETS.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/features/SECRETS.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/security-model.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/TESTING.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/TROUBLESHOOTING.md", "has_footer": true, "version": "3.0.0"},
-      {"path": "docs/features/VARIABLES.md", "has_footer": false, "missing_footer": true}
+      {"path": "docs/features/VARIABLES.md", "has_footer": true, "version": "3.0.0"}
     ],
     "commands": [
       {"path": "commands/README.md", "has_footer": true, "version": "3.0.0"},
@@ -488,7 +488,7 @@
       {"path": "templates/master/README.md", "has_footer": false, "missing_footer": true}
     ],
     "examples": [
-      {"path": "examples/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "examples/README.md", "has_footer": true, "version": "3.0.0"},
       {"path": "examples/demo-app-sandbox-advanced/README.md", "has_footer": false, "missing_footer": true},
       {"path": "examples/demo-app-sandbox-basic/README.md", "has_footer": false, "missing_footer": true},
       {"path": "examples/demo-app-sandbox-intermediate/README.md", "has_footer": false, "missing_footer": true},
@@ -497,7 +497,7 @@
       {"path": "examples/streamlit-shared/README.md", "has_footer": false, "missing_footer": true}
     ],
     "data": [
-      {"path": "data/README.md", "has_footer": false, "missing_footer": true}
+      {"path": "data/README.md", "has_footer": true, "version": "3.0.0"}
     ],
     "tests": [
       {"path": "tests/README.md", "has_footer": false, "missing_footer": true}
