@@ -1,12 +1,31 @@
+# ============================================================================
 # Base Dockerfile for Sandboxxer DevContainer
+# ============================================================================
 # Includes Python 3.12 + Node 20 + common development tools
 # Language-specific additions are inserted at the marker below
+#
+# PROXY-FRIENDLY BUILD ARGUMENTS:
+#   INSTALL_SHELL_EXTRAS=true  - git-delta, zsh plugins (default: true)
+#   INSTALL_DEV_TOOLS=true     - Language dev tools, linters (default: true)
+#
+# Set to "false" for minimal builds behind corporate proxies that block
+# GitHub releases. Docker Hub access is still required for base images.
+# ============================================================================
 
+# === GLOBAL BUILD ARGUMENTS ===
+ARG INSTALL_SHELL_EXTRAS=true
+ARG INSTALL_DEV_TOOLS=true
+
+# === MULTI-STAGE SOURCES ===
 # Stage 1: Get Python + uv from official Astral image
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
 
 # Stage 2: Main build
 FROM node:20-bookworm-slim
+
+# Re-declare ARGs after FROM (Docker requirement)
+ARG INSTALL_SHELL_EXTRAS=true
+ARG INSTALL_DEV_TOOLS=true
 
 # Timezone configuration
 ARG TZ=America/Los_Angeles
@@ -84,12 +103,14 @@ RUN mkdir -p /workspace /home/node/.claude && \
 
 WORKDIR /workspace
 
-# GIT delta (enhanced git diff)
+# GIT delta (enhanced git diff) - conditional on INSTALL_SHELL_EXTRAS
 ARG GIT_DELTA_VERSION=0.18.2
-RUN ARCH=$(dpkg --print-architecture) && \
-  wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
-  dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
-  rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
+RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
+    ARCH=$(dpkg --print-architecture) && \
+    wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
+    dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
+    rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"; \
+  fi
 
 # Copy domain allowlist and extract all domains (Issue #32)
 COPY data/allowable-domains.json /tmp/allowable-domains.json
@@ -103,23 +124,27 @@ USER node
 ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
 ENV PATH=$PATH:/usr/local/share/npm-global/bin
 
-# ZSH with Powerlevel10k
+# ZSH with Powerlevel10k - conditional on INSTALL_SHELL_EXTRAS
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
 ENV SHELL=/bin/zsh
 
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
-  -p git \
-  -p fzf \
-  -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
-  -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
-  -a "source /usr/share/doc/fzf/examples/completion.zsh" \
-  -x
+RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
+    sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
+      -p git \
+      -p fzf \
+      -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+      -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
+      -a "source /usr/share/doc/fzf/examples/completion.zsh" \
+      -x; \
+  fi
 
-# Pre-download gitstatusd for powerlevel10k (avoid runtime download failure)
+# Pre-download gitstatusd for powerlevel10k - conditional on INSTALL_SHELL_EXTRAS
 ARG GITSTATUSD_VERSION=v1.5.4
-RUN mkdir -p ~/.cache/gitstatus && \
+RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
+    mkdir -p ~/.cache/gitstatus && \
     wget -qO- "https://github.com/romkatv/gitstatus/releases/download/${GITSTATUSD_VERSION}/gitstatusd-linux-x86_64.tar.gz" | \
-    tar -xz -C ~/.cache/gitstatus
+    tar -xz -C ~/.cache/gitstatus; \
+  fi
 
 # Editor configuration
 ENV EDITOR=nano
@@ -135,36 +160,40 @@ ENV PGHOST=postgres \
     PGUSER=sandboxxer_user \
     PGDATABASE=sandboxxer_dev
 
-# Initialize uv project and install Python packages to .venv
+# Initialize uv project with core packages
 RUN uv init --name workspace-env && \
-    uv add --no-cache \
-      deepagents \
-      tavily-python \
-      pytest \
-      black \
-      flake8 \
-      mypy \
-      ipython \
-      requests
+    uv add --no-cache deepagents tavily-python requests
 
-# Install Claude Code
+# Python dev tools - conditional on INSTALL_DEV_TOOLS
+RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
+    uv add --no-cache pytest black flake8 mypy ipython; \
+  fi
+
+# Install Claude Code (always required)
 ARG CLAUDE_CODE_VERSION=latest
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
-RUN npm install -g \
-  typescript \
-  ts-node \
-  eslint \
-  prettier \
-  nodemon \
-  yarn \
-  pnpm \
-  @mermaid-js/mermaid-cli \
-  puppeteer@24
 
-# Install Python tools system-wide (available outside venv)
+# Core Node tools (always installed - package managers)
+RUN npm install -g yarn pnpm
+
+# Node dev tools - conditional on INSTALL_DEV_TOOLS
+RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
+    npm install -g \
+      typescript \
+      ts-node \
+      eslint \
+      prettier \
+      nodemon \
+      @mermaid-js/mermaid-cli \
+      puppeteer@24; \
+  fi
+
+# Python tools system-wide - conditional on INSTALL_DEV_TOOLS
 ENV PATH="/home/node/.local/bin:$PATH"
-RUN uv tool install ruff && \
-    uv tool install poetry
+RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
+    uv tool install ruff && \
+    uv tool install poetry; \
+  fi
 
 # === LANGUAGE PARTIALS ===
 

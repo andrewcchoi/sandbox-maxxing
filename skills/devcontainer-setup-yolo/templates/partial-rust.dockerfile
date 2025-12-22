@@ -1,24 +1,32 @@
 # === RUST LANGUAGE ADDITIONS ===
+# REQUIRED: Add to base multi-stage sources section:
+#   FROM rust:1.75-bookworm AS rust-source
+# ============================================================================
+
 USER root
 
-# Install Rust toolchain
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+# Copy Rust toolchain from official image (proxy-friendly)
+# NOTE: Requires 'rust-source' stage in base Dockerfile
+COPY --from=rust-source /usr/local/rustup /usr/local/rustup
+COPY --from=rust-source /usr/local/cargo /usr/local/cargo
 
 # Set Rust environment variables
-ENV CARGO_HOME=/home/node/.cargo \
-    RUSTUP_HOME=/home/node/.rustup \
-    PATH=/home/node/.cargo/bin:$PATH
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/home/node/.cargo \
+    PATH=/usr/local/cargo/bin:/home/node/.cargo/bin:$PATH
 
-# Copy cargo configuration to user directory and set ownership
-RUN mkdir -p /home/node/.cargo /home/node/.rustup && \
-    cp -r /root/.cargo/* /home/node/.cargo/ 2>/dev/null || true && \
-    cp -r /root/.rustup/* /home/node/.rustup/ 2>/dev/null || true && \
-    chown -R node:node /home/node/.cargo /home/node/.rustup
+# Create user cargo directory and set ownership
+RUN mkdir -p /home/node/.cargo && \
+    chown -R node:node /home/node/.cargo
 
 USER node
 
-# Install Rust components and tools
-RUN rustup component add rustfmt clippy rust-src && \
-    cargo install cargo-edit cargo-watch cargo-outdated
+# Rust development tools - conditional on INSTALL_DEV_TOOLS
+# These require network access to crates.io
+ARG INSTALL_RUST_TOOLS=${INSTALL_DEV_TOOLS:-true}
+RUN if [ "$INSTALL_RUST_TOOLS" = "true" ]; then \
+    rustup component add rustfmt clippy rust-src && \
+    cargo install cargo-edit cargo-watch cargo-outdated; \
+  fi
 
 # === END RUST LANGUAGE ADDITIONS ===

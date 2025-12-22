@@ -29,9 +29,10 @@ Then:
 1. Project name (e.g., "demo-app")
 2. Additional languages (e.g., "none", "go", "rust", or comma-separated)
 3. Services needed (e.g., "postgres", "redis", or comma-separated)
-4. Firewall mode (e.g., "permissive", "strict")
-5. Firewall ports to allow (e.g., "443,8080" or "80,443,8000")
-6. Confirmation (e.g., "yes", "y")
+4. Proxy-friendly mode (e.g., "yes", "no")
+5. Firewall mode (e.g., "permissive", "strict")
+6. Firewall ports to allow (e.g., "443,8080" or "80,443,8000")
+7. Confirmation (e.g., "yes", "y")
 
 **Example automated invocation:**
 ```
@@ -182,17 +183,35 @@ echo "Auto-detected languages: ${DETECTED_LANGUAGES[*]:-none}"
 
 ### Step 2B: Ask User Questions
 
-**Question 1: Firewall Mode**
+**Question 1: Proxy-Friendly Mode**
 ```
 Use AskUserQuestion tool:
 
+Question: "Are you behind a corporate proxy?"
+Options:
+- No: Install all dev tools and shell extras (default)
+- Yes: Minimal build - skip GitHub downloads (git-delta, zsh plugins, dev tools)
+```
+
+If "Yes", configure build args in docker-compose.yml:
+```yaml
+services:
+  app:
+    build:
+      args:
+        INSTALL_SHELL_EXTRAS: "false"
+        INSTALL_DEV_TOOLS: "false"
+```
+
+**Question 2: Firewall Mode**
+```
 Question: "Select firewall mode:"
 Options:
 - Permissive: Allow all outbound traffic (development convenience)
 - Strict: Only allow domains in allowlist (security-focused) [Recommended]
 ```
 
-**Question 2: Additional Languages**
+**Question 3: Additional Languages**
 ```
 Question: "Additional languages to include?"
 Options:

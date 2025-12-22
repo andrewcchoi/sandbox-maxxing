@@ -522,11 +522,40 @@ For each service, ask:
 
 #### E. Build Arguments
 Ask which build args to customize:
+
+**Proxy-Friendly Build Args** (for corporate environments):
+- `INSTALL_SHELL_EXTRAS` - Install git-delta, zsh plugins (default: true)
+  - Set to `false` to skip GitHub downloads behind proxies
+- `INSTALL_DEV_TOOLS` - Install language dev tools like linters, LSPs (default: true)
+  - Set to `false` for minimal builds
+
+**Per-Language Dev Tool Overrides** (inherit from INSTALL_DEV_TOOLS):
+- `INSTALL_GO_TOOLS` - gopls, golangci-lint, delve (default: ${INSTALL_DEV_TOOLS})
+- `INSTALL_RUST_TOOLS` - rustfmt, clippy, cargo extensions (default: ${INSTALL_DEV_TOOLS})
+- `INSTALL_RUBY_TOOLS` - rubocop, rspec, rake (default: ${INSTALL_DEV_TOOLS})
+- `INSTALL_CPP_TOOLS` - vcpkg (default: ${INSTALL_DEV_TOOLS})
+
+**Standard Build Args**:
 - `TZ` - Timezone (default: America/Los_Angeles)
 - `CLAUDE_CODE_VERSION` - Claude Code version (default: latest)
 - `GIT_DELTA_VERSION` - git-delta version (default: 0.18.2)
 - `ZSH_IN_DOCKER_VERSION` - ZSH installer version (default: 1.2.0)
 - Custom build args?
+
+**Example docker-compose.yml for proxy-friendly build:**
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        INSTALL_SHELL_EXTRAS: "false"
+        INSTALL_DEV_TOOLS: "false"
+        # Or selectively disable specific language tools:
+        INSTALL_GO_TOOLS: "false"
+        INSTALL_RUST_TOOLS: "true"
+```
 
 #### F. VS Code Configuration
 Ask which VS Code extensions to include:
