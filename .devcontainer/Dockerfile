@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   zsh fzf \
   # GitHub CLI
   gh \
+  build-essential \
   # Network security tools (firewall)
   iptables ipset iproute2 dnsutils \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -44,6 +45,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   default-mysql-client \
   sqlite3 \
   redis-tools \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Puppeteer dependencies for mermaid-cli
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  libglib2.0-0 libnss3 libatk1.0-0 libatk-bridge2.0-0 \
+  libcups2 libdrm2 libxkbcommon0 libxcomposite1 \
+  libxdamage1 libxfixes3 libxrandr2 libgbm1 \
+  libpango-1.0-0 libcairo2 libasound2 \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create node user if it doesn't exist (may already exist in base image)
@@ -93,7 +102,10 @@ ENV SHELL=/bin/zsh
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
   -p git \
+  -p fzf \
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+  -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
+  -a "source /usr/share/doc/fzf/examples/completion.zsh" \
   -x
 
 # Pre-download gitstatusd for powerlevel10k (avoid runtime download failure)
@@ -131,7 +143,15 @@ RUN npm install -g \
   ts-node \
   eslint \
   prettier \
-  nodemon
+  nodemon \
+  yarn \
+  pnpm \
+  @mermaid-js/mermaid-cli
+
+# Install Python tools system-wide (available outside venv)
+ENV PATH="/home/node/.local/bin:$PATH"
+RUN uv tool install ruff && \
+    uv tool install poetry
 
 # The langgraph.json file has the assistant ID as the key:
 #   "graphs": {
