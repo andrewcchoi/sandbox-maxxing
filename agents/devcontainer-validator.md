@@ -176,4 +176,4 @@ Action Required: Delete wrong files, verify DevContainer setup
 ---
 
 **Last Updated:** 2025-12-21
-**Version:** 3.0.0
+**Version:** 4.0.0
