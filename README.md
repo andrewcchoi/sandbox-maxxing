@@ -384,9 +384,9 @@ Performs comprehensive security audits.
 ## Reference Documentation
 
 The plugin includes comprehensive reference documentation:
-- `skills/devcontainer-setup-advanced/references/customization.md` - Customization guide
-- `skills/devcontainer-setup-advanced/references/security.md` - Security model and best practices
-- `skills/devcontainer-setup-advanced/references/troubleshooting.md` - Detailed troubleshooting guide
+- `docs/features/CUSTOMIZATION.md` - Customization guide
+- `docs/features/security-model.md` - Security model and best practices
+- `docs/features/TROUBLESHOOTING.md` - Detailed troubleshooting guide
 
 ## Naming Convention
 
@@ -716,7 +716,7 @@ MIT License - See LICENSE file for details
 ## Support
 
 - **Issues**: https://github.com/andrewcchoi/sandbox-maxxing/issues
-- **Documentation**: See `skills/*/references/` directories
+- **Documentation**: See `docs/features/` directory
 - **Claude Code Docs**: https://claude.ai/code
 
 ## Repository Maintenance

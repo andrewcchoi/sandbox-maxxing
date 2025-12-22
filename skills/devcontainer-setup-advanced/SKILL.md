@@ -601,7 +601,7 @@ All advanced mode setups must include Claude credentials mounting:
 
 ## Reference Documentation
 
-For detailed information, refer to embedded documentation in `references/`:
+For detailed information, refer to documentation in `docs/features/`:
 - `customization.md` - Full customization guide
 - `security.md` - Security model and best practices
 - `troubleshooting.md` - Common issues and solutions

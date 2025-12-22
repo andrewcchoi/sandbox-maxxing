@@ -360,7 +360,7 @@ The devcontainer sets minimal environment variables:
 ## Getting Help
 
 - **Issues**: https://github.com/andrewcchoi/sandbox-maxxing/issues
-- **Documentation**: See `skills/*/references/` directories
+- **Documentation**: See `docs/features/` directory
 - **Claude Code**: https://claude.ai/code
 - **Plugin Development**: Use `/devcontainer:troubleshoot` for debugging
 

@@ -271,7 +271,7 @@ Provide comprehensive report:
 
 ## Threat Model Reference
 
-From `references/security.md`:
+From `docs/features/security-model.md`:
 
 **What we protect against**:
 - Accidental data exfiltration

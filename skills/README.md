@@ -72,9 +72,9 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 **Location:** `skills/devcontainer-setup-advanced/SKILL.md`
 
 **Reference Documentation:**
-- `skills/devcontainer-setup-advanced/references/customization.md` - Customization guide
-- `skills/devcontainer-setup-advanced/references/security.md` - Security best practices
-- `skills/devcontainer-setup-advanced/references/troubleshooting.md` - Common issues
+- `docs/features/CUSTOMIZATION.md` - Customization guide
+- `docs/features/security-model.md` - Security best practices
+- `docs/features/TROUBLESHOOTING.md` - Common issues
 
 ---
 
@@ -176,7 +176,7 @@ skills/
 │   └── SKILL.md
 ├── devcontainer-setup-advanced/
 │   ├── SKILL.md
-│   └── references/                    # Additional documentation
+│   └── templates/                     # Mode-specific templates
 │       ├── customization.md
 │       ├── security.md
 │       └── troubleshooting.md
@@ -198,12 +198,10 @@ skills/
 - Verification steps
 - Error handling
 
-**references/** (optional)
-- Supplementary documentation
-- Detailed guides
-- Reference tables
-- Best practices
-- Advanced topics
+**templates/** (required)
+- Mode-specific template files
+- Dockerfile templates, configuration files
+- Extensions, MCP, variables, compose files
 
 ## How Skills Work
 

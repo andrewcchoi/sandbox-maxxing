@@ -129,7 +129,7 @@ docker inspect <container-name> | grep Networks -A 5
 
 ### 3. Apply Systematic Fixes
 
-Based on the diagnostic results, apply fixes from the reference documentation (`references/troubleshooting.md`).
+Based on the diagnostic results, apply fixes from the reference documentation (`docs/features/TROUBLESHOOTING.md`).
 
 #### Container Won't Start
 1. Check Docker is running: `docker ps`
@@ -229,7 +229,7 @@ docker compose up -d
 
 ## Reference Documentation
 
-For detailed troubleshooting steps, refer to `references/troubleshooting.md` which contains comprehensive solutions for all common issues.
+For detailed troubleshooting steps, refer to `docs/features/TROUBLESHOOTING.md` which contains comprehensive solutions for all common issues.
 
 ## Key Principles
 
