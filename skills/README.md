@@ -31,26 +31,6 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 
 ---
 
-#### devcontainer-setup-intermediate
-**Command:** `/devcontainer:setup` (Intermediate mode)
-**When to use:** You want a standard sandbox with good balance of flexibility and simplicity.
-
-**Features:**
-- Custom Dockerfile for flexibility
-- Permissive firewall for convenience
-- Common service options (PostgreSQL, Redis, RabbitMQ)
-- Moderate questions (5-8)
-- Standard setup (3-5 minutes)
-
-**Best for:**
-- Regular developers
-- Team projects
-- Projects requiring authentication
-- Moderate customization needs
-
-**Location:** `skills/devcontainer-setup-intermediate/SKILL.md`
-
----
 
 #### devcontainer-setup-advanced
 **Command:** `/devcontainer:setup` (Advanced mode)
@@ -165,23 +145,39 @@ See also: [Security Model](../docs/features/security-model.md)
 
 ## Skill Directory Structure
 
-Each skill follows a consistent structure:
+The skills directory uses a shared resources architecture for maintainability:
 
 ```
 skills/
 ├── README.md                          # This file
+├── _shared/                           # Shared resources (v4.0.0)
+│   ├── planning-phase.md              # Common planning workflow
+│   ├── templates/                     # Consolidated templates
+│   │   ├── base.dockerfile
+│   │   ├── partial-*.dockerfile       # Language partials
+│   │   ├── devcontainer.json
+│   │   ├── docker-compose.yml
+│   │   ├── setup-claude-credentials.sh
+│   │   ├── extensions.json
+│   │   ├── mcp.json
+│   │   ├── variables.json
+│   │   ├── .env.template
+│   │   └── init-firewall/
+│   │       ├── disabled.sh            # Basic mode
+│   │       ├── permissive.sh          # YOLO option
+│   │       └── strict.sh              # Advanced mode
+│   └── data/                          # Shared data files
+│       ├── allowable-domains.json
+│       ├── sandbox-templates.json
+│       ├── official-images.json
+│       ├── mcp-servers.json
+│       └── vscode-extensions.json
 ├── devcontainer-setup-basic/
-│   └── SKILL.md                       # Skill definition and workflow
-├── devcontainer-setup-intermediate/
-│   └── SKILL.md
+│   └── SKILL.md                       # Simplified skill (references _shared)
 ├── devcontainer-setup-advanced/
-│   ├── SKILL.md
-│   └── templates/                     # Mode-specific templates
-│       ├── customization.md
-│       ├── security.md
-│       └── troubleshooting.md
+│   └── SKILL.md                       # Simplified skill (references _shared)
 ├── devcontainer-setup-yolo/
-│   └── SKILL.md
+│   └── SKILL.md                       # Simplified skill (references _shared)
 ├── sandbox-troubleshoot/
 │   └── SKILL.md
 └── sandbox-security/
@@ -192,16 +188,26 @@ skills/
 
 **SKILL.md**
 - Skill metadata (name, description)
-- When to use the skill
-- Step-by-step workflow
-- Decision trees and conditionals
-- Verification steps
-- Error handling
+- Mandatory planning phase reference
+- Mode-specific configuration
+- Implementation workflow
+- Validation and completion checklist
 
-**templates/** (required)
-- Mode-specific template files
-- Dockerfile templates, configuration files
-- Extensions, MCP, variables, compose files
+**_shared/planning-phase.md**
+- Common project discovery workflow
+- Plan document creation template
+- User approval workflow
+- Error handling patterns
+
+**_shared/templates/**
+- Single source of truth for all templates
+- Base Dockerfile with language partial composition
+- Firewall variants for different security modes
+- All configuration files (devcontainer.json, docker-compose.yml, etc.)
+
+**_shared/data/**
+- Reference data shared across all skills
+- Domain allowlists, image catalogs, extension lists
 
 ## How Skills Work
 
@@ -236,22 +242,36 @@ Claude: [Automatically uses devcontainer-setup-advanced skill]
 
 ### Skill Workflow
 
-1. **Skill Loaded**: Claude reads SKILL.md and reference documentation
-2. **Context Gathered**: Claude asks questions or examines project
-3. **Workflow Executed**: Claude follows structured steps in SKILL.md
+**New in v4.0.0: Mandatory Planning Phase**
+
+All devcontainer setup skills now follow this workflow:
+
+1. **Planning Phase** (NEW):
+   - Project discovery (scan directory, detect languages, check existing config)
+   - Plan creation (write to `docs/plans/YYYY-MM-DD-devcontainer-setup.md`)
+   - User approval (present plan, ask questions, get explicit approval)
+2. **Skill Loaded**: Claude reads SKILL.md and _shared resources
+3. **Implementation**: Claude follows structured steps in SKILL.md
 4. **Validation**: Claude verifies successful completion
 5. **Documentation**: Claude provides next steps and references
+
+**Benefits of Planning Mode:**
+- User visibility before execution
+- Opportunity to review and adjust configuration
+- Clear documentation of decisions
+- Single source of truth in _shared resources
 
 ## Skill Comparison
 
 | Skill | Complexity | Questions | Time | Security | Customization |
 |-------|-----------|-----------|------|----------|---------------|
-| devcontainer-setup-basic | Low | 2-3 | 1-2 min | Low | Minimal |
-| devcontainer-setup-intermediate | Medium | 5-8 | 3-5 min | Medium | Moderate |
-| devcontainer-setup-advanced | High | 10-15 | 8-12 min | High | High |
+| devcontainer-setup-basic | Low | 1-3 | 1-2 min | Low | Minimal |
+| devcontainer-setup-advanced | High | 7-10 | 8-12 min | High | High |
 | devcontainer-setup-yolo | Expert | 15-20+ | 15-30 min | User-controlled | Complete |
 | sandbox-troubleshoot | Varies | Diagnostic | Varies | N/A | N/A |
 | sandbox-security | Medium | Audit-based | 5-10 min | N/A | N/A |
+
+**Note:** All times include the mandatory planning phase (added in v4.0.0).
 
 ## When to Use Each Setup Skill
 
@@ -261,13 +281,6 @@ Claude: [Automatically uses devcontainer-setup-advanced skill]
 - Learning projects
 - Solo development
 - Working with trusted code only
-
-### Choose Intermediate Mode When:
-- Regular team development
-- Need Git/GitHub authentication
-- Require common services (DB, cache, queue)
-- Want flexibility without complexity
-- Moderate customization needed
 
 ### Choose Advanced Mode When:
 - Security is a priority
@@ -335,10 +348,11 @@ Each skill is demonstrated in example projects:
 
 ### Setup Skill Examples
 - `docs/examples/demo-app-sandbox-basic/` - Basic mode result
-- `docs/examples/demo-app-sandbox-intermediate/` - Intermediate mode result
 - `docs/examples/demo-app-sandbox-advanced/` - Advanced mode result
 - `docs/examples/demo-app-sandbox-yolo/` - YOLO mode result
 - `docs/examples/streamlit-sandbox-basic/` - Basic mode (Python-only)
+
+**Note:** Intermediate mode has been deprecated in v4.0.0. Users should choose Basic (simple) or Advanced (security-focused) modes instead.
 
 See [Examples README](../docs/examples/README.md) for detailed walkthroughs.
 
@@ -373,5 +387,5 @@ When reporting skill-related issues, include:
 
 ---
 
-**Last Updated:** 2025-12-16
-**Version:** 3.0.0
+**Last Updated:** 2025-12-22
+**Version:** 4.0.0 (Planning Mode Integration + Shared Resources)
