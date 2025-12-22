@@ -221,7 +221,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ## CRITICAL: USE ACTUAL TEMPLATE FILES
 
 **DO NOT generate simplified Dockerfiles.** Always:
-1. READ `${CLAUDE_PLUGIN_ROOT}/templates/dockerfiles/Dockerfile.<language>`
+1. READ `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-intermediate/templates/Dockerfile.<language>`
 2. COPY the template content EXACTLY
 3. Only modify placeholder values (PROJECT_NAME, etc.)
 
@@ -298,7 +298,7 @@ The skill will:
 - **Validation**: All images must be from official Docker repositories
 
 ### Dockerfile
-- **Template**: Standard language-specific templates from `templates/dockerfiles/Dockerfile.<language>`
+- **Template**: Standard language-specific templates from `skills/devcontainer-setup-intermediate/templates/Dockerfile.<language>`
 - **Contents**:
   - Base image from official sources
   - Common development tools (git, curl, wget, vim, etc.)
@@ -309,7 +309,7 @@ The skill will:
 
 ### Firewall Configuration
 - **Mode**: PERMISSIVE (always)
-- **Script**: `templates/firewall/intermediate-permissive.sh`
+- **Script**: `skills/devcontainer-setup-intermediate/templates/init-firewall.sh`
 - **Behavior**: No network restrictions, all outbound traffic allowed
 - **Configuration**: `FIREWALL_MODE: permissive` in devcontainer.json
 - **Security Notice**: User must be warned about permissive nature
@@ -332,28 +332,28 @@ The skill will:
 
 When generating configuration, use these template files:
 
-- **Extensions**: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.intermediate.json`
+- **Extensions**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-intermediate/templates/extensions.json`
   - Read this file and merge with platform-specific extensions
   - Includes ~15-20 extensions covering common development tools
   - Base + language-specific + productivity tools
 
-- **MCP Configuration**: `${CLAUDE_PLUGIN_ROOT}/templates/mcp/mcp.intermediate.json`
+- **MCP Configuration**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-intermediate/templates/mcp.json`
   - Includes 5 MCP servers: filesystem, memory, sqlite, fetch, github
   - Copy to `.devcontainer/mcp.json`
 
-- **Variables**: `${CLAUDE_PLUGIN_ROOT}/templates/variables/variables.intermediate.json`
+- **Variables**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-intermediate/templates/variables.json`
   - Build args and container environment variables
   - Standard development configuration
 
-- **Docker Compose**: `${CLAUDE_PLUGIN_ROOT}/templates/compose/docker-compose.intermediate.yml`
+- **Docker Compose**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-intermediate/templates/docker-compose.yml`
   - Template with postgres, redis, rabbitmq services
   - Includes healthchecks and named networks
 
-- **Dockerfile**: `${CLAUDE_PLUGIN_ROOT}/templates/dockerfiles/Dockerfile.<language>`
+- **Dockerfile**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-intermediate/templates/Dockerfile.<language>`
   - Language-specific dockerfiles (Python, Node, Go, etc.)
   - Multi-stage build with Node.js for corporate proxy support (Issue #29)
 
-- **Firewall**: `${CLAUDE_PLUGIN_ROOT}/templates/firewall/intermediate-permissive.sh`
+- **Firewall**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-intermediate/templates/init-firewall.sh`
   - Permissive firewall configuration (no restrictions)
   - Copy to `.devcontainer/init-firewall.sh`
 
@@ -505,7 +505,7 @@ Examples: postgresql-client, imagemagick, ffmpeg
 **Process:**
 
 1. **Load Base Dockerfile Template**
-   - Location: `templates/dockerfiles/Dockerfile.<language>`
+   - Location: `skills/devcontainer-setup-intermediate/templates/Dockerfile.<language>`
    - Variables to replace:
      - `{{BASE_IMAGE}}`: Official image (e.g., `python:3.11`)
      - `{{ADDITIONAL_PACKAGES}}`: User-specified packages
@@ -523,13 +523,13 @@ Examples: postgresql-client, imagemagick, ffmpeg
    - Preserve dependencies and networks
 
 3. **Configure Firewall Script**
-   - Source: `templates/firewall/intermediate-permissive.sh`
+   - Source: `skills/devcontainer-setup-intermediate/templates/init-firewall.sh`
    - Copy as-is (no modifications needed)
    - Set permissions: `chmod +x .devcontainer/init-firewall.sh`
 
 4. **Generate devcontainer.json**
-   - Base template: `templates/base/devcontainer.json.template`
-   - Read extensions from `templates/extensions/extensions.intermediate.json`
+   - Base template: `skills/devcontainer-setup-intermediate/templates/devcontainer.json`
+   - Read extensions from `skills/devcontainer-setup-intermediate/templates/extensions.json`
    - Merge base + platform-specific extensions
    - Key settings:
      ```json
@@ -544,7 +544,7 @@ Examples: postgresql-client, imagemagick, ffmpeg
              "terminal.integrated.defaultProfile.linux": "bash"
            },
            "extensions": [
-             // From templates/extensions/extensions.intermediate.json
+             // From templates/extensions.json
              // Base: anthropic.claude-code, ms-azuretools.vscode-docker, etc.
              // Platform-specific: ms-python.python, dbaeumer.vscode-eslint, etc.
            ]
@@ -561,7 +561,7 @@ Examples: postgresql-client, imagemagick, ffmpeg
      ```
 
 5. **Create docker-compose.yml**
-   - Base structure from `templates/compose/docker-compose.intermediate.yml`
+   - Base structure from `skills/devcontainer-setup-intermediate/templates/docker-compose.yml`
    - Add `app` service with Dockerfile build
    - Include credentials mount for Issue #30
    - Append extracted services from master template
@@ -679,7 +679,7 @@ To review firewall settings:
 ## Templates Used
 
 ### Dockerfile Template
-**Location**: `templates/dockerfiles/Dockerfile.<language>`
+**Location**: `skills/devcontainer-setup-intermediate/templates/Dockerfile.<language>`
 
 **Example for Python**:
 ```dockerfile
@@ -720,7 +720,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 ```
 
 ### Firewall Script
-**Location**: `templates/firewall/intermediate-permissive.sh`
+**Location**: `skills/devcontainer-setup-intermediate/templates/init-firewall.sh`
 
 ```bash
 #!/bin/bash

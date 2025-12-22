@@ -809,7 +809,7 @@ Even in YOLO mode, perform basic validation:
 YOLO mode uses the complete master templates with full customization. Always read these template files:
 
 ### 1. Extensions Template
-**File**: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.yolo.json`
+**File**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-yolo/templates/extensions.json`
 - Comprehensive extension list (35+ extensions)
 - All language extensions (Python, JS, Go, Rust, Java, Ruby, PHP, C++)
 - Productivity tools (GitLens, Error Lens, TODO Tree, Code Spell Checker)
@@ -818,13 +818,13 @@ YOLO mode uses the complete master templates with full customization. Always rea
 - **Important**: Read this file and merge with platform-specific extensions
 
 ### 2. MCP Configuration Template
-**File**: `${CLAUDE_PLUGIN_ROOT}/templates/mcp/mcp.yolo.json`
+**File**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-yolo/templates/mcp.json`
 - All 11+ MCP servers available
 - Includes: filesystem, memory, sqlite, fetch, github, postgres, docker, brave-search, puppeteer, slack, google-drive, custom
 - Copy to `.devcontainer/mcp.json` with user selections
 
 ### 3. Variables Template
-**File**: `${CLAUDE_PLUGIN_ROOT}/templates/variables/variables.yolo.json`
+**File**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-yolo/templates/variables.json`
 - User-defined build args and container environment variables
 - Custom configuration based on user needs
 - Copy to `.devcontainer/variables.json`

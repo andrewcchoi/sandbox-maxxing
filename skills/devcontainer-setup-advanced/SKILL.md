@@ -220,7 +220,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ## CRITICAL: USE ACTUAL TEMPLATE FILES
 
 **DO NOT generate simplified Dockerfiles.** Always:
-1. READ `${CLAUDE_PLUGIN_ROOT}/templates/dockerfiles/Dockerfile.<language>`
+1. READ `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/Dockerfile.<language>`
 2. COPY the template content EXACTLY
 3. Only modify placeholder values (PROJECT_NAME, etc.)
 
@@ -450,11 +450,11 @@ Ask these questions with brief explanations:
 Use templates from `${CLAUDE_PLUGIN_ROOT}/templates/`:
 
 **Dockerfile**:
-- Source: `templates/dockerfiles/Dockerfile.<language>` (e.g., `Dockerfile.python`, `Dockerfile.node`)
+- Source: `skills/devcontainer-setup-advanced/templates/Dockerfile.<language>` (e.g., `Dockerfile.python`, `Dockerfile.node`)
 - Customize with selected base image and pre-install options
 
 **Firewall Script**:
-- Source: `templates/firewall/advanced-strict.sh`
+- Source: `skills/devcontainer-setup-advanced/templates/init-firewall.sh`
 - Customize allowlist based on user selections and additional domains
 
 **Docker Compose**:
@@ -533,35 +533,35 @@ Ask: "Would you like me to run the startup commands now?"
 
 Advanced Mode uses these template sources:
 
-1. **Dockerfile**: `templates/dockerfiles/Dockerfile.<language>`
+1. **Dockerfile**: `skills/devcontainer-setup-advanced/templates/Dockerfile.<language>`
    - Examples: `Dockerfile.python`, `Dockerfile.node`, `Dockerfile.go`
    - Multi-stage build with Node.js for corporate proxy support (Issue #29)
    - Customized with base image and pre-install options
 
-2. **Extensions**: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.advanced.json`
+2. **Extensions**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/extensions.json`
    - Read this file and merge with platform-specific extensions
    - Includes ~22-28 extensions covering comprehensive development tools
    - Base + language-specific + productivity + themes
 
-3. **MCP Configuration**: `${CLAUDE_PLUGIN_ROOT}/templates/mcp/mcp.advanced.json`
+3. **MCP Configuration**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/mcp.json`
    - Includes 8 MCP servers: filesystem, memory, sqlite, fetch, github, postgres, docker, brave-search
    - Copy to `.devcontainer/mcp.json`
 
-4. **Variables**: `${CLAUDE_PLUGIN_ROOT}/templates/variables/variables.advanced.json`
+4. **Variables**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/variables.json`
    - Build args and container environment variables
    - Production-like configuration settings
 
-5. **Firewall Script**: `templates/firewall/advanced-strict.sh`
+5. **Firewall Script**: `skills/devcontainer-setup-advanced/templates/init-firewall.sh`
    - Starts with `mode_defaults.advanced` allowlist
    - Customized with user-provided additional domains
    - Category markers added for documentation
 
-6. **Docker Compose**: `${CLAUDE_PLUGIN_ROOT}/templates/compose/docker-compose.advanced.yml`
+6. **Docker Compose**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-advanced/templates/docker-compose.yml`
    - Production-like service configurations
    - Includes health checks, resource limits, restart policies
    - Must include credentials mount for Issue #30
 
-7. **DevContainer Config**: `templates/base/devcontainer.json.template`
+7. **DevContainer Config**: `skills/devcontainer-setup-advanced/templates/devcontainer.json`
    - Customized with project name, network name, firewall mode
    - Must include credentials setup in postCreateCommand
 

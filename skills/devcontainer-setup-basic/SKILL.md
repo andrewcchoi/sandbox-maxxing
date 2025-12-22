@@ -405,18 +405,18 @@ Reference: `${CLAUDE_PLUGIN_ROOT}/data/official-images.json`
 
 When generating configuration, use these template files:
 
-- **Extensions**: `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.basic.json`
+- **Extensions**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-basic/templates/extensions.json`
   - Read this file and merge base extensions with platform-specific extensions
   - Base extensions: `anthropic.claude-code`, `ms-azuretools.vscode-docker`, `redhat.vscode-yaml`, `eamodio.gitlens`, `PKief.material-icon-theme`, `johnpapa.vscode-peacock`
   - Platform extensions: Python (`ms-python.python`, `ms-python.vscode-pylance`), Node (`dbaeumer.vscode-eslint`, `esbenp.prettier-vscode`), etc.
 
-- **Docker Compose**: `${CLAUDE_PLUGIN_ROOT}/templates/compose/docker-compose.basic.yml`
+- **Docker Compose**: `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-basic/templates/docker-compose.yml`
   - Template includes postgres and redis services
   - Add app service with credentials mount
 
-- **Firewall**: `${CLAUDE_PLUGIN_ROOT}/templates/firewall/basic-no-firewall.sh`
-  - No-op script that relies on sandbox isolation
-  - Copy to `.devcontainer/init-firewall.sh`
+- **Firewall**: No firewall script needed (Basic mode relies on sandbox isolation)
+  - No-op approach that relies on sandbox isolation
+  - No firewall file to create
 
 - **Credentials Setup**: Create `.devcontainer/setup-claude-credentials.sh` for Issue #30
   - Copies Claude credentials from host mount to container
@@ -512,7 +512,7 @@ services:
     command: sleep infinity
     # Add depends_on if services needed (postgres, redis, etc.)
 
-  # Add services from templates/compose/docker-compose.basic.yml if needed
+  # Add services from docker-compose.yml template if needed
   # postgres:
   #   image: postgres:16-bookworm
   #   environment:
@@ -535,7 +535,7 @@ services:
 
 #### File 2: `.devcontainer/devcontainer.json`
 
-Read extensions from `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.basic.json` and merge with platform-specific extensions.
+Read extensions from `${CLAUDE_PLUGIN_ROOT}/skills/devcontainer-setup-basic/templates/extensions.json` and merge with platform-specific extensions.
 
 ```json
 {
@@ -547,7 +547,7 @@ Read extensions from `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.basi
   "customizations": {
     "vscode": {
       "extensions": [
-        // Base extensions from templates/extensions/extensions.basic.json
+        // Base extensions from templates/extensions.json
         "anthropic.claude-code",
         "ms-azuretools.vscode-docker",
         "redhat.vscode-yaml",
@@ -568,7 +568,7 @@ Read extensions from `${CLAUDE_PLUGIN_ROOT}/templates/extensions/extensions.basi
 
 #### File 3: `.devcontainer/init-firewall.sh`
 
-Copy from `${CLAUDE_PLUGIN_ROOT}/templates/firewall/basic-no-firewall.sh`:
+Basic mode doesn't use a firewall script (relying on sandbox isolation):
 
 ```bash
 #!/bin/bash

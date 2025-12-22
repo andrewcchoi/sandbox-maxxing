@@ -799,8 +799,8 @@ secrets:
 ## Reference Files
 
 - `data/secrets.json` - Complete secrets catalog
-- `templates/env/*.template` - Environment templates with secret placeholders
-- `templates/variables/*.json` - Variable configurations per mode
+- `skills/devcontainer-setup-*/templates/.env.template` - Environment templates with secret placeholders
+- `skills/devcontainer-setup-*/templates/variables.json` - Variable configurations per mode
 
 ---
 
