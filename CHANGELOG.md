@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Reorganized repository structure for better clarity
+  - Moved maintenance files to `.internal/`: repo-keeper, audits, archive, plans, legacy-templates, tests, scripts, bin, hooks, node_modules
+  - Moved examples to `docs/examples/`
+  - Core plugin files remain at root: .claude-plugin/, agents/, commands/, data/, skills/, templates/master/
+
 ### Fixed
 - **Template path discovery failure**: Fixed silent template copy failures when running from user projects
   - Root cause: Plugin directory discovery using `find ~/.claude/plugins` was unreliable
