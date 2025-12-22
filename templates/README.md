@@ -590,7 +590,7 @@ The `legacy/` directory contains deprecated v1.x templates from the original thr
 ### Relationship
 
 - **Templates** (this directory): Source templates used to generate DevContainer configurations
-- **Examples** (`../examples/`): Complete working projects generated from templates
+- **Examples** (`../docs/examples/`): Complete working projects generated from templates
 
 When you run `/devcontainer:setup`, the system:
 1. Reads templates from this directory
@@ -701,9 +701,9 @@ All fixes are included by default when using templates since version 2.2.1.
 - [Commands README](../commands/README.md) - Commands that trigger setup
 
 ### Examples
-- [Examples README](../examples/README.md) - Example projects
-- [demo-app-sandbox-basic](../examples/demo-app-sandbox-basic/) - Basic mode result
-- [demo-app-sandbox-advanced](../examples/demo-app-sandbox-advanced/) - Advanced mode result
+- [Examples README](../docs/examples/README.md) - Example projects
+- [demo-app-sandbox-basic](../docs/examples/demo-app-sandbox-basic/) - Basic mode result
+- [demo-app-sandbox-advanced](../docs/examples/demo-app-sandbox-advanced/) - Advanced mode result
 
 ---
 

@@ -344,9 +344,9 @@ Test commands with:
 - [Secrets Management](../docs/features/SECRETS.md) - Credential handling
 
 ### Examples
-- [Examples README](../examples/README.md) - Example projects
-- [demo-app-sandbox-basic](../examples/demo-app-sandbox-basic/) - Basic mode result
-- [demo-app-sandbox-advanced](../examples/demo-app-sandbox-advanced/) - Advanced mode result
+- [Examples README](../docs/examples/README.md) - Example projects
+- [demo-app-sandbox-basic](../docs/examples/demo-app-sandbox-basic/) - Basic mode result
+- [demo-app-sandbox-advanced](../docs/examples/demo-app-sandbox-advanced/) - Advanced mode result
 
 ## Plugin Integration
 
