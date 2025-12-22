@@ -13,7 +13,7 @@
       "last_updated": "2025-12-19",
       "mode": "basic",
       "related_command": "commands/basic.md",
-      "related_example": "examples/demo-app-sandbox-basic/",
+      "related_example": "docs/examples/demo-app-sandbox-basic/",
       "related_templates": [
         "skills/devcontainer-setup-basic/templates/devcontainer.json",
         "templates/master/shared/docker-compose.yml",
@@ -29,7 +29,7 @@
       "last_updated": "2025-12-19",
       "mode": "intermediate",
       "related_command": "commands/intermediate.md",
-      "related_example": "examples/demo-app-sandbox-intermediate/",
+      "related_example": "docs/examples/demo-app-sandbox-intermediate/",
       "related_templates": [
         "skills/devcontainer-setup-intermediate/templates/devcontainer.json",
         "skills/devcontainer-setup-intermediate/templates/init-firewall.sh",
@@ -46,7 +46,7 @@
       "last_updated": "2025-12-19",
       "mode": "advanced",
       "related_command": "commands/advanced.md",
-      "related_example": "examples/demo-app-sandbox-advanced/",
+      "related_example": "docs/examples/demo-app-sandbox-advanced/",
       "related_templates": [
         "skills/devcontainer-setup-advanced/templates/devcontainer.json",
         "skills/devcontainer-setup-advanced/templates/init-firewall.sh",
@@ -63,7 +63,7 @@
       "last_updated": "2025-12-19",
       "mode": "yolo",
       "related_command": "commands/yolo.md",
-      "related_example": "examples/demo-app-sandbox-yolo/",
+      "related_example": "docs/examples/demo-app-sandbox-yolo/",
       "related_templates": [
         "skills/devcontainer-setup-yolo/templates/devcontainer.json",
         "skills/devcontainer-setup-yolo/templates/init-firewall.sh",
@@ -294,61 +294,61 @@
   "examples": [
     {
       "name": "demo-app-sandbox-basic",
-      "path": "examples/demo-app-sandbox-basic/",
+      "path": "docs/examples/demo-app-sandbox-basic/",
       "mode": "basic",
-      "devcontainer_path": "examples/demo-app-sandbox-basic/.devcontainer/",
-      "dockerfile_path": "examples/demo-app-sandbox-basic/.devcontainer/Dockerfile",
-      "compose_path": "examples/demo-app-sandbox-basic/docker-compose.yml",
+      "devcontainer_path": "docs/examples/demo-app-sandbox-basic/.devcontainer/",
+      "dockerfile_path": "docs/examples/demo-app-sandbox-basic/.devcontainer/Dockerfile",
+      "compose_path": "docs/examples/demo-app-sandbox-basic/docker-compose.yml",
       "has_tests": true,
       "test_types": ["jest", "pytest"],
       "description": "Full-stack demo with Basic mode"
     },
     {
       "name": "demo-app-sandbox-intermediate",
-      "path": "examples/demo-app-sandbox-intermediate/",
+      "path": "docs/examples/demo-app-sandbox-intermediate/",
       "mode": "intermediate",
-      "devcontainer_path": "examples/demo-app-sandbox-intermediate/.devcontainer/",
-      "dockerfile_path": "examples/demo-app-sandbox-intermediate/.devcontainer/Dockerfile",
-      "compose_path": "examples/demo-app-sandbox-intermediate/docker-compose.yml",
+      "devcontainer_path": "docs/examples/demo-app-sandbox-intermediate/.devcontainer/",
+      "dockerfile_path": "docs/examples/demo-app-sandbox-intermediate/.devcontainer/Dockerfile",
+      "compose_path": "docs/examples/demo-app-sandbox-intermediate/docker-compose.yml",
       "has_tests": true,
       "test_types": ["jest", "pytest"],
       "description": "Full-stack demo with Intermediate mode"
     },
     {
       "name": "demo-app-sandbox-advanced",
-      "path": "examples/demo-app-sandbox-advanced/",
+      "path": "docs/examples/demo-app-sandbox-advanced/",
       "mode": "advanced",
-      "devcontainer_path": "examples/demo-app-sandbox-advanced/.devcontainer/",
-      "dockerfile_path": "examples/demo-app-sandbox-advanced/.devcontainer/Dockerfile",
-      "compose_path": "examples/demo-app-sandbox-advanced/docker-compose.yml",
+      "devcontainer_path": "docs/examples/demo-app-sandbox-advanced/.devcontainer/",
+      "dockerfile_path": "docs/examples/demo-app-sandbox-advanced/.devcontainer/Dockerfile",
+      "compose_path": "docs/examples/demo-app-sandbox-advanced/docker-compose.yml",
       "has_tests": true,
       "test_types": ["jest", "pytest"],
       "description": "Full-stack demo with Advanced mode"
     },
     {
       "name": "demo-app-sandbox-yolo",
-      "path": "examples/demo-app-sandbox-yolo/",
+      "path": "docs/examples/demo-app-sandbox-yolo/",
       "mode": "yolo",
-      "devcontainer_path": "examples/demo-app-sandbox-yolo/.devcontainer/",
-      "dockerfile_path": "examples/demo-app-sandbox-yolo/.devcontainer/Dockerfile",
-      "compose_path": "examples/demo-app-sandbox-yolo/docker-compose.yml",
+      "devcontainer_path": "docs/examples/demo-app-sandbox-yolo/.devcontainer/",
+      "dockerfile_path": "docs/examples/demo-app-sandbox-yolo/.devcontainer/Dockerfile",
+      "compose_path": "docs/examples/demo-app-sandbox-yolo/docker-compose.yml",
       "has_tests": true,
       "test_types": ["jest", "pytest"],
       "description": "Full-stack demo with YOLO mode"
     },
     {
       "name": "streamlit-sandbox-basic",
-      "path": "examples/streamlit-sandbox-basic/",
+      "path": "docs/examples/streamlit-sandbox-basic/",
       "mode": "basic",
-      "devcontainer_path": "examples/streamlit-sandbox-basic/.devcontainer/",
-      "dockerfile_path": "examples/streamlit-sandbox-basic/.devcontainer/Dockerfile",
-      "compose_path": "examples/streamlit-sandbox-basic/docker-compose.yml",
+      "devcontainer_path": "docs/examples/streamlit-sandbox-basic/.devcontainer/",
+      "dockerfile_path": "docs/examples/streamlit-sandbox-basic/.devcontainer/Dockerfile",
+      "compose_path": "docs/examples/streamlit-sandbox-basic/docker-compose.yml",
       "has_tests": false,
       "description": "Streamlit dashboard with Basic mode"
     },
     {
       "name": "demo-app-shared",
-      "path": "examples/demo-app-shared/",
+      "path": "docs/examples/demo-app-shared/",
       "mode": "shared",
       "devcontainer_path": null,
       "has_tests": true,
@@ -357,7 +357,7 @@
     },
     {
       "name": "streamlit-shared",
-      "path": "examples/streamlit-shared/",
+      "path": "docs/examples/streamlit-shared/",
       "mode": "shared",
       "devcontainer_path": null,
       "has_tests": false,
@@ -441,19 +441,19 @@
       {"path": "CONTRIBUTING.md", "has_footer": true, "version": "3.0.0", "category": "contributing"},
       {"path": "DEVELOPMENT.md", "has_footer": true, "version": "3.0.0", "category": "development"},
       {"path": "SECURITY.md", "has_footer": true, "version": "3.0.0", "category": "security"},
-      {"path": "docs/archive/.github-issue-v2.2.0.md", "has_footer": false, "category": "archived"}
+      {"path": ".internal/archive/.github-issue-v2.2.0.md", "has_footer": false, "category": "archived"}
     ],
     "docs": [
       {"path": "docs/ARCHITECTURE.md", "has_footer": true, "version": "3.0.0"},
-      {"path": "docs/audits/CONSISTENCY_AUDIT_2025-12-16.md", "has_footer": false},
-      {"path": "docs/audits/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "3.0.0"},
+      {"path": ".internal/audits/CONSISTENCY_AUDIT_2025-12-16.md", "has_footer": false},
+      {"path": ".internal/audits/CONSOLIDATION_RECOMMENDATIONS.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/CUSTOMIZATION.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/EXTENSIONS.md", "has_footer": true, "version": "3.0.0"},
-      {"path": "docs/archive/LOW_PRIORITY_FIXES_v2.2.0.md", "has_footer": false},
+      {"path": ".internal/archive/LOW_PRIORITY_FIXES_v2.2.0.md", "has_footer": false},
       {"path": "docs/features/MCP.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/MODES.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/RELEASE_CHECKLIST.md", "has_footer": true, "version": "3.0.0"},
-      {"path": "docs/archive/RELEASE_NOTES_v1.0.0.md", "has_footer": false},
+      {"path": ".internal/archive/RELEASE_NOTES_v1.0.0.md", "has_footer": false},
       {"path": "docs/features/SECRETS.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/security-model.md", "has_footer": true, "version": "3.0.0"},
       {"path": "docs/features/TESTING.md", "has_footer": true, "version": "3.0.0"},
@@ -481,29 +481,29 @@
     ],
     "templates": [
       {"path": "templates/README.md", "has_footer": true, "version": "3.0.0"},
-      {"path": "templates/legacy/README.md", "has_footer": false, "missing_footer": true},
-      {"path": "templates/legacy/fullstack/EXAMPLE.md", "has_footer": false, "missing_footer": true},
-      {"path": "templates/legacy/node/EXAMPLE.md", "has_footer": false, "missing_footer": true},
-      {"path": "templates/legacy/python/EXAMPLE.md", "has_footer": false, "missing_footer": true},
+      {"path": ".internal/legacy-templates/README.md", "has_footer": false, "missing_footer": true},
+      {"path": ".internal/legacy-templates/fullstack/EXAMPLE.md", "has_footer": false, "missing_footer": true},
+      {"path": ".internal/legacy-templates/node/EXAMPLE.md", "has_footer": false, "missing_footer": true},
+      {"path": ".internal/legacy-templates/python/EXAMPLE.md", "has_footer": false, "missing_footer": true},
       {"path": "templates/master/README.md", "has_footer": false, "missing_footer": true}
     ],
     "examples": [
-      {"path": "examples/README.md", "has_footer": true, "version": "3.0.0"},
-      {"path": "examples/demo-app-sandbox-advanced/README.md", "has_footer": false, "missing_footer": true},
-      {"path": "examples/demo-app-sandbox-basic/README.md", "has_footer": false, "missing_footer": true},
-      {"path": "examples/demo-app-sandbox-intermediate/README.md", "has_footer": false, "missing_footer": true},
-      {"path": "examples/demo-app-sandbox-yolo/README.md", "has_footer": false, "missing_footer": true},
-      {"path": "examples/streamlit-sandbox-basic/README.md", "has_footer": false, "missing_footer": true},
-      {"path": "examples/streamlit-shared/README.md", "has_footer": false, "missing_footer": true}
+      {"path": "docs/examples/README.md", "has_footer": true, "version": "3.0.0"},
+      {"path": "docs/examples/demo-app-sandbox-advanced/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/examples/demo-app-sandbox-basic/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/examples/demo-app-sandbox-intermediate/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/examples/demo-app-sandbox-yolo/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/examples/streamlit-sandbox-basic/README.md", "has_footer": false, "missing_footer": true},
+      {"path": "docs/examples/streamlit-shared/README.md", "has_footer": false, "missing_footer": true}
     ],
     "data": [
       {"path": "data/README.md", "has_footer": true, "version": "3.0.0"}
     ],
     "tests": [
-      {"path": "tests/README.md", "has_footer": false, "missing_footer": true}
+      {"path": ".internal/tests/README.md", "has_footer": false, "missing_footer": true}
     ],
     "repo-keeper": [
-      {"path": "docs/repo-keeper/ORGANIZATION_CHECKLIST.md", "has_footer": true, "version": "3.0.0"}
+      {"path": ".internal/repo-keeper/ORGANIZATION_CHECKLIST.md", "has_footer": true, "version": "3.0.0"}
     ]
   },
 
@@ -518,83 +518,83 @@
     },
     {
       "name": "demo-basic",
-      "path": "examples/demo-app-sandbox-basic/.devcontainer/",
+      "path": "docs/examples/demo-app-sandbox-basic/.devcontainer/",
       "mode": "basic",
-      "dockerfile_path": "examples/demo-app-sandbox-basic/.devcontainer/Dockerfile",
-      "firewall_path": "examples/demo-app-sandbox-basic/.devcontainer/init-firewall.sh"
+      "dockerfile_path": "docs/examples/demo-app-sandbox-basic/.devcontainer/Dockerfile",
+      "firewall_path": "docs/examples/demo-app-sandbox-basic/.devcontainer/init-firewall.sh"
     },
     {
       "name": "demo-intermediate",
-      "path": "examples/demo-app-sandbox-intermediate/.devcontainer/",
+      "path": "docs/examples/demo-app-sandbox-intermediate/.devcontainer/",
       "mode": "intermediate",
-      "dockerfile_path": "examples/demo-app-sandbox-intermediate/.devcontainer/Dockerfile",
-      "firewall_path": "examples/demo-app-sandbox-intermediate/.devcontainer/init-firewall.sh"
+      "dockerfile_path": "docs/examples/demo-app-sandbox-intermediate/.devcontainer/Dockerfile",
+      "firewall_path": "docs/examples/demo-app-sandbox-intermediate/.devcontainer/init-firewall.sh"
     },
     {
       "name": "demo-advanced",
-      "path": "examples/demo-app-sandbox-advanced/.devcontainer/",
+      "path": "docs/examples/demo-app-sandbox-advanced/.devcontainer/",
       "mode": "advanced",
-      "dockerfile_path": "examples/demo-app-sandbox-advanced/.devcontainer/Dockerfile",
-      "firewall_path": "examples/demo-app-sandbox-advanced/.devcontainer/init-firewall.sh"
+      "dockerfile_path": "docs/examples/demo-app-sandbox-advanced/.devcontainer/Dockerfile",
+      "firewall_path": "docs/examples/demo-app-sandbox-advanced/.devcontainer/init-firewall.sh"
     },
     {
       "name": "demo-yolo",
-      "path": "examples/demo-app-sandbox-yolo/.devcontainer/",
+      "path": "docs/examples/demo-app-sandbox-yolo/.devcontainer/",
       "mode": "yolo",
-      "dockerfile_path": "examples/demo-app-sandbox-yolo/.devcontainer/Dockerfile",
-      "firewall_path": "examples/demo-app-sandbox-yolo/.devcontainer/init-firewall.sh"
+      "dockerfile_path": "docs/examples/demo-app-sandbox-yolo/.devcontainer/Dockerfile",
+      "firewall_path": "docs/examples/demo-app-sandbox-yolo/.devcontainer/init-firewall.sh"
     },
     {
       "name": "streamlit-basic",
-      "path": "examples/streamlit-sandbox-basic/.devcontainer/",
+      "path": "docs/examples/streamlit-sandbox-basic/.devcontainer/",
       "mode": "basic",
-      "dockerfile_path": "examples/streamlit-sandbox-basic/.devcontainer/Dockerfile",
-      "firewall_path": "examples/streamlit-sandbox-basic/.devcontainer/init-firewall.sh"
+      "dockerfile_path": "docs/examples/streamlit-sandbox-basic/.devcontainer/Dockerfile",
+      "firewall_path": "docs/examples/streamlit-sandbox-basic/.devcontainer/init-firewall.sh"
     }
   ],
 
   "dependencies": {
     "python_requirements": [
-      "examples/demo-app-sandbox-basic/backend/requirements.txt",
-      "examples/demo-app-sandbox-intermediate/backend/requirements.txt",
-      "examples/demo-app-sandbox-advanced/backend/requirements.txt",
-      "examples/demo-app-sandbox-yolo/backend/requirements.txt",
-      "examples/demo-app-shared/backend/requirements.txt",
-      "examples/streamlit-sandbox-basic/requirements.txt",
-      "examples/streamlit-shared/requirements.txt",
-      "templates/legacy/python/requirements.txt"
+      "docs/examples/demo-app-sandbox-basic/backend/requirements.txt",
+      "docs/examples/demo-app-sandbox-intermediate/backend/requirements.txt",
+      "docs/examples/demo-app-sandbox-advanced/backend/requirements.txt",
+      "docs/examples/demo-app-sandbox-yolo/backend/requirements.txt",
+      "docs/examples/demo-app-shared/backend/requirements.txt",
+      "docs/examples/streamlit-sandbox-basic/requirements.txt",
+      "docs/examples/streamlit-shared/requirements.txt",
+      ".internal/legacy-templates/python/requirements.txt"
     ],
     "node_packages": [
-      "examples/demo-app-sandbox-basic/frontend/package.json",
-      "examples/demo-app-sandbox-intermediate/frontend/package.json",
-      "examples/demo-app-sandbox-advanced/frontend/package.json",
-      "examples/demo-app-sandbox-yolo/frontend/package.json",
-      "examples/demo-app-shared/frontend/package.json",
-      "templates/legacy/node/package.json"
+      "docs/examples/demo-app-sandbox-basic/frontend/package.json",
+      "docs/examples/demo-app-sandbox-intermediate/frontend/package.json",
+      "docs/examples/demo-app-sandbox-advanced/frontend/package.json",
+      "docs/examples/demo-app-sandbox-yolo/frontend/package.json",
+      "docs/examples/demo-app-shared/frontend/package.json",
+      ".internal/legacy-templates/node/package.json"
     ]
   },
 
   "test_files": {
     "manual_tests": [
-      "tests/test-setup-basic.md",
-      "tests/test-setup-advanced.md",
-      "tests/test-setup-yolo.md",
-      "tests/test-troubleshoot.md",
-      "tests/test-security.md"
+      ".internal/tests/test-setup-basic.md",
+      ".internal/tests/test-setup-advanced.md",
+      ".internal/tests/test-setup-yolo.md",
+      ".internal/tests/test-troubleshoot.md",
+      ".internal/tests/test-security.md"
     ],
     "jest_configs": [
-      "examples/demo-app-sandbox-basic/frontend/jest.config.js",
-      "examples/demo-app-sandbox-intermediate/frontend/jest.config.js",
-      "examples/demo-app-sandbox-advanced/frontend/jest.config.js",
-      "examples/demo-app-sandbox-yolo/frontend/jest.config.js",
-      "examples/demo-app-shared/frontend/jest.config.js"
+      "docs/examples/demo-app-sandbox-basic/frontend/jest.config.js",
+      "docs/examples/demo-app-sandbox-intermediate/frontend/jest.config.js",
+      "docs/examples/demo-app-sandbox-advanced/frontend/jest.config.js",
+      "docs/examples/demo-app-sandbox-yolo/frontend/jest.config.js",
+      "docs/examples/demo-app-shared/frontend/jest.config.js"
     ],
     "pytest_configs": [
-      "examples/demo-app-sandbox-basic/backend/pytest.ini",
-      "examples/demo-app-sandbox-intermediate/backend/pytest.ini",
-      "examples/demo-app-sandbox-advanced/backend/pytest.ini",
-      "examples/demo-app-sandbox-yolo/backend/pytest.ini",
-      "examples/demo-app-shared/backend/pytest.ini"
+      "docs/examples/demo-app-sandbox-basic/backend/pytest.ini",
+      "docs/examples/demo-app-sandbox-intermediate/backend/pytest.ini",
+      "docs/examples/demo-app-sandbox-advanced/backend/pytest.ini",
+      "docs/examples/demo-app-sandbox-yolo/backend/pytest.ini",
+      "docs/examples/demo-app-shared/backend/pytest.ini"
     ]
   },
 
