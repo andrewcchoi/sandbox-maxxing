@@ -40,6 +40,13 @@ All notable changes to this project will be documented in this file.
   - Updated skill comparison tables
   - Updated command reference guides
 
+- **Repository Cleanup**: Removed duplicate root directories
+  - Deleted `data/` directory (exact duplicate of `skills/_shared/data/`)
+  - Deleted `templates/` directory (outdated master template system)
+  - Deleted `.internal/scripts/sync-templates.sh` (no longer needed)
+  - Updated `skills/_shared/data/README.md` paths to reference new location
+  - Rewrote `docs/ARCHITECTURE.md` for v4.0.0 shared resources architecture
+
 ### Benefits
 - Single source of truth for templates (easier maintenance)
 - Consistent planning workflow across all modes

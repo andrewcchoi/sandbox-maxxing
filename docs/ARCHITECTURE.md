@@ -2,278 +2,369 @@
 
 ## Overview
 
-The Claude Code Sandbox plugin uses a skills-based architecture with a data-driven template system supporting four experience modes (Basic, Intermediate, Advanced, YOLO).
+The Claude Code DevContainer Setup plugin uses a skills-based architecture with shared resources supporting three experience modes (Basic, Advanced, YOLO) and mandatory planning mode.
+
+**Version 4.0.0 Changes:**
+- **Planning mode mandatory** - All skills start with planning phase before implementation
+- **Shared resources architecture** - Templates and data consolidated to `skills/_shared/`
+- **Intermediate mode deprecated** - Three-mode system (Basic, Advanced, YOLO)
+- **69% reduction in skill file sizes** - Skills reference shared resources instead of duplicating
 
 ## Components
 
 ### 1. Skills
-- `devcontainer-setup-basic` - Basic mode setup (quick automatic)
-- `devcontainer-setup-intermediate` - Intermediate mode setup (balanced)
-- `devcontainer-setup-advanced` - Advanced mode setup (secure minimal)
+
+**Active Skills:**
+- `devcontainer-setup-basic` - Basic mode setup (quick, minimal questions)
+- `devcontainer-setup-advanced` - Advanced mode setup (security-focused)
 - `devcontainer-setup-yolo` - YOLO mode setup (full control)
 - `sandbox-troubleshoot` - Diagnostic assistant
 - `sandbox-security` - Security auditor
 
+**Deprecated Skills:**
+- `devcontainer-setup-intermediate` - Removed in v4.0.0 (see migration guide in `commands/intermediate.md`)
+
 ### 2. Commands
-- `/devcontainer:basic` - Invokes Basic mode setup (quick automatic)
-- `/devcontainer:intermediate` - Invokes Intermediate mode setup (balanced)
-- `/devcontainer:advanced` - Invokes Advanced mode setup (secure minimal)
-- `/devcontainer:yolo` - Invokes YOLO mode setup (full control)
-- `/devcontainer:setup` - Interactive mode selection (or use `--basic`, `--intermediate`, etc.)
+
+**Primary Commands:**
+- `/devcontainer:setup` - Interactive mode selection (or use `--basic`, `--advanced`, `--yolo`)
 - `/devcontainer:troubleshoot` - Invokes troubleshoot skill
 - `/devcontainer:audit` - Invokes security skill
 
-### 3. Data Files
-The plugin uses JSON data files for configuration-driven setup:
+**Mode-Specific Commands:**
+- `/devcontainer:basic` - Invokes Basic mode setup directly
+- `/devcontainer:advanced` - Invokes Advanced mode setup directly
+- `/devcontainer:yolo` - Invokes YOLO mode setup directly
+- `/devcontainer:intermediate` - DEPRECATED (returns migration notice)
 
-#### `/workspace/data/sandbox-templates.json`
-Official Docker sandbox-templates registry with recommended images:
-- Tags: `latest`, `claude-code`, `ubuntu-python`, `nightly`, `cagent`, etc.
-- Metadata: OS support, architectures, image sizes, mode recommendations
-- Purpose: Skills query this to present valid image options per mode
+### 3. Shared Resources Architecture (v4.0.0)
 
-#### `/workspace/data/official-images.json`
-Official Docker Hub images registry:
-- Languages: Python, Node.js, Ruby, Go, Rust, PHP, Java, etc.
-- Services: PostgreSQL, Redis, MySQL, MongoDB, RabbitMQ, Nginx
-- Version recommendations and default tags
-- Purpose: Skills use this for service selection and Dockerfile generation
-
-#### `/workspace/data/allowable-domains.json`
-Firewall domain whitelist organized by category:
-- Categories: `anthropic_services`, `version_control`, `container_registries`, `package_managers`, `cloud_platforms`, etc.
-- Mode defaults: Each mode has predefined domain sets
-- Subcategories: Package managers organized by language
-- Purpose: Skills generate firewall configs based on mode and project needs
-
-### 4. Template System
-
-The plugin uses a fully self-contained template organization with master source files:
+All templates and data files are now consolidated in `skills/_shared/` for easier maintenance and consistency.
 
 #### Directory Structure
-```
-templates/
-├── master/                  # Master source of truth for ALL templates
-│   ├── devcontainer.json.master     # 8.3 KB - All 37 sections
-│   ├── Dockerfile.master            # 12.8 KB - All 14 language toolchains
-│   ├── docker-compose.master.yml    # 17.6 KB - All services
-│   ├── init-firewall.master.sh      # 12.4 KB - All 200+ domains
-│   ├── setup-claude-credentials.master.sh  # 6.2 KB - Credential persistence
-│   ├── extensions.master.json       # Master VS Code extensions (all modes)
-│   ├── mcp.master.json              # Master MCP servers (all modes)
-│   ├── env.master.json              # Master environment variables (all modes)
-│   ├── variables.master.json        # Master build/runtime variables (all modes)
-│   ├── shared/                      # Shared files synced to all skill modes
-│   │   ├── docker-compose.yml       # 2.4 KB - Synced to skills
-│   │   ├── Dockerfile.python        # 3.3 KB - Multi-stage build (synced)
-│   │   ├── Dockerfile.node          # 3.0 KB - Multi-stage build (synced)
-│   │   └── setup-claude-credentials.sh  # 6.2 KB - (synced)
-│   └── dockerfiles/                 # Language-specific Dockerfiles
-│       ├── Dockerfile.python
-│       ├── Dockerfile.node
-│       ├── Dockerfile.go
-│       ├── Dockerfile.rust
-│       ├── Dockerfile.java
-│       ├── Dockerfile.ruby
-│       ├── Dockerfile.php
-│       ├── Dockerfile.cpp-gcc
-│       ├── Dockerfile.cpp-clang
-│       ├── Dockerfile.postgres
-│       └── Dockerfile.redis
-└── legacy/                  # Old monolithic templates (deprecated)
 
+```
 skills/
+├── _shared/                           # Shared resources (v4.0.0)
+│   ├── planning-phase.md              # Common planning workflow (349 lines)
+│   ├── templates/                     # Template files (18 files)
+│   │   ├── base.dockerfile            # Base Dockerfile with markers
+│   │   ├── partial-*.dockerfile       # Language-specific partials (8 files)
+│   │   ├── devcontainer.json          # DevContainer configuration
+│   │   ├── docker-compose.yml         # Docker Compose template
+│   │   ├── setup-claude-credentials.sh # Credential persistence
+│   │   ├── extensions.json            # VS Code extensions
+│   │   ├── mcp.json                   # MCP server configuration
+│   │   ├── variables.json             # Build/runtime variables
+│   │   ├── .env.template              # Environment variables
+│   │   └── init-firewall/             # Firewall variants
+│   │       ├── disabled.sh            # Basic mode (no firewall)
+│   │       ├── permissive.sh          # YOLO option (allow all)
+│   │       └── strict.sh              # Advanced mode (whitelist)
+│   └── data/                          # Data files (9 files)
+│       ├── allowable-domains.json     # Firewall domain whitelist
+│       ├── sandbox-templates.json     # Docker template images
+│       ├── official-images.json       # Official Docker images
+│       ├── uv-images.json             # Python UV images
+│       ├── mcp-servers.json           # MCP server catalog
+│       ├── secrets.json               # Secret handling patterns
+│       ├── variables.json             # Variable catalog
+│       ├── vscode-extensions.json     # Extension catalog
+│       └── README.md                  # Data file documentation
 ├── devcontainer-setup-basic/
-│   └── templates/           # ALL files needed for basic mode (self-contained)
-│       ├── devcontainer.json
-│       ├── docker-compose.yml        # Synced from master/shared
-│       ├── Dockerfile.python         # Synced from master/shared
-│       ├── Dockerfile.node           # Synced from master/shared
-│       ├── setup-claude-credentials.sh # Synced from master/shared
-│       ├── .env.template
-│       ├── extensions.json
-│       ├── mcp.json
-│       └── variables.json
-├── devcontainer-setup-intermediate/
-│   └── templates/           # ALL files needed for intermediate mode
-│       ├── devcontainer.json
-│       ├── docker-compose.yml        # Synced from master/shared
-│       ├── Dockerfile.python         # Synced from master/shared
-│       ├── Dockerfile.node           # Synced from master/shared
-│       ├── setup-claude-credentials.sh # Synced from master/shared
-│       ├── init-firewall.sh          # 2.3 KB (permissive firewall)
-│       ├── .env.template
-│       ├── extensions.json
-│       ├── mcp.json
-│       └── variables.json
+│   └── SKILL.md                       # 234 lines (79% reduction from v3.0.0)
 ├── devcontainer-setup-advanced/
-│   └── templates/           # ALL files needed for advanced mode
-│       ├── devcontainer.json
-│       ├── docker-compose.yml        # Synced from master/shared
-│       ├── Dockerfile.python         # Synced from master/shared
-│       ├── Dockerfile.node           # Synced from master/shared
-│       ├── setup-claude-credentials.sh # Synced from master/shared
-│       ├── init-firewall.sh          # 10.8 KB (strict firewall)
-│       ├── .env.template
-│       ├── extensions.json
-│       ├── mcp.json
-│       └── variables.json
+│   └── SKILL.md                       # 309 lines (60% reduction from v3.0.0)
 └── devcontainer-setup-yolo/
-    └── templates/           # ALL files needed for yolo mode
-        ├── devcontainer.json
-        ├── docker-compose.yml        # Synced from master/shared
-        ├── Dockerfile.python         # Synced from master/shared
-        ├── Dockerfile.node           # Synced from master/shared
-        ├── setup-claude-credentials.sh # Synced from master/shared
-        ├── init-firewall.sh          # 17.9 KB (full firewall)
-        ├── .env.template
-        ├── extensions.json
-        ├── mcp.json
-        └── variables.json
+    └── SKILL.md                       # 372 lines (66% reduction from v3.0.0)
 ```
 
-#### Organization Strategy
+#### Benefits of Shared Architecture
 
-**Master Templates** (`templates/master/`):
-- Source of truth for ALL template files
-- Comprehensive "kitchen sink" versions with all options
-- Shared files in `templates/master/shared/` are synced to all skill modes
-- Language-specific Dockerfiles in `templates/master/dockerfiles/`
-- Updated using sync script: `./.internal/scripts/sync-templates.sh`
-- Changes propagate to all skill folders
-- Includes: Dockerfiles, docker-compose.yml, credentials script
+1. **Single source of truth** - Templates exist in one location only
+2. **Easier maintenance** - Update once, applies to all modes
+3. **Consistent behavior** - All skills use identical base templates
+4. **Reduced duplication** - ~45 template files → ~18 files (60% reduction)
+5. **Simpler skills** - Skills focus on mode-specific logic, not template management
 
-**Fully Self-Contained Skills**:
-- Each skill has ALL templates in its `templates/` folder
-- No external directory dependencies
-- Works reliably when running from any user project
-- Simple skill-relative path: `$SKILL_DIR/templates`
+### 4. Planning Phase (v4.0.0)
 
-**Sync Workflow**:
-1. Edit files in `templates/master-shared/` (source of truth)
-2. Run `./.internal/scripts/sync-templates.sh` to copy to all skills
-3. Commit both master and synced copies
+**Mandatory for all devcontainer skills.** Workflow defined in `skills/_shared/planning-phase.md`.
 
-**Benefits**:
-- Guaranteed template availability from skill context
-- No "template not found" errors in user projects
-- Simple, predictable path discovery
-- Clear separation: master (edit here) vs runtime (skills)
-- Minimal duplication cost (~60KB total for reliability)
+#### Planning Workflow
 
-#### Section Marker Format
-Templates use comments to mark extractable sections:
+1. **Project Discovery**
+   - Scan project directory for languages, frameworks, existing configs
+   - Detect required services (databases, caches, message queues)
+   - Check for proxy environment variables
+   - Identify security requirements
+
+2. **Plan Creation**
+   - Write plan to `docs/plans/YYYY-MM-DD-devcontainer-setup.md`
+   - Include:
+     - Files to be created/modified
+     - Detected project details
+     - Proposed configuration
+     - Firewall rules (if applicable)
+     - Extensions and MCP servers
+
+3. **User Approval**
+   - Present plan to user
+   - Wait for explicit approval
+   - Allow modifications/questions
+
+4. **Implementation**
+   - Execute skill workflow only after approval
+   - Follow plan exactly
+   - Report completion status
+
+#### Planning Phase Example
+
+```markdown
+## DevContainer Setup Plan - Advanced Mode
+
+**Project:** my-python-api
+**Detected:** Python 3.12, FastAPI, PostgreSQL
+**Services:** PostgreSQL, Redis
+
+### Files to Create:
+1. `.devcontainer/Dockerfile` - Multi-stage Python 3.12 build
+2. `.devcontainer/devcontainer.json` - VS Code configuration
+3. `.devcontainer/setup-claude-credentials.sh` - Credential persistence
+4. `docker-compose.yml` - PostgreSQL + Redis services
+5. `.devcontainer/init-firewall.sh` - Strict whitelist firewall
+
+### Configuration:
+- Base image: python:3.12-bookworm-slim
+- Firewall: Strict (anthropic, pypi, github, postgresql domains)
+- Extensions: Python, Docker, PostgreSQL (15 total)
+- MCP Servers: filesystem, postgres, github
 ```
-// ===SECTION_START:section_name===
-[content]
-// ===SECTION_END:section_name===
-```
 
-Skills can:
-- Extract specific sections from master templates
-- Combine sections from multiple files
-- Remove unused sections for cleaner output
-- Customize based on mode and requirements
+### 5. Data Files
 
-Example markers:
-- `===SECTION_START:build===` - Build configuration
-- `===SECTION_START:postgres===` - PostgreSQL service
-- `===SECTION_START:firewall_basic===` - Basic firewall rules
-- `===SECTION_START:extensions_advanced===` - Advanced VS Code extensions
+All data files are in `skills/_shared/data/`. See `skills/_shared/data/README.md` for details.
 
-## Four-Mode System
+**Key files:**
+- `sandbox-templates.json` - Docker template image registry
+- `official-images.json` - Official Docker images (Python, Node, databases)
+- `allowable-domains.json` - Firewall domain whitelist by category
+- `uv-images.json` - Python UV images (fast package manager)
+- `mcp-servers.json` - MCP server configurations
+- `vscode-extensions.json` - VS Code extension catalog
+
+Skills reference these using: `skills/_shared/data/<filename>`
+
+## Three-Mode System (v4.0.0)
 
 ### Basic Mode
-- **Philosophy**: Zero-configuration development
-- **Target**: Beginners, rapid prototyping
-- **Features**:
-  - Auto-detection (2-3 questions max)
-  - Sensible defaults (PostgreSQL, Redis, strict firewall)
-  - Minimal VS Code extensions (5-8 essential)
-  - Base image: `docker/sandbox-templates:latest` or `docker/sandbox-templates:claude-code`
-  - Firewall: Essential domains only (40-50 domains)
 
-### Intermediate Mode
-- **Philosophy**: Balanced convenience and control
-- **Target**: Regular developers, team projects
-- **Features**:
-  - Some customization (5-8 questions)
-  - Build args for flexibility (Python/Node versions)
-  - Curated VS Code extensions (10-15)
-  - Base image: Official images (`python:3.12-slim`, `node:20-bookworm-slim`)
-  - Firewall: Expanded domains including cloud platforms (100+ domains)
+**Philosophy:** Quick start with sensible defaults
+
+**Target:** Beginners, rapid prototyping, learning
+
+**Workflow:**
+1. Planning phase (1-2 minutes)
+2. Minimal questions (1-3)
+3. Auto-detect project type
+4. Use template base image
+5. No firewall (container isolation only)
+
+**Features:**
+- Base image: `docker/sandbox-templates:claude-code`
+- Firewall: Disabled (relies on Docker isolation)
+- Extensions: Minimal essential set (5-8)
+- Questions: 1-3 total
+- Time: 1-2 minutes planning + 1-2 minutes implementation
+
+**Best for:**
+- First-time DevContainer users
+- Quick project setup
+- Learning and experimentation
 
 ### Advanced Mode
-- **Philosophy**: Security-first minimal surface
-- **Target**: Security-conscious developers, production prep
-- **Features**:
-  - Detailed configuration (10-15 questions)
-  - Multi-stage optimized Dockerfiles
-  - Comprehensive VS Code extensions (20+)
-  - Base image: Security-hardened official images
-  - Firewall: Minimal whitelist, requires explicit additions (30-40 domains)
+
+**Philosophy:** Security-first with strict controls
+
+**Target:** Security-conscious developers, production prep, team projects
+
+**Workflow:**
+1. Planning phase (5-7 minutes)
+2. Security mini-audit during planning
+3. Detailed questions (7-10)
+4. Strict firewall configuration
+5. Minimal attack surface
+
+**Features:**
+- Base image: Official security-hardened images
+- Firewall: Strict whitelist (customizable allowlist)
+- Extensions: Comprehensive curated set (15-20)
+- Questions: 7-10 total
+- Time: 5-7 minutes planning + 8-12 minutes implementation
+
+**Best for:**
+- Production-bound projects
+- Security-conscious development
+- Team environments
+- Compliance requirements
 
 ### YOLO Mode
-- **Philosophy**: Maximum flexibility, user controls everything
-- **Target**: Experts, custom environments, experimental setups
-- **Features**:
-  - Full customization (15-20+ questions)
-  - Custom base images (including nightly/experimental)
-  - Complete VS Code extension control
-  - Base image: Any including `docker/sandbox-templates:nightly`
-  - Firewall: Optional (can disable entirely) or fully custom
+
+**Philosophy:** Maximum flexibility, expert control
+
+**Target:** Experts, custom environments, experimental setups
+
+**Workflow:**
+1. Planning phase (10-15 minutes)
+2. Extensive customization options
+3. Detailed questions (15-20+)
+4. Complete control over all settings
+5. Optional safety nets
+
+**Features:**
+- Base image: Any (including nightly/experimental)
+- Firewall: User choice (disabled/permissive/strict/custom)
+- Extensions: Full control
+- Questions: 15-20+ total
+- Time: 10-15 minutes planning + 15-30 minutes implementation
+
+**Best for:**
+- Expert users
+- Highly customized environments
+- Experimental setups
+- Testing edge cases
+
+### Mode Comparison
+
+| Aspect | Basic | Advanced | YOLO |
+|--------|-------|----------|------|
+| **Planning Time** | 1-2 min | 5-7 min | 10-15 min |
+| **Questions** | 1-3 | 7-10 | 15-20+ |
+| **Firewall** | None | Strict | User choice |
+| **Base Images** | Template only | Official only | Any |
+| **Extensions** | 5-8 | 15-20 | User control |
+| **Security** | Low | High | User-controlled |
+| **Customization** | Minimal | Moderate | Complete |
 
 ## Data Flow
 
-1. User invokes mode-specific command (e.g., `/devcontainer:basic`)
-2. Command activates skill with mode parameter
-3. Skill queries data files for mode-appropriate options:
-   - `sandbox-templates.json` for base images
-   - `official-images.json` for services
-   - `allowable-domains.json` for firewall rules
-4. Skill uses AskUserQuestion for mode-appropriate inputs
-5. Skill extracts sections from master templates
-6. Skill combines with mode-specific sections
-7. Skill replaces placeholders with user choices
-8. Skill writes output files
-9. Skill provides mode-appropriate next steps
+### Setup Flow (with Planning Mode)
 
-## Template Placeholder System
+1. **User Invocation**
+   - User runs `/devcontainer:setup` or mode-specific command
+   - Command activates skill
+
+2. **Planning Phase Start**
+   - Skill follows `skills/_shared/planning-phase.md`
+   - Scans project directory
+   - Detects languages, services, existing configuration
+
+3. **Plan Creation**
+   - Query `skills/_shared/data/` files for mode-appropriate options
+   - Generate plan document
+   - Write to `docs/plans/YYYY-MM-DD-devcontainer-setup.md`
+
+4. **User Approval**
+   - Present plan to user
+   - Wait for explicit "approve" or modifications
+   - Update plan if needed
+
+5. **Implementation Phase**
+   - Load templates from `skills/_shared/templates/`
+   - Select mode-specific firewall variant if applicable
+   - Replace placeholders with user choices
+   - Write output files to project
+
+6. **Completion**
+   - Report files created
+   - Provide next steps
+   - Suggest security audit (Advanced mode)
+
+### Template Placeholder System
 
 Templates use `{{PLACEHOLDER}}` syntax:
+
+**Project placeholders:**
 - `{{PROJECT_NAME}}` - Project name
-- `{{NETWORK_NAME}}` - Docker network
+- `{{NETWORK_NAME}}` - Docker network name
+
+**Image placeholders:**
 - `{{BASE_IMAGE}}` - Docker base image from data files
-- `{{FIREWALL_MODE}}` - basic/intermediate/advanced/yolo
-- `{{DB_NAME}}`, `{{DB_USER}}`, `{{DB_PASSWORD}}` - Database config
-- `{{REDIS_ENABLED}}` - true/false for Redis
 - `{{PYTHON_VERSION}}` - Python version from official-images.json
 - `{{NODE_VERSION}}` - Node.js version from official-images.json
 
+**Configuration placeholders:**
+- `{{FIREWALL_MODE}}` - disabled/permissive/strict
+- `{{DB_NAME}}`, `{{DB_USER}}`, `{{DB_PASSWORD}}` - Database config
+- `{{REDIS_ENABLED}}` - true/false for Redis
+- `{{EXTENSIONS_JSON}}` - VS Code extensions array
+
 ## Skill Integration
 
-Skills can invoke each other and share context:
-- After setup → suggest security audit
-- During errors → auto-invoke troubleshoot
-- Before production → recommend advanced mode review
+Skills can invoke each other for related tasks:
 
-## Version 2.0 Changes
+- **After setup** → Suggest `/devcontainer:audit` for security review
+- **During errors** → Auto-invoke `/devcontainer:troubleshoot`
+- **Before production** → Recommend Advanced mode review
 
-### What's New
-1. **Data-driven configuration**: All options now sourced from JSON files
-2. **Four-mode system**: Replaces old Basic/Advanced/YOLO with clearer modes
-3. **Modular templates**: Section markers enable composable configs
-4. **Enhanced firewall**: Mode-specific domain whitelists
-5. **Official images**: Direct integration with Docker Hub metadata
+## Version History
 
-### Migration from 1.x
-- Old `templates/base/` → Now dynamically generated from `templates/master/`
-- Old `templates/python/`, `templates/node/`, `templates/fullstack/` → Moved to `.internal/legacy-templates/`
-- Old Basic mode → New Basic mode (similar)
-- Old Advanced mode → New Intermediate mode (similar functionality)
-- Old YOLO mode → New Advanced mode (security-focused) or YOLO mode (flexibility-focused)
+### Version 4.0.0 (2025-12-22)
+
+**Major Breaking Changes:**
+- **Mandatory planning mode** - All skills require planning phase
+- **Intermediate mode deprecated** - Three-mode system only
+- **Shared resources** - Templates consolidated to `skills/_shared/`
+
+**Key Changes:**
+- Templates: ~45 files → ~18 files (60% reduction)
+- Skills: 2965 → 915 lines total (69% reduction)
+- Deleted `templates/` and `data/` root directories (duplicates)
+- Created `skills/_shared/planning-phase.md` (349 lines)
+- Created explicit firewall variants (disabled/permissive/strict)
+
+**Migration:**
+- Intermediate mode users → Use Basic or Advanced mode
+- Old template paths → Now `skills/_shared/templates/`
+- Old data paths → Now `skills/_shared/data/`
+
+### Version 3.0.0 (2025-12-19)
+
+- Plugin renamed: `sandboxxer` → `devcontainer-setup`
+- Copy-first workflow for templates
+- Fixed template path discovery issues
+
+### Version 2.0.0 (2025-12-16)
+
+- Four-mode system (Basic, Intermediate, Advanced, YOLO)
+- Data-driven configuration with JSON files
+- Modular template system
+
+### Version 1.0.0 (2025-12-12)
+
+- Initial release with three modes
+- Basic template system
+
+## Related Documentation
+
+### Core Docs
+- [Skills README](../skills/README.md) - Detailed skill documentation
+- [Commands README](../commands/README.md) - Command reference
+- [Modes Guide](features/MODES.md) - Mode comparison and selection
+- [Shared Data](../skills/_shared/data/README.md) - Data file reference
+
+### Configuration
+- [Planning Phase](../skills/_shared/planning-phase.md) - Planning workflow
+- [Troubleshooting](features/TROUBLESHOOTING.md) - Common issues
+- [Security Model](features/security-model.md) - Security architecture
+- [Variables Guide](features/VARIABLES.md) - Environment configuration
+
+### Examples
+- [Examples README](examples/README.md) - Example projects
+- [Basic Example](examples/demo-app-sandbox-basic/) - Basic mode result
+- [Advanced Example](examples/demo-app-sandbox-advanced/) - Advanced mode result
 
 ---
 
-**Last Updated:** 2025-12-16
-**Version:** 3.0.0
+**Last Updated:** 2025-12-22
+**Version:** 4.0.0
