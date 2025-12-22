@@ -1,0 +1,28 @@
+Skill Validation Report
+=======================
+Mode: basic
+Iteration: 1
+Timestamp: Sat Dec 20 08:33:18 UTC 2025
+Accuracy: [0;32m[2025-12-20 08:33:17] [FEEDER] [INFO] Comparing generated files against examples for basic...[0m
+[0;32m[2025-12-20 08:33:17] [FEEDER] [INFO] devcontainer.json similarity: 0%[0m
+[0;32m[2025-12-20 08:33:17] [FEEDER] [INFO] docker-compose.yml similarity: 0%[0m
+[0;32m[2025-12-20 08:33:17] [FEEDER] [INFO] Dockerfile similarity: 0%[0m
+[0;32m[2025-12-20 08:33:17] [FEEDER] [INFO] init-firewall.sh similarity: 0%[0m
+[0;32m[2025-12-20 08:33:17] [FEEDER] [INFO] setup-claude-credentials.sh similarity: 0%[0m
+[0;32m[2025-12-20 08:33:18] [FEEDER] [INFO] Average similarity for basic: 0.00%[0m
+0.00%
+Threshold: 95%
+Status: FAIL
+
+Generated Files:
+/workspace/tests/skill-validation/generated/basic/.devcontainer/devcontainer.json
+/workspace/tests/skill-validation/generated/basic/.devcontainer/Dockerfile
+/workspace/tests/skill-validation/generated/basic/.devcontainer/extensions.json
+/workspace/tests/skill-validation/generated/basic/.devcontainer/init-firewall.sh
+/workspace/tests/skill-validation/generated/basic/.devcontainer/mcp.json
+/workspace/tests/skill-validation/generated/basic/.devcontainer/setup-claude-credentials.sh
+/workspace/tests/skill-validation/generated/basic/.devcontainer/variables.json
+/workspace/tests/skill-validation/generated/basic/.env.template
+/workspace/tests/skill-validation/generated/basic/app.py
+/workspace/tests/skill-validation/generated/basic/docker-compose.yml
+/workspace/tests/skill-validation/generated/basic/package.json
