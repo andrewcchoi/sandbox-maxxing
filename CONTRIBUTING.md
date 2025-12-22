@@ -214,7 +214,7 @@ Before submitting changes, please review the [`docs/repo-keeper/ORGANIZATION_CHE
 3. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
 
 4. **Naming Conventions**:
-   - Commands: `/devcontainer-setup:{action}`
+   - Commands: `/devcontainer:{action}`
    - Skills: `sandbox-{action}[-mode]/SKILL.md`
    - Templates: `{component}.{mode}.{ext}`
 

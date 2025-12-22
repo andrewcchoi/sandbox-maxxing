@@ -132,9 +132,9 @@ claude plugins list
 
 # Test slash commands
 claude
-> /devcontainer-setup:setup --basic
-> /devcontainer-setup:troubleshoot
-> /devcontainer-setup:audit
+> /devcontainer:setup --basic
+> /devcontainer:troubleshoot
+> /devcontainer:audit
 ```
 
 ### 3. Running Example Applications (Optional)
@@ -180,7 +180,7 @@ cd /tmp/test-project
 
 # Use the plugin to generate configs
 claude
-> /devcontainer-setup:setup --basic
+> /devcontainer:setup --basic
 
 # Verify generated files
 ls -la .devcontainer/
@@ -218,7 +218,7 @@ The `.devcontainer/` in this repository was created using the plugin itself:
 
 ```bash
 # What was run (hypothetically, during setup)
-/devcontainer-setup:basic
+/devcontainer:basic
 
 # Plugin detection output:
 # ✓ Scanning repository...
@@ -252,7 +252,7 @@ When plugin templates change, regenerate the devcontainer to stay current:
 mv .devcontainer .devcontainer.backup
 
 # 2. Regenerate using latest plugin
-/devcontainer-setup:basic
+/devcontainer:basic
 
 # 3. Review changes
 diff -r .devcontainer.backup .devcontainer
@@ -346,7 +346,7 @@ The devcontainer sets minimal environment variables:
 
 1. **Keep the devcontainer minimal** - Don't add services unless the plugin itself needs them
 2. **Use examples/docker-compose.yml** - Keep example services separate
-3. **Test with the plugin** - Use `/devcontainer-setup:basic` to validate changes
+3. **Test with the plugin** - Use `/devcontainer:basic` to validate changes
 4. **Document changes** - Update this file when modifying the development workflow
 5. **Regenerate periodically** - Keep the devcontainer in sync with plugin templates
 
@@ -362,7 +362,7 @@ The devcontainer sets minimal environment variables:
 - **Issues**: https://github.com/andrewcchoi/sandbox-maxxing/issues
 - **Documentation**: See `skills/*/references/` directories
 - **Claude Code**: https://claude.ai/code
-- **Plugin Development**: Use `/devcontainer-setup:troubleshoot` for debugging
+- **Plugin Development**: Use `/devcontainer:troubleshoot` for debugging
 
 ---
 

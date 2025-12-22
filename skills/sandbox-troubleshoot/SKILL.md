@@ -11,11 +11,11 @@ Diagnoses and resolves common issues with Claude Code Docker sandbox environment
 
 ## Usage
 
-This skill is invoked via the `/devcontainer-setup:troubleshoot` command.
+This skill is invoked via the `/devcontainer:troubleshoot` command.
 
 **Command:**
 ```
-/devcontainer-setup:troubleshoot
+/devcontainer:troubleshoot
 ```
 
 The skill will:
@@ -248,7 +248,7 @@ User reports container won't start:
 ```
 User: My container won't build. It says "ERROR: failed to solve"
 Assistant: I'll help troubleshoot this build failure.
-/devcontainer-setup:troubleshoot
+/devcontainer:troubleshoot
 ```
 
 The skill guides through checking Docker logs, Dockerfile syntax, network connectivity during build, and provides specific fix for the identified issue.
@@ -260,7 +260,7 @@ User can't connect to PostgreSQL:
 ```
 User: My app can't connect to PostgreSQL. Connection refused on port 5432.
 Assistant: I'll diagnose this database connectivity issue.
-/devcontainer-setup:troubleshoot
+/devcontainer:troubleshoot
 ```
 
 The skill checks if PostgreSQL service is running, verifies port mappings, tests connectivity from container, and ensures connection string is correct.
@@ -272,7 +272,7 @@ User's API calls are being blocked:
 ```
 User: I'm getting network errors when calling the OpenAI API. It works outside the container.
 Assistant: This sounds like a firewall configuration issue. Let me troubleshoot.
-/devcontainer-setup:troubleshoot
+/devcontainer:troubleshoot
 ```
 
 The skill checks firewall mode, reviews allowed domains list, tests connectivity to specific domain, and provides guidance on adding OpenAI domains to allowlist.

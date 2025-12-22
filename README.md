@@ -1,7 +1,7 @@
 # DevContainer Setup Plugin
 
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
-> **Plugin Name:** devcontainer-setup (used in commands: /devcontainer-setup:basic, /devcontainer-setup:advanced, etc.)
+> **Plugin Name:** devcontainer-setup (used in commands: /devcontainer:basic, /devcontainer:advanced, etc.)
 
 Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Four-mode system (Basic, Intermediate, Advanced, YOLO) with security firewall options and comprehensive tooling.
 
@@ -30,22 +30,22 @@ claude plugins list
 
 ```bash
 # Quick setup with auto-detection (Basic mode)
-/devcontainer-setup:basic
+/devcontainer:basic
 
 # Balanced control and convenience (Intermediate mode)
-/devcontainer-setup:intermediate
+/devcontainer:intermediate
 
 # Security-focused minimal setup (Advanced mode)
-/devcontainer-setup:advanced
+/devcontainer:advanced
 
 # Full customization and control (YOLO mode)
-/devcontainer-setup:yolo
+/devcontainer:yolo
 
 # Troubleshoot existing DevContainer
-/devcontainer-setup:troubleshoot
+/devcontainer:troubleshoot
 
 # Security audit
-/devcontainer-setup:audit
+/devcontainer:audit
 ```
 
 ### Claude Code Installation
@@ -91,7 +91,7 @@ See [MODES.md](docs/features/MODES.md) for comprehensive comparison guide.
 
 **Example**:
 ```
-You: /devcontainer-setup:basic
+You: /devcontainer:basic
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -114,7 +114,7 @@ Claude: I detected a Python FastAPI project. Setting up with:
 
 **Example**:
 ```
-You: /devcontainer-setup:intermediate
+You: /devcontainer:intermediate
 Claude: What's your primary language?
         • Python • Node.js • Ruby • Go • PHP
 You: Python
@@ -140,7 +140,7 @@ Claude: What database?
 
 **Example**:
 ```
-You: /devcontainer-setup:advanced
+You: /devcontainer:advanced
 Claude: This mode creates security-hardened configurations.
 
         **Step 1: Base Configuration**
@@ -169,7 +169,7 @@ Claude: This mode creates security-hardened configurations.
 
 **Example**:
 ```
-You: /devcontainer-setup:yolo
+You: /devcontainer:yolo
 Claude: YOLO mode - You're in control!
 
         ⚠️  Warning: Maximum flexibility, minimal safety rails.
@@ -189,13 +189,13 @@ Claude: sandbox-templates tag?
 
 | Command                            | Description                                                           | Mode         |
 | ---------------------------------- | --------------------------------------------------------------------- | ------------ |
-| `/devcontainer-setup:basic`        | Quick automatic setup with auto-detection                             | Basic        |
-| `/devcontainer-setup:intermediate` | Balanced control and convenience                                      | Intermediate |
-| `/devcontainer-setup:advanced`     | Security-focused minimal setup                                        | Advanced     |
-| `/devcontainer-setup:yolo`         | Full customization and control                                        | YOLO         |
-| `/devcontainer-setup:setup`        | Interactive mode selection (or use `--basic`, `--intermediate`, etc.) | All          |
-| `/devcontainer-setup:troubleshoot` | Diagnose and fix sandbox issues                                       | All          |
-| `/devcontainer-setup:audit`        | Security audit and recommendations                                    | All          |
+| `/devcontainer:basic`        | Quick automatic setup with auto-detection                             | Basic        |
+| `/devcontainer:intermediate` | Balanced control and convenience                                      | Intermediate |
+| `/devcontainer:advanced`     | Security-focused minimal setup                                        | Advanced     |
+| `/devcontainer:yolo`         | Full customization and control                                        | YOLO         |
+| `/devcontainer:setup`        | Interactive mode selection (or use `--basic`, `--intermediate`, etc.) | All          |
+| `/devcontainer:troubleshoot` | Diagnose and fix sandbox issues                                       | All          |
+| `/devcontainer:audit`        | Security audit and recommendations                                    | All          |
 
 ## Auto-Detection
 
@@ -283,7 +283,7 @@ The troubleshooter handles:
 ### Example Troubleshooting Session
 
 ```
-You: /devcontainer-setup:troubleshoot
+You: /devcontainer:troubleshoot
 Claude: What issue are you experiencing?
 You: Can't connect to PostgreSQL
 Claude: Let me diagnose...
@@ -396,7 +396,7 @@ This plugin uses consistent naming across different contexts:
 | ----------------- | ------------------------- | --------------------------------------------------- |
 | Plugin name       | devcontainer-setup        | Plugin installation and management                  |
 | GitHub repository | sandbox-maxxing           | github.com/andrewcchoi/sandbox-maxxing              |
-| Slash commands    | /devcontainer-setup:*     | /devcontainer-setup:basic, /devcontainer-setup:yolo |
+| Slash commands    | /devcontainer-setup:*     | /devcontainer:basic, /devcontainer:yolo |
 | Skills            | sandbox-*                 | devcontainer-setup-basic                            |
 | User-facing title | DevContainer Setup Plugin | In documentation headers                            |
 
@@ -438,13 +438,13 @@ sandbox-maxxing/
 │   ├── sandbox-troubleshoot/    # Troubleshooting assistant
 │   └── sandbox-security/        # Security auditor
 ├── commands/
-│   ├── basic.md                 # /devcontainer-setup:basic
-│   ├── intermediate.md          # /devcontainer-setup:intermediate
-│   ├── advanced.md              # /devcontainer-setup:advanced
-│   ├── yolo.md                  # /devcontainer-setup:yolo
-│   ├── setup.md                 # /devcontainer-setup:setup (router)
-│   ├── troubleshoot.md          # /devcontainer-setup:troubleshoot
-│   └── audit.md                 # /devcontainer-setup:audit
+│   ├── basic.md                 # /devcontainer:basic
+│   ├── intermediate.md          # /devcontainer:intermediate
+│   ├── advanced.md              # /devcontainer:advanced
+│   ├── yolo.md                  # /devcontainer:yolo
+│   ├── setup.md                 # /devcontainer:setup (router)
+│   ├── troubleshoot.md          # /devcontainer:troubleshoot
+│   └── audit.md                 # /devcontainer:audit
 ├── templates/
 │   ├── master/                  # Master templates with section markers
 │   │   ├── devcontainer.json.master
@@ -468,7 +468,7 @@ sandbox-maxxing/
 ### Example 1: Quick Python Setup (Basic Mode)
 
 ```
-You: /devcontainer-setup:basic
+You: /devcontainer:basic
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -490,7 +490,7 @@ Claude: I detected a Python FastAPI project. Setting up with:
 ### Example 2: Node.js with Customization (Intermediate Mode)
 
 ```
-You: /devcontainer-setup:intermediate
+You: /devcontainer:intermediate
 Claude: What's your primary language?
 You: Node.js
 Claude: Node.js version?
@@ -512,7 +512,7 @@ Claude: Generating configuration for Node.js 20 + MongoDB 7 + Redis...
 ### Example 3: Security Audit
 
 ```
-You: /devcontainer-setup:audit
+You: /devcontainer:audit
 Claude: Running security audit...
 
         # Security Audit Report
@@ -739,7 +739,7 @@ For contributors and maintainers, see [`docs/repo-keeper/`](docs/repo-keeper/):
   - `allowable-domains.json`: Mode-specific firewall whitelists
 - Modular template system with section markers
 - Enhanced firewall with mode-specific domain sets (30-100+ domains)
-- Updated slash commands: `/devcontainer-setup:basic`, `/devcontainer-setup:intermediate`, `/devcontainer-setup:advanced`, `/devcontainer-setup:yolo`
+- Updated slash commands: `/devcontainer:basic`, `/devcontainer:intermediate`, `/devcontainer:advanced`, `/devcontainer:yolo`
 - Comprehensive mode comparison guide (MODES.md)
 - Migration from Basic/Advanced/YOLO to new four-mode system
 

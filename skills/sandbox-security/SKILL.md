@@ -11,11 +11,11 @@ Performs comprehensive security audits of Claude Code Docker sandbox configurati
 
 ## Usage
 
-This skill is invoked via the `/devcontainer-setup:audit` command.
+This skill is invoked via the `/devcontainer:audit` command.
 
 **Command:**
 ```
-/devcontainer-setup:audit
+/devcontainer:audit
 ```
 
 The skill will:
@@ -321,7 +321,7 @@ User requests a security review of their existing DevContainer:
 ```
 User: Can you audit my sandbox security?
 Assistant: I'll run the security auditor to review your configuration.
-/devcontainer-setup:audit
+/devcontainer:audit
 ```
 
 The skill scans configuration files, checks firewall settings, and provides a prioritized list of security recommendations.
@@ -333,7 +333,7 @@ User preparing to deploy and wants to ensure security hardening:
 ```
 User: We're about to go live. Can you check if our development environment is secure?
 Assistant: I'll perform a comprehensive security audit focusing on production readiness.
-/devcontainer-setup:audit
+/devcontainer:audit
 ```
 
 The skill performs deep security analysis, reviews all network configurations, and provides deployment-specific recommendations.
@@ -345,7 +345,7 @@ User experiencing connectivity issues and wants to verify firewall is properly c
 ```
 User: My API calls are being blocked. Can you check my firewall?
 Assistant: I'll audit your firewall configuration.
-/devcontainer-setup:audit
+/devcontainer:audit
 ```
 
 The skill reviews firewall mode, allowed domains, and provides guidance on adding necessary domains while maintaining security.
