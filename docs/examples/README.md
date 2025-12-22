@@ -414,9 +414,3 @@ This project was created with [Claude](https://claude.ai) using the [Superpowers
 
 **Last Updated:** 2025-12-16
 **Version:** 3.0.0
-
-
----
-
-**Last Updated:** 2025-12-21
-**Version:** 3.0.0
