@@ -210,7 +210,6 @@ The new credentials will be saved in the container's `~/.claude` directory.
 If you need network-level security controls:
 
 **Intermediate Mode**: Add permissive firewall (no restrictions, but audit logging)
-- Copy configuration from `demo-app-sandbox-intermediate/`
 
 **Advanced Mode**: Add strict firewall with customizable allowlist
 - Copy configuration from `demo-app-sandbox-advanced/`
@@ -281,7 +280,6 @@ docker-compose down
 ## Related Examples
 
 - `examples/demo-app-shared/` - Uses shared Docker Compose services
-- `examples/demo-app-sandbox-intermediate/` - Intermediate mode with permissive firewall
 - `examples/demo-app-sandbox-advanced/` - Advanced mode with strict firewall
 - `examples/demo-app-sandbox-yolo/` - YOLO mode with full customization
 - `examples/streamlit-sandbox-basic/` - Simpler Python-only app

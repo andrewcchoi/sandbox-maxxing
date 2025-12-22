@@ -22,7 +22,6 @@ The Claude Code DevContainer Setup plugin uses a skills-based architecture with 
 - `sandbox-security` - Security auditor
 
 **Deprecated Skills:**
-- `devcontainer-setup-intermediate` - Removed in v4.0.0 (see migration guide in `commands/intermediate.md`)
 
 ### 2. Commands
 
@@ -35,7 +34,6 @@ The Claude Code DevContainer Setup plugin uses a skills-based architecture with 
 - `/devcontainer:basic` - Invokes Basic mode setup directly
 - `/devcontainer:advanced` - Invokes Advanced mode setup directly
 - `/devcontainer:yolo` - Invokes YOLO mode setup directly
-- `/devcontainer:intermediate` - DEPRECATED (returns migration notice)
 
 ### 3. Shared Resources Architecture (v4.0.0)
 

@@ -132,15 +132,6 @@ These commands directly invoke mode-specific setup skills. Most users should use
 
 ---
 
-#### `/devcontainer:intermediate` [DEPRECATED]
-**File:** `commands/intermediate.md`
-**Status:** Deprecated in v4.0.0
-**Description:** Intermediate mode has been removed. Use `/devcontainer:basic` or `/devcontainer:advanced` instead.
-
-See `commands/intermediate.md` for migration guide.
-
----
-
 #### `/devcontainer:advanced`
 **File:** `commands/advanced.md`
 **Skill:** devcontainer-setup-advanced
@@ -199,7 +190,7 @@ Use and follow the [skill-name] skill exactly as written.
 
 Commands follow the pattern:
 - **Primary commands**: `setup`, `troubleshoot`, `audit`
-- **Mode-specific**: `basic`, `advanced`, `yolo` (v4.0.0: intermediate deprecated)
+- **Mode-specific**: `basic`, `advanced`, `yolo`
 
 All commands use the `/devcontainer:` namespace prefix when invoked.
 

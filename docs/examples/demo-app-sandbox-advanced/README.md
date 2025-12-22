@@ -481,7 +481,6 @@ alembic init migrations
 
 - `examples/demo-app-shared/` - Uses shared Docker Compose services
 - `examples/demo-app-sandbox-basic/` - Basic mode (no firewall, minimal config)
-- `examples/demo-app-sandbox-intermediate/` - Intermediate mode (permissive firewall, message queue)
 - `examples/demo-app-sandbox-yolo/` - YOLO mode (full customization)
 - `examples/streamlit-sandbox-basic/` - Simpler Python-only app
 

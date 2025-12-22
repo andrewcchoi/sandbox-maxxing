@@ -112,7 +112,6 @@ Most development work doesn't require services:
 code skills/devcontainer-setup-advanced/SKILL.md
 
 # Edit templates
-code skills/devcontainer-setup-intermediate/templates/devcontainer.json
 
 # Edit documentation
 code README.md

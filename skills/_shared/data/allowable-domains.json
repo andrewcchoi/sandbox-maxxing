@@ -57,7 +57,7 @@
     },
     "cloud_platforms": {
       "description": "Major cloud provider APIs and services",
-      "mode_minimum": "intermediate",
+      "mode_minimum": "advanced",
       "sub_categories": {
         "google": {
           "domains": [
@@ -263,7 +263,7 @@
     },
     "development_tools": {
       "description": "Development infrastructure and tools",
-      "mode_minimum": "intermediate",
+      "mode_minimum": "advanced",
       "domains": [
         "dl.k8s.io",
         "pkgs.k8s.io",
@@ -303,7 +303,7 @@
     },
     "analytics_telemetry": {
       "description": "Analytics and telemetry services",
-      "mode_minimum": "intermediate",
+      "mode_minimum": "advanced",
       "domains": [
         "statsig.com",
         "www.statsig.com",
@@ -313,7 +313,7 @@
     },
     "content_delivery": {
       "description": "CDNs and mirrors",
-      "mode_minimum": "intermediate",
+      "mode_minimum": "advanced",
       "wildcard_domains": [
         "*.sourceforge.net"
       ],
@@ -324,7 +324,7 @@
     },
     "schema_configuration": {
       "description": "Schema and configuration repositories",
-      "mode_minimum": "intermediate",
+      "mode_minimum": "advanced",
       "domains": [
         "json-schema.org",
         "www.json-schema.org",
@@ -346,22 +346,6 @@
       "included_subcategories": {
         "package_managers": ["npm", "python", "ruby", "rust", "go", "maven"]
       }
-    },
-    "intermediate": {
-      "description": "Expanded domain access for intermediate development",
-      "included_categories": [
-        "anthropic_services",
-        "version_control",
-        "container_registries",
-        "package_managers",
-        "cloud_platforms",
-        "linux_distributions",
-        "development_tools",
-        "vscode",
-        "analytics_telemetry",
-        "content_delivery",
-        "schema_configuration"
-      ]
     },
     "advanced": {
       "description": "Curated minimal domains for security-focused development",

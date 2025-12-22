@@ -153,7 +153,6 @@ Claude: I detected a Python FastAPI project. Setting up with:
 
 **Setup Experience**:
 ```
-You: /devcontainer:intermediate
 
 Claude: What's your primary language?
         • Python • Node.js • Ruby • Go • PHP
@@ -635,7 +634,6 @@ START: What's your primary goal?
 
 **Setup**:
 ```bash
-/devcontainer:intermediate
 # Choose: Node.js 20
 # Choose: MongoDB
 # Choose: Expanded firewall (for AWS)
@@ -709,7 +707,6 @@ START: What's your primary goal?
 ## Development Setup
 
 ### Quick Start (Recommended for Contributors)
-/devcontainer:intermediate
 
 ### Security-Focused Setup (For Maintainers)
 /devcontainer:advanced
@@ -748,7 +745,6 @@ START: What's your primary goal?
 
 **Steps**:
 1. Note your current config (PostgreSQL version, etc.)
-2. Run `/devcontainer:intermediate`
 3. Choose same services but with version control
 4. Migrate data from old volumes to new
 5. Test thoroughly
@@ -776,7 +772,7 @@ START: What's your primary goal?
 
 ### Upgrading: Basic → Advanced
 
-**When**: Prototype → Production, skipping intermediate
+**When**: Prototype → Production, direct migration
 
 **Steps**:
 1. List all current functionality

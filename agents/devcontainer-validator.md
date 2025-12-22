@@ -17,11 +17,9 @@ This agent automatically validates that DevContainer setup skills created files 
 
 **Automatically trigger after:**
 - `devcontainer-setup-basic` skill completes
-- `devcontainer-setup-intermediate` skill completes
 - `devcontainer-setup-advanced` skill completes
 - `devcontainer-setup-yolo` skill completes
 - `devcontainer-basic` skill completes (after renaming)
-- `devcontainer-intermediate` skill completes (after renaming)
 - `devcontainer-advanced` skill completes (after renaming)
 - `devcontainer-yolo` skill completes (after renaming)
 

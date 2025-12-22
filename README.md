@@ -434,7 +434,6 @@ sandbox-maxxing/
 │   └── sandbox-security/        # Security auditor
 ├── commands/
 │   ├── basic.md                 # /devcontainer:basic
-│   ├── intermediate.md          # /devcontainer:intermediate [DEPRECATED v4.0.0]
 │   ├── advanced.md              # /devcontainer:advanced
 │   ├── yolo.md                  # /devcontainer:yolo
 │   ├── setup.md                 # /devcontainer:setup (router)
