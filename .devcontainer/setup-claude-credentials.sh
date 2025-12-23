@@ -201,10 +201,38 @@ else
 fi
 
 # ============================================================================
-# 9. Fix Permissions
+# 9. Copy Hooks for Linux Container (Optional)
 # ============================================================================
 echo ""
-echo "[8/8] Setting permissions..."
+echo "[8/9] Setting up hooks..."
+
+HOOKS_SRC="/workspace/.devcontainer/defaults/hooks"
+HOOKS_DST="$CLAUDE_DIR/hooks"
+
+if [ -d "$HOOKS_SRC" ]; then
+    mkdir -p "$HOOKS_DST"
+    HOOKS_COPIED=0
+    for hook in "$HOOKS_SRC"/*.sh; do
+        if [ -f "$hook" ]; then
+            cp "$hook" "$HOOKS_DST/"
+            chmod +x "$HOOKS_DST/$(basename "$hook")"
+            HOOKS_COPIED=$((HOOKS_COPIED + 1))
+        fi
+    done
+    if [ $HOOKS_COPIED -gt 0 ]; then
+        echo "  ✓ $HOOKS_COPIED hook(s) copied"
+    else
+        echo "  ℹ No hooks found"
+    fi
+else
+    echo "  ℹ No hooks directory (optional)"
+fi
+
+# ============================================================================
+# 10. Fix Permissions
+# ============================================================================
+echo ""
+echo "[9/9] Setting permissions..."
 
 chown -R "$(id -u):$(id -g)" "$CLAUDE_DIR" 2>/dev/null || true
 chown -R "$(id -u):$(id -g)" "$GH_CONFIG_DIR" 2>/dev/null || true
