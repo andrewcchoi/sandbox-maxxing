@@ -714,7 +714,7 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
 
 - **Organization Checklist**: [`ORGANIZATION_CHECKLIST.md`](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) - 18-category maintenance checklist
 - **Inventory**: [`INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) - Entity inventory for auditing
-- **Automation Scripts**: [`scripts/`](.internal/repo-keeper/.internal/scripts/) - Version sync, link checking, inventory validation
+- **Automation Scripts**: [`scripts/`](.internal/repo-keeper/scripts/) - Version sync, link checking, inventory validation
 - **GitHub Workflows**: [`workflows/`](.internal/repo-keeper/workflows/) - CI/CD templates for automated validation
 - **Issue/PR Templates**: [`templates/`](.internal/repo-keeper/templates/) - Standardized templates for contributors
 

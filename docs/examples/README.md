@@ -343,7 +343,7 @@ sudo /usr/local/bin/init-firewall.sh
 ### Getting Help
 
 1. Check the example's README for specific guidance
-2. Review [TROUBLESHOOTING.md](../docs/features/TROUBLESHOOTING.md) in the repository root
+2. Review [TROUBLESHOOTING.md](../features/TROUBLESHOOTING.md) in the repository root
 3. Open an issue on GitHub (for bugs only)
 
 ## Directory Details
@@ -397,7 +397,7 @@ sudo /usr/local/bin/init-firewall.sh
 - ✅ Use Advanced mode for production development with strict security
 - ✅ Try YOLO mode for maximum customization
 - 📖 Read mode-specific READMEs for detailed guides
-- 🔒 Review [security-model.md](../docs/features/security-model.md) for security best practices
+- 🔒 Review [security-model.md](../features/security-model.md) for security best practices
 - 🚀 Customize examples for your project needs
 
 ## About
