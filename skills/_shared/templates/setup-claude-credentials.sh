@@ -71,16 +71,17 @@ if [ -d "$HOST_CLAUDE/hooks" ] && [ "$(ls -A "$HOST_CLAUDE/hooks" 2>/dev/null)" 
     HOOKS_COUNT=$(ls -1 "$CLAUDE_DIR/hooks" 2>/dev/null | wc -l)
     echo "  ✓ $HOOKS_COUNT hook(s) synced from host"
 else
-    # Copy default hooks from workspace defaults
-    if [ -d "$DEFAULTS_DIR/hooks" ] && [ "$(ls -A "$DEFAULTS_DIR/hooks" 2>/dev/null)" ]; then
+    # Copy default hooks from devcontainer defaults
+    if [ -d "$DEFAULTS_DIR/hooks" ]; then
         cp -r "$DEFAULTS_DIR/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
         chmod +x "$CLAUDE_DIR/hooks/"*.sh 2>/dev/null || true
+        # Fix line endings (convert CRLF to LF)
         for hook in "$CLAUDE_DIR/hooks/"*.sh; do
             [ -f "$hook" ] && sed -i 's/\r$//' "$hook" 2>/dev/null || true
         done
         echo "  ✓ Created default hooks (LangSmith tracing)"
     else
-        echo "  ℹ No hooks found and no defaults available"
+        echo "  ⚠ No hooks found and no defaults available"
     fi
 fi
 
@@ -95,8 +96,8 @@ if [ -d "$HOST_CLAUDE/state" ] && [ "$(ls -A "$HOST_CLAUDE/state" 2>/dev/null)" 
     STATE_COUNT=$(ls -1 "$CLAUDE_DIR/state" 2>/dev/null | wc -l)
     echo "  ✓ $STATE_COUNT state file(s) synced from host"
 else
-    # Copy default state files from workspace defaults
-    if [ -d "$DEFAULTS_DIR/state" ] && [ "$(ls -A "$DEFAULTS_DIR/state" 2>/dev/null)" ]; then
+    # Copy default state files from devcontainer defaults
+    if [ -d "$DEFAULTS_DIR/state" ]; then
         cp -r "$DEFAULTS_DIR/state/"* "$CLAUDE_DIR/state/" 2>/dev/null || true
         echo "  ✓ Created default state files (hook.log, langsmith_state.json)"
     else
@@ -112,23 +113,24 @@ fi
 # ============================================================================
 echo ""
 echo "[4/8] Syncing plugins directory..."
+echo "Skip..."
 
-if [ -d "$HOST_CLAUDE/plugins" ] && [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
-    cp -r "$HOST_CLAUDE/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
-    # Fix line endings for any shell scripts in plugins
-    find "$CLAUDE_DIR/plugins" -name "*.sh" -exec sed -i 's/\r$//' {} \; 2>/dev/null || true
-    find "$CLAUDE_DIR/plugins" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
-    PLUGIN_COUNT=$(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l)
-    echo "  ✓ $PLUGIN_COUNT plugin(s) synced from host"
-else
-    # Copy default plugins if available
-    if [ -d "$DEFAULTS_DIR/plugins" ] && [ "$(ls -A "$DEFAULTS_DIR/plugins" 2>/dev/null)" ]; then
-        cp -r "$DEFAULTS_DIR/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
-        echo "  ✓ Created default plugins"
-    else
-        echo "  ℹ No plugins found"
-    fi
-fi
+# if [ -d "$HOST_CLAUDE/plugins" ] && [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
+#     cp -r "$HOST_CLAUDE/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
+#     # Fix line endings for any shell scripts in plugins
+#     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec sed -i 's/\r$//' {} \; 2>/dev/null || true
+#     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+#     PLUGIN_COUNT=$(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l)
+#     echo "  ✓ $PLUGIN_COUNT plugin(s) synced from host"
+# else
+#     # Copy default plugins if available
+#     if [ -d "$DEFAULTS_DIR/plugins" ] && [ "$(ls -A "$DEFAULTS_DIR/plugins" 2>/dev/null)" ]; then
+#         cp -r "$DEFAULTS_DIR/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
+#         echo "  ✓ Created default plugins"
+#     else
+#         echo "  ℹ No plugins found"
+#     fi
+# fi
 
 # ============================================================================
 # 6. MCP Configuration

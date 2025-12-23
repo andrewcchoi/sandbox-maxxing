@@ -1,12 +1,12 @@
 #!/bin/bash
 # ============================================================================
 # Enhanced Claude Code Credentials & Settings Persistence
-# Issue #30 Extended - Full Configuration Sync
+# Issue #30 Extended - Full Configuration Sync (Unified Template)
 # ============================================================================
 #
 # This script copies ALL Claude Code configuration files from the host
 # machine into the DevContainer. This includes credentials, settings,
-# plugins, MCP config, and environment variables.
+# hooks, state, plugins, MCP config, and environment variables.
 #
 # Required docker-compose.yml configuration:
 #   volumes:
@@ -23,7 +23,10 @@ HOST_CLAUDE="/tmp/host-claude"
 HOST_ENV="/tmp/host-env"
 HOST_GH="/tmp/host-gh"
 GH_CONFIG_DIR="$HOME/.config/gh"
-DEFAULTS_DIR="/workspace/.devcontainer/defaults"
+
+# Configurable defaults directory - points to template defaults by default
+# Override via: DEFAULTS_DIR=/custom/path ./setup-claude-credentials.sh
+DEFAULTS_DIR="${DEFAULTS_DIR:-/workspace/skills/_shared/templates/defaults}"
 
 echo "================================================================"
 echo "Setting up Claude Code environment..."
@@ -110,23 +113,24 @@ fi
 # ============================================================================
 echo ""
 echo "[4/8] Syncing plugins directory..."
+echo "Skip..."
 
-if [ -d "$HOST_CLAUDE/plugins" ] && [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
-    cp -r "$HOST_CLAUDE/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
-    # Fix line endings for any shell scripts in plugins
-    find "$CLAUDE_DIR/plugins" -name "*.sh" -exec sed -i 's/\r$//' {} \; 2>/dev/null || true
-    find "$CLAUDE_DIR/plugins" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
-    PLUGIN_COUNT=$(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l)
-    echo "  ✓ $PLUGIN_COUNT plugin(s) synced from host"
-else
-    # Copy default plugins if available
-    if [ -d "$DEFAULTS_DIR/plugins" ] && [ "$(ls -A "$DEFAULTS_DIR/plugins" 2>/dev/null)" ]; then
-        cp -r "$DEFAULTS_DIR/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
-        echo "  ✓ Created default plugins"
-    else
-        echo "  ℹ No plugins found"
-    fi
-fi
+# if [ -d "$HOST_CLAUDE/plugins" ] && [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
+#     cp -r "$HOST_CLAUDE/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
+#     # Fix line endings for any shell scripts in plugins
+#     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec sed -i 's/\r$//' {} \; 2>/dev/null || true
+#     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+#     PLUGIN_COUNT=$(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l)
+#     echo "  ✓ $PLUGIN_COUNT plugin(s) synced from host"
+# else
+#     # Copy default plugins if available
+#     if [ -d "$DEFAULTS_DIR/plugins" ] && [ "$(ls -A "$DEFAULTS_DIR/plugins" 2>/dev/null)" ]; then
+#         cp -r "$DEFAULTS_DIR/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
+#         echo "  ✓ Created default plugins"
+#     else
+#         echo "  ℹ No plugins found"
+#     fi
+# fi
 
 # ============================================================================
 # 6. MCP Configuration

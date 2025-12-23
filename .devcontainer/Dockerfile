@@ -92,7 +92,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
   rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
 
 # Copy domain allowlist and extract all domains (Issue #32)
-COPY data/allowable-domains.json /tmp/allowable-domains.json
+COPY skills/_shared/data/allowable-domains.json /tmp/allowable-domains.json
 RUN jq -r '[.categories | to_entries[] | .value | ((.domains // []), (.wildcard_domains // []), (.sub_categories // {} | to_entries[] | .value | (.domains // []), (.wildcard_domains // [])))] | flatten | unique | .[]' \
     /tmp/allowable-domains.json > /etc/claude-allowed-domains.txt && \
     rm /tmp/allowable-domains.json
