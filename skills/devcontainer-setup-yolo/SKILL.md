@@ -128,7 +128,83 @@ NO defaults - user makes ALL choices. Ask about everything.
 
 After planning phase approval:
 
-### Step 1: Copy Templates
+### DELEGATE TO GENERATOR AGENT
+
+**CRITICAL: Do NOT implement file generation directly. Use the specialized devcontainer-generator agent.**
+
+The devcontainer-generator agent has restricted tools (Bash, Read, Glob only - NO Write/Edit) which enforces the template-copy workflow. Attempting to implement directly may result in inconsistent file generation.
+
+**Use Task tool to invoke the agent:**
+
+```
+Use Task tool with:
+  subagent_type: "devcontainer-generator"
+  description: "Generate YOLO DevContainer files"
+  prompt: "Generate DevContainer files for YOLO mode with the following configuration:
+
+  Project name: <detected or user-provided name>
+  All languages: <full list of all languages from planning phase>
+  Services needed: <full list of all services from planning phase>
+  Mode: yolo
+  Firewall: <user-selected mode: disabled/permissive/strict>
+  Additional domains: <list of user-provided domains (if strict firewall)>
+  Proxy-friendly: <yes/no from user response>
+  Custom build args: <list of all custom build args>
+  Custom environment variables: <list of env vars>
+  Port forwarding: <list of ports>
+  Base image: <user-selected base image (official/unofficial)>
+  VS Code extensions: <list of all extensions>
+  MCP servers: <list of all MCP servers>
+
+  Follow the standard workflow:
+  1. Read templates from skills/_shared/templates/
+  2. Copy templates using cp commands
+  3. Select and copy appropriate firewall template (<firewall-mode>.sh)
+  4. Compose Dockerfile from base + ALL selected language partials
+  5. Configure ALL custom build args in docker-compose.yml
+  6. Customize firewall allowlist if strict mode
+  7. Replace ALL placeholders (PROJECT_NAME, NETWORK_NAME, BASE_IMAGE, custom values)
+  8. Set permissions on scripts
+  9. Enable ALL detected services in docker-compose.yml
+  10. Configure custom environment variables
+  11. Configure port forwarding
+  12. Verify all files created
+
+  For firewall customization (if strict), add ALL user domains to ALLOWED_DOMAINS:
+  ALLOWED_DOMAINS+=(
+      'domain1.com'      # [Category] Description
+      'domain2.com'      # [Category] Description
+  )
+
+  Report completion summary when done."
+```
+
+**Wait for agent completion before proceeding.**
+
+### After Agent Completion: Verification and Security Audit
+
+Once the devcontainer-generator agent completes, verify the output and perform security audit:
+
+```bash
+echo "=== File Verification ==="
+test -f docker-compose.yml && echo "✓ docker-compose.yml" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile && echo "✓ Dockerfile" || echo "✗ MISSING"
+test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json" || echo "✗ MISSING"
+test -f .devcontainer/init-firewall.sh && echo "✓ init-firewall.sh" || echo "✗ MISSING"
+test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh" || echo "✗ MISSING"
+```
+
+### Manual Implementation (Fallback Only)
+
+**ONLY use manual implementation if:**
+- User explicitly requests not to use agents
+- Agent invocation fails
+- Testing or debugging the workflow
+
+<details>
+<summary>Manual Implementation Steps (Click to Expand)</summary>
+
+#### Step 1: Copy Templates
 
 ```bash
 # Template location
@@ -166,7 +242,7 @@ esac
 chmod +x .devcontainer/setup-claude-credentials.sh .devcontainer/init-firewall.sh
 ```
 
-### Step 2: Configure Build Args
+#### Step 2: Configure Build Args
 
 If user selected custom build args, configure in docker-compose.yml:
 
@@ -182,7 +258,7 @@ services:
         # ... user-specified args
 ```
 
-### Step 3: Compose Dockerfile
+#### Step 3: Compose Dockerfile
 
 ```bash
 # Same composition function as other modes
@@ -214,7 +290,7 @@ compose_dockerfile() {
 compose_dockerfile "${ALL_LANGUAGES[@]}"
 ```
 
-### Step 4: Customize Firewall (if strict mode)
+#### Step 4: Customize Firewall (if strict mode)
 
 If strict firewall selected, edit `.devcontainer/init-firewall.sh` with user-provided allowlist:
 
@@ -226,7 +302,7 @@ ALLOWED_DOMAINS+=(
 )
 ```
 
-### Step 5: Customize ALL Placeholders
+#### Step 5: Customize ALL Placeholders
 
 Use Edit tool to replace:
 - `{{PROJECT_NAME}}` → actual project name
@@ -238,6 +314,8 @@ In files:
 - `docker-compose.yml`
 - `.devcontainer/devcontainer.json`
 - `.devcontainer/Dockerfile` (if using unofficial image)
+
+</details>
 
 ### Step 6: Verify Files Created
 
