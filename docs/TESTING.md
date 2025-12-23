@@ -21,7 +21,6 @@ cd tests/skill-validation
 
 The framework validates 4 sandbox setup modes:
 - `devcontainer-setup-basic` - Simple Docker Compose setup
-- `devcontainer-setup-intermediate` - Dockerfile-based with firewall
 - `devcontainer-setup-advanced` - Custom network isolation
 - `devcontainer-setup-yolo` - Full control with allowlists
 

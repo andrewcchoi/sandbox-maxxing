@@ -344,6 +344,6 @@ After planning phase, verify:
 
 ---
 
-**Version:** 1.0.0
+**Version:** 4.0.0
 **Last Updated:** 2025-12-22
 **Related:** Issue #49

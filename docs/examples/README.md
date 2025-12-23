@@ -36,7 +36,6 @@ examples/
 │
 ├── demo-app-shared/                 # Shared full-stack application code
 ├── demo-app-sandbox-basic/          # Demo app with Basic mode DevContainer
-├── demo-app-sandbox-intermediate/   # Demo app with Intermediate mode DevContainer
 ├── demo-app-sandbox-advanced/       # Demo app with Advanced mode DevContainer
 └── demo-app-sandbox-yolo/           # Demo app with YOLO mode DevContainer
 ```
@@ -72,7 +71,6 @@ examples/
 
 **Sandbox Examples**:
 - `demo-app-sandbox-basic/` - Basic mode (quick start, no firewall)
-- `demo-app-sandbox-intermediate/` - Intermediate mode (permissive firewall, message queue)
 - `demo-app-sandbox-advanced/` - Advanced mode (strict firewall, balanced)
 - `demo-app-sandbox-yolo/` - YOLO mode (full customization)
 
@@ -112,7 +110,6 @@ examples/
 **Setup time**: 2 minutes
 **Build time**: 2-3 minutes
 
-**Example**: `demo-app-sandbox-intermediate/`
 
 ### Advanced Mode - Production Development
 
@@ -346,7 +343,7 @@ sudo /usr/local/bin/init-firewall.sh
 ### Getting Help
 
 1. Check the example's README for specific guidance
-2. Review [TROUBLESHOOTING.md](../docs/features/TROUBLESHOOTING.md) in the repository root
+2. Review [TROUBLESHOOTING.md](../features/TROUBLESHOOTING.md) in the repository root
 3. Open an issue on GitHub (for bugs only)
 
 ## Directory Details
@@ -375,7 +372,6 @@ sudo /usr/local/bin/init-firewall.sh
 - No firewall (hypervisor isolation)
 - Perfect for quick start
 
-**demo-app-sandbox-intermediate/**: Full-stack with Intermediate mode
 - Platform-specific templates
 - Permissive firewall
 - Message queue (RabbitMQ)
@@ -401,7 +397,7 @@ sudo /usr/local/bin/init-firewall.sh
 - ✅ Use Advanced mode for production development with strict security
 - ✅ Try YOLO mode for maximum customization
 - 📖 Read mode-specific READMEs for detailed guides
-- 🔒 Review [security-model.md](../docs/features/security-model.md) for security best practices
+- 🔒 Review [security-model.md](../features/security-model.md) for security best practices
 - 🚀 Customize examples for your project needs
 
 ## About

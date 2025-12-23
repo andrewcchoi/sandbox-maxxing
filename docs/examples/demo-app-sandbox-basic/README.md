@@ -59,7 +59,7 @@ This example shows what the `sandbox-maxxing` plugin generates when run in Basic
    curl -fsSL https://claude.ai/install.sh | sh
    ```
 
-   > **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../docs/features/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
+   > **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../features/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
 
 4. **Start the Application**:
 
@@ -210,7 +210,6 @@ The new credentials will be saved in the container's `~/.claude` directory.
 If you need network-level security controls:
 
 **Intermediate Mode**: Add permissive firewall (no restrictions, but audit logging)
-- Copy configuration from `demo-app-sandbox-intermediate/`
 
 **Advanced Mode**: Add strict firewall with customizable allowlist
 - Copy configuration from `demo-app-sandbox-advanced/`
@@ -281,17 +280,16 @@ docker-compose down
 ## Related Examples
 
 - `examples/demo-app-shared/` - Uses shared Docker Compose services
-- `examples/demo-app-sandbox-intermediate/` - Intermediate mode with permissive firewall
 - `examples/demo-app-sandbox-advanced/` - Advanced mode with strict firewall
 - `examples/demo-app-sandbox-yolo/` - YOLO mode with full customization
 - `examples/streamlit-sandbox-basic/` - Simpler Python-only app
 
 ## Learn More
 
-- [Claude Code Sandbox Documentation](../../docs/)
-- [Security Model](../../docs/features/security-model.md)
-- [Development Guide](../../DEVELOPMENT.md)
-- [Contributing](../../CONTRIBUTING.md)
+- [Claude Code Sandbox Documentation](../../)
+- [Security Model](../../features/security-model.md)
+- [Development Guide](../../../DEVELOPMENT.md)
+- [Contributing](../../../CONTRIBUTING.md)
 
 ## License
 

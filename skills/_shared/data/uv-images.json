@@ -14,21 +14,21 @@
       "description": "Alpine Linux base - smallest image size (~40MB)",
       "recommended_for": [
         "basic",
-        "intermediate",
+        
         "advanced"
       ]
     },
     "debian-slim": {
       "description": "Debian slim base - balance of size and compatibility",
       "recommended_for": [
-        "intermediate",
+        
         "advanced"
       ]
     },
     "bookworm": {
       "description": "Debian Bookworm (12) - stable release",
       "recommended_for": [
-        "intermediate",
+        
         "advanced"
       ]
     },
@@ -56,7 +56,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:alpine"
@@ -77,7 +77,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:alpine3.21"
@@ -98,7 +98,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:alpine3.22"
@@ -203,7 +203,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.10-alpine"
@@ -224,7 +224,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.10-alpine3.23"
@@ -286,7 +286,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.11-alpine"
@@ -307,7 +307,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.11-alpine3.23"
@@ -369,7 +369,7 @@
       ],
       "recommended_tier": [
         "basic",
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.12-alpine"
@@ -391,7 +391,7 @@
       ],
       "recommended_tier": [
         "basic",
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.12-alpine3.23"
@@ -453,7 +453,7 @@
       ],
       "recommended_tier": [
         "basic",
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.13-alpine"
@@ -475,7 +475,7 @@
       ],
       "recommended_tier": [
         "basic",
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.13-alpine3.23"
@@ -537,7 +537,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.14-alpine"
@@ -558,7 +558,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.14-alpine3.23"
@@ -619,7 +619,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.8-alpine"
@@ -640,7 +640,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.8-alpine3.20"
@@ -681,7 +681,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.9-alpine"
@@ -702,7 +702,7 @@
         "linux/arm64"
       ],
       "recommended_tier": [
-        "intermediate",
+        
         "advanced"
       ],
       "pull_command": "docker pull astral/uv:python3.9-alpine3.22"
@@ -773,14 +773,6 @@
     "basic": [
       "python3.12-alpine",
       "python3.13-alpine"
-    ],
-    "intermediate": [
-      "python3.11-alpine",
-      "python3.11-alpine3.23",
-      "python3.12-alpine",
-      "python3.12-alpine3.23",
-      "python3.13-alpine",
-      "python3.13-alpine3.23"
     ],
     "advanced": [
       "python3.10-alpine",

@@ -18,7 +18,7 @@
         "arm64": 318.74
       },
       "description": "Latest stable release",
-      "recommended_tier": ["basic", "intermediate"],
+      "recommended_tier": ["basic"],
       "pull_command": "docker pull docker/sandbox-templates:latest"
     },
     {
@@ -30,7 +30,7 @@
         "arm64": 358.0
       },
       "description": "Optimized for Claude Code",
-      "recommended_tier": ["basic", "intermediate", "advanced"],
+      "recommended_tier": ["basic", "advanced"],
       "pull_command": "docker pull docker/sandbox-templates:claude-code"
     },
     {
@@ -42,7 +42,7 @@
         "arm64": 312.74
       },
       "description": "Ubuntu base with Python",
-      "recommended_tier": ["basic", "intermediate"],
+      "recommended_tier": ["basic"],
       "pull_command": "docker pull docker/sandbox-templates:ubuntu-python"
     },
     {
@@ -66,7 +66,7 @@
         "arm64": 318.74
       },
       "description": "Version 0.1.0 stable",
-      "recommended_tier": ["basic", "intermediate", "advanced"],
+      "recommended_tier": ["basic", "advanced"],
       "pull_command": "docker pull docker/sandbox-templates:0.1.0"
     },
     {
@@ -90,7 +90,7 @@
         "arm64": 310.17
       },
       "description": "Agent-focused template",
-      "recommended_tier": ["intermediate", "advanced"],
+      "recommended_tier": ["advanced"],
       "pull_command": "docker pull docker/sandbox-templates:cagent"
     },
     {
@@ -102,7 +102,7 @@
         "arm64": 348.91
       },
       "description": "Cursor agent template",
-      "recommended_tier": ["intermediate", "advanced"],
+      "recommended_tier": ["advanced"],
       "pull_command": "docker pull docker/sandbox-templates:cursor-agent"
     },
     {
@@ -114,7 +114,7 @@
         "arm64": 412.48
       },
       "description": "Gemini integration template",
-      "recommended_tier": ["intermediate", "advanced"],
+      "recommended_tier": ["advanced"],
       "pull_command": "docker pull docker/sandbox-templates:gemini"
     },
     {
@@ -126,7 +126,7 @@
         "arm64": 494.66
       },
       "description": "Kiro template",
-      "recommended_tier": ["intermediate", "advanced"],
+      "recommended_tier": ["advanced"],
       "pull_command": "docker pull docker/sandbox-templates:kiro"
     }
   ]

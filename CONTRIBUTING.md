@@ -56,7 +56,6 @@ Note: Without the devcontainer, you won't be able to fully test the example appl
 
 Skills are located in the `skills/` directory:
 - `devcontainer-setup-basic/SKILL.md` - Basic mode setup
-- `devcontainer-setup-intermediate/SKILL.md` - Intermediate mode setup
 - `devcontainer-setup-advanced/SKILL.md` - Advanced mode setup
 - `devcontainer-setup-yolo/SKILL.md` - YOLO mode setup
 - `sandbox-troubleshoot/SKILL.md` - Troubleshooting assistant
@@ -102,7 +101,6 @@ The `docs/examples/` directory contains working applications that validate the p
 #### Demo Blog Application
 - **Shared**: `docs/examples/demo-app-shared/` - Full-stack application code
 - **Basic Mode**: `docs/examples/demo-app-sandbox-basic/` - Minimal DevContainer configuration
-- **Intermediate Mode**: `docs/examples/demo-app-sandbox-intermediate/` - Standard DevContainer with permissive firewall
 - **Advanced Mode**: `docs/examples/demo-app-sandbox-advanced/` - Balanced DevContainer with customization
 - **YOLO Mode**: `docs/examples/demo-app-sandbox-yolo/` - Full-control DevContainer with comprehensive tooling
 

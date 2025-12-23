@@ -104,7 +104,74 @@ During planning, ask these 7-10 questions with brief explanations:
 
 After planning phase approval:
 
-### Step 1: Copy Templates
+### DELEGATE TO GENERATOR AGENT
+
+**CRITICAL: Do NOT implement file generation directly. Use the specialized devcontainer-generator agent.**
+
+The devcontainer-generator agent has restricted tools (Bash, Read, Glob only - NO Write/Edit) which enforces the template-copy workflow. Attempting to implement directly may result in inconsistent file generation.
+
+**Use Task tool to invoke the agent:**
+
+```
+Use Task tool with:
+  subagent_type: "devcontainer-generator"
+  description: "Generate advanced DevContainer files"
+  prompt: "Generate DevContainer files for advanced mode with the following configuration:
+
+  Project name: <detected or user-provided name>
+  Detected languages: <list of languages from planning phase>
+  Services needed: <list of services from planning phase>
+  Mode: advanced
+  Firewall: strict (strict.sh)
+  Additional domains: <list of user-provided additional domains>
+  Proxy-friendly: <yes/no from user response>
+
+  Follow the standard workflow:
+  1. Read templates from skills/_shared/templates/
+  2. Copy templates using cp commands
+  3. Compose Dockerfile from base + partials
+  4. Configure proxy-friendly build args if needed
+  5. Customize firewall allowlist with additional domains
+  6. Replace placeholders (PROJECT_NAME, NETWORK_NAME)
+  7. Set permissions on scripts
+  8. Enable detected services in docker-compose.yml
+  9. Verify all files created
+
+  For firewall customization, add user-provided domains to ALLOWED_DOMAINS array:
+  ALLOWED_DOMAINS+=(
+      'domain1.com'      # [Category] Description
+      'domain2.com'      # [Category] Description
+  )
+
+  Report completion summary when done."
+```
+
+**Wait for agent completion before proceeding.**
+
+### After Agent Completion: Verification and Security Audit
+
+Once the devcontainer-generator agent completes, verify the output and perform security checks:
+
+```bash
+echo "=== File Verification ==="
+test -f docker-compose.yml && echo "✓ docker-compose.yml" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile && echo "✓ Dockerfile" || echo "✗ MISSING"
+test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json" || echo "✗ MISSING"
+test -f .devcontainer/init-firewall.sh && echo "✓ init-firewall.sh" || echo "✗ MISSING"
+test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh" || echo "✗ MISSING"
+```
+
+### Manual Implementation (Fallback Only)
+
+**ONLY use manual implementation if:**
+- User explicitly requests not to use agents
+- Agent invocation fails
+- Testing or debugging the workflow
+
+<details>
+<summary>Manual Implementation Steps (Click to Expand)</summary>
+
+#### Step 1: Copy Templates
 
 ```bash
 # Template location
@@ -127,7 +194,7 @@ cp "$TEMPLATES/init-firewall/strict.sh" .devcontainer/init-firewall.sh
 chmod +x .devcontainer/setup-claude-credentials.sh .devcontainer/init-firewall.sh
 ```
 
-### Step 2: Configure Proxy-Friendly Build (if needed)
+#### Step 2: Configure Proxy-Friendly Build (if needed)
 
 If user is behind proxy, configure build args in docker-compose.yml:
 
@@ -140,7 +207,7 @@ services:
         INSTALL_DEV_TOOLS: "false"
 ```
 
-### Step 3: Compose Dockerfile
+#### Step 3: Compose Dockerfile
 
 ```bash
 # Same composition function as Basic mode
@@ -172,7 +239,7 @@ compose_dockerfile() {
 compose_dockerfile "${DETECTED_LANGUAGES[@]}"
 ```
 
-### Step 4: Customize Firewall Allowlist
+#### Step 4: Customize Firewall Allowlist
 
 Edit `.devcontainer/init-firewall.sh` to add project-specific domains to ALLOWED_DOMAINS array:
 
@@ -184,7 +251,7 @@ ALLOWED_DOMAINS+=(
 )
 ```
 
-### Step 5: Customize Placeholders
+#### Step 5: Customize Placeholders
 
 Use Edit tool to replace:
 - `{{PROJECT_NAME}}` → actual project name
@@ -193,6 +260,8 @@ Use Edit tool to replace:
 In files:
 - `docker-compose.yml`
 - `.devcontainer/devcontainer.json`
+
+</details>
 
 ### Step 6: Verify Files Created
 

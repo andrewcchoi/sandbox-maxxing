@@ -83,7 +83,64 @@ During planning, ask only if auto-detection fails:
 
 After planning phase approval:
 
-### Step 1: Copy Templates
+### DELEGATE TO GENERATOR AGENT
+
+**CRITICAL: Do NOT implement file generation directly. Use the specialized devcontainer-generator agent.**
+
+The devcontainer-generator agent has restricted tools (Bash, Read, Glob only - NO Write/Edit) which enforces the template-copy workflow. Attempting to implement directly may result in inconsistent file generation.
+
+**Use Task tool to invoke the agent:**
+
+```
+Use Task tool with:
+  subagent_type: "devcontainer-generator"
+  description: "Generate basic DevContainer files"
+  prompt: "Generate DevContainer files for basic mode with the following configuration:
+
+  Project name: <detected or user-provided name>
+  Detected languages: <list of languages from planning phase>
+  Services needed: <list of services from planning phase>
+  Mode: basic
+  Firewall: disabled (disabled.sh)
+
+  Follow the standard workflow:
+  1. Read templates from skills/_shared/templates/
+  2. Copy templates using cp commands
+  3. Compose Dockerfile from base + partials
+  4. Replace placeholders (PROJECT_NAME, NETWORK_NAME)
+  5. Set permissions on scripts
+  6. Enable detected services in docker-compose.yml
+  7. Verify all files created
+
+  Report completion summary when done."
+```
+
+**Wait for agent completion before proceeding.**
+
+### After Agent Completion: Verification
+
+Once the devcontainer-generator agent completes, verify the output:
+
+```bash
+echo "=== File Verification ==="
+test -f docker-compose.yml && echo "✓ docker-compose.yml" || echo "✗ MISSING"
+test -f .devcontainer/Dockerfile && echo "✓ Dockerfile" || echo "✗ MISSING"
+test -f .devcontainer/devcontainer.json && echo "✓ devcontainer.json" || echo "✗ MISSING"
+test -f .devcontainer/init-firewall.sh && echo "✓ init-firewall.sh" || echo "✗ MISSING"
+test -f .devcontainer/setup-claude-credentials.sh && echo "✓ setup-claude-credentials.sh" || echo "✗ MISSING"
+```
+
+### Manual Implementation (Fallback Only)
+
+**ONLY use manual implementation if:**
+- User explicitly requests not to use agents
+- Agent invocation fails
+- Testing or debugging the workflow
+
+<details>
+<summary>Manual Implementation Steps (Click to Expand)</summary>
+
+#### Step 1: Copy Templates
 
 ```bash
 # Template location
@@ -106,7 +163,7 @@ cp "$TEMPLATES/init-firewall/disabled.sh" .devcontainer/init-firewall.sh
 chmod +x .devcontainer/setup-claude-credentials.sh .devcontainer/init-firewall.sh
 ```
 
-### Step 2: Compose Dockerfile
+#### Step 2: Compose Dockerfile
 
 ```bash
 # Compose Dockerfile from base + detected language partials
@@ -140,7 +197,7 @@ compose_dockerfile() {
 compose_dockerfile "$TEMPLATES/base.dockerfile" ".devcontainer/Dockerfile" "${DETECTED_LANGUAGES[@]}"
 ```
 
-### Step 3: Customize Placeholders
+#### Step 3: Customize Placeholders
 
 Use Edit tool to replace:
 - `{{PROJECT_NAME}}` → actual project name
@@ -149,6 +206,8 @@ Use Edit tool to replace:
 In files:
 - `docker-compose.yml`
 - `.devcontainer/devcontainer.json`
+
+</details>
 
 ### Step 4: Verify Files Created
 

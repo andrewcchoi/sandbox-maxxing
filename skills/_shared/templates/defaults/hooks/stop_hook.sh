@@ -2,12 +2,6 @@
 ###
 # Claude Code Stop Hook - LangSmith Tracing Integration
 # Sends Claude Code traces to LangSmith after each response.
-# stop_hook.sh processes Claude Code’s generated conversation 
-# transcripts and sends traces to LangSmith. Create the 
-# file ~/.claude/hooks/stop_hook.sh with the following script:
-# Make it executable:
-# chmod +x ~/.claude/hooks/stop_hook.sh
-# https://docs.langchain.com/langsmith/trace-claude-code
 ###
 
 set -e
@@ -38,7 +32,7 @@ if [ "$(echo "$TRACE_TO_LANGSMITH" | tr '[:upper:]' '[:lower:]')" != "true" ]; t
     exit 0
 fi
 
-# Required commands (uuidgen has fallbacks, so not required)
+# Required commands (uuidgen has fallbacks via get_uuid, so not required)
 for cmd in jq curl; do
     if ! command -v "$cmd" &> /dev/null; then
         echo "Error: $cmd is required but not installed" >&2
@@ -48,7 +42,7 @@ done
 
 # Config (continued)
 API_KEY="${CC_LANGSMITH_API_KEY:-$LANGSMITH_API_KEY}"
-NAME_BASE="${CLAUDE_CODE_TEAM:-acdc}"
+PROJECT_BASE="${CC_LANGSMITH_PROJECT:-claude-code}"
 API_BASE="https://api.smith.langchain.com"
 STATE_FILE="$HOME/.claude/state/langsmith_state.json"
 
@@ -88,8 +82,7 @@ detect_environment() {
 detect_environment
 
 # Build project name with environment label
-TRACE_NAME="${NAME_BASE}-${ENV_LABEL}"
-PROJECT="${CC_LANGSMITH_PROJECT}"
+PROJECT="${PROJECT_BASE}-${ENV_LABEL}"
 
 # Global variables
 CURRENT_TURN_ID=""  # Track current turn run for cleanup on exit
@@ -111,9 +104,6 @@ get_microseconds() {
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS fallback: use Python for microseconds
         python3 -c "import time; print(str(int(time.time() * 1000000) % 1000000).zfill(6))"
-    elif [[ "$OSTYPE" == "msys"* ]] || [[ "$OSTYPE" == "cygwin"* ]]; then
-        # Git Bash/MSYS2 includes GNU date
-        date +%6N
     else
         # Linux/GNU date
         date +%6N
@@ -125,9 +115,6 @@ get_file_size() {
     local file="$1"
     if [[ "$OSTYPE" == "darwin"* ]]; then
         stat -f%z "$file"
-    elif [[ "$OSTYPE" == "msys"* ]] || [[ "$OSTYPE" == "cygwin"* ]]; then
-        # Git Bash uses GNU stat
-        stat -c%s "$file"
     else
         stat -c%s "$file"
     fi
@@ -485,7 +472,7 @@ create_trace() {
     turn_data=$(jq -n \
         --arg id "$turn_id" \
         --arg trace_id "$turn_id" \
-        --arg name "$TRACE_NAME" \
+        --arg name "Claude Code" \
         --arg project "$PROJECT" \
         --arg session "$session_id" \
         --arg time "$now" \

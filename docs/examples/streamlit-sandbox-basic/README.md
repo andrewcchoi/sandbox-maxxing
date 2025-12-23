@@ -54,7 +54,7 @@ code .
 curl -fsSL https://claude.ai/install.sh | sh
 ```
 
-> **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../docs/features/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
+> **Note:** Claude Code must be reinstalled each time the devcontainer is rebuilt. If you're in an offline or air-gapped environment where the installation script cannot be reached, see [TROUBLESHOOTING.md](../../features/TROUBLESHOOTING.md#claude-code-installation) for alternative installation methods.
 
 ### Run the App
 
@@ -128,7 +128,6 @@ The new credentials will be saved in the container's `~/.claude` directory.
 - **Advanced mode**: 5-7 questions, configurable Dockerfile with build args, 5 VS Code extensions
 - **YOLO mode**: 10-15+ questions, technology-optimized Dockerfile, 11 extensions, production-ready configs
 
-See `examples/demo-app-sandbox-intermediate/`, `examples/demo-app-sandbox-advanced/`, and `examples/demo-app-sandbox-yolo/` for comparisons.
 
 ## Troubleshooting
 
@@ -144,7 +143,7 @@ See `examples/demo-app-sandbox-intermediate/`, `examples/demo-app-sandbox-advanc
 - Or stop conflicting service: `lsof -ti:8501 | xargs kill -9`
 
 **Claude Code installation issues:**
-- See [TROUBLESHOOTING.md](../../docs/features/TROUBLESHOOTING.md#claude-code-installation) for offline installation methods
+- See [TROUBLESHOOTING.md](../../features/TROUBLESHOOTING.md#claude-code-installation) for offline installation methods
 - Verify installation: `claude --version`
 
 **Services not starting:**
@@ -152,7 +151,7 @@ See `examples/demo-app-sandbox-intermediate/`, `examples/demo-app-sandbox-advanc
 - Verify disk space: `docker system df`
 - Rebuild container: Press F1 → "Dev Containers: Rebuild Container"
 
-For more help, see [../../docs/features/TROUBLESHOOTING.md](../../docs/features/TROUBLESHOOTING.md)
+For more help, see [../../features/TROUBLESHOOTING.md](../../features/TROUBLESHOOTING.md)
 
 ## Next Steps
 

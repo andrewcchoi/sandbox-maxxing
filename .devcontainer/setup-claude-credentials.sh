@@ -1,12 +1,12 @@
 #!/bin/bash
 # ============================================================================
 # Enhanced Claude Code Credentials & Settings Persistence
-# Issue #30 Extended - Full Configuration Sync
+# Issue #30 Extended - Full Configuration Sync (Unified Template)
 # ============================================================================
 #
 # This script copies ALL Claude Code configuration files from the host
 # machine into the DevContainer. This includes credentials, settings,
-# plugins, MCP config, and environment variables.
+# hooks, state, plugins, MCP config, and environment variables.
 #
 # Required docker-compose.yml configuration:
 #   volumes:
@@ -23,7 +23,10 @@ HOST_CLAUDE="/tmp/host-claude"
 HOST_ENV="/tmp/host-env"
 HOST_GH="/tmp/host-gh"
 GH_CONFIG_DIR="$HOME/.config/gh"
-DEFAULTS_DIR="/workspace/.devcontainer/defaults"
+
+# Configurable defaults directory - points to template defaults by default
+# Override via: DEFAULTS_DIR=/custom/path ./setup-claude-credentials.sh
+DEFAULTS_DIR="${DEFAULTS_DIR:-/workspace/skills/_shared/templates/defaults}"
 
 echo "================================================================"
 echo "Setting up Claude Code environment..."
@@ -35,13 +38,14 @@ echo "================================================================"
 mkdir -p "$CLAUDE_DIR"
 mkdir -p "$CLAUDE_DIR/hooks"
 mkdir -p "$CLAUDE_DIR/state"
+mkdir -p "$CLAUDE_DIR/plugins"
 mkdir -p "$CLAUDE_DIR/mcp"
 
 # ============================================================================
 # 2. Core Configuration Files
 # ============================================================================
 echo ""
-echo "[1/7] Copying core configuration files..."
+echo "[1/8] Copying core configuration files..."
 
 for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json" ".mcp.json"; do
     if [ -f "$HOST_CLAUDE/$config_file" ]; then
@@ -55,7 +59,7 @@ done
 # 3. Hooks Directory
 # ============================================================================
 echo ""
-echo "[2/7] Syncing hooks directory..."
+echo "[2/8] Syncing hooks directory..."
 
 if [ -d "$HOST_CLAUDE/hooks" ] && [ "$(ls -A "$HOST_CLAUDE/hooks" 2>/dev/null)" ]; then
     cp -r "$HOST_CLAUDE/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
@@ -85,7 +89,7 @@ fi
 # 4. State Directory
 # ============================================================================
 echo ""
-echo "[3/7] Syncing state directory..."
+echo "[3/8] Syncing state directory..."
 
 if [ -d "$HOST_CLAUDE/state" ] && [ "$(ls -A "$HOST_CLAUDE/state" 2>/dev/null)" ]; then
     cp -r "$HOST_CLAUDE/state/"* "$CLAUDE_DIR/state/" 2>/dev/null || true
@@ -105,10 +109,34 @@ else
 fi
 
 # ============================================================================
-# 5. MCP Configuration
+# 5. Plugins Directory
 # ============================================================================
 echo ""
-echo "[4/7] Syncing MCP configuration..."
+echo "[4/8] Syncing plugins directory..."
+echo "Skip..."
+
+# if [ -d "$HOST_CLAUDE/plugins" ] && [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
+#     cp -r "$HOST_CLAUDE/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
+#     # Fix line endings for any shell scripts in plugins
+#     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec sed -i 's/\r$//' {} \; 2>/dev/null || true
+#     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+#     PLUGIN_COUNT=$(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l)
+#     echo "  ✓ $PLUGIN_COUNT plugin(s) synced from host"
+# else
+#     # Copy default plugins if available
+#     if [ -d "$DEFAULTS_DIR/plugins" ] && [ "$(ls -A "$DEFAULTS_DIR/plugins" 2>/dev/null)" ]; then
+#         cp -r "$DEFAULTS_DIR/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
+#         echo "  ✓ Created default plugins"
+#     else
+#         echo "  ℹ No plugins found"
+#     fi
+# fi
+
+# ============================================================================
+# 6. MCP Configuration
+# ============================================================================
+echo ""
+echo "[5/8] Syncing MCP configuration..."
 
 # Copy .mcp.json if exists (already handled above, but check for mcp/ dir)
 if [ -d "$HOST_CLAUDE/mcp" ]; then
@@ -124,10 +152,10 @@ else
 fi
 
 # ============================================================================
-# 6. Environment Variables (Optional)
+# 7. Environment Variables (Optional)
 # ============================================================================
 echo ""
-echo "[5/7] Loading environment variables..."
+echo "[6/8] Loading environment variables..."
 
 if [ -f "$HOST_ENV/.env.claude" ]; then
     # Source environment variables
@@ -146,10 +174,10 @@ else
 fi
 
 # ============================================================================
-# 7. GitHub CLI Authentication (Optional)
+# 8. GitHub CLI Authentication (Optional)
 # ============================================================================
 echo ""
-echo "[6/7] Setting up GitHub CLI authentication..."
+echo "[7/8] Setting up GitHub CLI authentication..."
 
 if [ -d "$HOST_GH" ]; then
     mkdir -p "$GH_CONFIG_DIR"
@@ -173,10 +201,38 @@ else
 fi
 
 # ============================================================================
-# 8. Fix Permissions
+# 9. Copy Hooks for Linux Container (Optional)
 # ============================================================================
 echo ""
-echo "[7/7] Setting permissions..."
+echo "[8/9] Setting up hooks..."
+
+HOOKS_SRC="/workspace/.devcontainer/defaults/hooks"
+HOOKS_DST="$CLAUDE_DIR/hooks"
+
+if [ -d "$HOOKS_SRC" ]; then
+    mkdir -p "$HOOKS_DST"
+    HOOKS_COPIED=0
+    for hook in "$HOOKS_SRC"/*.sh; do
+        if [ -f "$hook" ]; then
+            cp "$hook" "$HOOKS_DST/"
+            chmod +x "$HOOKS_DST/$(basename "$hook")"
+            HOOKS_COPIED=$((HOOKS_COPIED + 1))
+        fi
+    done
+    if [ $HOOKS_COPIED -gt 0 ]; then
+        echo "  ✓ $HOOKS_COPIED hook(s) copied"
+    else
+        echo "  ℹ No hooks found"
+    fi
+else
+    echo "  ℹ No hooks directory (optional)"
+fi
+
+# ============================================================================
+# 10. Fix Permissions
+# ============================================================================
+echo ""
+echo "[9/9] Setting permissions..."
 
 chown -R "$(id -u):$(id -g)" "$CLAUDE_DIR" 2>/dev/null || true
 chown -R "$(id -u):$(id -g)" "$GH_CONFIG_DIR" 2>/dev/null || true
@@ -192,6 +248,7 @@ echo "================================================================"
 echo "  Config directory: $CLAUDE_DIR"
 echo "  Hooks: $(ls -1 "$CLAUDE_DIR/hooks" 2>/dev/null | wc -l) installed"
 echo "  State files: $(ls -1 "$CLAUDE_DIR/state" 2>/dev/null | wc -l) configured"
+echo "  Plugins: $(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l) installed"
 echo "  MCP servers: $(ls -1 "$CLAUDE_DIR/mcp" 2>/dev/null | wc -l) configured"
 if [ -f "$GH_CONFIG_DIR/hosts.yml" ]; then
     echo "  GitHub CLI: ✓ Authenticated"

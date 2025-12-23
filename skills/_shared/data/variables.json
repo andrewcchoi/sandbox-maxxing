@@ -22,7 +22,7 @@
           "description": "Python version to install",
           "type": "ARG",
           "default": "3.12",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public",
           "examples": ["3.11", "3.12", "3.13"]
         },
@@ -30,7 +30,7 @@
           "description": "Node.js version to install",
           "type": "ARG",
           "default": "20",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public",
           "examples": ["18", "20", "22"]
         },
@@ -77,7 +77,7 @@
           "description": "Claude Code CLI version to install",
           "type": "ARG",
           "default": "latest",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public",
           "examples": ["latest", "0.1.0", "0.2.0"]
         }
@@ -199,7 +199,7 @@
           "description": "MySQL root password",
           "type": "COMPOSE",
           "default": "rootpassword",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "secret",
           "warning": "Never commit real passwords! Use Docker secrets."
         },
@@ -207,21 +207,21 @@
           "description": "MySQL database name",
           "type": "COMPOSE",
           "default": "sandbox_dev",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public"
         },
         "MYSQL_USER": {
           "description": "MySQL application user",
           "type": "COMPOSE",
           "default": "sandbox_user",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "sensitive"
         },
         "MYSQL_PASSWORD": {
           "description": "MySQL application user password",
           "type": "COMPOSE",
           "default": "devpassword",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "secret",
           "warning": "Never commit real passwords! Use Docker secrets."
         },
@@ -229,14 +229,14 @@
           "description": "MongoDB root username",
           "type": "COMPOSE",
           "default": "root",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "sensitive"
         },
         "MONGO_INITDB_ROOT_PASSWORD": {
           "description": "MongoDB root password",
           "type": "COMPOSE",
           "default": "rootpassword",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "secret",
           "warning": "Never commit real passwords! Use Docker secrets."
         },
@@ -244,7 +244,7 @@
           "description": "MongoDB initial database",
           "type": "COMPOSE",
           "default": "sandbox_dev",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public"
         }
       }
@@ -279,34 +279,34 @@
           "description": "Memcached host",
           "type": "ENV",
           "default": "memcached",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public"
         },
         "MEMCACHED_PORT": {
           "description": "Memcached port",
           "type": "ENV",
           "default": "11211",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public"
         }
       }
     },
     "messaging": {
       "description": "Message queue and broker configuration",
-      "mode_minimum": "intermediate",
+      "mode_minimum": "advanced",
       "variables": {
         "RABBITMQ_DEFAULT_USER": {
           "description": "RabbitMQ username",
           "type": "COMPOSE",
           "default": "guest",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "sensitive"
         },
         "RABBITMQ_DEFAULT_PASS": {
           "description": "RabbitMQ password",
           "type": "COMPOSE",
           "default": "guest",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "secret",
           "warning": "Change default password for production!"
         },
@@ -314,7 +314,7 @@
           "description": "RabbitMQ host",
           "type": "ENV",
           "default": "rabbitmq",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public"
         },
         "KAFKA_BROKER": {
@@ -399,7 +399,7 @@
           "description": "GitHub personal access token (use VS Code input variable!)",
           "type": "VS_CODE_INPUT",
           "default": null,
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "secret",
           "warning": "CRITICAL: Use VS Code input variables with password:true, never commit!"
         },
@@ -453,7 +453,7 @@
           "description": "Firewall logging level",
           "type": "ENV",
           "default": "info",
-          "mode_minimum": "intermediate",
+          "mode_minimum": "advanced",
           "security_level": "public",
           "examples": ["debug", "info", "warning", "error"]
         }
@@ -477,10 +477,6 @@
     "basic": {
       "variable_count": 5,
       "categories": ["build", "runtime", "database", "cache"]
-    },
-    "intermediate": {
-      "variable_count": 8,
-      "categories": ["build", "runtime", "database", "cache", "messaging"]
     },
     "advanced": {
       "variable_count": 12,
