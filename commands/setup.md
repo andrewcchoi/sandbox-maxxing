@@ -27,11 +27,9 @@ SELECTED_CATEGORIES=()
 
 ```bash
 echo ""
-echo "╔══════════════════════════════════════════╗"
-echo "║  BASE STACK (always included)            ║"
-echo "║  • Python 3.12                           ║"
-echo "║  • Node 20                               ║"
-echo "╚══════════════════════════════════════════╝"
+echo "--- Base Stack ---"
+echo "Python 3.12 + Node 20"
+echo "------------------"
 echo ""
 ```
 
@@ -409,4 +407,4 @@ echo "=========================================="
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.4.2 (UX: Clarify Base Stack)
+**Version:** 4.4.3 (Compact Banner)

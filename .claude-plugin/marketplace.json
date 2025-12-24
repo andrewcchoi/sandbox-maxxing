@@ -9,7 +9,7 @@
     {
       "name": "devcontainer-setup",
       "description": "Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Build multi-stack environments by selecting multiple languages (Go, Rust, Java, Ruby, PHP, C++, PostgreSQL tools) with optional network firewall.",
-      "version": "4.4.2",
+      "version": "4.4.3",
       "source": "./",
       "author": {
         "name": "shadow developer"
