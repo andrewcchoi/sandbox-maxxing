@@ -23,22 +23,25 @@ allowed-tools: [Bash]
 ### Step 1: Find Plugin Directory
 
 ```bash
-# Method 1: Use CLAUDE_PLUGIN_ROOT if available
-if [ -n "${CLAUDE_PLUGIN_ROOT}" ]; then
-  PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT}"
+# Disable history expansion (fixes ! in Windows paths)
+set +H 2>/dev/null || true
+
+# Handle Windows paths - convert backslashes to forward slashes
+PLUGIN_ROOT=""
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+  PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT//\\//}"
   echo "Using CLAUDE_PLUGIN_ROOT: $PLUGIN_ROOT"
-# Method 2: Find plugin in installed location
-elif FOUND_ROOT=$(find ~/.claude/plugins -type f -name "plugin.json" -exec grep -l '"name": "devcontainer-setup"' {} \; 2>/dev/null | head -1 | xargs dirname 2>/dev/null); then
-  PLUGIN_ROOT="$FOUND_ROOT"
-  echo "Found installed plugin: $PLUGIN_ROOT"
-# Method 3: Fall back to current directory
-elif [ -f skills/_shared/templates/base.dockerfile ]; then
+elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
   PLUGIN_ROOT="."
   echo "Using current directory as plugin root"
-else
-  echo "ERROR: Cannot locate plugin templates"
-  exit 1
+elif [ -d "$HOME/.claude/plugins" ]; then
+  PLUGIN_ROOT=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
+    -exec grep -l '"name": "devcontainer-setup"' {} \; 2>/dev/null | \
+    head -1 | xargs -r dirname 2>/dev/null) || true
+  [ -n "$PLUGIN_ROOT" ] && echo "Found installed plugin: $PLUGIN_ROOT"
 fi
+
+[ -z "$PLUGIN_ROOT" ] && { echo "ERROR: Cannot locate plugin templates"; exit 1; }
 ```
 
 ### Step 2: Copy Templates and Process Placeholders
@@ -57,8 +60,10 @@ cp "$TEMPLATES/devcontainer.json" .devcontainer/
 cp "$TEMPLATES/docker-compose.yml" ./
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
 
-# Replace placeholders
-sed -i "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" .devcontainer/devcontainer.json docker-compose.yml
+# Replace placeholders (portable sed without -i)
+for f in .devcontainer/devcontainer.json docker-compose.yml; do
+  sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+done
 
 # Make scripts executable
 chmod +x .devcontainer/*.sh
@@ -84,5 +89,5 @@ echo "=========================================="
 
 ---
 
-**Last Updated:** 2025-12-23
-**Version:** 4.3.2 (Quick Setup Path)
+**Last Updated:** 2025-12-24
+**Version:** 4.4.1 (Windows/Cross-Platform Compatibility)

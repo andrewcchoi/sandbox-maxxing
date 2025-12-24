@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ============================================================================
 # Enhanced Claude Code Credentials & Settings Persistence
 # Issue #30 Extended - Full Configuration Sync (Unified Template)
@@ -64,9 +64,11 @@ echo "[2/8] Syncing hooks directory..."
 if [ -d "$HOST_CLAUDE/hooks" ] && [ "$(ls -A "$HOST_CLAUDE/hooks" 2>/dev/null)" ]; then
     cp -r "$HOST_CLAUDE/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
     chmod +x "$CLAUDE_DIR/hooks/"*.sh 2>/dev/null || true
-    # Fix line endings (convert CRLF to LF)
+    # Fix line endings (convert CRLF to LF) - portable sed
     for hook in "$CLAUDE_DIR/hooks/"*.sh; do
-        [ -f "$hook" ] && sed -i 's/\r$//' "$hook" 2>/dev/null || true
+        if [ -f "$hook" ]; then
+            sed 's/\r$//' "$hook" > "$hook.tmp" && mv "$hook.tmp" "$hook" 2>/dev/null || true
+        fi
     done
     HOOKS_COUNT=$(ls -1 "$CLAUDE_DIR/hooks" 2>/dev/null | wc -l)
     echo "  ✓ $HOOKS_COUNT hook(s) synced from host"
@@ -75,9 +77,11 @@ else
     if [ -d "$DEFAULTS_DIR/hooks" ]; then
         cp -r "$DEFAULTS_DIR/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
         chmod +x "$CLAUDE_DIR/hooks/"*.sh 2>/dev/null || true
-        # Fix line endings (convert CRLF to LF)
+        # Fix line endings (convert CRLF to LF) - portable sed
         for hook in "$CLAUDE_DIR/hooks/"*.sh; do
-            [ -f "$hook" ] && sed -i 's/\r$//' "$hook" 2>/dev/null || true
+            if [ -f "$hook" ]; then
+                sed 's/\r$//' "$hook" > "$hook.tmp" && mv "$hook.tmp" "$hook" 2>/dev/null || true
+            fi
         done
         echo "  ✓ Created default hooks (LangSmith tracing)"
     else
@@ -117,8 +121,10 @@ echo "Skip..."
 
 # if [ -d "$HOST_CLAUDE/plugins" ] && [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
 #     cp -r "$HOST_CLAUDE/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
-#     # Fix line endings for any shell scripts in plugins
-#     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec sed -i 's/\r$//' {} \; 2>/dev/null || true
+#     # Fix line endings for any shell scripts in plugins - portable sed
+#     find "$CLAUDE_DIR/plugins" -name "*.sh" -type f 2>/dev/null | while read -r script; do
+#         sed 's/\r$//' "$script" > "$script.tmp" && mv "$script.tmp" "$script" 2>/dev/null || true
+#     done
 #     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
 #     PLUGIN_COUNT=$(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l)
 #     echo "  ✓ $PLUGIN_COUNT plugin(s) synced from host"

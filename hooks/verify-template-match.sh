@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ============================================================================
 # PostToolUse Hook: Verify Template Match
 # ============================================================================
@@ -131,8 +131,8 @@ case "$FILE_PATH" in
         echo "Validating script: $(basename "$FILE_PATH")..." >&2
 
         # Check shebang
-        if ! head -n 1 "$FILE_PATH" | grep -q "^#!/bin/bash"; then
-            echo "⚠️  WARNING: Script missing #!/bin/bash shebang" >&2
+        if ! head -n 1 "$FILE_PATH" | grep -qE "^#!/(usr/bin/env )?bash"; then
+            echo "⚠️  WARNING: Script missing portable bash shebang" >&2
             ERRORS=$((ERRORS + 1))
         fi
 

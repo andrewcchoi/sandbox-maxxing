@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.4.1] - 2025-12-24
+
+### Fixed
+- **Windows Compatibility**: All bash scripts now work on Windows (Git Bash/WSL), Linux, and macOS
+  - Fixed Windows path handling with `!` character (history expansion)
+  - Fixed backslash escape character issues in paths
+  - Portable `sed` usage (removed `-i` flag, use temp files)
+  - Portable shebangs: `#!/usr/bin/env bash` instead of `#!/bin/bash`
+
+### Changed
+- **commands/setup.md**:
+  - Added `set +H` to disable history expansion (fixes Windows paths with `!`)
+  - Windows path conversion: `${CLAUDE_PLUGIN_ROOT//\\//}` converts backslashes to forward slashes
+  - Reordered plugin discovery: check current directory before searching ~/.claude/plugins
+  - Portable sed: use temp file approach instead of `sed -i`
+- **commands/yolo.md**:
+  - Applied same plugin discovery and sed fixes as setup.md
+- **hooks/verify-template-match.sh**:
+  - Changed shebang to `#!/usr/bin/env bash`
+  - Updated shebang validation to accept both `#!/bin/bash` and `#!/usr/bin/env bash`
+- **hooks/verify-devcontainer-complete.sh**:
+  - Changed shebang to `#!/usr/bin/env bash`
+- **skills/_shared/templates/setup-claude-credentials.sh**:
+  - Changed shebang to `#!/usr/bin/env bash`
+  - Fixed 3 occurrences of `sed -i` to use portable temp file approach
+
+### Technical Details
+- Plugin discovery now checks in this order:
+  1. `CLAUDE_PLUGIN_ROOT` environment variable (with backslash conversion)
+  2. Current directory (if templates exist)
+  3. `~/.claude/plugins` directory (fallback)
+- All `sed -i "s/old/new/" file` replaced with: `sed "s/old/new/" file > file.tmp && mv file.tmp file`
+- History expansion disabled with `set +H 2>/dev/null || true` at start of scripts
+
+### Benefits
+- Works with Windows paths like `D:\!wip\sandbox-maxxing`
+- No more "syntax error near unexpected token" on Windows
+- Consistent behavior across all platforms
+- More robust error handling with fallbacks
+
 ## [4.4.0] - 2025-12-24
 
 ### Added
@@ -372,5 +412,5 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-**Last Updated:** 2025-12-22
-**Version:** 4.2.1
+**Last Updated:** 2025-12-24
+**Version:** 4.4.1
