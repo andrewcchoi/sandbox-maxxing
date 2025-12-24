@@ -76,6 +76,40 @@ Three firewall modes available:
 - `permissive.sh` - Allow all traffic (alternative to disabled)
 - `strict.sh` - Strict allowlist-based firewall (Advanced mode)
 
+## Template Placeholders
+
+Templates use placeholders that are replaced during setup:
+
+| Placeholder | Used In | Replaced With |
+|-------------|---------|---------------|
+| `{{PROJECT_NAME}}` | devcontainer.json, docker-compose.yml | Current directory name |
+
+### Placeholder Replacement
+
+Commands use portable sed to replace placeholders:
+
+```bash
+PROJECT_NAME="$(basename $(pwd))"
+for f in .devcontainer/devcontainer.json docker-compose.yml; do
+  sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+done
+```
+
+### Where Placeholders Appear
+
+**devcontainer.json:**
+- `"name": "{{PROJECT_NAME}}"` - Display name in VS Code
+
+**docker-compose.yml:**
+- `container_name: {{PROJECT_NAME}}-postgres` - Container naming
+- `container_name: {{PROJECT_NAME}}-redis` - Container naming
+- `name: {{PROJECT_NAME}}-network` - Network naming
+
+### Why This Matters
+- Helps users understand what gets customized
+- Enables manual customization if needed
+- Documents the build process for contributors
+
 ## Why Duplicate-Looking Files?
 
 You may notice:
