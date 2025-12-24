@@ -144,26 +144,16 @@ All commands use the `/devcontainer:` namespace prefix when invoked.
 Commands serve as user-friendly entry points that delegate to skills:
 
 ```
-User types: /devcontainer:quickstart --advanced
+User types: /devcontainer:quickstart
     ↓
-Command file: commands/advanced.md loaded
+Command file: commands/quickstart.md loaded
     ↓
-Command delegates to: devcontainer-setup-advanced skill
+Command executes bash script with template copying
     ↓
-Skill executes: skills/devcontainer-setup-advanced/SKILL.md
+Templates copied from: skills/_shared/templates/
     ↓
 Result: DevContainer configuration created
 ```
-
-### Command vs Skill
-
-| Aspect | Command | Skill |
-|--------|---------|-------|
-| **Purpose** | User interface | Implementation |
-| **Location** | `commands/*.md` | `skills/*/SKILL.md` |
-| **Invocation** | `/devcontainer:command` | Via command or directly |
-| **Content** | Brief, delegates to skill | Detailed workflow |
-| **User-facing** | Yes | Sometimes (expert users) |
 
 ## Command Quick Reference
 

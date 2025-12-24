@@ -71,12 +71,13 @@ When modifying skills:
 
 ### Working on Templates
 
-Templates are in the `templates/` directory:
-- `master/` - Master templates with all features
-- `dockerfiles/` - Language-specific Dockerfiles (Python, Node.js, Go, Rust, etc.)
-- `compose/` - Mode-specific docker-compose templates
-- `firewall/` - Mode-specific firewall scripts
-- `legacy/` - Deprecated monolithic templates (python/, nodejs/, fullstack/)
+Templates are in the `skills/_shared/templates/` directory:
+- `base.dockerfile` - Base Dockerfile with Python 3.12 + Node 20
+- `devcontainer.json` - DevContainer configuration template
+- `docker-compose.yml` - Docker Compose services template
+- `init-firewall.sh` - Firewall configuration script
+- `setup-claude-credentials.sh` - Claude Code credential setup
+- `partials/` - Language-specific Dockerfile sections (Go, Rust, Java, Ruby, PHP, C++, PostgreSQL)
 
 Template placeholders:
 - `{{PROJECT_NAME}}` - Project name

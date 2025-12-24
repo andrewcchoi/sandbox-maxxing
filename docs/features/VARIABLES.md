@@ -546,8 +546,8 @@ RUN --mount=type=secret,id=npm_token \
 ## Reference Files
 
 - `data/variables.json` - Complete variable catalog
-- `skills/devcontainer-setup-*/templates/.env.template` - Environment file templates per mode
-- `skills/devcontainer-setup-*/templates/variables.json` - Variable configurations per mode
+- `skills/_shared/templates/.env.template` - Environment file templates per mode
+- `skills/_shared/templates/variables.json` - Variable configurations per mode
 
 ---
 

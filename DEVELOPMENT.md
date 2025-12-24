@@ -75,19 +75,23 @@ sandbox/
 │   └── init-firewall.sh        # Disabled (not needed)
 │
 ├── skills/                     # Plugin skills (main work here)
-│   ├── devcontainer-setup-advanced/
+│   ├── _shared/                # Shared templates and data
 │   ├── sandbox-troubleshoot/
 │   └── sandbox-security/
 │
 ├── commands/                   # Slash commands
-│   ├── setup.md
+│   ├── quickstart.md
+│   ├── yolo-vibe-maxxing.md
 │   ├── troubleshoot.md
 │   └── audit.md
 │
-├── templates/                  # Configuration templates
-│   ├── python/
-│   ├── node/
-│   └── fullstack/
+├── skills/_shared/             # Shared resources
+│   ├── templates/              # DevContainer templates
+│   │   ├── base.dockerfile
+│   │   ├── devcontainer.json
+│   │   ├── docker-compose.yml
+│   │   └── partials/           # Language-specific sections
+│   └── templates/data/         # Configuration data
 │
 ├── docs/examples/                   # Demo applications
 │   ├── docker-compose.yml      # Services for examples ONLY
@@ -108,10 +112,12 @@ sandbox/
 Most development work doesn't require services:
 
 ```bash
-# Edit plugin skills
-code skills/devcontainer-setup-advanced/SKILL.md
+# Edit plugin commands
+code commands/quickstart.md
+code commands/yolo-vibe-maxxing.md
 
 # Edit templates
+code skills/_shared/templates/base.dockerfile
 
 # Edit documentation
 code README.md

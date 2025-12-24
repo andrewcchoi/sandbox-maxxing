@@ -163,7 +163,7 @@ Look for:
 cat tests/skill-validation/generated/{mode}/.devcontainer/devcontainer.json
 
 # View template
-cat templates/master/devcontainer.json.master
+cat skills/_shared/templates/devcontainer.json.master
 ```
 
 ### Step 3: Check Syntax
@@ -178,7 +178,7 @@ python3 -c "import yaml; yaml.safe_load(open('tests/skill-validation/generated/{
 ### Step 4: Fix the Skill
 Edit the skill file:
 ```bash
-vim skills/devcontainer-setup-{mode}/SKILL.md
+vim commands/{quickstart,yolo-vibe-maxxing}.md
 ```
 
 Focus on:
@@ -232,7 +232,7 @@ validate_syntax "test-file.json"
 4. Document any special considerations
 
 ### When Modifying Templates
-1. Update master templates in `templates/master/`
+1. Update master templates in `skills/_shared/templates/`
 2. Run full test suite: `./run-continuous.sh`
 3. Update skills that fail new validation
 4. Commit templates and skill updates together
@@ -264,7 +264,7 @@ For issues with testing:
 4. Run in dry-run mode to validate setup
 
 For skill-specific issues:
-- Review skill file: `skills/devcontainer-setup-{mode}/SKILL.md`
+- Review skill file: `commands/{quickstart,yolo-vibe-maxxing}.md`
 - Check skill documentation in skill frontmatter
 - Test skill manually in isolation
 - Compare with working skills for patterns

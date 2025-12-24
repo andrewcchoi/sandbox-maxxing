@@ -27,7 +27,7 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - Learning and tutorials
 - Solo developers
 
-**Location:** `skills/devcontainer-setup-basic/SKILL.md`
+**Location:** `commands/quickstart.md`
 
 ---
 
@@ -49,7 +49,7 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - Evaluating untrusted packages
 - Compliance requirements
 
-**Location:** `skills/devcontainer-setup-advanced/SKILL.md`
+**Location:** `commands/quickstart.md`
 
 **Reference Documentation:**
 - `docs/features/CUSTOMIZATION.md` - Customization guide
@@ -75,7 +75,7 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - Custom security policies
 - Experimental configurations
 
-**Location:** `skills/devcontainer-setup-yolo/SKILL.md`
+**Location:** `commands/yolo-vibe-maxxing.md`
 
 ---
 
