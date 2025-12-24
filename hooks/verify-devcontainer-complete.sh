@@ -25,15 +25,11 @@ WARNINGS=0
 echo "" >&2
 echo "Checking required files..." >&2
 
-# Core files (always required)
+# All 5 required files - MUST be present for basic mode
 REQUIRED_FILES=(
     ".devcontainer/Dockerfile"
     ".devcontainer/devcontainer.json"
     "docker-compose.yml"
-)
-
-# Scripts (required for most setups)
-SCRIPT_FILES=(
     ".devcontainer/setup-claude-credentials.sh"
     ".devcontainer/init-firewall.sh"
 )
@@ -43,6 +39,14 @@ for file in "${REQUIRED_FILES[@]}"; do
         SIZE=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "0")
         if [ "$SIZE" -gt 0 ]; then
             echo "✓ $file exists ($SIZE bytes)" >&2
+
+            # Check if script files are executable
+            if [[ "$file" == *.sh ]]; then
+                if [ ! -x "$file" ]; then
+                    echo "  ⚠️  WARNING: Script is not executable" >&2
+                    WARNINGS=$((WARNINGS + 1))
+                fi
+            fi
         else
             echo "❌ ERROR: $file is empty!" >&2
             ERRORS=$((ERRORS + 1))
@@ -50,22 +54,6 @@ for file in "${REQUIRED_FILES[@]}"; do
     else
         echo "❌ ERROR: $file NOT found!" >&2
         ERRORS=$((ERRORS + 1))
-    fi
-done
-
-for file in "${SCRIPT_FILES[@]}"; do
-    if [ -f "$file" ]; then
-        SIZE=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "0")
-        echo "✓ $file exists ($SIZE bytes)" >&2
-
-        # Check if executable
-        if [ ! -x "$file" ]; then
-            echo "  ⚠️  WARNING: Script is not executable" >&2
-            WARNINGS=$((WARNINGS + 1))
-        fi
-    else
-        echo "⚠️  WARNING: $file NOT found (optional but recommended)" >&2
-        WARNINGS=$((WARNINGS + 1))
     fi
 done
 
@@ -224,5 +212,11 @@ fi
 
 echo "" >&2
 
-# Always exit 0 (informational only - don't block)
-exit 0
+# Exit with code 2 if there are errors (blocks completion)
+# Exit with code 0 if successful (allows completion)
+if [ $ERRORS -gt 0 ]; then
+    echo "❌ BLOCKING: Cannot complete with $ERRORS error(s)" >&2
+    exit 2
+else
+    exit 0
+fi

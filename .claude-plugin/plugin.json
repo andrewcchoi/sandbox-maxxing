@@ -1,6 +1,6 @@
 {
   "name": "devcontainer-setup",
-  "version": "4.0.0",
+  "version": "4.2.1",
   "description": "Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Three-mode system (Basic, Advanced, YOLO) with mandatory planning phase, shared resources architecture, and security firewall options.",
   "author": {
     "name": "shadow developer"

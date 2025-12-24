@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.2.1] - 2025-12-23
+
+### Fixed
+- **Basic Mode: Template Source Correction**
+  - Fixed command to use canonical templates from `skills/_shared/templates/` instead of `docs/examples/demo-app-sandbox-basic/`
+  - Command now copies and processes actual templates with placeholder replacement
+  - Includes required `data/allowable-domains.json` for Docker build
+
+### Changed
+- **commands/basic.md**:
+  - Added plugin directory discovery (works in both installed and development environments)
+  - Copies from `skills/_shared/templates/` (canonical source)
+  - File mapping: `base.dockerfile` → `Dockerfile`, `init-firewall/disabled.sh` → `init-firewall.sh`
+  - Uses `sed` to replace `{{PROJECT_NAME}}` placeholders
+  - Copies `allowable-domains.json` to `data/` directory for Docker build
+
+### Technical Details
+- Plugin discovery (3 methods, in order):
+  1. `${CLAUDE_PLUGIN_ROOT}` environment variable (inline/development plugins)
+  2. Search in `~/.claude/plugins` (installed plugins)
+  3. Current directory if templates exist (fallback)
+- Template processing: 5 DevContainer files + 1 data file = 6 total files
+- Placeholder replacement: `{{PROJECT_NAME}}` replaced in devcontainer.json and docker-compose.yml
+
+## [4.2.0] - 2025-12-23
+
+### Breaking Changes
+- **Basic Mode: Converted from Skill to Command**
+  - Replaced `skills/devcontainer-setup-basic/` with `commands/basic.md`
+  - Added `allowed-tools: [Bash]` restriction to enforce file copying at system level
+  - Command now uses direct `cp -r` from reference implementation at `docs/examples/demo-app-sandbox-basic/`
+  - Write tool is now **prohibited** at the system level, preventing agent from generating files
+
+### Fixed
+- **Root cause of incomplete file generation**: Both planning and default modes were using Write tool instead of copying from reference
+  - Planning mode placed files correctly due to more deliberate reasoning time
+  - Default mode grouped all files in `.devcontainer/` including docker-compose.yml (wrong location)
+  - Solution: System-level tool restriction forces exact file copying behavior
+
+### Changed
+- **Basic mode workflow**:
+  - Old: Agent reads skill, attempts to generate files via Write tool
+  - New: Agent executes single bash command to copy all 5 files from reference
+  - Result: Guaranteed correct files, correct locations, no interpretation needed
+
+### Technical Details
+- Command uses: `cp -r docs/examples/demo-app-sandbox-basic/.devcontainer . && cp docs/examples/demo-app-sandbox-basic/docker-compose.yml .`
+- All 5 files copied: Dockerfile, devcontainer.json, init-firewall.sh, setup-claude-credentials.sh, docker-compose.yml
+- docker-compose.yml placed at project root (correct Docker Compose convention)
+- Scripts automatically marked executable via `chmod +x`
+
+## [4.1.1] - 2025-12-23
+
+### Fixed
+- **Basic Mode: Enforced Bash Tool Usage**
+  - Fixed issue where agent ignored skill's bash cp instructions and used Write tool instead
+  - Added explicit tool restrictions prohibiting Write tool for devcontainer files
+  - Made Bash command mandatory with clear directive language
+  - Updated Stop hook to enforce all 5 files present (exit 2 if missing)
+  - Cleaned up non-working PreToolUse/PostToolUse hooks from hooks.json
+  - Root cause: Agent interpreted bash code blocks as documentation rather than executable instructions
+
+### Changed
+- **devcontainer-setup-basic skill**
+  - Added "TOOL RESTRICTIONS" section at top with explicit prohibitions
+  - Converted multi-line bash example into single-line mandatory command
+  - Added "DO NOT" list to prevent common mistakes
+- **verify-devcontainer-complete.sh hook**
+  - Moved script files from optional warnings to required errors
+  - Changed exit behavior: exit 2 (block) on errors instead of exit 0 (informational)
+  - All 5 files now mandatory: Dockerfile, devcontainer.json, docker-compose.yml, init-firewall.sh, setup-claude-credentials.sh
+- **hooks.json**
+  - Removed PreToolUse and PostToolUse hooks (matched but never executed)
+  - Kept only Stop hook which reliably executes
+
+## [4.1.0] - 2025-12-22
+
+### Fixed
+- **Basic Mode: Direct Copy from Reference Implementation**
+  - Fixed missing files issue (`init-firewall.sh`, `setup-claude-credentials.sh` were not generated)
+  - Fixed wrong file locations (`docker-compose.yml` was in `.devcontainer/` instead of root)
+  - Fixed incorrect configurations (wrong user, missing postStartCommand, etc.)
+  - **Solution**: Basic mode now copies all 5 files directly from `docs/examples/demo-app-sandbox-basic/`
+  - Benefits: Guaranteed consistency, all files present, correct configurations
+  - Evaluated against requirements in Dec 2025 gap analysis
+
+### Changed
+- **devcontainer-setup-basic skill v4.1.0**
+  - Replaced agent-based generation with direct file copy
+  - Removed template composition complexity
+  - Updated validation checks to verify reference file integrity
+  - Added clear documentation about the change
+
 ## [4.0.0] - 2025-12-22
 
 ### Major Breaking Changes
