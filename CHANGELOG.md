@@ -6,25 +6,20 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **Banner Display**: Made base stack banner more compact to prevent cutoff on narrow terminals
-  - Changed from 44-character wide Unicode box to 21-character simple dashes
-  - Previous: `╔══════...╗` with multiple lines
-  - New: `--- Base Stack ---` with content below
+  - Changed from 44-character wide Unicode box to 30-character single line
+  - Previous: `╔══════...╗` with multiple lines (44 chars)
+  - New: `[Base: Python 3.12 + Node 20]` (30 chars)
 
 ### Changed
 - **commands/setup.md**:
-  - Step 1.5: Replaced wide Unicode banner with compact dash format
+  - Step 1.5: Replaced wide Unicode banner with single-line bracket format
   - Banner now fits in narrow terminals without truncation
   - Updated version footer to 4.4.3
 
 ### Technical Details
-- Old banner width: ~44 characters (Unicode box drawing)
-- New banner width: ~21 characters (ASCII dashes)
-- Format:
-  ```
-  --- Base Stack ---
-  Python 3.12 + Node 20
-  ------------------
-  ```
+- Old banner width: ~44 characters (Unicode box drawing, 5 lines)
+- New banner width: ~30 characters (single line)
+- Format: `[Base: Python 3.12 + Node 20]`
 
 ## [4.4.2] - 2025-12-24
 

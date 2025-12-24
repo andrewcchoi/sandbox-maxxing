@@ -27,9 +27,7 @@ SELECTED_CATEGORIES=()
 
 ```bash
 echo ""
-echo "--- Base Stack ---"
-echo "Python 3.12 + Node 20"
-echo "------------------"
+echo "[Base: Python 3.12 + Node 20]"
 echo ""
 ```
 
