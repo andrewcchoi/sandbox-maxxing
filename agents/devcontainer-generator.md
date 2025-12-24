@@ -320,4 +320,4 @@ Wait for agent completion, then verify output.
 ---
 
 **Last Updated:** 2025-12-22
-**Version:** 4.3.0
+**Version:** 4.3.1

@@ -388,4 +388,4 @@ When reporting skill-related issues, include:
 ---
 
 **Last Updated:** 2025-12-22
-**Version:** 4.3.0 (Planning Mode Integration + Shared Resources)
+**Version:** 4.3.1 (Planning Mode Integration + Shared Resources)

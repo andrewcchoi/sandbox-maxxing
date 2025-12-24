@@ -349,7 +349,7 @@ Skills can invoke each other for related tasks:
 - [Skills README](../skills/README.md) - Detailed skill documentation
 - [Commands README](../commands/README.md) - Command reference
 - [Modes Guide](features/MODES.md) - Mode comparison and selection
-- [Shared Data](../skills/_shared/data/README.md) - Data file reference
+- [Shared Data](../skills/_shared/templates/data/README.md) - Data file reference
 
 ### Configuration
 - [Planning Phase](../skills/_shared/planning-phase.md) - Planning workflow
@@ -365,4 +365,4 @@ Skills can invoke each other for related tasks:
 ---
 
 **Last Updated:** 2025-12-22
-**Version:** 4.3.0
+**Version:** 4.3.1

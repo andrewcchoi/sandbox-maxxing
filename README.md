@@ -737,4 +737,4 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 4.3.0
+**Version:** 4.3.1

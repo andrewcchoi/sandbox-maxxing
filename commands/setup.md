@@ -26,6 +26,10 @@ Options:
 3. Ruby (Adds Ruby 3.3 and bundler)
 4. Rust (Adds Rust toolchain and Cargo)
 5. Java (Adds OpenJDK 21, Maven, Gradle)
+6. C++ (Clang) (Adds Clang 17, CMake, Ninja, vcpkg)
+7. C++ (GCC) (Adds GCC, CMake, Ninja, vcpkg)
+8. PHP (Adds PHP 8.3, Composer, extensions)
+9. PostgreSQL Dev (Adds PostgreSQL client and dev tools)
 ```
 
 Store the answer as `PROJECT_TYPE`.
@@ -122,6 +126,22 @@ case "$PROJECT_TYPE" in
     cat "$PARTIALS/java.dockerfile" >> .devcontainer/Dockerfile
     echo "Added Java toolchain"
     ;;
+  "C++ (Clang)")
+    cat "$PARTIALS/cpp-clang.dockerfile" >> .devcontainer/Dockerfile
+    echo "Added C++ (Clang 17) toolchain"
+    ;;
+  "C++ (GCC)")
+    cat "$PARTIALS/cpp-gcc.dockerfile" >> .devcontainer/Dockerfile
+    echo "Added C++ (GCC) toolchain"
+    ;;
+  "PHP")
+    cat "$PARTIALS/php.dockerfile" >> .devcontainer/Dockerfile
+    echo "Added PHP 8.3 and Composer"
+    ;;
+  "PostgreSQL Dev")
+    cat "$PARTIALS/postgres.dockerfile" >> .devcontainer/Dockerfile
+    echo "Added PostgreSQL development tools"
+    ;;
   "Python/Node")
     echo "Using base image (Python 3.12 + Node 20)"
     ;;
@@ -144,7 +164,7 @@ if [ "$NEEDS_FIREWALL" = "Yes" ]; then
   echo "Firewall: Strict mode with domain allowlist"
 else
   # Use disabled firewall
-  cp "$TEMPLATES/init-firewall/disabled.sh" .devcontainer/init-firewall.sh
+  # cp "$TEMPLATES/init-firewall/disabled.sh" .devcontainer/init-firewall.sh
   echo "Firewall: Disabled (Docker isolation only)"
 fi
 ```
@@ -162,7 +182,7 @@ cp "$TEMPLATES/docker-compose.yml" ./
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
 
 # Copy data files
-cp "$TEMPLATES/../data/allowable-domains.json" data/
+cp "$TEMPLATES/data/allowable-domains.json" data/
 
 # Replace placeholders
 sed -i "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" .devcontainer/devcontainer.json docker-compose.yml
@@ -199,4 +219,4 @@ echo "=========================================="
 ---
 
 **Last Updated:** 2025-12-23
-**Version:** 4.3.0 (Interactive Project-Type Flow)
+**Version:** 4.3.1 (Interactive Project-Type Flow)

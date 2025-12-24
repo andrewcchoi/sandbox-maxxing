@@ -273,4 +273,4 @@ For skill-specific issues:
 ---
 
 **Last Updated:** 2025-12-21
-**Version:** 4.3.0
+**Version:** 4.3.1

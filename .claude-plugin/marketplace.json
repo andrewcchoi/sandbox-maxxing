@@ -9,7 +9,7 @@
     {
       "name": "devcontainer-setup",
       "description": "Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Choose between interactive setup with project type selection and firewall customization, or quick one-command setup with defaults.",
-      "version": "4.3.0",
+      "version": "4.3.1",
       "source": "./",
       "author": {
         "name": "shadow developer"

@@ -46,7 +46,7 @@ fi
 ```bash
 PROJECT_NAME="$(basename $(pwd))"
 TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
-DATA="$PLUGIN_ROOT/skills/_shared/data"
+DATA="$PLUGIN_ROOT/skills/_shared/templates/data"
 
 # Create directories
 mkdir -p .devcontainer data
@@ -56,8 +56,6 @@ cp "$TEMPLATES/base.dockerfile" .devcontainer/Dockerfile
 cp "$TEMPLATES/devcontainer.json" .devcontainer/
 cp "$TEMPLATES/docker-compose.yml" ./
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
-cp "$TEMPLATES/init-firewall/disabled.sh" .devcontainer/init-firewall.sh
-cp "$DATA/allowable-domains.json" data/
 
 # Replace placeholders
 sed -i "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" .devcontainer/devcontainer.json docker-compose.yml
@@ -75,10 +73,8 @@ echo ""
 echo "Files created:"
 echo "  .devcontainer/Dockerfile"
 echo "  .devcontainer/devcontainer.json"
-echo "  .devcontainer/init-firewall.sh"
 echo "  .devcontainer/setup-claude-credentials.sh"
 echo "  docker-compose.yml"
-echo "  data/allowable-domains.json"
 echo ""
 echo "Next: Open in VS Code → 'Reopen in Container'"
 echo "=========================================="
@@ -89,4 +85,4 @@ echo "=========================================="
 ---
 
 **Last Updated:** 2025-12-23
-**Version:** 4.3.0 (Quick Setup Path)
+**Version:** 4.3.1 (Quick Setup Path)

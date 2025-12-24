@@ -49,4 +49,4 @@ None currently.
 ---
 
 **Last Updated:** 2025-12-16
-**Version:** 4.3.0
+**Version:** 4.3.1
