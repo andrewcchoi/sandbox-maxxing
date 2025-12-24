@@ -77,7 +77,7 @@ Use `mode_defaults.<mode_name>` array
 ```
 
 **Update procedure:**
-1. Run `/workspace/scripts/update-uv-images.sh` (Python script)
+1. Run `.internal/scripts/update-uv-images.sh` (Python script)
 2. Script automatically:
    - Fetches all tags from Docker Hub API
    - Filters to floating tags (excludes version-pinned like 0.9.18-)

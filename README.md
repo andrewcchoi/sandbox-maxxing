@@ -60,10 +60,7 @@ claude --version
 
 **Offline/Air-gapped Environments:**
 
-If the installation script cannot be downloaded or the Anthropic servers are unreachable:
-1. Pre-download the installation script on a connected machine
-2. Include it in your project or mount it as a volume
-3. Run the local script instead: `sh ./.internal/scripts/install-claude.sh`
+If the installation script cannot be downloaded or the Anthropic servers are unreachable, pre-download the installation script on a connected machine and include it in your project or mount it as a volume.
 
 See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installation) for details.
 
