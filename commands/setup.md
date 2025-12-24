@@ -23,18 +23,37 @@ SELECTED_PARTIALS=()
 SELECTED_CATEGORIES=()
 ```
 
+## Step 1.5: Show Base Stack
+
+```bash
+echo ""
+echo "╔══════════════════════════════════════════╗"
+echo "║  BASE STACK (always included)            ║"
+echo "║  • Python 3.12                           ║"
+echo "║  • Node 20                               ║"
+echo "╚══════════════════════════════════════════╝"
+echo ""
+```
+
 ## Step 2: Ask About Tool Category (LOOP START)
 
 Use AskUserQuestion:
 
 ```
-What additional tools do you need? (Base includes Python 3.12 + Node 20)
+What ADDITIONAL tools do you want to add to your stack?
 
 Options:
 1. Backend language (Go, Rust, Java, Ruby, PHP)
+   → Add a compiled backend language alongside Python
+
 2. Database tools (PostgreSQL client + extensions)
+   → PostgreSQL client, dev libraries, pgvector
+
 3. C++ development
+   → Clang 17 or GCC compiler toolchain
+
 4. None - use base only
+   → Just Python 3.12 + Node 20 - ready to code!
 ```
 
 Store as `TOOL_CATEGORY`.
@@ -390,4 +409,4 @@ echo "=========================================="
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.4.1 (Windows/Cross-Platform Compatibility)
+**Version:** 4.4.2 (UX: Clarify Base Stack)

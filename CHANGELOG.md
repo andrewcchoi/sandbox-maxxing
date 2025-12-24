@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.4.2] - 2025-12-24
+
+### Changed
+- **UX Improvement: Clearer Base Stack Communication**
+  - Added visual banner showing "BASE STACK (always included): Python 3.12 + Node 20"
+  - Updated question text to emphasize "ADDITIONAL" tools (not just "additional")
+  - Added descriptions to all tool category options explaining what they include
+  - "None - use base only" option now clearly states "Just Python 3.12 + Node 20 - ready to code!"
+
+### Technical Details
+- **commands/setup.md**:
+  - New Step 1.5: Shows base stack banner before first question
+  - Step 2 question: "What ADDITIONAL tools do you want to add to your stack?"
+  - Added arrow-prefixed descriptions (→) for each option
+  - Updated version footer to 4.4.2
+
+### Benefits
+- Users see what's included BEFORE answering any questions
+- "ADDITIONAL" emphasis makes it clear Python + Node are always present
+- Option descriptions provide context about what each choice adds
+- Reduces confusion about base tooling
+
 ## [4.4.1] - 2025-12-24
 
 ### Fixed
@@ -413,4 +435,4 @@ All notable changes to this project will be documented in this file.
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.4.1
+**Version:** 4.4.2
