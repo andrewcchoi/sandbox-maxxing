@@ -375,4 +375,4 @@ When reporting skill-related issues, include:
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.3.3 (Remove obsolete planning-phase.md)
+**Version:** 4.5.0 (Remove obsolete planning-phase.md)

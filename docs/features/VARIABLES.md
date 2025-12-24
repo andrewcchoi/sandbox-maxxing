@@ -578,5 +578,5 @@ RUN --mount=type=secret,id=npm_token \
 
 ---
 
-**Last Updated:** 2025-12-16
-**Version:** 4.3.2
+**Last Updated:** 2025-12-24
+**Version:** 4.5.0

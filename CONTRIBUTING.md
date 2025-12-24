@@ -232,5 +232,5 @@ See the full [Organization Checklist](.internal/repo-keeper/ORGANIZATION_CHECKLI
 
 ---
 
-**Last Updated:** 2025-12-16
-**Version:** 4.3.2
+**Last Updated:** 2025-12-24
+**Version:** 4.5.0

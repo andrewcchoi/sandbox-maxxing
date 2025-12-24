@@ -319,5 +319,5 @@ Wait for agent completion, then verify output.
 
 ---
 
-**Last Updated:** 2025-12-22
-**Version:** 4.3.2
+**Last Updated:** 2025-12-24
+**Version:** 4.5.0

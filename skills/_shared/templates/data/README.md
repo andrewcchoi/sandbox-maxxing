@@ -330,5 +330,5 @@ For questions about data file structure or usage, see:
 
 ---
 
-**Last Updated:** 2025-12-22
-**Version:** 4.3.2
+**Last Updated:** 2025-12-24
+**Version:** 4.5.0
