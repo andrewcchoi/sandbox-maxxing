@@ -24,7 +24,7 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 ### 2. Commands
 
 **Primary Commands:**
-- `/sandboxxer:quickstart` - Interactive mode selection (or use `--basic`, `--advanced`, `--yolo`)
+- `/sandboxxer:quickstart` - Interactive quickstart with project type selection
 - `/sandboxxer:troubleshoot` - Invokes troubleshoot skill
 - `/sandboxxer:audit` - Invokes security skill
 
@@ -124,7 +124,7 @@ Skills reference these using: `skills/_shared/data/<filename>`
 - Users wanting firewall protection
 - Customizable setups
 
-### Quick Setup (`/sandboxxer:yolo-vibe-maxxing )
+### Quick Setup (`/sandboxxer:yolo-vibe-maxxing`)
 
 **Philosophy:** Zero questions, instant setup
 
@@ -162,7 +162,7 @@ Skills reference these using: `skills/_shared/data/<filename>`
 ### Setup Flow (v4.3.0+)
 
 1. **User Invocation**
-   - User runs `/sandboxxer:quickstart` (interactive) or `/sandboxxer:yolo-vibe-maxxing  (quick)
+   - User runs `/sandboxxer:quickstart` (interactive) or `/sandboxxer:yolo-vibe-maxxing` (non-interactive)
    - Command executes directly (bash-based, not skill-based)
 
 2. **Interactive Questions** (setup command only)
@@ -238,7 +238,7 @@ Skills can invoke each other for related tasks:
 
 ### Version 2.0.0 (2025-12-16)
 
-- Four-mode system (Basic, Intermediate, Advanced, YOLO)
+- Four-mode system (Basic, Intermediate, Advanced, YOLO) - deprecated in v4.6.0
 - Data-driven configuration with JSON files
 - Modular template system
 

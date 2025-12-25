@@ -20,13 +20,13 @@ This guide covers secure credential handling in DevContainers, including Docker 
 
 | Secret Type        | Best Method                         | Mode          | Example                    |
 | ------------------ | ----------------------------------- | ------------- | -------------------------- |
-| API Keys (dev)     | VS Code Input                       | Advanced+ | GitHub token, OpenAI key   |
-| API Keys (prod)    | Docker Secret                       | Advanced+     | Production API credentials |
-| Database Passwords | VS Code Input (dev) / Secret (prod) | Basic+        | PostgreSQL password        |
-| Git Auth           | VS Code Input or SSH                | Advanced+ | GitHub/GitLab tokens       |
-| Cloud Credentials  | Host Mount                          | Advanced+     | ~/.aws, ~/.gcloud          |
-| Private Registry   | Docker Build Secret                 | Advanced+     | NPM, PyPI tokens           |
-| SSL Certificates   | Docker Secret                       | Advanced+     | TLS cert and key           |
+| API Keys (dev)     | VS Code Input                       | Domain Allowlist, Custom | GitHub token, OpenAI key   |
+| API Keys (prod)    | Docker Secret                       | Domain Allowlist, Custom     | Production API credentials |
+| Database Passwords | VS Code Input (dev) / Secret (prod) | All configurations        | PostgreSQL password        |
+| Git Auth           | VS Code Input or SSH                | Domain Allowlist, Custom | GitHub/GitLab tokens       |
+| Cloud Credentials  | Host Mount                          | Domain Allowlist, Custom     | ~/.aws, ~/.gcloud          |
+| Private Registry   | Docker Build Secret                 | Domain Allowlist, Custom     | NPM, PyPI tokens           |
+| SSL Certificates   | Docker Secret                       | Domain Allowlist, Custom     | TLS cert and key           |
 
 ## Why Secrets Management Matters
 

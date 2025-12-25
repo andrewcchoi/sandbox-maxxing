@@ -283,10 +283,10 @@ The sandbox plugin supports multiple methods for handling sensitive credentials,
 
 | Method | When to Use | Security Level | Mode Availability |
 |--------|-------------|----------------|-------------------|
-| **VS Code Input** | Development credentials, user-specific tokens | Medium | Advanced+ |
-| **Docker Build Secret** | Private registry auth during build | High | Advanced+ |
-| **Docker Runtime Secret** | Production deployments | High | Advanced+ |
-| **Host Mount** | Cloud CLI credentials (~/.aws, ~/.gcloud) | Medium-High | Advanced+ |
+| **VS Code Input** | Development credentials, user-specific tokens | Medium | Domain Allowlist, Custom |
+| **Docker Build Secret** | Private registry auth during build | High | Domain Allowlist, Custom |
+| **Docker Runtime Secret** | Production deployments | High | Domain Allowlist, Custom |
+| **Host Mount** | Cloud CLI credentials (~/.aws, ~/.gcloud) | Medium-High | Domain Allowlist, Custom |
 | **Environment Variables** | Non-sensitive configuration only | Low | All modes |
 
 ### Critical Security Rules
@@ -410,13 +410,13 @@ See [Secrets Management Guide](SECRETS.md) for detailed examples and best practi
 - Installing conflicting software on host
 - Polluting host with development dependencies
 
-**Tier 2: Malicious Dependencies (Advanced/YOLO Strict)**
+**Tier 2: Malicious Dependencies (Domain Allowlist/Custom (Strict))**
 - Package dependencies contacting C2 servers
 - Cryptocurrency miners using network resources
 - Data exfiltration to attacker-controlled domains
 - Unexpected network reconnaissance
 
-**Tier 3: Supply Chain Attacks (Advanced/YOLO Strict + Secrets)**
+**Tier 3: Supply Chain Attacks (Domain Allowlist/Custom (Strict) + Secrets)**
 - Compromised packages attempting to steal credentials
 - Typosquatting packages reaching out to malicious domains
 - Backdoored dependencies attempting data exfiltration
@@ -451,7 +451,7 @@ See [Secrets Management Guide](SECRETS.md) for detailed examples and best practi
 
 ### Security Posture by Mode
 
-| Threat | Basic | Advanced | YOLO (Strict) |
+| Threat | Minimal | Domain Allowlist | Custom (Strict) |
 |--------|-------|--------------|----------|---------------|
 | Accidental host damage | ✓ Protected | ✓ Protected | ✓ Protected | ✓ Protected |
 | Dependency phone-home | ✗ Vulnerable | ✗ Vulnerable | ✓ Protected | ✓ Protected |

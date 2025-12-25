@@ -356,7 +356,7 @@ This configuration is characterized by:
    - Domain verification on startup
 
 6. **Balanced Approach**
-   - More than Basic (flexible)
+   - More than Minimal (flexible)
    - Less than Pro (not overwhelming)
    - Production-ready patterns
    - Development-friendly defaults
@@ -368,7 +368,7 @@ This configuration is characterized by:
 | Questions asked     | 1-2                             | 3-5                  | 5-7               | 10-15+               |
 | Configuration style | Auto-detected                   | Platform-specific    | Customizable      | Fully explicit       |
 | Dockerfile          | Sandbox template/official image | Platform template    | Configurable      | Technology-optimized |
-| VS Code extensions  | Essential (2)                   | Basic (5)            | Curated (10+)     | Comprehensive (20+)  |
+| VS Code extensions  | Essential (2)                   | Minimal (5)            | Curated (10+)     | Comprehensive (20+)  |
 | Firewall            | None                            | Permissive           | Strict            | Configurable         |
 | Services            | Essential only                  | + Message queue      | + Resource limits | All available        |
 | Build args          | None                            | Python/Node versions | More options      | All dependencies     |

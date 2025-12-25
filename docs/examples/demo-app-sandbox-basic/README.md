@@ -267,12 +267,12 @@ docker-compose down
 
 ## Comparing to Other Modes
 
-| Feature | Basic | Advanced | YOLO |
+| Feature | Minimal | Domain Allowlist | Custom |
 |---------|-------|--------------|----------|------|
 | Questions asked | 1-2 | 3-5 | 5-7 | 10-15+ |
 | Configuration style | Auto-detected | Platform-specific | Customizable | Fully explicit |
 | Dockerfile | Sandbox template/official image | Platform template | Configurable | Technology-optimized |
-| VS Code extensions | Essential (2) | Basic (5) | Curated (10+) | Comprehensive (20+) |
+| VS Code extensions | Essential (2) | Minimal (5) | Curated (10+) | Comprehensive (20+) |
 | Firewall | None | Permissive | Strict | Configurable |
 | Services | Essential only | + Message queue | + Resource limits | All available |
 | Best for | Quick start | Learning | Production dev | Full control |

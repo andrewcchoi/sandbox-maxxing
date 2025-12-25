@@ -1,5 +1,5 @@
 metadata:
-  mode: basic
+  config: minimal
   description: "Minimal configuration with Python backend, minimal setup"
   expected_files:
     - .devcontainer/devcontainer.json

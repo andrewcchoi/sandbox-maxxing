@@ -13,14 +13,14 @@ This directory contains:
 
 ### For First-Time Users
 
-1. **Start with Streamlit Basic** - Fastest way to validate your setup (< 1 minute)
-2. **Try Demo App Basic** - Full-stack application with minimal configuration
-3. **Try Advanced/Custom** - More features and production-ready patterns
+1. **Start with Streamlit Minimal** - Fastest way to validate your setup (< 1 minute)
+2. **Try Demo App Minimal** - Full-stack application with minimal configuration
+3. **Try Domain Allowlist/Custom** - More features and production-ready patterns
 
 ### For Production Projects
 
-1. **Demo App Advanced** - Production-ready configuration with domain allowlist security
-2. **Demo App YOLO** - Comprehensive setup with all tooling and maximum customization
+1. **Demo App Domain Allowlist** - Production-ready configuration with domain allowlist security
+2. **Demo App Custom** - Comprehensive setup with all tooling and maximum customization
 
 ## Examples Structure
 
@@ -161,7 +161,7 @@ examples/
 | Additional         | None              | None              | All (optional)     |
 | **Production**     |
 | Resource limits    | No                | Yes               | Yes (configurable) |
-| Health checks      | Basic             | Standard          | Comprehensive      |
+| Health checks      | Minimal             | Standard          | Comprehensive      |
 | Security hardening | Minimal           | Good              | Full               |
 | Monitoring hooks   | No                | No                | Yes                |
 | **Best For**       |
