@@ -88,6 +88,9 @@ SELECTED_CATEGORIES=()
 
 # Installation mode: "partials" (custom dockerfiles) or "features" (official Dev Container Features)
 INSTALL_MODE="partials"
+
+# Workspace mode: "bind" (default) or "volume" (better I/O on Windows/macOS)
+WORKSPACE_MODE="bind"
 ```
 
 ## Step 1.5: Choose Installation Mode
@@ -499,14 +502,54 @@ else
 fi
 ```
 
+## Step 11.5: Workspace Mode Selection
+
+Use AskUserQuestion:
+
+```
+Which workspace mode do you prefer?
+
+Options:
+1. Bind mount (default)
+   → Real-time file sync between host and container
+   → Best for Linux hosts
+   → Works seamlessly with all development workflows
+
+2. Volume mode
+   → Isolated Docker volume for better I/O performance
+   → Recommended for Windows/macOS hosts
+   → Trade-off: Files exist only in container
+```
+
+Store as `WORKSPACE_MODE_CHOICE`.
+
+```bash
+case "$WORKSPACE_MODE_CHOICE" in
+  "Volume mode")
+    WORKSPACE_MODE="volume"
+    echo "Using volume mode for better Windows/macOS performance"
+    ;;
+  *)
+    WORKSPACE_MODE="bind"
+    echo "Using bind mount mode (default)"
+    ;;
+esac
+```
+
 ## Step 12: Copy Other Templates
 
 ```bash
 # Copy devcontainer config
 cp "$TEMPLATES/devcontainer.json" .devcontainer/
 
-# Copy docker-compose
-cp "$TEMPLATES/docker-compose.yml" ./
+# Copy docker-compose based on workspace mode
+if [ "$WORKSPACE_MODE" = "volume" ]; then
+  cp "$TEMPLATES/docker-compose.volume.yml" ./docker-compose.yml
+  echo "Using docker-compose.volume.yml (volume mode)"
+else
+  cp "$TEMPLATES/docker-compose.yml" ./docker-compose.yml
+  echo "Using docker-compose.yml (bind mount mode)"
+fi
 
 # Copy credential setup script
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
