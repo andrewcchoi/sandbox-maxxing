@@ -464,6 +464,42 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
   sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 done
 
+# Add language-specific VS Code extensions based on selected partials
+EXTENSIONS_TO_ADD=""
+for partial in "${SELECTED_PARTIALS[@]}"; do
+  case "$partial" in
+    "go")
+      EXTENSIONS_TO_ADD+=',\n        "golang.go"'
+      ;;
+    "rust")
+      EXTENSIONS_TO_ADD+=',\n        "rust-lang.rust-analyzer"'
+      ;;
+    "java")
+      EXTENSIONS_TO_ADD+=',\n        "redhat.java",\n        "vscjava.vscode-java-pack"'
+      ;;
+    "ruby")
+      EXTENSIONS_TO_ADD+=',\n        "shopify.ruby-lsp"'
+      ;;
+    "php")
+      EXTENSIONS_TO_ADD+=',\n        "bmewburn.vscode-intelephense-client"'
+      ;;
+    "cpp-clang"|"cpp-gcc")
+      EXTENSIONS_TO_ADD+=',\n        "ms-vscode.cpptools",\n        "ms-vscode.cmake-tools"'
+      ;;
+    "postgres")
+      EXTENSIONS_TO_ADD+=',\n        "ckolkman.vscode-postgres"'
+      ;;
+  esac
+done
+
+# Insert extensions before the closing bracket of extensions array
+if [ -n "$EXTENSIONS_TO_ADD" ]; then
+  sed "s/\"johnpapa.vscode-peacock\"/\"johnpapa.vscode-peacock\"$EXTENSIONS_TO_ADD/g" \
+    .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp && \
+    mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
+  echo "Added language-specific VS Code extensions"
+fi
+
 # Set permissions
 chmod +x .devcontainer/*.sh
 ```

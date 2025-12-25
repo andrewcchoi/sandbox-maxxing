@@ -22,13 +22,28 @@
         // "dotfiles.targetPath": "~/dotfiles",
         // "dotfiles.installCommand": "install.sh"
       },
+      // Base extensions (always installed)
+      // Language-specific extensions are added by quickstart based on selected tools
       "extensions": [
+        // Core tools
         "anthropic.claude-code",
         "ms-azuretools.vscode-docker",
         "redhat.vscode-yaml",
         "eamodio.gitlens",
+        // Python (base stack includes Python 3.12)
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        // Theme & UI
         "PKief.material-icon-theme",
         "johnpapa.vscode-peacock"
+        // Language-specific extensions added below by quickstart:
+        // Go: "golang.go"
+        // Rust: "rust-lang.rust-analyzer"
+        // Java: "redhat.java", "vscjava.vscode-java-pack"
+        // Ruby: "shopify.ruby-lsp"
+        // PHP: "bmewburn.vscode-intelephense-client"
+        // C++: "ms-vscode.cpptools", "ms-vscode.cmake-tools"
+        // PostgreSQL: "ckolkman.vscode-postgres"
       ]
     }
   },
