@@ -79,14 +79,49 @@ echo ""
 ## Step 1: Initialize Tool Selection Tracking
 
 ```bash
-# Array to track all selected partial dockerfiles
+# Array to track all selected partial dockerfiles OR features
 SELECTED_PARTIALS=()
+SELECTED_FEATURES=()
 
 # Track which categories have been selected (to avoid duplicates in loop)
 SELECTED_CATEGORIES=()
+
+# Installation mode: "partials" (custom dockerfiles) or "features" (official Dev Container Features)
+INSTALL_MODE="partials"
 ```
 
-## Step 1.5: Show Base Stack
+## Step 1.5: Choose Installation Mode
+
+Use AskUserQuestion:
+
+```
+How should additional languages be installed?
+
+Options:
+1. Dev Container Features (Recommended)
+   → Uses official ghcr.io/devcontainers/features/*
+   → Faster builds, maintained by community
+   → Requires internet during build
+
+2. Custom Dockerfiles (Partials)
+   → Uses bundled partial dockerfiles
+   → Works offline/air-gapped
+   → Full control over versions
+```
+
+Store as `INSTALL_MODE_CHOICE`.
+
+```bash
+if [ "$INSTALL_MODE_CHOICE" = "Dev Container Features (Recommended)" ]; then
+  INSTALL_MODE="features"
+  echo "Using Dev Container Features"
+else
+  INSTALL_MODE="partials"
+  echo "Using custom partial dockerfiles"
+fi
+```
+
+## Step 1.75: Show Base Stack
 
 ```bash
 echo ""
@@ -142,14 +177,17 @@ Store as `BACKEND_CHOICE`.
 case "$BACKEND_CHOICE" in
   "Go")
     SELECTED_PARTIALS+=("go")
+    SELECTED_FEATURES+=("ghcr.io/devcontainers/features/go:1")
     echo "Selected: Go toolchain"
     ;;
   "Rust")
     SELECTED_PARTIALS+=("rust")
+    SELECTED_FEATURES+=("ghcr.io/devcontainers/features/rust:1")
     echo "Selected: Rust toolchain"
     ;;
   "Java")
     SELECTED_PARTIALS+=("java")
+    SELECTED_FEATURES+=("ghcr.io/devcontainers/features/java:1")
     echo "Selected: Java toolchain"
     ;;
   "More languages...")
@@ -179,10 +217,12 @@ Store as `MORE_BACKEND_CHOICE`.
 case "$MORE_BACKEND_CHOICE" in
   "Ruby")
     SELECTED_PARTIALS+=("ruby")
+    SELECTED_FEATURES+=("ghcr.io/devcontainers/features/ruby:1")
     echo "Selected: Ruby toolchain"
     ;;
   "PHP")
     SELECTED_PARTIALS+=("php")
+    SELECTED_FEATURES+=("ghcr.io/devcontainers/features/php:1")
     echo "Selected: PHP toolchain"
     ;;
   "Back to main menu")
@@ -211,11 +251,14 @@ Store as `CPP_COMPILER`.
 case "$CPP_COMPILER" in
   "Clang 17")
     SELECTED_PARTIALS+=("cpp-clang")
+    SELECTED_FEATURES+=("ghcr.io/devcontainers-community/features/llvm:3")
     echo "Selected: C++ with Clang 17"
     ;;
   "GCC")
     SELECTED_PARTIALS+=("cpp-gcc")
-    echo "Selected: C++ with GCC"
+    # Note: No official GCC feature, using partial dockerfile
+    INSTALL_MODE="partials"
+    echo "Selected: C++ with GCC (using partial dockerfile)"
     ;;
 esac
 ```
@@ -319,42 +362,57 @@ mkdir -p .devcontainer data
 cp "$TEMPLATES/base.dockerfile" .devcontainer/Dockerfile
 echo "Base image: Python 3.12 + Node 20"
 
-# Append all selected language partials
-if [ ${#SELECTED_PARTIALS[@]} -gt 0 ]; then
-  echo "Adding selected tools..."
-  for partial in "${SELECTED_PARTIALS[@]}"; do
-    cat "$PARTIALS/${partial}.dockerfile" >> .devcontainer/Dockerfile
-
-    # Echo friendly message based on partial
-    case "$partial" in
-      "go")
-        echo "  ✓ Go toolchain"
-        ;;
-      "ruby")
-        echo "  ✓ Ruby toolchain"
-        ;;
-      "rust")
-        echo "  ✓ Rust toolchain"
-        ;;
-      "java")
-        echo "  ✓ Java toolchain"
-        ;;
-      "cpp-clang")
-        echo "  ✓ C++ (Clang 17)"
-        ;;
-      "cpp-gcc")
-        echo "  ✓ C++ (GCC)"
-        ;;
-      "php")
-        echo "  ✓ PHP 8.3"
-        ;;
-      "postgres")
-        echo "  ✓ PostgreSQL development tools"
-        ;;
-    esac
-  done
+# Handle tool installation based on mode
+if [ "$INSTALL_MODE" = "features" ]; then
+  # Features mode: tools installed via devcontainer.json features section
+  echo "Installation mode: Dev Container Features"
+  if [ ${#SELECTED_FEATURES[@]} -gt 0 ]; then
+    echo "Selected features:"
+    for feature in "${SELECTED_FEATURES[@]}"; do
+      echo "  ✓ $feature"
+    done
+  else
+    echo "Using base image only (no additional features)"
+  fi
 else
-  echo "Using base image only (no additional tools)"
+  # Partials mode: append partial dockerfiles
+  echo "Installation mode: Partial Dockerfiles"
+  if [ ${#SELECTED_PARTIALS[@]} -gt 0 ]; then
+    echo "Adding selected tools..."
+    for partial in "${SELECTED_PARTIALS[@]}"; do
+      cat "$PARTIALS/${partial}.dockerfile" >> .devcontainer/Dockerfile
+
+      # Echo friendly message based on partial
+      case "$partial" in
+        "go")
+          echo "  ✓ Go toolchain"
+          ;;
+        "ruby")
+          echo "  ✓ Ruby toolchain"
+          ;;
+        "rust")
+          echo "  ✓ Rust toolchain"
+          ;;
+        "java")
+          echo "  ✓ Java toolchain"
+          ;;
+        "cpp-clang")
+          echo "  ✓ C++ (Clang 17)"
+          ;;
+        "cpp-gcc")
+          echo "  ✓ C++ (GCC)"
+          ;;
+        "php")
+          echo "  ✓ PHP 8.3"
+          ;;
+        "postgres")
+          echo "  ✓ PostgreSQL development tools"
+          ;;
+      esac
+    done
+  else
+    echo "Using base image only (no additional tools)"
+  fi
 fi
 
 # Show final stack summary
@@ -463,6 +521,25 @@ cp "$TEMPLATES/.env.example" ./.env.example
 for f in .devcontainer/devcontainer.json docker-compose.yml; do
   sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 done
+
+# Add features to devcontainer.json if in features mode
+if [ "$INSTALL_MODE" = "features" ] && [ ${#SELECTED_FEATURES[@]} -gt 0 ]; then
+  # Build features JSON object
+  FEATURES_JSON="{"
+  for i in "${!SELECTED_FEATURES[@]}"; do
+    if [ $i -gt 0 ]; then
+      FEATURES_JSON+=","
+    fi
+    FEATURES_JSON+="\n    \"${SELECTED_FEATURES[$i]}\": {}"
+  done
+  FEATURES_JSON+="\n  }"
+
+  # Replace empty features object with populated one
+  sed "s/\"features\": {}/\"features\": $FEATURES_JSON/g" \
+    .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp && \
+    mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
+  echo "Added Dev Container Features to devcontainer.json"
+fi
 
 # Add language-specific VS Code extensions based on selected partials
 EXTENSIONS_TO_ADD=""
