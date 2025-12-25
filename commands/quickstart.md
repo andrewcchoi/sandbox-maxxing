@@ -959,4 +959,4 @@ Replace `YOUR-PROJECT` with your project name. This approach bypasses the host s
 ---
 
 **Last Updated:** 2025-12-25
-**Version:** 4.5.1 (Troubleshooting)
+**Version:** 4.5.0

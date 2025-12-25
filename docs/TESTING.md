@@ -6,6 +6,18 @@ This document describes the testing infrastructure for the Claude Code sandbox s
 
 The project includes automated testing for sandbox setup skills to ensure they generate valid and accurate container configuration files.
 
+## Test Coverage
+
+- ✅ Basic mode setup
+- ✅ Advanced mode setup
+- ✅ YOLO mode setup
+- ✅ Troubleshooting diagnostics
+- ✅ Security auditing
+- ✅ Template generation
+- ✅ Placeholder replacement
+- ✅ Docker services
+- ✅ Firewall configuration
+
 ## Skill Validation Testing
 
 Automated testing for sandbox setup skills. The framework validates that skills generate correct DevContainer configurations by comparing outputs against master templates.
@@ -19,10 +31,9 @@ cd tests/skill-validation
 
 ### What Gets Tested
 
-The framework validates 4 sandbox setup modes:
-- `devcontainer-setup-basic` - Simple Docker Compose setup
-- `devcontainer-setup-advanced` - Custom network isolation
-- `devcontainer-setup-yolo` - Full control with allowlists
+The framework validates sandbox setup commands:
+- `/devcontainer:quickstart` - Interactive setup with project type selection
+- `/devcontainer:yolo-vibe-maxxing` - Quick setup with full control and allowlists
 
 ### Requirements
 
@@ -133,9 +144,9 @@ cd /tmp/test-sandbox
 echo '{"name": "test"}' > package.json
 ```
 
-2. Run the skill:
+2. Run the command:
 ```bash
-# Use the correct skill name (e.g., devcontainer-setup-basic)
+# Use the correct command (e.g., /devcontainer:quickstart or /devcontainer:yolo-vibe-maxxing)
 ```
 
 3. Verify generated files:
