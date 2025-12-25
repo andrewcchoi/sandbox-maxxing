@@ -31,26 +31,6 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 
 ---
 
-#### devcontainer-setup-intermediate
-**Command:** `/devcontainer:setup` (Intermediate mode)
-**When to use:** You want a standard sandbox with good balance of flexibility and simplicity.
-
-**Features:**
-- Custom Dockerfile for flexibility
-- Permissive firewall for convenience
-- Common service options (PostgreSQL, Redis, RabbitMQ)
-- Moderate questions (5-8)
-- Standard setup (3-5 minutes)
-
-**Best for:**
-- Regular developers
-- Team projects
-- Projects requiring authentication
-- Moderate customization needs
-
-**Location:** `skills/devcontainer-setup-intermediate/SKILL.md`
-
----
 
 #### devcontainer-setup-advanced
 **Command:** `/devcontainer:quickstart` (Advanced mode)
@@ -165,12 +145,11 @@ See also: [Security Model](../docs/features/security-model.md)
 
 ## Skill Directory Structure
 
-Each skill follows a consistent structure:
+The skills directory uses a shared resources architecture for maintainability:
 
 ```
 skills/
 ├── README.md                          # This file
-<<<<<<< HEAD
 ├── _shared/                           # Shared resources
 │   ├── templates/                     # Template files
 │   │   ├── base.dockerfile            # Base multi-stage dockerfile
@@ -202,20 +181,6 @@ skills/
 │   │       ├── variables.json
 │   │       ├── vscode-extensions.json
 │   │       └── README.md
-=======
-├── devcontainer-setup-basic/
-│   └── SKILL.md                       # Skill definition and workflow
-├── devcontainer-setup-intermediate/
-│   └── SKILL.md
-├── devcontainer-setup-advanced/
-│   ├── SKILL.md
-│   └── templates/                     # Mode-specific templates
-│       ├── customization.md
-│       ├── security.md
-│       └── troubleshooting.md
-├── devcontainer-setup-yolo/
-│   └── SKILL.md
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 ├── sandbox-troubleshoot/
 │   └── SKILL.md                       # Troubleshooting workflow
 └── sandbox-security/
@@ -226,7 +191,6 @@ skills/
 
 **SKILL.md**
 - Skill metadata (name, description)
-<<<<<<< HEAD
 - Workflow instructions
 - Validation and completion checklist
 
@@ -239,18 +203,6 @@ skills/
 **_shared/data/**
 - Reference data shared across all skills
 - Domain allowlists, image catalogs, extension lists
-=======
-- When to use the skill
-- Step-by-step workflow
-- Decision trees and conditionals
-- Verification steps
-- Error handling
-
-**templates/** (required)
-- Mode-specific template files
-- Dockerfile templates, configuration files
-- Extensions, MCP, variables, compose files
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 
 ## How Skills Work
 
@@ -285,7 +237,6 @@ Claude: [Automatically uses devcontainer-setup-advanced skill]
 
 ### Skill Workflow
 
-<<<<<<< HEAD
 **Current System (v4.3.0+): Command-Based Setup**
 
 DevContainer setup is now command-based (not skill-based):
@@ -312,26 +263,6 @@ The two remaining skills are utilities invoked by commands:
 - You want firewall protection with domain allowlists
 - You prefer guided setup with questions
 - You want some customization
-=======
-1. **Skill Loaded**: Claude reads SKILL.md and reference documentation
-2. **Context Gathered**: Claude asks questions or examines project
-3. **Workflow Executed**: Claude follows structured steps in SKILL.md
-4. **Validation**: Claude verifies successful completion
-5. **Documentation**: Claude provides next steps and references
-
-## Skill Comparison
-
-| Skill | Complexity | Questions | Time | Security | Customization |
-|-------|-----------|-----------|------|----------|---------------|
-| devcontainer-setup-basic | Low | 2-3 | 1-2 min | Low | Minimal |
-| devcontainer-setup-intermediate | Medium | 5-8 | 3-5 min | Medium | Moderate |
-| devcontainer-setup-advanced | High | 10-15 | 8-12 min | High | High |
-| devcontainer-setup-yolo | Expert | 15-20+ | 15-30 min | User-controlled | Complete |
-| sandbox-troubleshoot | Varies | Diagnostic | Varies | N/A | N/A |
-| sandbox-security | Medium | Audit-based | 5-10 min | N/A | N/A |
-
-## When to Use Each Setup Skill
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 
 ### Use `/devcontainer:yolo-vibe-maxxing  (Quick) When:
 - You want instant setup with no questions
@@ -340,29 +271,12 @@ The two remaining skills are utilities invoked by commands:
 - You want the fastest possible setup
 - You trust your development environment
 
-<<<<<<< HEAD
 ### Use `/devcontainer:troubleshoot` When:
 - Container fails to start
 - Services won't connect (database, Redis, etc.)
 - Firewall blocking legitimate traffic
 - Permission errors
 - Any sandbox-related problem
-=======
-### Choose Intermediate Mode When:
-- Regular team development
-- Need Git/GitHub authentication
-- Require common services (DB, cache, queue)
-- Want flexibility without complexity
-- Moderate customization needed
-
-### Choose Advanced Mode When:
-- Security is a priority
-- Production-like environment needed
-- Evaluating unknown/untrusted packages
-- Compliance requirements
-- Handling sensitive data
-- Need explicit network control
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 
 ### Use `/devcontainer:audit` When:
 - You want to review security configuration
@@ -421,15 +335,11 @@ Each skill is demonstrated in example projects:
 
 ### Setup Skill Examples
 - `docs/examples/demo-app-sandbox-basic/` - Basic mode result
-- `docs/examples/demo-app-sandbox-intermediate/` - Intermediate mode result
 - `docs/examples/demo-app-sandbox-advanced/` - Advanced mode result
 - `docs/examples/demo-app-sandbox-yolo/` - YOLO mode result
 - `docs/examples/streamlit-sandbox-basic/` - Basic mode (Python-only)
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 See [Examples README](../docs/examples/README.md) for detailed walkthroughs.
 
 ## Command Quick Reference
@@ -463,10 +373,5 @@ When reporting skill-related issues, include:
 
 ---
 
-<<<<<<< HEAD
 **Last Updated:** 2025-12-24
 **Version:** 4.5.0 (Remove obsolete planning-phase.md)
-=======
-**Last Updated:** 2025-12-16
-**Version:** 3.0.0
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")

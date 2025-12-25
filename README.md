@@ -29,25 +29,11 @@ claude plugins list
 ### Basic Usage
 
 ```bash
-<<<<<<< HEAD
 # Interactive quickstart - choose project type and firewall options
 /devcontainer:quickstart
 
 # YOLO vibe-maxxing - no questions, instant DevContainer (Python+Node, no firewall)
 /devcontainer:yolo-vibe-maxxing
-=======
-# Quick setup with auto-detection (Basic mode)
-/devcontainer:basic
-
-# Balanced control and convenience (Intermediate mode)
-/devcontainer:intermediate
-
-# Security-focused minimal setup (Advanced mode)
-/devcontainer:advanced
-
-# Full customization and control (YOLO mode)
-/devcontainer:yolo
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 
 # Troubleshoot existing DevContainer
 /devcontainer:troubleshoot
@@ -56,11 +42,8 @@ claude plugins list
 /devcontainer:audit
 ```
 
-<<<<<<< HEAD
 **Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/devcontainer:yolo-vibe-maxxing` for the fastest path with sensible defaults.
 
-=======
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 ### Claude Code Installation
 
 > **Important:** Claude Code must be installed each time the devcontainer is rebuilt.
@@ -110,35 +93,6 @@ Claude: I detected a Python FastAPI project. Setting up with:
         Generating configs... Done!
 ```
 
-<<<<<<< HEAD
-=======
-### Intermediate Mode - Balanced Control
-
-**Best for**: Regular development, team projects, customization needs
-
-**Key Features**:
-- Some customization (5-8 questions)
-- Build args for version flexibility
-- Base images: Official images (`python:3.12-slim`, `node:20-bookworm-slim`)
-- Firewall: Permissive (no restrictions, for convenience)
-- VS Code: 10-15 curated extensions
-- Ready in 3-5 minutes
-
-**Example**:
-```
-You: /devcontainer:intermediate
-Claude: What's your primary language?
-        • Python • Node.js • Ruby • Go • PHP
-You: Python
-Claude: Python version?
-        • 3.13 (latest) • 3.12 (stable, recommended) • 3.11 (LTS)
-You: 3.12
-Claude: What database?
-        • PostgreSQL • MySQL • MongoDB • None
-...
-```
-
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 ### Advanced Mode - Security-First Minimal
 
 **Best for**: Security-conscious development, production prep, compliance
@@ -200,7 +154,6 @@ Claude: sandbox-templates tag?
 
 ## Slash Commands
 
-<<<<<<< HEAD
 | Command                            | Description                                                           |
 | ---------------------------------- | --------------------------------------------------------------------- |
 | `/devcontainer:quickstart`        | Interactive quickstart - choose project type and firewall options          |
@@ -210,18 +163,6 @@ Claude: sandbox-templates tag?
 
 **v4.3.0:** Setup now offers interactive project-type selection or instant YOLO defaults.
 
-=======
-| Command                            | Description                                                           | Mode         |
-| ---------------------------------- | --------------------------------------------------------------------- | ------------ |
-| `/devcontainer:basic`        | Quick automatic setup with auto-detection                             | Basic        |
-| `/devcontainer:intermediate` | Balanced control and convenience                                      | Intermediate |
-| `/devcontainer:advanced`     | Security-focused minimal setup                                        | Advanced     |
-| `/devcontainer:yolo`         | Full customization and control                                        | YOLO         |
-| `/devcontainer:setup`        | Interactive mode selection (or use `--basic`, `--intermediate`, etc.) | All          |
-| `/devcontainer:troubleshoot` | Diagnose and fix sandbox issues                                       | All          |
-| `/devcontainer:audit`        | Security audit and recommendations                                    | All          |
-
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 ## Auto-Detection
 
 The plugin automatically activates when you:
@@ -355,7 +296,6 @@ Interactive setup wizard with four experience modes.
 
 **Note:** This is a router command that delegates to mode-specific skills:
 - `devcontainer-setup-basic` - Basic mode setup
-- `devcontainer-setup-intermediate` - Intermediate mode setup
 - `devcontainer-setup-advanced` - Advanced mode setup
 - `devcontainer-setup-yolo` - YOLO mode setup
 
@@ -455,7 +395,6 @@ sandbox-maxxing/
 │   ├── official-images.json     # Docker Hub official images registry
 │   └── allowable-domains.json   # Firewall domain whitelists
 ├── skills/
-<<<<<<< HEAD
 │   ├── _shared/                 # Shared templates and data
 │   │   ├── templates/           # DevContainer templates
 │   │   │   ├── base.dockerfile
@@ -482,26 +421,11 @@ sandbox-maxxing/
 ├── commands/
 │   ├── quickstart.md            # /devcontainer:quickstart (interactive mode selection)
 │   ├── yolo-vibe-maxxing.md     # /devcontainer:yolo-vibe-maxxing (quick no-questions setup)
-=======
-│   ├── devcontainer-setup-basic/     # Basic mode setup
-│   ├── devcontainer-setup-intermediate/  # Intermediate mode setup
-│   ├── devcontainer-setup-advanced/  # Advanced mode setup
-│   ├── devcontainer-setup-yolo/      # YOLO mode setup
-│   ├── sandbox-troubleshoot/    # Troubleshooting assistant
-│   └── sandbox-security/        # Security auditor
-├── commands/
-│   ├── basic.md                 # /devcontainer:basic
-│   ├── intermediate.md          # /devcontainer:intermediate
-│   ├── advanced.md              # /devcontainer:advanced
-│   ├── yolo.md                  # /devcontainer:yolo
-│   ├── setup.md                 # /devcontainer:setup (router)
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 │   ├── troubleshoot.md          # /devcontainer:troubleshoot
 │   └── audit.md                 # /devcontainer:audit
 └── docs/examples/                    # Working example applications
     ├── streamlit-sandbox-basic/
     ├── demo-app-sandbox-basic/
-    ├── demo-app-sandbox-intermediate/
     ├── demo-app-sandbox-advanced/
     └── demo-app-sandbox-yolo/
 ```
@@ -533,9 +457,6 @@ Claude: I detected a Python FastAPI project. Setting up with:
 ### Example 2: Node.js with Customization
 
 ```
-You: /devcontainer:intermediate
-Claude: What's your primary language?
-You: Node.js
 Claude: Node.js version?
         • 22 (latest) • 20 (LTS, recommended) • 18 (maintenance)
 You: 20
@@ -597,7 +518,6 @@ docs/examples/
 │
 ├── demo-app-shared/                 # Shared: Full-stack blog application
 ├── demo-app-sandbox-basic/          # Demo app with Basic mode DevContainer
-├── demo-app-sandbox-intermediate/   # Demo app with Intermediate mode DevContainer
 ├── demo-app-sandbox-advanced/       # Demo app with Advanced mode DevContainer
 └── demo-app-sandbox-yolo/            # Demo app with YOLO mode DevContainer
 ```
@@ -782,11 +702,7 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
   - `allowable-domains.json`: Mode-specific firewall whitelists
 - Modular template system with section markers
 - Enhanced firewall with mode-specific domain sets (30-100+ domains)
-<<<<<<< HEAD
 - Updated slash commands: `/devcontainer:quickstart`, `/devcontainer:quickstart`, `/devcontainer:yolo-vibe-maxxing`, `/devcontainer:quickstart`
-=======
-- Updated slash commands: `/devcontainer:basic`, `/devcontainer:intermediate`, `/devcontainer:advanced`, `/devcontainer:yolo`
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 - Comprehensive mode comparison guide (MODES.md)
 - Migration from Basic/Advanced/YOLO to new three-mode system
 

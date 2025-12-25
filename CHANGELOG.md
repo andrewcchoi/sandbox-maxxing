@@ -2,7 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-<<<<<<< HEAD
 ## [4.5.0] - 2025-12-24
 
 ### Breaking Changes
@@ -306,8 +305,6 @@ Update your usage:
 - ~70% reduction in skill file sizes
 - Eliminated template duplication
 
-=======
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 ## [Unreleased]
 
 ### Changed

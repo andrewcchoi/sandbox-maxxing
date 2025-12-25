@@ -17,7 +17,7 @@ Docker sandbox-templates image registry with available tags, architectures, and 
 
 **Usage in skills:**
 ```markdown
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/sandbox-templates.json`
+Reference: `skills/_shared/data/sandbox-templates.json`
 ```
 
 **Update procedure:**
@@ -40,7 +40,7 @@ Official Docker images registry for common languages, databases, and tools.
 
 **Usage in skills:**
 ```markdown
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/official-images.json`
+Reference: `skills/_shared/data/official-images.json`
 ```
 
 **Update procedure:**
@@ -70,7 +70,7 @@ Astral UV Docker images registry - Python package manager with fast dependency r
 
 **Usage in skills:**
 ```markdown
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/uv-images.json`
+Reference: `skills/_shared/data/uv-images.json`
 
 # Get recommended tags for a mode
 Use `mode_defaults.<mode_name>` array
@@ -115,7 +115,7 @@ Firewall domain allowlist organized by category for different mode defaults.
 
 **Usage in skills:**
 ```markdown
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/allowable-domains.json`
+Reference: `skills/_shared/data/allowable-domains.json`
 
 # Extract domains for specific mode
 Use `mode_defaults.<mode_name>` to get included categories
@@ -142,7 +142,7 @@ MCP (Model Context Protocol) servers catalog for configuring Claude Code integra
 
 **Usage in skills:**
 ```markdown
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/mcp-servers.json`
+Reference: `skills/_shared/data/mcp-servers.json`
 
 # Get default servers for a mode
 Use `mode_defaults.<mode_name>.servers` array
@@ -183,7 +183,7 @@ Secret handling patterns catalog for DevContainer configurations.
 
 **Usage in skills:**
 ```markdown
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/secrets.json`
+Reference: `skills/_shared/data/secrets.json`
 
 # Get secret handling pattern
 Use categories.<category>.secrets.<secret_name>
@@ -217,7 +217,7 @@ Configuration variables catalog for DevContainer setup (non-sensitive).
 
 **Usage in skills:**
 ```markdown
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/variables.json`
+Reference: `skills/_shared/data/variables.json`
 
 # Get variable configuration
 Use categories.<category>.variables.<var_name>
@@ -250,7 +250,7 @@ VS Code extensions catalog organized by language and category.
 
 **Usage in skills:**
 ```markdown
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/vscode-extensions.json`
+Reference: `skills/_shared/data/vscode-extensions.json`
 
 # Get extensions for language
 Use categories.<language>.extensions array
@@ -283,13 +283,13 @@ All data files use JSON format with JSON Schema metadata for validation.
 
 ## Skills Integration
 
-Skills reference these files using the `${CLAUDE_PLUGIN_ROOT}` variable which resolves to the plugin's root directory.
+Skills reference these files using relative paths from the plugin root directory.
 
 **Example skill reference:**
 ```markdown
 ## Available Base Images
 
-Reference: `${CLAUDE_PLUGIN_ROOT}/data/sandbox-templates.json`
+Reference: `skills/_shared/data/sandbox-templates.json`
 
 **Sandbox Templates** (recommended for Basic mode):
 - `docker/sandbox-templates:latest` - Default choice
@@ -327,10 +327,5 @@ For questions about data file structure or usage, see:
 
 ---
 
-<<<<<<<< HEAD:skills/devcontainer-setup-basic/templates/data/README.md
 **Last Updated:** 2025-12-24
 **Version:** 4.5.0
-========
-**Last Updated:** 2025-12-21
-**Version:** 3.0.0
->>>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)"):data/README.md

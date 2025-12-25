@@ -29,25 +29,19 @@ Each command loads and executes the corresponding skill with user-friendly promp
 /devcontainer:quickstart
 
 # Quick setup with flags
-<<<<<<< HEAD
 /devcontainer:quickstart --basic          # Fastest setup
 /devcontainer:quickstart --advanced       # Secure setup
 /devcontainer:quickstart --yolo           # Full control
-=======
-/devcontainer:setup --basic          # Fastest setup
-/devcontainer:setup --intermediate   # Standard setup
-/devcontainer:setup --advanced       # Secure setup
-/devcontainer:setup --yolo           # Full control
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 ```
 
 **What it does:**
 1. Asks user to choose setup mode (or uses flag)
 2. Routes to appropriate mode-specific skill:
    - `--basic` → devcontainer-setup-basic skill
-   - `--intermediate` → devcontainer-setup-intermediate skill
    - `--advanced` → devcontainer-setup-advanced skill
    - `--yolo` → devcontainer-setup-yolo skill
+
+**Note:** All modes now include a planning phase (v4.0.0) where Claude scans your project, creates a plan, and gets your approval before implementing.
 
 **When to use:**
 - Creating a new sandbox environment
@@ -117,81 +111,6 @@ See also: [Security Model](../docs/features/security-model.md)
 
 ---
 
-<<<<<<< HEAD
-=======
-### Mode-Specific Setup Commands
-
-These commands directly invoke mode-specific setup skills. Most users should use `/devcontainer:setup` instead, which provides interactive mode selection.
-
-#### `/devcontainer:basic`
-**File:** `commands/basic.md`
-**Skill:** devcontainer-setup-basic
-**Description:** Quick sandbox setup using sandbox templates, no firewall
-
-**Usage:**
-```bash
-/devcontainer:basic
-```
-
-**Equivalent to:**
-```bash
-/devcontainer:setup --basic
-```
-
----
-
-#### `/devcontainer:intermediate`
-**File:** `commands/intermediate.md`
-**Skill:** devcontainer-setup-intermediate
-**Description:** Standard sandbox setup with Dockerfile and permissive firewall
-
-**Usage:**
-```bash
-/devcontainer:intermediate
-```
-
-**Equivalent to:**
-```bash
-/devcontainer:setup --intermediate
-```
-
----
-
-#### `/devcontainer:advanced`
-**File:** `commands/advanced.md`
-**Skill:** devcontainer-setup-advanced
-**Description:** Secure sandbox setup with strict firewall and customizable allowlist
-
-**Usage:**
-```bash
-/devcontainer:advanced
-```
-
-**Equivalent to:**
-```bash
-/devcontainer:setup --advanced
-```
-
----
-
-#### `/devcontainer:yolo`
-**File:** `commands/yolo.md`
-**Skill:** devcontainer-setup-yolo
-**Description:** Full control sandbox setup with no restrictions
-
-**Usage:**
-```bash
-/devcontainer:yolo
-```
-
-**Equivalent to:**
-```bash
-/devcontainer:setup --yolo
-```
-
----
-
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 ## Command Structure
 
 ### File Format
@@ -216,11 +135,7 @@ Use and follow the [skill-name] skill exactly as written.
 
 Commands follow the pattern:
 - **Primary commands**: `setup`, `troubleshoot`, `audit`
-<<<<<<< HEAD
 - **Mode-specific**: `basic`, `advanced`, `yolo`
-=======
-- **Mode-specific**: `basic`, `intermediate`, `advanced`, `yolo`
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 
 All commands use the `/devcontainer:` namespace prefix when invoked.
 
@@ -244,18 +159,12 @@ Result: DevContainer configuration created
 
 | Command | Mode | Questions | Time | Security | Best For |
 |---------|------|-----------|------|----------|----------|
-<<<<<<< HEAD
 | `/devcontainer:quickstart` | Interactive | Varies | Varies | Varies | Most users (choose mode) |
 | `/devcontainer:yolo-vibe-maxxing  | YOLO | 15-20+ | 15-30 min | User-controlled | Expert customization |
-=======
-| `/devcontainer:setup` | Interactive | Varies | Varies | Varies | Most users (choose mode) |
-| `/devcontainer:basic` | Basic | 2-3 | 1-2 min | Low | Quick start, learning |
-| `/devcontainer:intermediate` | Intermediate | 5-8 | 3-5 min | Medium | Regular development |
-| `/devcontainer:advanced` | Advanced | 10-15 | 8-12 min | High | Security-conscious |
-| `/devcontainer:yolo` | YOLO | 15-20+ | 15-30 min | User-controlled | Expert customization |
->>>>>>> 7386fb3 (Revert "feat: Add planning mode and consolidate shared resources (v4.0.0)")
 | `/devcontainer:troubleshoot` | N/A | Diagnostic | Varies | N/A | Problem solving |
 | `/devcontainer:audit` | N/A | Audit | 5-10 min | N/A | Security review |
+
+**Note:** All setup commands now include a planning phase (v4.0.0). Times include planning + implementation.
 
 ## Usage Examples
 
@@ -265,9 +174,12 @@ Result: DevContainer configuration created
 ```
 User: /devcontainer:quickstart
 Claude: Which setup mode do you prefer?
-        [Shows mode comparison]
-User: Intermediate
-Claude: [Executes devcontainer-setup-intermediate skill]
+        [Shows mode comparison with planning phase info]
+User: Basic
+Claude: [Enters planning mode, scans project, creates plan]
+Claude: [Presents plan for approval]
+User: Approve
+Claude: [Implements devcontainer configuration]
 ```
 
 **Experienced (Direct):**
