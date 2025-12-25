@@ -91,6 +91,9 @@ INSTALL_MODE="partials"
 
 # Workspace mode: "bind" (default) or "volume" (better I/O on Windows/macOS)
 WORKSPACE_MODE="bind"
+
+# Pre-built image mode: "false" (default, build from scratch) or "true" (pull pre-built)
+USE_PREBUILT_IMAGE="false"
 ```
 
 ## Step 1.5: Choose Installation Mode
@@ -121,6 +124,37 @@ if [ "$INSTALL_MODE_CHOICE" = "Dev Container Features (Recommended)" ]; then
 else
   INSTALL_MODE="partials"
   echo "Using custom partial dockerfiles"
+fi
+```
+
+## Step 1.6: Choose Pre-built Image Option
+
+Use AskUserQuestion:
+
+```
+Do you want to use pre-built images for faster startup?
+
+Options:
+1. Build from scratch (default)
+   → Full control over build process
+   → Works offline
+   → Takes 2-5 minutes
+
+2. Use pre-built image
+   → Instant startup (~30 seconds)
+   → Requires internet connection
+   → Pulls from GitHub Container Registry
+```
+
+Store as `PREBUILT_IMAGE_CHOICE`.
+
+```bash
+if [ "$PREBUILT_IMAGE_CHOICE" = "Use pre-built image" ]; then
+  USE_PREBUILT_IMAGE="true"
+  echo "Using pre-built image from GHCR"
+else
+  USE_PREBUILT_IMAGE="false"
+  echo "Building from scratch"
 fi
 ```
 
@@ -542,8 +576,11 @@ esac
 # Copy devcontainer config
 cp "$TEMPLATES/devcontainer.json" .devcontainer/
 
-# Copy docker-compose based on workspace mode
-if [ "$WORKSPACE_MODE" = "volume" ]; then
+# Copy docker-compose based on modes (pre-built takes precedence)
+if [ "$USE_PREBUILT_IMAGE" = "true" ]; then
+  cp "$TEMPLATES/docker-compose.prebuilt.yml" ./docker-compose.yml
+  echo "Using docker-compose.prebuilt.yml (pre-built image mode)"
+elif [ "$WORKSPACE_MODE" = "volume" ]; then
   cp "$TEMPLATES/docker-compose.volume.yml" ./docker-compose.yml
   echo "Using docker-compose.volume.yml (volume mode)"
 else
