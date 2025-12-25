@@ -319,15 +319,59 @@ echo ""
 ```bash
 if [ "$NEEDS_FIREWALL" = "Yes" ]; then
   # Generate firewall script from selected categories
-  # Read allowable-domains.json and extract domains for selected categories
-  # Copy firewall script with domain allowlist
-
   cp "$TEMPLATES/init-firewall.sh" .devcontainer/init-firewall.sh
 
-  # TODO: Customize ALLOWED_DOMAINS array based on DOMAIN_CATEGORIES
-  # For now, use default allowlist
+  # Read allowable-domains.json and build domain list from selected categories
+  DOMAINS_JSON="$TEMPLATES/data/allowable-domains.json"
+
+  # Build ALLOWED_DOMAINS array from selected categories
+  FIREWALL_DOMAINS=""
+
+  for category in "${DOMAIN_CATEGORIES[@]}"; do
+    case "$category" in
+      "Package managers")
+        # Add npm and python by default (basic subcategories)
+        FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.npm.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/' | tr '\n' '\n')
+        FIREWALL_DOMAINS+="\n"
+        FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.python.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/' | tr '\n' '\n')
+        ;;
+      "Version control")
+        FIREWALL_DOMAINS+=$(jq -r '.categories.version_control.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/' | tr '\n' '\n')
+        ;;
+      "Container registries")
+        FIREWALL_DOMAINS+=$(jq -r '.categories.container_registries.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/' | tr '\n' '\n')
+        ;;
+      "Cloud platforms")
+        FIREWALL_DOMAINS+=$(jq -r '.categories.cloud_platforms.sub_categories | to_entries[].value.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/' | tr '\n' '\n')
+        ;;
+      "Development tools")
+        FIREWALL_DOMAINS+=$(jq -r '.categories.development_tools.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/' | tr '\n' '\n')
+        ;;
+      "VS Code extensions")
+        FIREWALL_DOMAINS+=$(jq -r '.categories.vscode.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/' | tr '\n' '\n')
+        ;;
+      "Analytics/telemetry")
+        FIREWALL_DOMAINS+=$(jq -r '.categories.analytics_telemetry.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/' | tr '\n' '\n')
+        ;;
+    esac
+  done
+
+  # Add Anthropic services (always required)
+  ANTHROPIC_DOMAINS=$(jq -r '.categories.anthropic_services.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/')
+
+  # Add Linux distributions (always required)
+  LINUX_DOMAINS=$(jq -r '.categories.linux_distributions.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/')
+
+  # Add custom domains if provided
+  CUSTOM_DOMAIN_LIST=""
+  if [ -n "${CUSTOM_DOMAINS:-}" ]; then
+    for domain in $(echo "$CUSTOM_DOMAINS" | tr ',' '\n'); do
+      CUSTOM_DOMAIN_LIST+="  \"$(echo $domain | xargs)\"\n"
+    done
+  fi
 
   echo "Firewall: Strict mode with domain allowlist"
+  echo "  Categories: ${DOMAIN_CATEGORIES[*]}"
 else
   # No firewall script needed - Docker container isolation only
   echo "Firewall: Disabled (Docker isolation only)"

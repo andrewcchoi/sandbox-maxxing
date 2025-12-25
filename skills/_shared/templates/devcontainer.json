@@ -4,6 +4,8 @@
   "service": "app",
   "workspaceFolder": "/workspace",
   "remoteUser": "node",
+  "updateRemoteUserUID": true,
+  "shutdownAction": "stopCompose",
 
   "customizations": {
     "vscode": {
