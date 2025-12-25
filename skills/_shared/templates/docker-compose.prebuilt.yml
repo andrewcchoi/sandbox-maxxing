@@ -1,19 +1,14 @@
 # ============================================================================
-# BASIC MODE - Docker Compose Configuration
+# PRE-BUILT MODE - Docker Compose Configuration
 # ============================================================================
-# Simple development environment with app container and optional services
-# Issue #30: Includes Claude credentials mounting for persistence
+# Uses pre-built image from GitHub Container Registry for instant startup
+# Trade-off: Faster startup (~30 seconds) but requires internet connection
+# Issue #72: Pre-built image workflow for faster container startup
 # ============================================================================
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: .devcontainer/Dockerfile
-      args:
-        - INSTALL_SHELL_EXTRAS=${INSTALL_SHELL_EXTRAS:-true}
-        - INSTALL_DEV_TOOLS=${INSTALL_DEV_TOOLS:-true}
-        - INSTALL_CA_CERT=${INSTALL_CA_CERT:-false}
+    image: ${PREBUILT_IMAGE:-ghcr.io/andrewcchoi/sandbox-maxxing/sandboxxer-base:latest}
     ports:
       - "${APP_PORT:-8000}:8000"
       - "${FRONTEND_PORT:-3000}:3000"

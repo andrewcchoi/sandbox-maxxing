@@ -4,6 +4,8 @@
   "service": "app",
   "workspaceFolder": "/workspace",
   "remoteUser": "node",
+  "updateRemoteUserUID": true,
+  "shutdownAction": "stopCompose",
 
   "customizations": {
     "vscode": {
@@ -14,26 +16,90 @@
             "path": "/bin/zsh"
           }
         }
+        // Dotfiles: Personalize your container with your shell configs, aliases, and preferences
+        // Uncomment and configure to use your dotfiles repository:
+        // "dotfiles.repository": "https://github.com/YOUR_USERNAME/dotfiles",
+        // "dotfiles.targetPath": "~/dotfiles",
+        // "dotfiles.installCommand": "install.sh"
       },
+      // Base extensions (always installed)
+      // Language-specific extensions are added by quickstart based on selected tools
       "extensions": [
+        // Core tools
         "anthropic.claude-code",
         "ms-azuretools.vscode-docker",
         "redhat.vscode-yaml",
         "eamodio.gitlens",
+        // Python (base stack includes Python 3.12)
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        // Theme & UI
         "PKief.material-icon-theme",
         "johnpapa.vscode-peacock"
+        // Language-specific extensions added below by quickstart:
+        // Go: "golang.go"
+        // Rust: "rust-lang.rust-analyzer"
+        // Java: "redhat.java", "vscjava.vscode-java-pack"
+        // Ruby: "shopify.ruby-lsp"
+        // PHP: "bmewburn.vscode-intelephense-client"
+        // C++: "ms-vscode.cpptools", "ms-vscode.cmake-tools"
+        // PostgreSQL: "ckolkman.vscode-postgres"
       ]
     }
   },
 
-  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
-  "postStartCommand": "echo 'Basic DevContainer ready!'",
+  // Lifecycle hooks (in execution order):
+  // 1. initializeCommand - runs on HOST before container creation (useful for host-side setup)
+  // 2. onCreateCommand - runs inside container after creation, before postCreateCommand
+  // 3. postCreateCommand - runs after container is created (main setup script)
+  // 4. updateContentCommand - runs when container is updated/rebuilt
+  // 5. postStartCommand - runs each time the container starts
+  // 6. postAttachCommand - runs each time VS Code attaches to the container
 
-  "forwardPorts": [8000, 3000, 5432, 6379],
+  "initializeCommand": "",
+  "onCreateCommand": "",
+  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
+  "updateContentCommand": "",
+  "postStartCommand": "echo 'DevContainer ready!'",
+  "postAttachCommand": "",
+  "waitFor": "postCreateCommand",
+
+  "forwardPorts": [{{APP_PORT}}, {{FRONTEND_PORT}}, {{POSTGRES_PORT}}, {{REDIS_PORT}}],
+
+  // GitHub Codespaces configuration
+  // See: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "portsAttributes": {
+    "{{APP_PORT}}": { "label": "App", "onAutoForward": "notify" },
+    "{{FRONTEND_PORT}}": { "label": "Frontend", "onAutoForward": "notify" },
+    "{{POSTGRES_PORT}}": { "label": "PostgreSQL", "onAutoForward": "silent" },
+    "{{REDIS_PORT}}": { "label": "Redis", "onAutoForward": "silent" }
+  },
+  // Codespaces secrets: Configure in repo Settings > Secrets > Codespaces
+  // ANTHROPIC_API_KEY, OPENAI_API_KEY, etc. will be available as env vars
+
+  // Environment Variables:
+  // - containerEnv: Set at container build time, available in Dockerfile
+  // - remoteEnv: Set at runtime, can reference host env vars with ${localEnv:VAR}
+  // - Use .env file for secrets (not committed to git)
+
+  "containerEnv": {
+    "DEVCONTAINER": "true",
+    "TZ": "America/Los_Angeles"
+  },
 
   "remoteEnv": {
     "PATH": "/usr/local/bin:${containerEnv:PATH}",
-    "FIREWALL_MODE": "permissive"
+    "FIREWALL_MODE": "permissive",
+    // Inherit from host (if set):
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+    "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}",
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
   },
+
   "features": {}
 }

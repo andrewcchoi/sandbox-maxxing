@@ -4,17 +4,22 @@
 # Includes Python 3.12 + Node 20 + common development tools
 # Language-specific additions are inserted at the marker below
 #
-# PROXY-FRIENDLY BUILD ARGUMENTS:
+# BUILD ARGUMENTS:
 #   INSTALL_SHELL_EXTRAS=true  - git-delta, zsh plugins (default: true)
 #   INSTALL_DEV_TOOLS=true     - Language dev tools, linters (default: true)
+#   INSTALL_CA_CERT=false      - Corporate CA certificate (default: false)
 #
-# Set to "false" for minimal builds behind corporate proxies that block
-# GitHub releases. Docker Hub access is still required for base images.
+# PROXY-FRIENDLY: Set INSTALL_SHELL_EXTRAS/INSTALL_DEV_TOOLS to "false" for
+# minimal builds behind corporate proxies that block GitHub releases.
+#
+# CORPORATE CA CERTIFICATE: For SSL inspection environments, place your CA
+# certificate as 'corporate-ca.crt' in .devcontainer/ and set INSTALL_CA_CERT=true
 # ============================================================================
 
 # === GLOBAL BUILD ARGUMENTS ===
 ARG INSTALL_SHELL_EXTRAS=true
 ARG INSTALL_DEV_TOOLS=true
+ARG INSTALL_CA_CERT=false
 
 # === MULTI-STAGE SOURCES ===
 # Stage 1: Get Python + uv from official Astral image
@@ -26,6 +31,7 @@ FROM node:20-bookworm-slim
 # Re-declare ARGs after FROM (Docker requirement)
 ARG INSTALL_SHELL_EXTRAS=true
 ARG INSTALL_DEV_TOOLS=true
+ARG INSTALL_CA_CERT=false
 
 # Timezone configuration
 ARG TZ=America/Los_Angeles
@@ -46,6 +52,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   # Network security tools (firewall)
   iptables ipset iproute2 dnsutils \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Corporate CA certificate support (for SSL inspection)
+# To use: place your CA cert as 'corporate-ca.crt' in .devcontainer/ and set INSTALL_CA_CERT=true
+COPY corporate-ca.crt* /tmp/
+RUN if [ "$INSTALL_CA_CERT" = "true" ] && [ -f /tmp/corporate-ca.crt ]; then \
+    cp /tmp/corporate-ca.crt /usr/local/share/ca-certificates/corporate-ca.crt && \
+    chmod 644 /usr/local/share/ca-certificates/corporate-ca.crt && \
+    update-ca-certificates && \
+    echo "Corporate CA certificate installed successfully"; \
+  else \
+    echo "No corporate CA certificate to install"; \
+  fi && rm -f /tmp/corporate-ca.crt
 
 # Copy Python 3.12 binaries
 COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/

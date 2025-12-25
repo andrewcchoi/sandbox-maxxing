@@ -29,16 +29,18 @@ set +H 2>/dev/null || true
 # Handle Windows paths - convert backslashes to forward slashes
 PLUGIN_ROOT=""
 if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
-  PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT//\\//}"
-  echo "Using CLAUDE_PLUGIN_ROOT: $PLUGIN_ROOT"
+  PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT//\\//}";
+  echo "Using CLAUDE_PLUGIN_ROOT: $PLUGIN_ROOT";
 elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
-  PLUGIN_ROOT="."
-  echo "Using current directory as plugin root"
+  PLUGIN_ROOT=".";
+  echo "Using current directory as plugin root";
 elif [ -d "$HOME/.claude/plugins" ]; then
-  PLUGIN_ROOT=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
-    -exec grep -l '"name": "devcontainer-setup"' {} \; 2>/dev/null | \
-    head -1 | xargs -r dirname 2>/dev/null) || true
-  [ -n "$PLUGIN_ROOT" ] && echo "Found installed plugin: $PLUGIN_ROOT"
+  PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
+    -exec grep -l '"name": "devcontainer-setup"' {} \; 2>/dev/null | head -1);
+  if [ -n "$PLUGIN_JSON" ]; then
+    PLUGIN_ROOT=$(dirname "$(dirname "$PLUGIN_JSON")");
+    echo "Found installed plugin: $PLUGIN_ROOT";
+  fi;
 fi
 
 [ -z "$PLUGIN_ROOT" ] && { echo "ERROR: Cannot locate plugin templates"; exit 1; }
@@ -62,7 +64,7 @@ cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
 
 # Replace placeholders (portable sed without -i)
 for f in .devcontainer/devcontainer.json docker-compose.yml; do
-  sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+  sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$f" > "$f.tmp" && mv "$f.tmp" "$f";
 done
 
 # Make scripts executable

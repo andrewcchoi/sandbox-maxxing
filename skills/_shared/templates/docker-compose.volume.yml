@@ -1,8 +1,9 @@
 # ============================================================================
-# BASIC MODE - Docker Compose Configuration
+# VOLUME MODE - Docker Compose Configuration
 # ============================================================================
-# Simple development environment with app container and optional services
-# Issue #30: Includes Claude credentials mounting for persistence
+# Uses isolated Docker volume instead of bind mount for better I/O performance
+# on Windows/macOS. Trade-off: Better I/O but changes require explicit sync.
+# Issue #79: Repository container option for Windows/macOS performance
 # ============================================================================
 
 services:
@@ -18,10 +19,11 @@ services:
       - "${APP_PORT:-8000}:8000"
       - "${FRONTEND_PORT:-3000}:3000"
     volumes:
-      - .:/workspace:cached
-      - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
-      - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
-      - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)
+      - {{PROJECT_NAME}}-workspace-volume:/workspace  # Named volume for better I/O performance
+      - ./.devcontainer:/workspace/.devcontainer:ro  # Scripts for postCreateCommand
+      - ~/.claude:/tmp/host-claude:ro            # Issue #30: Claude config
+      - ~/.config/claude-env:/tmp/host-env:ro    # Environment secrets (optional)
+      - ~/.config/gh:/tmp/host-gh:ro             # GitHub CLI config (optional)
     working_dir: /workspace
     command: sleep infinity
     networks:
@@ -73,6 +75,8 @@ networks:
     driver: bridge
 
 volumes:
+  {{PROJECT_NAME}}-workspace-volume:
+    external: true
   postgres_data:
     driver: local
   redis_data:

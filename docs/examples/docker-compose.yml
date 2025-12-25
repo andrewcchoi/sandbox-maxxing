@@ -24,8 +24,6 @@
 #   psql -h postgres -U sandbox_user -d sandbox_dev
 #   redis-cli -h redis ping
 
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
