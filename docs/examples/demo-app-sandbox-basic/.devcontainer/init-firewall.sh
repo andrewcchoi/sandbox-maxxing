@@ -1,22 +1,22 @@
 #!/bin/bash
 # ============================================================================
-# CLAUDE CODE SANDBOX - Basic Mode Firewall Configuration
+# CLAUDE CODE SANDBOX - Minimal Configuration (No Firewall)
 # ============================================================================
-# Basic mode relies on Windows Sandbox isolation for security rather than
+# Minimal configuration relies on container isolation for security rather than
 # network-level restrictions. This approach minimizes complexity while
-# leveraging the hypervisor-based isolation provided by Windows Sandbox.
+# leveraging the container isolation provided by Docker.
 #
 # Security model:
-# - Hypervisor-level container isolation (Windows Sandbox)
+# - Container-level isolation (Docker)
 # - Ephemeral environment (automatic cleanup on exit)
 # - No persistent state between sessions
 # - No network firewall restrictions
 # ============================================================================
 
 echo "=========================================="
-echo "FIREWALL: BASIC MODE"
+echo "FIREWALL: MINIMAL CONFIGURATION"
 echo "=========================================="
-echo "No firewall configured (Basic mode - relies on sandbox isolation)"
+echo "No firewall configured (minimal configuration - relies on container isolation)"
 echo ""
 echo "Security model:"
 echo "  - Windows Sandbox hypervisor isolation"

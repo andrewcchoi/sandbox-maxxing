@@ -1,5 +1,5 @@
 # ============================================================================
-# BASIC MODE - Docker Compose Configuration
+# Docker Compose Configuration
 # ============================================================================
 # Simple development environment with app container and optional services
 # Issue #30: Includes Claude credentials mounting for persistence

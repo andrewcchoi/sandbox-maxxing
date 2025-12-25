@@ -10,44 +10,22 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 
 ### Setup Skills
 
-#### 
-**Command:** `/sandboxxer:quickstart` (Basic mode)
-**When to use:** You want the simplest sandbox setup with minimal configuration.
+#### Interactive Quickstart
+**Command:** `/sandboxxer:quickstart`
+**When to use:** You want to create a customized sandbox with guided setup.
 
 **Features:**
-- Uses sandbox templates or official images
-- Docker Compose when appropriate
-- No firewall (relies on container isolation only)
-- Minimal questions (2-3)
-- Fast setup (1-2 minutes)
+- Interactive project type selection (9 language options)
+- Optional firewall with domain allowlist
+- Customizable configuration (2-3 questions)
+- Language-specific toolchains (Go, Ruby, Rust, Java, C++, PHP, PostgreSQL)
+- Setup time: 2-3 minutes
 
 **Best for:**
-- First-time users
-- Rapid prototyping
-- Learning and tutorials
-- Solo developers
-
-**Location:** `commands/quickstart.md`
-
----
-
-
-#### 
-**Command:** `/sandboxxer:quickstart` (Advanced mode)
-**When to use:** You need security-focused development with strict controls.
-
-**Features:**
-- Security-hardened official images
-- Strict whitelist-based firewall
-- Customizable domain allowlists
-- Comprehensive questions (10-15)
-- Detailed setup (8-12 minutes)
-
-**Best for:**
-- Security-conscious developers
+- Most users needing specific language toolchains
+- Projects requiring firewall protection
 - Production-like environments
-- Evaluating untrusted packages
-- Compliance requirements
+- Guided configuration with options
 
 **Location:** `commands/quickstart.md`
 
@@ -55,6 +33,27 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - `docs/features/CUSTOMIZATION.md` - Customization guide
 - `docs/features/security-model.md` - Security best practices
 - `docs/features/TROUBLESHOOTING.md` - Common issues
+
+---
+
+#### Non-Interactive YOLO Vibe Maxxing
+**Command:** `/sandboxxer:yolo-vibe-maxxing`
+**When to use:** You want instant setup with no questions.
+
+**Features:**
+- Zero questions asked
+- Python 3.12 + Node 20 base
+- Container isolation only (no firewall)
+- All standard development tools
+- Setup time: < 1 minute
+
+**Best for:**
+- Rapid prototyping
+- Python/Node projects
+- Quick experimentation
+- Trusted code scenarios
+
+**Location:** `commands/yolo-vibe-maxxing.md`
 
 ---
 
@@ -106,7 +105,7 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 
 **Features:**
 - Comprehensive security checklist
-- Mode-appropriate recommendations
+- Configuration-appropriate recommendations
 - Actionable improvement suggestions
 - Risk assessment
 
@@ -190,8 +189,11 @@ skills/
 Skills are typically invoked through slash commands defined in `/commands/`:
 
 ```bash
-# Setup commands (choose mode interactively)
+# Interactive setup with project type selection
 /sandboxxer:quickstart
+
+# Quick setup with no questions
+/sandboxxer:yolo-vibe-maxxing
 
 # Troubleshooting
 /sandboxxer:troubleshoot
@@ -288,7 +290,7 @@ Test skills with various scenarios:
 ## Related Documentation
 
 ### Core Documentation
-- [Modes Comparison](../docs/features/MODES.md) - Detailed mode comparison
+- [Setup Options](../docs/features/MODES.md) - Command comparison and selection
 - [Security Model](../docs/features/security-model.md) - Security architecture
 - [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md) - Common issues and fixes
 
@@ -305,10 +307,10 @@ Test skills with various scenarios:
 
 Each skill is demonstrated in example projects:
 
-### Setup Skill Examples
-- `docs/examples/demo-app-sandbox-basic/` - Basic mode result
-- `docs/examples/demo-app-sandbox-advanced/` - Advanced mode result
-- `docs/examples/streamlit-sandbox-basic/` - Basic mode (Python-only)
+### Setup Command Examples
+- `docs/examples/demo-app-sandbox-basic/` - Minimal configuration example
+- `docs/examples/demo-app-sandbox-advanced/` - Domain allowlist configuration example
+- `docs/examples/streamlit-sandbox-basic/` - Minimal configuration (Python-only)
 
 
 See [Examples README](../docs/examples/README.md) for detailed walkthroughs.
@@ -336,7 +338,7 @@ See [Commands README](../commands/README.md) for full command documentation.
 ### Reporting Issues
 
 When reporting skill-related issues, include:
-- Skill name and mode (if setup skill)
+- Skill or command name
 - Error messages or unexpected behavior
 - Project structure and configuration
 - Relevant logs (Docker, VS Code, Claude)

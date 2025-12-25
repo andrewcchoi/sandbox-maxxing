@@ -16,12 +16,12 @@ Before publishing plugin:
 - [x] LICENSE file present
 
 ## Testing
-- [ ] Basic mode tested
-- [ ] Advanced mode tested
-- [ ] YOLO mode tested
+- [ ] Interactive quickstart tested
+- [ ] Non-interactive YOLO vibe maxxing tested
 - [ ] Troubleshoot tested
 - [ ] Security audit tested
 - [ ] Cross-platform tested
+- [ ] Firewall configurations tested (container isolation and domain allowlist)
 
 ## Distribution
 - [x] Git repository clean
@@ -36,5 +36,5 @@ Before publishing plugin:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

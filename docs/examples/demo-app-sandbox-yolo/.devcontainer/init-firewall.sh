@@ -1,10 +1,10 @@
 #!/bin/bash
 # ============================================================================
-# CLAUDE CODE SANDBOX - YOLO Mode Firewall Configuration
+# CLAUDE CODE SANDBOX - Custom Configuration Firewall Configuration
 # ============================================================================
-# YOLO mode provides complete flexibility with optional firewall modes:
+# Custom Configuration provides complete flexibility with optional firewall modes:
 # - DISABLED: No firewall (relies on container isolation only)
-# - PERMISSIVE: Allow all traffic (like Intermediate mode)
+# - PERMISSIVE: Allow all traffic (like Permissive Configuration)
 # - STRICT: Whitelist-based firewall with comprehensive domain categories
 #
 # This template includes all available domain categories from the standard
@@ -561,7 +561,7 @@ echo ""
 echo "=========================================="
 echo "FIREWALL CONFIGURED SUCCESSFULLY"
 echo "=========================================="
-echo "Mode: $FIREWALL_MODE (YOLO mode)"
+echo "Mode: $FIREWALL_MODE (Custom Configuration)"
 echo "Allowed domains: ${#ALLOWED_DOMAINS[@]}"
 echo "Host network: $HOST_NETWORK"
 echo ""

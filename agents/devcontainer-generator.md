@@ -34,7 +34,7 @@ This agent is a specialized file generator that ONLY creates DevContainer files 
 
 When invoked, you'll receive:
 - **Project name**: Name of the project (for placeholder replacement)
-- **Mode**: basic, advanced, or yolo
+- **Firewall option**: Container isolation only OR domain allowlist
 - **Detected languages**: List of programming languages in the project
 - **Services needed**: List of services (PostgreSQL, Redis, etc.)
 - **Templates path**: Path to templates directory (usually `skills/_shared/templates/`)
@@ -95,10 +95,9 @@ echo "✓ Copied devcontainer.json"
 cp skills/_shared/templates/setup-claude-credentials.sh .devcontainer/setup-claude-credentials.sh
 echo "✓ Copied setup-claude-credentials.sh"
 
-# Copy firewall script (mode-specific)
-# For basic mode: use disabled.sh
-# For advanced mode: use dns-allowlist.sh
-# For yolo mode: use disabled.sh
+# Copy firewall script (firewall-option-specific)
+# For container isolation: use disabled.sh
+# For domain allowlist: use dns-allowlist.sh
 cp skills/_shared/templates/init-firewall/disabled.sh .devcontainer/init-firewall.sh
 echo "✓ Copied init-firewall.sh"
 ```
@@ -264,7 +263,7 @@ Files Created:
 Dockerfile Composition:
   ✓ Base: base.dockerfile
   ✓ Partials: partial-postgresql.dockerfile
-  ✓ Firewall: disabled.sh (basic mode)
+  ✓ Firewall: disabled.sh (container isolation only)
 
 Placeholders:
   ✓ {{PROJECT_NAME}} → demo-app-shared
@@ -300,7 +299,7 @@ Delegate to the devcontainer-generator agent:
 
 Use Task tool with:
 - subagent_type: "devcontainer-generator"
-- prompt: "Generate DevContainer files for basic mode. Project: <name>. Languages: <list>. Services: <list>."
+- prompt: "Generate DevContainer files with container isolation only. Project: <name>. Languages: <list>. Services: <list>."
 
 Wait for agent completion, then verify output.
 ```
@@ -319,5 +318,5 @@ Wait for agent completion, then verify output.
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

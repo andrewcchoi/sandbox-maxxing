@@ -291,7 +291,7 @@ Skills reference these files using relative paths from the plugin root directory
 
 Reference: `skills/_shared/data/sandbox-templates.json`
 
-**Sandbox Templates** (recommended for Basic mode):
+**Sandbox Templates** (recommended for minimal configuration):
 - `docker/sandbox-templates:latest` - Default choice
 - `docker/sandbox-templates:claude-code` - Optimized for Claude Code
 ```

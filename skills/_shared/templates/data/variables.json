@@ -460,7 +460,7 @@
       }
     },
     "custom": {
-      "description": "User-defined custom variables (YOLO mode)",
+      "description": "User-defined custom variables (custom configuration)",
       "mode_minimum": "yolo",
       "variables": {
         "CUSTOM_VAR_EXAMPLE": {

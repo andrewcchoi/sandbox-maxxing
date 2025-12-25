@@ -1,4 +1,4 @@
-# Generated using sandboxxer-maxxing plugin Intermediate mode
+# Generated using sandboxxer plugin
 # Development container for plugin development with services
 # Includes PostgreSQL, Redis, RabbitMQ for testing examples
 

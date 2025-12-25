@@ -71,7 +71,7 @@ done
 chmod +x .devcontainer/*.sh
 
 echo "=========================================="
-echo "DevContainer Created (YOLO Mode)"
+echo "DevContainer Created (Non-Interactive YOLO Vibe Maxxing)"
 echo "=========================================="
 echo "Project: $PROJECT_NAME"
 echo "Language: Python 3.12 + Node 20"

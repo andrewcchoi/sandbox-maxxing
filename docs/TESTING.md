@@ -8,15 +8,14 @@ The project includes automated testing for sandbox setup skills to ensure they g
 
 ## Test Coverage
 
-- ✅ Basic mode setup
-- ✅ Advanced mode setup
-- ✅ YOLO mode setup
+- ✅ Interactive quickstart setup
+- ✅ Non-interactive YOLO vibe maxxing setup
 - ✅ Troubleshooting diagnostics
 - ✅ Security auditing
 - ✅ Template generation
 - ✅ Placeholder replacement
 - ✅ Docker services
-- ✅ Firewall configuration
+- ✅ Firewall configuration (container isolation and domain allowlist)
 
 ## Skill Validation Testing
 
@@ -283,5 +282,5 @@ For skill-specific issues:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

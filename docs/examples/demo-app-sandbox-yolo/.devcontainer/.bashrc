@@ -1,4 +1,4 @@
-# Custom bash configuration for YOLO mode development
+# Custom bash configuration for Custom Configuration development
 
 # Enhanced prompt with git branch
 parse_git_branch() {
@@ -53,7 +53,7 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 # Welcome message
-echo "🚀 YOLO Mode Development Environment"
+echo "🚀 Custom Configuration Development Environment"
 echo "Python: $(python --version)"
 echo "Node.js: $(node --version)"
 echo "Git: $(git --version)"

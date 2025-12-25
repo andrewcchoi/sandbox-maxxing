@@ -1,8 +1,8 @@
 #!/bin/bash
 # ============================================================================
-# CLAUDE CODE SANDBOX - Intermediate Mode Firewall Configuration
+# CLAUDE CODE SANDBOX - Permissive Firewall Configuration
 # ============================================================================
-# Intermediate mode uses permissive mode with no network restrictions.
+# This configuration uses permissive mode with no network restrictions.
 # This provides maximum flexibility for development while still maintaining
 # container-level isolation.
 #
@@ -19,7 +19,7 @@ set -euo pipefail  # Exit on error, undefined vars, and pipeline failures
 IFS=$'\n\t'       # Stricter word splitting
 
 echo "=========================================="
-echo "FIREWALL MODE: PERMISSIVE (INTERMEDIATE)"
+echo "FIREWALL MODE: PERMISSIVE"
 echo "=========================================="
 echo "All outbound traffic will be allowed."
 echo ""
@@ -49,13 +49,13 @@ echo ""
 echo "=========================================="
 echo "FIREWALL CONFIGURED SUCCESSFULLY"
 echo "=========================================="
-echo "Mode: Permissive (Intermediate mode)"
+echo "Mode: Permissive (Container isolation only)"
 echo "Network restrictions: None"
 echo ""
 echo "Security considerations:"
 echo "  - Container isolation is your primary protection"
 echo "  - Be cautious about running untrusted code"
-echo "  - Consider upgrading to Advanced mode for network-level restrictions"
+echo "  - Consider using domain allowlist configuration for network-level restrictions"
 echo "=========================================="
 
 exit 0

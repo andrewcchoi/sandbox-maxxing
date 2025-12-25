@@ -209,7 +209,7 @@ Skills can invoke each other for related tasks:
 
 - **After setup** → Suggest `/sandboxxer:audit` for security review
 - **During errors** → Auto-invoke `/sandboxxer:troubleshoot`
-- **Before production** → Recommend Advanced mode review
+- **Before production** → Recommend domain allowlist configuration review
 
 ## Version History
 
@@ -262,10 +262,10 @@ Skills can invoke each other for related tasks:
 
 ### Examples
 - [Examples README](examples/README.md) - Example projects
-- [Basic Example](examples/demo-app-sandbox-basic/) - Basic mode result
-- [Advanced Example](examples/demo-app-sandbox-advanced/) - Advanced mode result
+- [Minimal Configuration](examples/demo-app-sandbox-basic/) - Minimal configuration result
+- [Domain Allowlist](examples/demo-app-sandbox-advanced/) - Domain allowlist result
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

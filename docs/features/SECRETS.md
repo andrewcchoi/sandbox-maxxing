@@ -307,9 +307,9 @@ def get_db_password():
 - More complex setup
 - Not for local development
 
-## Mode-Specific Approaches
+## Secret Management by Configuration
 
-### Basic Mode
+### Minimal Configuration
 
 **Philosophy:** Development defaults, no secret management
 
@@ -332,9 +332,9 @@ environment:
 **Security Notes:**
 - Only for local development
 - Change all defaults for production
-- No network firewall
+- Container isolation only
 
-### Advanced Mode
+### Production-Ready Configuration
 
 **Philosophy:** Comprehensive secret management with multiple methods
 
@@ -375,7 +375,7 @@ RUN --mount=type=secret,id=npm_token \
 - Strict network controls
 - Resource limits
 
-### YOLO Mode
+### Custom Configuration
 
 **Philosophy:** Full flexibility, all secret methods available
 
@@ -771,5 +771,5 @@ secrets:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

@@ -1,8 +1,8 @@
 #!/bin/bash
 # ============================================================================
-# CLAUDE CODE SANDBOX - Advanced Mode Firewall Configuration
+# CLAUDE CODE SANDBOX - Domain Allowlist Firewall Configuration
 # ============================================================================
-# Advanced mode implements strict network restrictions with a curated allowlist
+# Domain allowlist configuration implements strict network restrictions with a curated allowlist
 # of essential development domains. This provides strong security while
 # maintaining functionality for common development workflows.
 #
@@ -25,7 +25,7 @@ IFS=$'\n\t'       # Stricter word splitting
 # CONFIGURATION
 # ----------------------------------------------------------------------------
 
-# Mode is always strict for Advanced mode
+# Mode is always strict for domain allowlist configuration
 FIREWALL_MODE="strict"
 
 # CUSTOMIZE: Add your project-specific domains to this array
@@ -301,7 +301,7 @@ echo ""
 echo "=========================================="
 echo "FIREWALL CONFIGURED SUCCESSFULLY"
 echo "=========================================="
-echo "Mode: $FIREWALL_MODE (Advanced mode)"
+echo "Mode: $FIREWALL_MODE (Domain allowlist configuration)"
 echo "Allowed domains: ${#ALLOWED_DOMAINS[@]}"
 echo "Host network: $HOST_NETWORK"
 echo ""

@@ -70,11 +70,11 @@ cat partials/go.dockerfile >> .devcontainer/Dockerfile
 
 **Location:** `skills/_shared/templates/init-firewall/`
 
-Three firewall modes available:
+Three firewall options available:
 
-- `disabled.sh` - No firewall (Basic/YOLO modes)
+- `disabled.sh` - No firewall (container isolation only)
 - `permissive.sh` - Allow all traffic (alternative to disabled)
-- `strict.sh` - Strict allowlist-based firewall (Advanced mode)
+- `strict.sh` - Strict allowlist-based firewall (domain allowlist)
 
 ## Template Placeholders
 
@@ -141,9 +141,9 @@ DATA="$TEMPLATES/data"
 ## See Also
 
 - [Data Directory README](data/README.md) - Detailed documentation of reference catalogs
-- [MODES.md](../../../docs/features/MODES.md) - Interactive vs YOLO setup workflows
+- [MODES.md](../../../docs/features/MODES.md) - Command comparison and setup workflows
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0
