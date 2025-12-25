@@ -66,6 +66,22 @@
 
   "forwardPorts": [8000, 3000, 5432, 6379],
 
+  // GitHub Codespaces configuration
+  // See: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "portsAttributes": {
+    "8000": { "label": "App", "onAutoForward": "notify" },
+    "3000": { "label": "Frontend", "onAutoForward": "notify" },
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+    "6379": { "label": "Redis", "onAutoForward": "silent" }
+  },
+  // Codespaces secrets: Configure in repo Settings > Secrets > Codespaces
+  // ANTHROPIC_API_KEY, OPENAI_API_KEY, etc. will be available as env vars
+
   // Environment Variables:
   // - containerEnv: Set at container build time, available in Dockerfile
   // - remoteEnv: Set at runtime, can reference host env vars with ${localEnv:VAR}
