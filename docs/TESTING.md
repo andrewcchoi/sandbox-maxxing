@@ -32,8 +32,8 @@ cd tests/skill-validation
 ### What Gets Tested
 
 The framework validates sandbox setup commands:
-- `/devcontainer:quickstart` - Interactive setup with project type selection
-- `/devcontainer:yolo-vibe-maxxing` - Quick setup with full control and allowlists
+- `/sandboxxer:quickstart` - Interactive setup with project type selection
+- `/sandboxxer:yolo-vibe-maxxing` - Quick setup with full control and allowlists
 
 ### Requirements
 
@@ -146,7 +146,7 @@ echo '{"name": "test"}' > package.json
 
 2. Run the command:
 ```bash
-# Use the correct command (e.g., /devcontainer:quickstart or /devcontainer:yolo-vibe-maxxing)
+# Use the correct command (e.g., /sandboxxer:quickstart or /sandboxxer:yolo-vibe-maxxing)
 ```
 
 3. Verify generated files:

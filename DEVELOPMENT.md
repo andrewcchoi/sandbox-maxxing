@@ -324,7 +324,7 @@ lsof -i :6379
 
 ```bash
 # Reinstall plugin
-claude plugins remove devcontainer-setup
+claude plugins remove sandboxxer
 claude plugins add .
 
 # Verify installation

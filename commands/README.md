@@ -4,12 +4,12 @@ This directory contains slash commands for the Claude Code Sandbox Plugin. Comma
 
 ## Overview
 
-Commands are invoked with the `/devcontainer:` prefix in Claude Code:
+Commands are invoked with the `/sandboxxer:` prefix in Claude Code:
 
 ```
-/devcontainer:quickstart         # Set up a new sandbox (interactive mode selection)
-/devcontainer:troubleshoot  # Diagnose and fix issues
-/devcontainer:audit         # Security audit
+/sandboxxer:quickstart         # Set up a new sandbox (interactive mode selection)
+/sandboxxer:troubleshoot  # Diagnose and fix issues
+/sandboxxer:audit         # Security audit
 ```
 
 Each command loads and executes the corresponding skill with user-friendly prompts and guidance.
@@ -18,7 +18,7 @@ Each command loads and executes the corresponding skill with user-friendly promp
 
 ### Primary Commands
 
-#### `/devcontainer:quickstart`
+#### `/sandboxxer:quickstart`
 **File:** `commands/quickstart.md`
 **Skill:** Routes to mode-specific setup skill
 **Description:** Set up a new Claude Code Docker sandbox environment
@@ -26,20 +26,20 @@ Each command loads and executes the corresponding skill with user-friendly promp
 **Usage:**
 ```bash
 # Interactive mode selection
-/devcontainer:quickstart
+/sandboxxer:quickstart
 
 # Quick setup with flags
-/devcontainer:quickstart --basic          # Fastest setup
-/devcontainer:quickstart --advanced       # Secure setup
-/devcontainer:quickstart --yolo           # Full control
+/sandboxxer:quickstart --basic          # Fastest setup
+/sandboxxer:quickstart --advanced       # Secure setup
+/sandboxxer:quickstart --yolo           # Full control
 ```
 
 **What it does:**
 1. Asks user to choose setup mode (or uses flag)
 2. Routes to appropriate mode-specific skill:
-   - `--basic` → devcontainer-setup-basic skill
-   - `--advanced` → devcontainer-setup-advanced skill
-   - `--yolo` → devcontainer-setup-yolo skill
+   - `--basic` → sandboxxer-basic skill
+   - `--advanced` → sandboxxer-advanced skill
+   - `--yolo` → sandboxxer-yolo skill
 
 **Note:** All modes now include a planning phase (v4.0.0) where Claude scans your project, creates a plan, and gets your approval before implementing.
 
@@ -50,14 +50,14 @@ Each command loads and executes the corresponding skill with user-friendly promp
 
 ---
 
-#### `/devcontainer:troubleshoot`
+#### `/sandboxxer:troubleshoot`
 **File:** `commands/troubleshoot.md`
 **Skill:** sandbox-troubleshoot
 **Description:** Diagnose and fix common Claude Code sandbox issues
 
 **Usage:**
 ```bash
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 ```
 
 **What it does:**
@@ -84,14 +84,14 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 
 ---
 
-#### `/devcontainer:audit`
+#### `/sandboxxer:audit`
 **File:** `commands/audit.md`
 **Skill:** sandbox-security
 **Description:** Audit sandbox configuration for security best practices
 
 **Usage:**
 ```bash
-/devcontainer:audit
+/sandboxxer:audit
 ```
 
 **What it does:**
@@ -137,14 +137,14 @@ Commands follow the pattern:
 - **Primary commands**: `setup`, `troubleshoot`, `audit`
 - **Mode-specific**: `basic`, `advanced`, `yolo`
 
-All commands use the `/devcontainer:` namespace prefix when invoked.
+All commands use the `/sandboxxer:` namespace prefix when invoked.
 
 ## How Commands Invoke Skills
 
 Commands serve as user-friendly entry points that delegate to skills:
 
 ```
-User types: /devcontainer:quickstart
+User types: /sandboxxer:quickstart
     ↓
 Command file: commands/quickstart.md loaded
     ↓
@@ -159,10 +159,10 @@ Result: DevContainer configuration created
 
 | Command | Mode | Questions | Time | Security | Best For |
 |---------|------|-----------|------|----------|----------|
-| `/devcontainer:quickstart` | Interactive | Varies | Varies | Varies | Most users (choose mode) |
-| `/devcontainer:yolo-vibe-maxxing  | YOLO | 15-20+ | 15-30 min | User-controlled | Expert customization |
-| `/devcontainer:troubleshoot` | N/A | Diagnostic | Varies | N/A | Problem solving |
-| `/devcontainer:audit` | N/A | Audit | 5-10 min | N/A | Security review |
+| `/sandboxxer:quickstart` | Interactive | Varies | Varies | Varies | Most users (choose mode) |
+| `/sandboxxer:yolo-vibe-maxxing  | YOLO | 15-20+ | 15-30 min | User-controlled | Expert customization |
+| `/sandboxxer:troubleshoot` | N/A | Diagnostic | Varies | N/A | Problem solving |
+| `/sandboxxer:audit` | N/A | Audit | 5-10 min | N/A | Security review |
 
 **Note:** All setup commands now include a planning phase (v4.0.0). Times include planning + implementation.
 
@@ -172,7 +172,7 @@ Result: DevContainer configuration created
 
 **Beginner (Interactive):**
 ```
-User: /devcontainer:quickstart
+User: /sandboxxer:quickstart
 Claude: Which setup mode do you prefer?
         [Shows mode comparison with planning phase info]
 User: Basic
@@ -184,20 +184,20 @@ Claude: [Implements devcontainer configuration]
 
 **Experienced (Direct):**
 ```
-User: /devcontainer:quickstart --advanced
-Claude: [Executes devcontainer-setup-advanced skill directly]
+User: /sandboxxer:quickstart --advanced
+Claude: [Executes sandboxxer-advanced skill directly]
 ```
 
 **Expert (Mode-Specific Command):**
 ```
-User: /devcontainer:yolo
-Claude: [Executes devcontainer-setup-yolo skill directly]
+User: /sandboxxer:yolo
+Claude: [Executes sandboxxer-yolo skill directly]
 ```
 
 ### Troubleshooting
 
 ```
-User: /devcontainer:troubleshoot
+User: /sandboxxer:troubleshoot
 Claude: What problem are you experiencing?
 User: Container won't start
 Claude: [Runs diagnostics, applies fixes]
@@ -206,7 +206,7 @@ Claude: [Runs diagnostics, applies fixes]
 ### Security Audit
 
 ```
-User: /devcontainer:audit
+User: /sandboxxer:audit
 Claude: [Reviews configuration]
         Security Assessment:
         ✓ Firewall: Strict mode active
@@ -302,14 +302,14 @@ Claude Code automatically discovers commands in the `commands/` directory when:
 
 1. **Command Issues**: Check command file for description and usage
 2. **Skill Issues**: See [Skills README](../skills/README.md)
-3. **General Problems**: Use `/devcontainer:troubleshoot`
-4. **Security Questions**: Use `/devcontainer:audit`
+3. **General Problems**: Use `/sandboxxer:troubleshoot`
+4. **Security Questions**: Use `/sandboxxer:audit`
 5. **Documentation**: Review [Core Documentation](#related-documentation)
 
 ### Reporting Issues
 
 When reporting command-related issues, include:
-- Command used (e.g., `/devcontainer:quickstart --advanced`)
+- Command used (e.g., `/sandboxxer:quickstart --advanced`)
 - Expected vs actual behavior
 - Error messages or logs
 - Project context (language, services, etc.)

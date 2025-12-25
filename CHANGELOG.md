@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.6.0] - 2025-12-25
+
+### Breaking Changes
+- **Plugin Rename**: `devcontainer-setup` → `sandboxxer`
+  - Plugin name: `sandboxxer`
+  - Marketplace name: `sandbox-maxxing`
+  - All slash commands updated: `/devcontainer:*` → `/sandboxxer:*`
+  - Command examples: `/sandboxxer:quickstart`, `/sandboxxer:yolo-vibe-maxxing`
+
+### Changed
+- **All Documentation**: Updated plugin name references across all files
+  - Plugin configuration files (`plugin.json`, `marketplace.json`)
+  - README.md, DEVELOPMENT.md, CONTRIBUTING.md
+  - All command and agent documentation
+  - Examples and templates
+
+### Removed
+- Obsolete skill references: `devcontainer-setup-basic`, `devcontainer-setup-advanced`, `devcontainer-setup-yolo`
+
+### Migration Guide
+```bash
+# Uninstall old plugin
+claude plugins remove devcontainer-setup
+
+# Install new plugin
+claude plugins add sandboxxer
+
+# Commands are now:
+/sandboxxer:quickstart
+/sandboxxer:yolo-vibe-maxxing
+/sandboxxer:troubleshoot
+/sandboxxer:audit
+```
+
 ## [4.5.0] - 2025-12-24
 
 ### Breaking Changes
@@ -26,9 +60,9 @@ Update your usage:
 /devcontainer:setup
 /devcontainer:yolo
 
-# New commands
-/devcontainer:quickstart
-/devcontainer:yolo-vibe-maxxing
+# New commands (v4.5.0)
+/sandboxxer:quickstart
+/sandboxxer:yolo-vibe-maxxing
 ```
 
 ### Technical Details

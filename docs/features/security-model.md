@@ -549,7 +549,7 @@ If you have security questions or discover vulnerabilities:
 
 1. **General questions**: Open a discussion on GitHub
 2. **Security vulnerabilities**: Follow responsible disclosure (see SECURITY.md in repository root, if available)
-3. **Configuration help**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or `/devcontainer:troubleshoot` command
+3. **Configuration help**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or `/sandboxxer:troubleshoot` command
 
 ---
 

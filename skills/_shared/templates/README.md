@@ -126,7 +126,7 @@ These serve **different purposes**:
 
 **Example:**
 - `extensions.json` has 6 essential extension IDs → copied to `.devcontainer/devcontainer.json`
-- `vscode-extensions.json` has 50+ extensions with categories → used by `/devcontainer:quickstart` to let users choose
+- `vscode-extensions.json` has 50+ extensions with categories → used by `/sandboxxer:quickstart` to let users choose
 
 ## File Discovery
 

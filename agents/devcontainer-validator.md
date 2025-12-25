@@ -1,7 +1,7 @@
 ---
 name: devcontainer-validator
-description: Validates that devcontainer skills created files in correct locations
-whenToUse: Run after devcontainer-setup-* skills complete to verify correct files exist and wrong files do NOT exist
+description: Validates that devcontainer setup commands created files in correct locations
+whenToUse: Run after /sandboxxer:quickstart or /sandboxxer:yolo-vibe-maxxing complete to verify correct files exist and wrong files do NOT exist
 model: haiku
 color: orange
 tools: ["Bash", "Glob", "Read"]
@@ -11,17 +11,13 @@ tools: ["Bash", "Glob", "Read"]
 
 ## Purpose
 
-This agent automatically validates that DevContainer setup skills created files in the correct locations. It catches common mistakes where Claude creates `.claude/config.json` or `.claude-code/settings.json` instead of `.devcontainer/` files.
+This agent automatically validates that DevContainer setup commands created files in the correct locations. It catches common mistakes where Claude creates `.claude/config.json` or `.claude-code/settings.json` instead of `.devcontainer/` files.
 
 ## When to Run
 
 **Automatically trigger after:**
-- `devcontainer-setup-basic` skill completes
-- `devcontainer-setup-advanced` skill completes
-- `devcontainer-setup-yolo` skill completes
-- `devcontainer-basic` skill completes (after renaming)
-- `devcontainer-advanced` skill completes (after renaming)
-- `devcontainer-yolo` skill completes (after renaming)
+- `/sandboxxer:quickstart` completes
+- `/sandboxxer:yolo-vibe-maxxing` completes
 
 ## Validation Steps
 

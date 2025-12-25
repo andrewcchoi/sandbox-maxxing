@@ -1,7 +1,7 @@
 ---
 name: devcontainer-generator
 description: Generates DevContainer files by copying templates and customizing placeholders. PROACTIVELY use for all devcontainer setup file generation.
-whenToUse: Automatically invoked by devcontainer-setup-* skills during implementation phase. This agent copies templates and replaces placeholders using bash commands only.
+whenToUse: Automatically invoked by /sandboxxer:quickstart and /sandboxxer:yolo-vibe-maxxing commands during implementation phase. This agent copies templates and replaces placeholders using bash commands only.
 model: haiku
 color: blue
 tools: ["Bash", "Read", "Glob"]
@@ -289,9 +289,9 @@ If you encounter errors:
 3. **Marker not found**: Check base.dockerfile has `# === LANGUAGE PARTIALS ===` marker
 4. **Sed errors**: Verify placeholder syntax is correct
 
-## Integration with Skills
+## Integration with Commands
 
-This agent is invoked by the devcontainer-setup-* skills during implementation:
+This agent is invoked by the /sandboxxer:quickstart and /sandboxxer:yolo-vibe-maxxing commands during implementation:
 
 ```markdown
 ## IMPLEMENTATION (After Planning Approval)

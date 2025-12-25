@@ -11,7 +11,7 @@ Create a customized VS Code DevContainer configuration with:
 - Optional network firewall with domain allowlist
 - All standard Claude Code sandbox features
 
-**Quick path:** Use `/devcontainer:yolo-vibe-maxxing` for instant setup with no questions (Python+Node, no firewall).
+**Quick path:** Use `/sandboxxer:yolo-vibe-maxxing` for instant setup with no questions (Python+Node, no firewall).
 
 ## Step 0: Pre-flight Validation
 
@@ -476,7 +476,7 @@ elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
   echo "Using current directory as plugin root";
 elif [ -d "$HOME/.claude/plugins" ]; then
   PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
-    -exec grep -l '"name": "devcontainer-setup"' {} \; 2>/dev/null | head -1);
+    -exec grep -l '"name": "sandboxxer"' {} \; 2>/dev/null | head -1);
   if [ -n "$PLUGIN_JSON" ]; then
     PLUGIN_ROOT=$(dirname "$(dirname "$PLUGIN_JSON")");
     echo "Found installed plugin: $PLUGIN_ROOT";

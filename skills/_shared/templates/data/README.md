@@ -302,7 +302,7 @@ When updating these files:
 
 1. Ensure JSON schema validation passes
 2. Update version numbers in file metadata
-3. Test with both `/devcontainer:quickstart` and `/devcontainer:yolo-vibe-maxxing  commands
+3. Test with both `/sandboxxer:quickstart` and `/sandboxxer:yolo-vibe-maxxing  commands
 4. Update INVENTORY.json if files are added/removed
 
 ## Maintenance Schedule

@@ -15,24 +15,22 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 ### 1. Skills
 
 **Active Skills:**
-- `devcontainer-setup-basic` - Basic mode setup (quick, minimal questions)
-- `devcontainer-setup-advanced` - Advanced mode setup (security-focused)
-- `devcontainer-setup-yolo` - YOLO mode setup (full control)
 - `sandbox-troubleshoot` - Diagnostic assistant
 - `sandbox-security` - Security auditor
 
 **Deprecated Skills:**
+- `devcontainer-setup-basic`, `devcontainer-setup-advanced`, `devcontainer-setup-yolo` (v4.6.0)
 
 ### 2. Commands
 
 **Primary Commands:**
-- `/devcontainer:quickstart` - Interactive mode selection (or use `--basic`, `--advanced`, `--yolo`)
-- `/devcontainer:troubleshoot` - Invokes troubleshoot skill
-- `/devcontainer:audit` - Invokes security skill
+- `/sandboxxer:quickstart` - Interactive mode selection (or use `--basic`, `--advanced`, `--yolo`)
+- `/sandboxxer:troubleshoot` - Invokes troubleshoot skill
+- `/sandboxxer:audit` - Invokes security skill
 
 **Setup Commands:**
-- `/devcontainer:quickstart` - Interactive DevContainer setup with mode selection
-- `/devcontainer:yolo-vibe-maxxing` - Quick setup with no questions (Python+Node base, no firewall)
+- `/sandboxxer:quickstart` - Interactive DevContainer setup with mode selection
+- `/sandboxxer:yolo-vibe-maxxing` - Quick setup with no questions (Python+Node base, no firewall)
 
 ### 3. Shared Resources Architecture (v4.0.0)
 
@@ -103,7 +101,7 @@ Skills reference these using: `skills/_shared/data/<filename>`
 
 ## Command-Based Setup (v4.3.0+)
 
-### Interactive Setup (`/devcontainer:quickstart`)
+### Interactive Setup (`/sandboxxer:quickstart`)
 
 **Philosophy:** Flexible configuration through guided questions
 
@@ -126,7 +124,7 @@ Skills reference these using: `skills/_shared/data/<filename>`
 - Users wanting firewall protection
 - Customizable setups
 
-### Quick Setup (`/devcontainer:yolo-vibe-maxxing )
+### Quick Setup (`/sandboxxer:yolo-vibe-maxxing )
 
 **Philosophy:** Zero questions, instant setup
 
@@ -151,20 +149,20 @@ Skills reference these using: `skills/_shared/data/<filename>`
 
 ### Command Comparison
 
-| Aspect | /devcontainer:quickstart | /devcontainer:yolo-vibe-maxxing |
-|--------|---------------------|-------------------|
-| **Questions** | 2-3+ | 0 |
-| **Languages** | 9 options | Python + Node only |
-| **Firewall** | Optional | Disabled |
-| **Time** | 1-3 min | < 30 sec |
-| **Customization** | Moderate | None |
+| Aspect            | /sandboxxer:quickstart | /sandboxxer:yolo-vibe-maxxing |
+| ----------------- | ---------------------- | ----------------------------- |
+| **Questions**     | 2-3+                   | 0                             |
+| **Languages**     | 9 options              | Python + Node only            |
+| **Firewall**      | Optional               | Disabled                      |
+| **Time**          | 1-3 min                | < 30 sec                      |
+| **Customization** | Moderate               | None                          |
 
 ## Data Flow
 
 ### Setup Flow (v4.3.0+)
 
 1. **User Invocation**
-   - User runs `/devcontainer:quickstart` (interactive) or `/devcontainer:yolo-vibe-maxxing  (quick)
+   - User runs `/sandboxxer:quickstart` (interactive) or `/sandboxxer:yolo-vibe-maxxing  (quick)
    - Command executes directly (bash-based, not skill-based)
 
 2. **Interactive Questions** (setup command only)
@@ -209,8 +207,8 @@ Templates use `{{PLACEHOLDER}}` syntax:
 
 Skills can invoke each other for related tasks:
 
-- **After setup** → Suggest `/devcontainer:audit` for security review
-- **During errors** → Auto-invoke `/devcontainer:troubleshoot`
+- **After setup** → Suggest `/sandboxxer:audit` for security review
+- **During errors** → Auto-invoke `/sandboxxer:troubleshoot`
 - **Before production** → Recommend Advanced mode review
 
 ## Version History

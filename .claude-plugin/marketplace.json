@@ -1,5 +1,5 @@
 {
-  "name": "devcontainer-setup",
+  "name": "sandbox-maxxing",
   "description": "Local development marketplace for creating VS Code DevContainer configurations with Docker Compose support",
   "owner": {
     "name": "shadow developer",
@@ -7,9 +7,9 @@
   },
   "plugins": [
     {
-      "name": "devcontainer-setup",
+      "name": "sandboxxer",
       "description": "Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Build multi-stack environments by selecting multiple languages (Go, Rust, Java, Ruby, PHP, C++, PostgreSQL tools) with optional network firewall.",
-      "version": "4.5.0",
+      "version": "4.6.0",
       "source": "./",
       "author": {
         "name": "shadow developer"

@@ -55,9 +55,6 @@ Note: Without the devcontainer, you won't be able to fully test the example appl
 ### Working on Skills
 
 Skills are located in the `skills/` directory:
-- `devcontainer-setup-basic/SKILL.md` - Basic mode setup
-- `devcontainer-setup-advanced/SKILL.md` - Advanced mode setup
-- `devcontainer-setup-yolo/SKILL.md` - YOLO mode setup
 - `sandbox-troubleshoot/SKILL.md` - Troubleshooting assistant
 - `sandbox-security/SKILL.md` - Security auditor
 

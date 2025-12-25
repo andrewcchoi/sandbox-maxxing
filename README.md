@@ -1,7 +1,7 @@
-# DevContainer Setup Plugin
+# Sandboxxer Plugin
 
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
-> **Plugin Name:** devcontainer-setup (used in commands: /devcontainer:quickstart, /devcontainer:yolo-vibe-maxxing)
+> **Plugin Name:** sandboxxer (used in commands: /sandboxxer:quickstart, /sandboxxer:yolo-vibe-maxxing)
 
 Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Choose between interactive setup with project type selection and firewall customization, or quick one-command setup with defaults.
 
@@ -30,19 +30,19 @@ claude plugins list
 
 ```bash
 # Interactive quickstart - choose project type and firewall options
-/devcontainer:quickstart
+/sandboxxer:quickstart
 
 # YOLO vibe-maxxing - no questions, instant DevContainer (Python+Node, no firewall)
-/devcontainer:yolo-vibe-maxxing
+/sandboxxer:yolo-vibe-maxxing
 
 # Troubleshoot existing DevContainer
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 
 # Security audit
-/devcontainer:audit
+/sandboxxer:audit
 ```
 
-**Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/devcontainer:yolo-vibe-maxxing` for the fastest path with sensible defaults.
+**Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/sandboxxer:yolo-vibe-maxxing` for the fastest path with sensible defaults.
 
 ### Claude Code Installation
 
@@ -84,7 +84,7 @@ See [MODES.md](docs/features/MODES.md) for comprehensive comparison guide.
 
 **Example**:
 ```
-You: /devcontainer:quickstart
+You: /sandboxxer:quickstart
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -107,7 +107,7 @@ Claude: I detected a Python FastAPI project. Setting up with:
 
 **Example**:
 ```
-You: /devcontainer:quickstart
+You: /sandboxxer:quickstart
 Claude: This mode creates security-hardened configurations.
 
         **Step 1: Base Configuration**
@@ -136,7 +136,7 @@ Claude: This mode creates security-hardened configurations.
 
 **Example**:
 ```
-You: /devcontainer:yolo-vibe-maxxing
+You: /sandboxxer:yolo-vibe-maxxing
 Claude: YOLO vibe-maxxing mode - You're in control!
 
         ⚠️  Warning: Maximum flexibility, minimal safety rails.
@@ -156,10 +156,10 @@ Claude: sandbox-templates tag?
 
 | Command                            | Description                                                           |
 | ---------------------------------- | --------------------------------------------------------------------- |
-| `/devcontainer:quickstart`        | Interactive quickstart - choose project type and firewall options          |
-| `/devcontainer:yolo-vibe-maxxing`         | YOLO vibe-maxxing - no questions, sensible defaults (Python+Node)           |
-| `/devcontainer:troubleshoot` | Diagnose and fix sandbox issues                                       |
-| `/devcontainer:audit`        | Security audit and recommendations                                    |
+| `/sandboxxer:quickstart`        | Interactive quickstart - choose project type and firewall options          |
+| `/sandboxxer:yolo-vibe-maxxing`         | YOLO vibe-maxxing - no questions, sensible defaults (Python+Node)           |
+| `/sandboxxer:troubleshoot` | Diagnose and fix sandbox issues                                       |
+| `/sandboxxer:audit`        | Security audit and recommendations                                    |
 
 **v4.3.0:** Setup now offers interactive project-type selection or instant YOLO defaults.
 
@@ -174,7 +174,7 @@ The plugin automatically activates when you:
 **Example**:
 ```
 You: I need to set up a Docker development environment for my Python project
-Claude: [Automatically uses /devcontainer:quickstart command]
+Claude: [Automatically uses /sandboxxer:quickstart command]
       What mode would you like?
       • Basic (Zero config, 1-2 min)
       • Advanced (Secure minimal, 8-12 min)
@@ -248,7 +248,7 @@ The troubleshooter handles:
 ### Example Troubleshooting Session
 
 ```
-You: /devcontainer:troubleshoot
+You: /sandboxxer:troubleshoot
 Claude: What issue are you experiencing?
 You: Can't connect to PostgreSQL
 Claude: Let me diagnose...
@@ -291,13 +291,8 @@ Templates use these placeholders:
 
 ## Skills Reference
 
-### /devcontainer:quickstart (Interactive Router)
-Interactive setup wizard with four experience modes.
-
-**Note:** This is a router command that delegates to mode-specific skills:
-- `devcontainer-setup-basic` - Basic mode setup
-- `devcontainer-setup-advanced` - Advanced mode setup
-- `devcontainer-setup-yolo` - YOLO mode setup
+### /sandboxxer:quickstart (Interactive Router)
+Interactive setup wizard with multiple experience modes.
 
 **Triggers**:
 - User mentions "devcontainer", "docker sandbox"
@@ -358,17 +353,18 @@ This plugin uses consistent naming across different contexts:
 
 | Context           | Name                      | Example                                             |
 | ----------------- | ------------------------- | --------------------------------------------------- |
-| Plugin name       | devcontainer-setup        | Plugin installation and management                  |
+| Plugin name       | sandboxxer                | Plugin installation and management                  |
+| Marketplace name  | sandbox-maxxing           | Marketplace listing name                            |
 | GitHub repository | sandbox-maxxing           | github.com/andrewcchoi/sandbox-maxxing              |
-| Slash commands    | /devcontainer:*           | /devcontainer:quickstart, /devcontainer:yolo-vibe-maxxing |
-| Skills            | sandbox-*                 | devcontainer-setup-basic                            |
-| User-facing title | DevContainer Setup Plugin | In documentation headers                            |
+| Slash commands    | /sandboxxer:*             | /sandboxxer:quickstart, /sandboxxer:yolo-vibe-maxxing |
+| Skills            | sandbox-*                 | Internal skill naming                               |
+| User-facing title | Sandboxxer Plugin         | In documentation headers                            |
 
 **Why different names?**
-- **devcontainer-setup**: Official plugin name used for installation and management
+- **sandboxxer**: Official plugin name used for installation and management
 - **sandbox-maxxing**: Repository and marketplace name (reflects Windows WSL 2 compatibility)
-- **sandbox**: Shorthand used in internal skills for brevity (skill files remain unchanged for backwards compatibility)
-- **DevContainer Setup Plugin**: Full descriptive name for user-facing documentation
+- **sandbox**: Shorthand used in internal skills for brevity
+- **Sandboxxer Plugin**: Full descriptive name for user-facing documentation
 
 ## Development
 
@@ -419,10 +415,10 @@ sandbox-maxxing/
 │   ├── sandbox-troubleshoot/    # Troubleshooting assistant
 │   └── sandbox-security/        # Security auditor
 ├── commands/
-│   ├── quickstart.md            # /devcontainer:quickstart (interactive mode selection)
-│   ├── yolo-vibe-maxxing.md     # /devcontainer:yolo-vibe-maxxing (quick no-questions setup)
-│   ├── troubleshoot.md          # /devcontainer:troubleshoot
-│   └── audit.md                 # /devcontainer:audit
+│   ├── quickstart.md            # /sandboxxer:quickstart (interactive mode selection)
+│   ├── yolo-vibe-maxxing.md     # /sandboxxer:yolo-vibe-maxxing (quick no-questions setup)
+│   ├── troubleshoot.md          # /sandboxxer:troubleshoot
+│   └── audit.md                 # /sandboxxer:audit
 └── docs/examples/                    # Working example applications
     ├── streamlit-sandbox-basic/
     ├── demo-app-sandbox-basic/
@@ -435,7 +431,7 @@ sandbox-maxxing/
 ### Example 1: Quick Python Setup (Basic Mode)
 
 ```
-You: /devcontainer:quickstart
+You: /sandboxxer:quickstart
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -476,7 +472,7 @@ Claude: Generating configuration for Node.js 20 + MongoDB 7 + Redis...
 ### Example 3: Security Audit
 
 ```
-You: /devcontainer:audit
+You: /sandboxxer:audit
 Claude: Running security audit...
 
         # Security Audit Report
@@ -702,7 +698,7 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
   - `allowable-domains.json`: Mode-specific firewall whitelists
 - Modular template system with section markers
 - Enhanced firewall with mode-specific domain sets (30-100+ domains)
-- Updated slash commands: `/devcontainer:quickstart`, `/devcontainer:quickstart`, `/devcontainer:yolo-vibe-maxxing`, `/devcontainer:quickstart`
+- Updated slash commands: `/sandboxxer:quickstart`, `/sandboxxer:quickstart`, `/sandboxxer:yolo-vibe-maxxing`, `/sandboxxer:quickstart`
 - Comprehensive mode comparison guide (MODES.md)
 - Migration from Basic/Advanced/YOLO to new three-mode system
 
@@ -715,5 +711,5 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

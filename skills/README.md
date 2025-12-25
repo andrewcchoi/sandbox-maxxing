@@ -4,14 +4,14 @@ This directory contains specialized skills for setting up, securing, and trouble
 
 ## Overview
 
-Skills are invoked through slash commands in Claude Code. When you use a command like `/devcontainer:quickstart`, Claude loads the corresponding skill and follows its structured workflow to ensure consistent, high-quality results.
+Skills are invoked through slash commands in Claude Code. When you use a command like `/sandboxxer:quickstart`, Claude loads the corresponding skill and follows its structured workflow to ensure consistent, high-quality results.
 
 ## Available Skills
 
 ### Setup Skills
 
-#### devcontainer-setup-basic
-**Command:** `/devcontainer:quickstart` (Basic mode)
+#### 
+**Command:** `/sandboxxer:quickstart` (Basic mode)
 **When to use:** You want the simplest sandbox setup with minimal configuration.
 
 **Features:**
@@ -32,8 +32,8 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 ---
 
 
-#### devcontainer-setup-advanced
-**Command:** `/devcontainer:quickstart` (Advanced mode)
+#### 
+**Command:** `/sandboxxer:quickstart` (Advanced mode)
 **When to use:** You need security-focused development with strict controls.
 
 **Features:**
@@ -58,31 +58,10 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 
 ---
 
-#### devcontainer-setup-yolo
-**Command:** `/devcontainer:quickstart` (YOLO mode)
-**When to use:** You want complete control with no restrictions.
-
-**Features:**
-- Unofficial images allowed
-- Optional or custom firewall configuration
-- Full access to all domain categories
-- Extensive questions (15-20+)
-- Custom setup (15-30 minutes)
-
-**Best for:**
-- Expert users
-- Highly specialized requirements
-- Custom security policies
-- Experimental configurations
-
-**Location:** `commands/yolo-vibe-maxxing.md`
-
----
-
 ### Maintenance Skills
 
 #### sandbox-troubleshoot
-**Command:** `/devcontainer:troubleshoot`
+**Command:** `/sandboxxer:troubleshoot`
 **When to use:** You're experiencing problems with your sandbox environment.
 
 **Handles:**
@@ -114,7 +93,7 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 ---
 
 #### sandbox-security
-**Command:** `/devcontainer:audit` (or manually invoked)
+**Command:** `/sandboxxer:audit` (or manually invoked)
 **When to use:** You want to audit or harden your sandbox security.
 
 **Handles:**
@@ -212,13 +191,13 @@ Skills are typically invoked through slash commands defined in `/commands/`:
 
 ```bash
 # Setup commands (choose mode interactively)
-/devcontainer:quickstart
+/sandboxxer:quickstart
 
 # Troubleshooting
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 
 # Security audit
-/devcontainer:audit
+/sandboxxer:audit
 ```
 
 See [Commands README](../commands/README.md) for full command list.
@@ -232,7 +211,7 @@ User: "I'm getting a connection refused error from PostgreSQL"
 Claude: [Automatically uses sandbox-troubleshoot skill]
 
 User: "Set up a secure development environment"
-Claude: [Automatically uses devcontainer-setup-advanced skill]
+Claude: [Automatically uses  skill]
 ```
 
 ### Skill Workflow
@@ -241,8 +220,8 @@ Claude: [Automatically uses devcontainer-setup-advanced skill]
 
 DevContainer setup is now command-based (not skill-based):
 
-1. **User runs command**: `/devcontainer:quickstart` (interactive) or `/devcontainer:yolo-vibe-maxxing  (quick)
-2. **Questions asked**: Command asks 2-3 questions (setup) or 0 questions (yolo)
+1. **User runs command**: `/sandboxxer:quickstart` (interactive)
+2. **Questions asked**: Command asks 2-3 questions for customization
 3. **Templates copied**: Files copied from `skills/_shared/templates/`
 4. **Placeholders replaced**: Customize with project-specific values
 5. **Completion**: Report files created and next steps
@@ -253,32 +232,25 @@ The two remaining skills are utilities invoked by commands:
 
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| sandbox-troubleshoot | `/devcontainer:troubleshoot` | Diagnose and fix issues |
-| sandbox-security | `/devcontainer:audit` | Security audit and hardening |
+| sandbox-troubleshoot | `/sandboxxer:troubleshoot` | Diagnose and fix issues |
+| sandbox-security | `/sandboxxer:audit` | Security audit and hardening |
 
 ## When to Use Each Command
 
-### Use `/devcontainer:quickstart` (Interactive) When:
+### Use `/sandboxxer:quickstart` When:
 - You need specific language toolchains (Go, Ruby, Rust, Java, C++, PHP, PostgreSQL)
-- You want firewall protection with domain allowlists
+- You want firewall protection with domain allowlists (optional)
 - You prefer guided setup with questions
-- You want some customization
+- You want customization options
 
-### Use `/devcontainer:yolo-vibe-maxxing  (Quick) When:
-- You want instant setup with no questions
-- Your project uses Python and/or Node.js only
-- You don't need network restrictions
-- You want the fastest possible setup
-- You trust your development environment
-
-### Use `/devcontainer:troubleshoot` When:
+### Use `/sandboxxer:troubleshoot` When:
 - Container fails to start
 - Services won't connect (database, Redis, etc.)
 - Firewall blocking legitimate traffic
 - Permission errors
 - Any sandbox-related problem
 
-### Use `/devcontainer:audit` When:
+### Use `/sandboxxer:audit` When:
 - You want to review security configuration
 - Before deploying to production
 - Compliance audit needed
@@ -336,7 +308,6 @@ Each skill is demonstrated in example projects:
 ### Setup Skill Examples
 - `docs/examples/demo-app-sandbox-basic/` - Basic mode result
 - `docs/examples/demo-app-sandbox-advanced/` - Advanced mode result
-- `docs/examples/demo-app-sandbox-yolo/` - YOLO mode result
 - `docs/examples/streamlit-sandbox-basic/` - Basic mode (Python-only)
 
 
@@ -346,9 +317,9 @@ See [Examples README](../docs/examples/README.md) for detailed walkthroughs.
 
 | Command | Skill Used | Purpose |
 |---------|-----------|---------|
-| `/devcontainer:quickstart` | devcontainer-setup-* | Create/update sandbox configuration |
-| `/devcontainer:troubleshoot` | sandbox-troubleshoot | Diagnose and fix issues |
-| `/devcontainer:audit` | sandbox-security | Security audit and hardening |
+| `/sandboxxer:quickstart` | (command-based) | Create/update sandbox configuration |
+| `/sandboxxer:troubleshoot` | sandbox-troubleshoot | Diagnose and fix issues |
+| `/sandboxxer:audit` | sandbox-security | Security audit and hardening |
 
 See [Commands README](../commands/README.md) for full command documentation.
 
@@ -356,7 +327,7 @@ See [Commands README](../commands/README.md) for full command documentation.
 
 ### Getting Help
 
-1. **Interactive Commands**: Use `/devcontainer:troubleshoot` for problems
+1. **Interactive Commands**: Use `/sandboxxer:troubleshoot` for problems
 2. **Documentation**: Check relevant guides in `docs/`
 3. **Examples**: Review example projects in `docs/examples/`
 4. **GitHub Issues**: Report bugs or request features
@@ -373,5 +344,5 @@ When reporting skill-related issues, include:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0 (Remove obsolete planning-phase.md)
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0
