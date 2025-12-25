@@ -28,8 +28,21 @@
     }
   },
 
+  // Lifecycle hooks (in execution order):
+  // 1. initializeCommand - runs on HOST before container creation (useful for host-side setup)
+  // 2. onCreateCommand - runs inside container after creation, before postCreateCommand
+  // 3. postCreateCommand - runs after container is created (main setup script)
+  // 4. updateContentCommand - runs when container is updated/rebuilt
+  // 5. postStartCommand - runs each time the container starts
+  // 6. postAttachCommand - runs each time VS Code attaches to the container
+
+  "initializeCommand": "",
+  "onCreateCommand": "",
   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
-  "postStartCommand": "echo 'Basic DevContainer ready!'",
+  "updateContentCommand": "",
+  "postStartCommand": "echo 'DevContainer ready!'",
+  "postAttachCommand": "",
+  "waitFor": "postCreateCommand",
 
   "forwardPorts": [8000, 3000, 5432, 6379],
 
