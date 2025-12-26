@@ -404,55 +404,75 @@ claude plugins add .
 
 ### Plugin Structure
 
+![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
+
+*Visual overview of the sandboxxer plugin components and their relationships. See [docs/diagrams/](docs/diagrams/) for more diagrams.*
+
 ```
 sandbox-maxxing/
 ├── .claude-plugin/
 │   ├── plugin.json              # Plugin manifest
 │   └── marketplace.json         # Marketplace configuration
-├── data/                        # Data-driven configuration
-│   ├── sandbox-templates.json   # Official Docker sandbox images
-│   ├── official-images.json     # Docker Hub official images registry
-│   └── allowable-domains.json   # Firewall domain whitelists
-├── skills/
-│   ├── _shared/                 # Shared templates and data
-│   │   ├── templates/           # DevContainer templates
-│   │   │   ├── base.dockerfile
-│   │   │   ├── devcontainer.json
-│   │   │   ├── docker-compose.yml
-│   │   │   ├── init-firewall.sh
-│   │   │   ├── setup-claude-credentials.sh
-│   │   │   └── partials/        # Language-specific Dockerfile sections
-│   │   │       ├── go.dockerfile
-│   │   │       ├── rust.dockerfile
-│   │   │       ├── java.dockerfile
-│   │   │       ├── ruby.dockerfile
-│   │   │       ├── php.dockerfile
-│   │   │       ├── cpp-clang.dockerfile
-│   │   │       ├── cpp-gcc.dockerfile
-│   │   │       ├── postgres.dockerfile
-│   │   │       └── azure-cli.dockerfile
-│   │   └── templates/azure/     # Azure deployment templates
-│   │       ├── azure.yaml       # Azure Developer CLI manifest
-│   │       └── infra/           # Bicep infrastructure templates
-│   │   └── templates/data/      # Configuration data
-│   │       ├── allowable-domains.json
-│   │       ├── azure-regions.json
-│   │       ├── mcp-servers.json
-│   │       ├── secrets.json
-│   │       └── variables.json
-│   ├── sandboxxer-troubleshoot/    # Troubleshooting assistant
-│   └── sandboxxer-security/        # Security auditor
-├── commands/
-│   ├── quickstart.md            # /sandboxxer:quickstart (interactive mode selection)
-│   ├── yolo-vibe-maxxing.md     # /sandboxxer:yolo-vibe-maxxing (quick no-questions setup)
+├── agents/                      # Subagent definitions
+│   ├── devcontainer-generator.md   # File generation subagent
+│   └── devcontainer-validator.md   # Post-setup validation subagent
+├── commands/                    # Slash commands
+│   ├── quickstart.md            # /sandboxxer:quickstart (interactive setup)
+│   ├── yolo-vibe-maxxing.md     # /sandboxxer:yolo-vibe-maxxing (instant setup)
 │   ├── deploy-to-azure.md       # /sandboxxer:deploy-to-azure (Azure deployment)
 │   ├── troubleshoot.md          # /sandboxxer:troubleshoot
 │   └── audit.md                 # /sandboxxer:audit
-└── docs/examples/                    # Working example applications
-    ├── streamlit-sandbox-basic/
-    ├── demo-app-sandbox-basic/
-    ├── demo-app-sandbox-advanced/
-    └── demo-app-sandbox-yolo/
+├── hooks/                       # Event hooks
+│   ├── hooks.json               # Hook configuration
+│   ├── stop_hook.sh             # Linux stop hook
+│   ├── stop_hook.ps1            # Windows stop hook
+│   └── run-hook.cmd             # Windows wrapper
+├── skills/                      # Skills and shared resources
+│   ├── _shared/                 # Shared templates and data
+│   │   └── templates/           # DevContainer templates
+│   │       ├── base.dockerfile
+│   │       ├── devcontainer.json
+│   │       ├── docker-compose.yml
+│   │       ├── docker-compose.volume.yml
+│   │       ├── docker-compose.prebuilt.yml
+│   │       ├── docker-compose-profiles.yml
+│   │       ├── init-firewall.sh
+│   │       ├── init-volume.sh
+│   │       ├── setup-claude-credentials.sh
+│   │       ├── azure/           # Azure deployment templates
+│   │       │   ├── azure.yaml
+│   │       │   └── infra/
+│   │       ├── partials/        # Language-specific Dockerfile sections
+│   │       │   ├── azure-cli.dockerfile
+│   │       │   ├── go.dockerfile
+│   │       │   ├── rust.dockerfile
+│   │       │   ├── java.dockerfile
+│   │       │   ├── ruby.dockerfile
+│   │       │   ├── php.dockerfile
+│   │       │   ├── cpp-clang.dockerfile
+│   │       │   ├── cpp-gcc.dockerfile
+│   │       │   └── postgres.dockerfile
+│   │       └── data/            # Configuration data
+│   │           ├── allowable-domains.json
+│   │           ├── azure-regions.json
+│   │           ├── mcp-servers.json
+│   │           ├── official-images.json
+│   │           ├── sandbox-templates.json
+│   │           ├── secrets.json
+│   │           ├── uv-images.json
+│   │           ├── variables.json
+│   │           └── vscode-extensions.json
+│   ├── sandboxxer-troubleshoot/ # Troubleshooting assistant
+│   │   └── SKILL.md
+│   └── sandboxxer-security/     # Security auditor
+│       └── SKILL.md
+└── docs/                        # Documentation
+    ├── examples/                # Working example applications
+    │   ├── streamlit-sandbox-basic/
+    │   ├── demo-app-sandbox-basic/
+    │   ├── demo-app-sandbox-advanced/
+    │   └── demo-app-sandbox-yolo/
+    └── features/                # Feature documentation
 ```
 
 ## Examples

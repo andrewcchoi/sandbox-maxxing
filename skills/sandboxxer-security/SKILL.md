@@ -27,6 +27,11 @@ This skill is invoked via the `/sandboxxer:audit` command.
 ```
 
 The skill will:
+
+![Security Audit Flow](../../docs/diagrams/svg/security-audit-flow.svg)
+
+*12-step security audit workflow with findings categorization and actionable recommendations.*
+
 1. Scan existing DevContainer configuration files
 2. Audit firewall configuration and domain allowlists
 3. Check for security best practices violations

@@ -132,15 +132,23 @@ skills/
 │   ├── templates/                     # Template files
 │   │   ├── base.dockerfile            # Base multi-stage dockerfile
 │   │   ├── devcontainer.json          # DevContainer config
-│   │   ├── docker-compose.yml         # Compose template
+│   │   ├── docker-compose.yml         # Compose template (bind mount)
+│   │   ├── docker-compose.volume.yml  # Compose template (volume mode)
+│   │   ├── docker-compose.prebuilt.yml # Compose template (prebuilt image)
+│   │   ├── docker-compose-profiles.yml # Compose with app service profiles
 │   │   ├── setup-claude-credentials.sh # Credential persistence
 │   │   ├── init-firewall.sh           # Strict iptables firewall (v4.3.2)
+│   │   ├── init-volume.sh             # Volume initialization script
 │   │   ├── extensions.json            # VS Code extensions (minimal)
 │   │   ├── mcp.json                   # MCP config
 │   │   ├── variables.json             # Build/runtime vars
 │   │   ├── .env.template              # Environment template
 │   │   ├── README.md                  # Template docs (v4.3.1)
+│   │   ├── azure/                     # Azure deployment templates
+│   │   │   ├── azure.yaml             # Azure Developer CLI manifest
+│   │   │   └── infra/                 # Bicep infrastructure templates
 │   │   ├── partials/                  # Language partials (v4.3.1)
+│   │   │   ├── azure-cli.dockerfile   # Azure CLI tools
 │   │   │   ├── go.dockerfile          # Go toolchain
 │   │   │   ├── ruby.dockerfile        # Ruby toolchain
 │   │   │   ├── rust.dockerfile        # Rust toolchain
@@ -151,6 +159,7 @@ skills/
 │   │   │   └── postgres.dockerfile    # PostgreSQL tools
 │   │   └── data/                      # Reference catalogs
 │   │       ├── allowable-domains.json
+│   │       ├── azure-regions.json
 │   │       ├── sandbox-templates.json
 │   │       ├── official-images.json
 │   │       ├── uv-images.json

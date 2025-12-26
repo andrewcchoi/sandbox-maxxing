@@ -10,6 +10,10 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 - **Shared resources architecture** - Templates and data consolidated to `skills/_shared/`
 - **Simplified firewall** - Single init-firewall.sh script (v4.3.2)
 
+![Plugin Architecture](diagrams/svg/plugin-architecture.svg)
+
+*Visual overview of the plugin's component hierarchy showing commands, skills, agents, hooks, and shared resources.*
+
 ## Components
 
 ### 1. Skills
@@ -44,15 +48,25 @@ skills/
 │   ├── templates/                     # Template files
 │   │   ├── base.dockerfile            # Base Dockerfile with markers
 │   │   ├── devcontainer.json          # DevContainer configuration
-│   │   ├── docker-compose.yml         # Docker Compose template
+│   │   ├── docker-compose.yml         # Docker Compose template (bind mount)
+│   │   ├── docker-compose.volume.yml  # Docker Compose template (volume mode)
+│   │   ├── docker-compose.prebuilt.yml # Docker Compose template (prebuilt image)
+│   │   ├── docker-compose-profiles.yml # Docker Compose with app service profiles
 │   │   ├── setup-claude-credentials.sh # Credential persistence
 │   │   ├── init-firewall.sh           # Strict iptables firewall (v4.3.2)
+│   │   ├── init-volume.sh             # Volume initialization script
 │   │   ├── extensions.json            # VS Code extensions (minimal)
 │   │   ├── mcp.json                   # MCP server configuration
 │   │   ├── variables.json             # Build/runtime variables
 │   │   ├── .env.template              # Environment variables
 │   │   ├── README.md                  # Template documentation (v4.3.1)
+│   │   ├── azure/                     # Azure deployment templates
+│   │   │   ├── azure.yaml             # Azure Developer CLI manifest
+│   │   │   └── infra/                 # Infrastructure-as-Code
+│   │   │       ├── main.bicep         # Main Azure resources
+│   │   │       └── modules/           # Bicep modules
 │   │   ├── partials/                  # Language-specific partials (v4.3.1)
+│   │   │   ├── azure-cli.dockerfile   # Azure CLI tools
 │   │   │   ├── go.dockerfile          # Go 1.22 toolchain
 │   │   │   ├── ruby.dockerfile        # Ruby 3.3 and bundler
 │   │   │   ├── rust.dockerfile        # Rust toolchain
@@ -63,6 +77,7 @@ skills/
 │   │   │   └── postgres.dockerfile    # PostgreSQL client tools
 │   │   └── data/                      # Reference catalogs (v4.3.1)
 │   │       ├── allowable-domains.json # Domain categories
+│   │       ├── azure-regions.json     # Azure region catalog
 │   │       ├── sandbox-templates.json # Docker template images
 │   │       ├── official-images.json   # Official Docker images
 │   │       ├── uv-images.json         # Python UV images
@@ -158,6 +173,10 @@ Skills reference these using: `skills/_shared/data/<filename>`
 | **Customization** | Moderate               | None                          |
 
 ## Data Flow
+
+![File Generation Process](diagrams/svg/file-generation.svg)
+
+*Visual representation of how templates, data catalogs, and language partials are processed to generate DevContainer files.*
 
 ### Setup Flow (v4.3.0+)
 

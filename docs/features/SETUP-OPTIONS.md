@@ -217,6 +217,23 @@ data/
   └── allowable-domains.json    (domain registry)
 ```
 
+## Docker Compose Mode Selection
+
+The plugin generates `docker-compose.yml` by default, but you can manually switch to alternative modes for specific scenarios:
+
+![Docker Compose Mode Selection](../diagrams/svg/mode-selection.svg)
+
+*Decision tree for selecting the appropriate Docker Compose mode based on platform and requirements.*
+
+### Available Modes
+
+- **Standard Bind Mount** (`docker-compose.yml`) - Direct file editing, best for Linux
+- **Volume Mode** (`docker-compose.volume.yml`) - Fast I/O on Windows/macOS using Docker volumes
+- **Prebuilt Mode** (`docker-compose.prebuilt.yml`) - CI/CD pipelines with pre-built images
+- **Profiles Mode** (`docker-compose-profiles.yml`) - Backend/frontend service isolation with selective startup
+
+See the [docker-compose templates](../../skills/_shared/templates/) directory for all available variants.
+
 ## See Also
 
 - [Customization Guide](CUSTOMIZATION.md) - Modify templates and add services

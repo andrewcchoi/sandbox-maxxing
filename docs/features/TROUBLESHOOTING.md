@@ -32,6 +32,10 @@ Common problems and their immediate fixes:
 | Port already in use             | Stop conflicting service or change port         | [Service Connectivity](#service-connectivity)                   |
 | VS Code extension not loading   | Rebuild container without cache                 | [VS Code DevContainer Problems](#vs-code-devcontainer-problems) |
 
+![Troubleshooting Flow](../diagrams/svg/troubleshooting-flow.svg)
+
+*Decision tree for diagnosing and resolving common sandbox issues. Use `/sandboxxer:troubleshoot` for interactive assistance.*
+
 ## Claude Code Installation
 
 ### Issue: Claude Code not available after container rebuild
@@ -448,6 +452,10 @@ sudo systemctl restart docker
 Ensure your host machine can resolve DNS. If host DNS is broken, containers will also fail.
 
 ## Service Connectivity
+
+![Service Connectivity](../diagrams/svg/service-connectivity.svg)
+
+*Docker network topology showing correct and incorrect connection patterns. Use service names (postgres:5432, redis:6379) not localhost.*
 
 ### Can't Connect to PostgreSQL/Redis/RabbitMQ
 

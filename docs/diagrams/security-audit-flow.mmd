@@ -1,0 +1,67 @@
+flowchart LR
+    Start([User runs /sandboxxer:audit]) --> Step1
+
+    Step1[1. Scan Configuration Files<br/>.devcontainer/, docker-compose.yml]
+    Step2[2. Firewall Configuration Audit<br/>init-firewall.sh, ALLOWED_DOMAINS]
+    Step3[3. Credentials and Secrets Audit<br/>Check for exposed secrets]
+    Step4[4. Port Exposure Audit<br/>Unnecessary ports published?]
+    Step5[5. Container Permissions Audit<br/>CAP_ADD, privileged mode]
+    Step6[6. Volume and Mount Audit<br/>Writable mounts, sensitive paths]
+    Step7[7. Network Isolation Audit<br/>Network mode, bridge config]
+    Step8[8. Dependency Security<br/>Base image vulnerabilities]
+    Step9[9. Lifecycle Hooks Security<br/>postCreateCommand, onCreateCommand]
+    Step10[10. Dev Container Features Audit<br/>Installed features review]
+    Step11[11. Dotfiles Security<br/>dotfiles.repository check]
+    Step12[12. Environment Variables Security<br/>Exposed env vars]
+
+    Step1 --> Step2 --> Step3 --> Step4
+    Step4 --> Step5 --> Step6 --> Step7
+    Step7 --> Step8 --> Step9 --> Step10
+    Step10 --> Step11 --> Step12
+
+    Step12 --> Findings{Security Findings}
+
+    subgraph Findings["Security Report"]
+        F1[✅ PASS: Items meeting security standards]
+        F2[⚠️ WARN: Non-critical issues]
+        F3[❌ FAIL: Critical security risks]
+    end
+
+    Findings --> Report
+
+    subgraph Report["Report Generation"]
+        R1[Categorize by severity:<br/>Critical, High, Medium, Low]
+        R2[Generate recommendations:<br/>Specific fixes for each issue]
+        R3[Prioritize actions:<br/>What to fix first]
+        R4[Provide examples:<br/>Code snippets for fixes]
+    end
+
+    Report --> Output
+
+    subgraph Output["Output Sections"]
+        O1[Executive Summary]
+        O2[Detailed Findings]
+        O3[Actionable Recommendations]
+        O4[Configuration Examples]
+        O5[Follow-up Actions]
+    end
+
+    Output --> Done([Security Audit Complete])
+
+    style Start fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Done fill:#90EE90,stroke:#333,stroke-width:2px
+    style Step1 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step2 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step3 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step4 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step5 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step6 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step7 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step8 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step9 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step10 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step11 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Step12 fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style Findings fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style Report fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Output fill:#90EE90,stroke:#333,stroke-width:2px

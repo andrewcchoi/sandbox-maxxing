@@ -74,26 +74,39 @@ sandbox/
 │   ├── Dockerfile              # Python + Node.js only
 │   └── init-firewall.sh        # Disabled (not needed)
 │
-├── skills/                     # Plugin skills (main work here)
-│   ├── _shared/                # Shared templates and data
-│   ├── sandboxxer-troubleshoot/
-│   └── sandboxxer-security/
+├── agents/                     # Subagent definitions
+│   ├── devcontainer-generator.md
+│   └── devcontainer-validator.md
 │
 ├── commands/                   # Slash commands
 │   ├── quickstart.md
 │   ├── yolo-vibe-maxxing.md
+│   ├── deploy-to-azure.md
 │   ├── troubleshoot.md
 │   └── audit.md
 │
-├── skills/_shared/             # Shared resources
-│   ├── templates/              # DevContainer templates
-│   │   ├── base.dockerfile
-│   │   ├── devcontainer.json
-│   │   ├── docker-compose.yml
-│   │   └── partials/           # Language-specific sections
-│   └── templates/data/         # Configuration data
+├── hooks/                      # Event hooks
+│   ├── hooks.json
+│   ├── stop_hook.sh
+│   ├── stop_hook.ps1
+│   └── run-hook.cmd
 │
-├── docs/examples/                   # Demo applications
+├── skills/                     # Plugin skills (main work here)
+│   ├── _shared/                # Shared templates and data
+│   │   └── templates/          # DevContainer templates
+│   │       ├── base.dockerfile
+│   │       ├── devcontainer.json
+│   │       ├── docker-compose.yml
+│   │       ├── docker-compose.volume.yml
+│   │       ├── docker-compose.prebuilt.yml
+│   │       ├── docker-compose-profiles.yml
+│   │       ├── azure/          # Azure deployment templates
+│   │       ├── partials/       # Language-specific sections
+│   │       └── data/           # Configuration data
+│   ├── sandboxxer-troubleshoot/
+│   └── sandboxxer-security/
+│
+├── docs/examples/              # Demo applications
 │   ├── docker-compose.yml      # Services for examples ONLY
 │   ├── streamlit-shared/       # Quick validation (shared services)
 │   ├── streamlit-sandbox-basic/ # Self-contained Streamlit
