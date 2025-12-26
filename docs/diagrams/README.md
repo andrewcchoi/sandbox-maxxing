@@ -303,21 +303,26 @@ All diagrams follow this color scheme:
 
 ## Embedding in Documentation
 
-To embed diagrams in markdown files, use:
+To embed diagrams in markdown files, use relative paths based on your file location.
 
-```markdown
-![Diagram Title](diagrams/svg/diagram-name.svg)
+**Syntax pattern:**
+
+```
+![Alt Text](path/to/diagram.svg)
 ```
 
-Or for relative paths from different locations:
+**Path examples based on file location:**
 
-```markdown
-<!-- From README.md -->
-![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
+| Your file location | Path to use | Example |
+|-------------------|-------------|---------|
+| Repository root (e.g., README.md) | `docs/diagrams/svg/name.svg` | `plugin-architecture.svg` |
+| Inside docs/ directory | `diagrams/svg/name.svg` | Used in ARCHITECTURE.md |
+| Inside docs/diagrams/ | `svg/name.svg` | Used in this file |
 
-<!-- From docs/ARCHITECTURE.md -->
-![Plugin Architecture](diagrams/svg/plugin-architecture.svg)
-```
+**See existing embeddings:**
+- README.md: View source to see diagram embeddings from repository root
+- docs/ARCHITECTURE.md: View source to see diagram embeddings from docs/
+- All embedded diagrams are in docs/diagrams/svg/ directory
 
 ---
 

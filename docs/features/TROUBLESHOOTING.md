@@ -355,6 +355,46 @@ ALLOWED_DOMAINS=(
 
 Rebuild container.
 
+### Python Virtual Environment Errors After Rebuild
+
+**Symptoms:**
+- `uv sync` fails with "Failed to spawn: `/workspace/.venv/bin/python3`"
+- Error message: "No such file or directory (os error 2)"
+- Occurs after rebuilding DevContainer
+
+**Cause:** Stale `.venv` directory with symlinks pointing to previous container's Python installation.
+
+**Background:** When you rebuild a DevContainer, the workspace directory (`.venv` included) persists via bind mount. However, `.venv` contains symlinks to container-specific Python paths like `libpython3.12.so.1.0`. After rebuild, the new container has different Python installation paths, making these symlinks invalid.
+
+**Automatic Solution:**
+
+As of version 4.6.0, this is **automatically handled** by lifecycle hooks:
+- `updateContentCommand` - Cleans `.venv` during rebuilds
+- `onCreateCommand` - Cleans `.venv` on fresh container creation
+
+If using an older template, regenerate with `/sandboxxer:quickstart` or manually update your `devcontainer.json`:
+
+```json
+{
+  "onCreateCommand": "rm -rf /workspace/.venv 2>/dev/null || true; ...",
+  "updateContentCommand": "echo '🧹 Cleaning stale .venv after rebuild...' && rm -rf /workspace/.venv 2>/dev/null || true"
+}
+```
+
+**Manual Workaround:**
+
+If cleanup doesn't happen automatically, manually remove the stale `.venv`:
+
+```bash
+# Inside the container
+rm -rf /workspace/.venv
+uv sync  # Recreates the virtual environment
+```
+
+**Prevention:**
+
+Always use the latest DevContainer template which includes automatic cleanup.
+
 ## Network Issues
 
 ### Can't Reach External Websites
