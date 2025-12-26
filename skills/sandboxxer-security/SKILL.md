@@ -9,6 +9,14 @@ description: Use when user wants to audit sandbox security, review firewall conf
 
 Performs comprehensive security audits of Claude Code Docker sandbox configurations and provides recommendations for hardening based on best practices.
 
+## Official Documentation References
+
+- [Dev Container Specification](https://containers.dev/) - Official spec
+- [Developing inside a Container](https://code.visualstudio.com/docs/devcontainers/containers) - VS Code guide
+- [Advanced Container Configuration](https://code.visualstudio.com/remote/advancedcontainers/overview) - Advanced topics
+- [GitHub Codespaces](https://docs.github.com/en/codespaces/quickstart) - Codespaces integration
+- [devcontainer.json Reference](https://containers.dev/implementors/json_reference/) - Full property reference
+
 ## Usage
 
 This skill is invoked via the `/sandboxxer:audit` command.
@@ -233,6 +241,115 @@ npm audit fix
 - ✅ **Use official images** only
 - ✅ **Pin versions** in production
 
+### 9. Lifecycle Hooks Security Audit
+
+**Check Lifecycle Commands** in `devcontainer.json`:
+- `initializeCommand` - ⚠️ **Runs on HOST before container starts**
+- `onCreateCommand` - Runs once when container created
+- `updateContentCommand` - Runs on rebuild
+- `postCreateCommand` - Runs after creation
+- `postStartCommand` - Runs on every start
+- `postAttachCommand` - Runs on every attach
+
+**Example Configuration**:
+```json
+{
+  "initializeCommand": "echo 'Running on host!'",
+  "onCreateCommand": "npm install",
+  "postCreateCommand": "npm run build",
+  "postAttachCommand": "echo 'Container attached'"
+}
+```
+
+**Security Concerns**:
+- ❌ **`initializeCommand` has HOST access** - audit carefully
+- ⚠️ **Verify commands don't download/execute untrusted scripts**
+- ✅ **Use pinned versions** in any package installs
+- ⚠️ **Avoid curl | bash patterns** in lifecycle hooks
+- ✅ **Review all commands** for potential security issues
+
+**Reference:** [Lifecycle Scripts](https://containers.dev/implementors/json_reference/#lifecycle-scripts)
+
+### 10. Dev Container Features Audit
+
+**Check Features** in `devcontainer.json`:
+```json
+"features": {
+  "ghcr.io/devcontainers/features/node:1": {
+    "version": "18"
+  },
+  "ghcr.io/devcontainers/features/python:1": {}
+}
+```
+
+**Security Recommendations**:
+- ✅ **Use official features** from `ghcr.io/devcontainers/features/*`
+- ✅ **Pin feature versions** (e.g., `:1` not `:latest`)
+- ⚠️ **Review third-party features** before use
+- ❌ **Never use features from untrusted sources**
+- ✅ **Audit feature installation scripts** when possible
+- ✅ **Check feature source** on GitHub before adding
+
+**Official Features Registry:** Over 200 pre-built features available at [Dev Container Features](https://containers.dev/features)
+
+**Reference:** [Dev Container Features Specification](https://containers.dev/implementors/features/)
+
+### 11. Dotfiles Security Audit
+
+**Check Dotfiles Configuration** in `devcontainer.json`:
+```json
+{
+  "dotfilesRepository": "your-github-user/dotfiles",
+  "dotfilesInstallCommand": "install.sh",
+  "dotfilesTargetPath": "~/dotfiles"
+}
+```
+
+**Security Concerns**:
+- ⚠️ **Dotfiles scripts execute automatically** in container
+- ❌ **Don't use untrusted dotfiles repositories**
+- ✅ **Review install scripts** in dotfiles repo before use
+- ✅ **Use personal, controlled dotfiles only**
+- ⚠️ **Dotfiles can modify shell config** and environment
+- ✅ **Audit dotfiles for malicious commands**
+
+**Reference:** [Personalizing with Dotfiles](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories)
+
+### 12. Environment Variables Security
+
+**Types of Environment Variables** in `devcontainer.json`:
+```json
+{
+  "containerEnv": {
+    "NODE_ENV": "development"
+  },
+  "remoteEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}"
+  }
+}
+```
+
+**Environment Variable Patterns**:
+- `containerEnv` - Available in container
+- `remoteEnv` - Available to VS Code processes
+- `${localEnv:VAR}` - Forwarded from host
+- `.env` files - Loaded from workspace root
+
+**Security Concerns**:
+- ❌ **Never commit secrets** in `containerEnv`
+- ✅ **Use `${localEnv:API_KEY}`** for secrets
+- ⚠️ **`.env` files should be in `.gitignore`**
+- ✅ **Use GitHub Codespaces secrets** for cloud environments
+- ❌ **Don't hardcode credentials** in devcontainer.json
+- ✅ **Review all environment variables** for sensitive data
+
+**GitHub Codespaces Integration**:
+- Use [Codespaces secrets](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-encrypted-secrets-for-your-codespaces) for sensitive values
+- Secrets are automatically available as environment variables
+- Organization-level secrets for team projects
+
+**Reference:** [Variables in devcontainer.json](https://containers.dev/implementors/json_reference/#variables-in-devcontainerjson)
+
 ## Security Report Format
 
 Provide comprehensive report:
@@ -267,6 +384,12 @@ Provide comprehensive report:
 - [ ] Dependencies audited
 - [ ] Secrets properly managed
 - [ ] Network isolation verified
+- [ ] Lifecycle hooks reviewed (especially initializeCommand)
+- [ ] Dev Container features from trusted sources
+- [ ] Feature versions pinned
+- [ ] Dotfiles repository trusted and reviewed
+- [ ] Environment variables not exposing secrets
+- [ ] GitHub Codespaces secrets configured properly (if using Codespaces)
 ```
 
 ## Threat Model Reference
@@ -352,5 +475,5 @@ The skill reviews firewall mode, allowed domains, and provides guidance on addin
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.6.0
+**Last Updated:** 2025-12-25
+**Version:** 4.7.0
