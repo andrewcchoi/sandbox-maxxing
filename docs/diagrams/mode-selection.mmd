@@ -1,0 +1,38 @@
+flowchart TD
+    Start([Choose Docker Compose Mode]) --> Q1{What platform?}
+
+    Q1 -->|Windows/macOS| Perf{I/O Performance<br/>critical?}
+    Q1 -->|Linux| Bind[Standard Bind Mount]
+
+    Perf -->|Yes<br/>Need fast I/O| Q2{Using pre-built<br/>image?}
+    Perf -->|No<br/>Direct editing OK| Bind
+
+    Q2 -->|Yes<br/>CI/CD pipeline| Prebuilt[Prebuilt Mode<br/>docker-compose.prebuilt.yml]
+    Q2 -->|No<br/>Development| Volume[Volume Mode<br/>docker-compose.volume.yml]
+
+    Bind --> Q3{Need separate<br/>app services?}
+
+    Q3 -->|Yes<br/>Backend/Frontend| Profiles[Profiles Mode<br/>docker-compose-profiles.yml]
+    Q3 -->|No<br/>Simple setup| BindOnly[Standard Bind<br/>docker-compose.yml]
+
+    Prebuilt --> Features1[✅ Fast I/O<br/>✅ Reproducible<br/>❌ Rebuild for changes]
+    Volume --> Features2[✅ Fast I/O<br/>✅ Persistent volume<br/>❌ Manual sync to host]
+    Profiles --> Features3[✅ Service isolation<br/>✅ Selective startup<br/>✅ Direct editing]
+    BindOnly --> Features4[✅ Direct editing<br/>✅ Simple setup<br/>❌ Slower I/O on Win/Mac]
+
+    style Start fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Q1 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Perf fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Q2 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Q3 fill:#FFE4B5,stroke:#333,stroke-width:2px
+
+    style Bind fill:#90EE90,stroke:#333,stroke-width:2px
+    style Volume fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Prebuilt fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style Profiles fill:#FFB366,stroke:#333,stroke-width:2px
+    style BindOnly fill:#90EE90,stroke:#333,stroke-width:2px
+
+    style Features1 fill:#f0f0f0,stroke:#999,stroke-width:1px
+    style Features2 fill:#f0f0f0,stroke:#999,stroke-width:1px
+    style Features3 fill:#f0f0f0,stroke:#999,stroke-width:1px
+    style Features4 fill:#f0f0f0,stroke:#999,stroke-width:1px

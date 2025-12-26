@@ -1,0 +1,66 @@
+sequenceDiagram
+    participant Developer
+    participant Git as Git Repository
+    participant CI as CI/CD Pipeline<br/>(GitHub Actions / Azure DevOps)
+    participant Azure as Azure Portal
+    participant ACR as Azure Container Registry
+    participant ACA as Azure Container Apps
+
+    Note over Developer,ACA: Setup Phase
+
+    Developer->>Azure: Create Service Principal
+    Azure-->>Developer: Return credentials:<br/>AZURE_CLIENT_ID<br/>AZURE_CLIENT_SECRET<br/>AZURE_TENANT_ID<br/>AZURE_SUBSCRIPTION_ID
+
+    Developer->>Git: Configure repository secrets<br/>Add AZURE_* credentials
+    Developer->>Git: Add azure.yaml and<br/>infra/ bicep files
+
+    Note over Developer,ACA: Development & Push
+
+    Developer->>Git: git push to main branch
+    Git->>CI: Trigger pipeline on push
+
+    Note over CI: CI/CD Pipeline Execution
+
+    CI->>CI: Checkout code
+    CI->>CI: Authenticate with Azure<br/>using Service Principal
+    activate CI
+
+    CI->>Azure: az login --service-principal
+
+    CI->>CI: Run azd provision<br/>(if not exists)
+    CI->>Azure: Create/verify Resource Group
+    CI->>Azure: Create/verify ACR
+    CI->>Azure: Create/verify Container Apps Environment
+    CI->>Azure: Create/verify Log Analytics
+
+    Note over CI: Build & Deploy
+
+    CI->>CI: Build container image<br/>docker build -t app:latest
+    CI->>ACR: Push image to ACR<br/>docker push acr.azurecr.io/app:latest
+    ACR-->>CI: Image pushed successfully
+
+    CI->>CI: Run azd deploy
+    CI->>ACA: Deploy new revision<br/>with latest image
+    ACA-->>CI: Deployment successful
+
+    CI->>ACA: Run health checks
+    ACA-->>CI: ✅ Healthy
+
+    deactivate CI
+
+    Note over CI,ACA: Post-Deployment
+
+    CI->>CI: Run smoke tests<br/>(optional)
+    CI->>Git: Update deployment status
+
+    alt Deployment Success
+        CI-->>Developer: ✅ Deployment succeeded<br/>Show application URL
+    else Deployment Failure
+        CI-->>Developer: ❌ Deployment failed<br/>Show error logs
+        CI->>ACA: Rollback to previous revision
+    end
+
+    Note over Developer,ACA: Monitoring
+
+    Developer->>ACA: View logs:<br/>azd logs
+    Developer->>Azure: Monitor metrics in portal

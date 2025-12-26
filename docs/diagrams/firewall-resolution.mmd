@@ -1,0 +1,55 @@
+sequenceDiagram
+    participant User
+    participant Script as init-firewall.sh
+    participant DNS as DNS Resolver
+    participant ipset
+    participant iptables
+
+    Note over User,iptables: Container Startup
+
+    User->>Script: Container starts
+    Script->>Script: Read ALLOWED_DOMAINS array<br/>[api.github.com, registry.npmjs.org, ...]
+
+    loop For each domain
+        Script->>DNS: Resolve domain to IPs<br/>dig +short api.github.com
+        DNS-->>Script: Return IP addresses<br/>140.82.121.5, 140.82.121.6
+        Script->>ipset: Add IPs to hash:net<br/>ipset add allowed-domains 140.82.121.5
+        ipset-->>Script: IP added to set
+    end
+
+    Script->>ipset: Create ipset if not exists<br/>ipset create allowed-domains hash:net
+    Note over ipset: ipset now contains all<br/>resolved IP addresses
+
+    Script->>iptables: Set default OUTPUT policy<br/>iptables -P OUTPUT DROP
+    Note over iptables: Block all outbound traffic by default
+
+    Script->>iptables: Allow localhost<br/>iptables -A OUTPUT -o lo -j ACCEPT
+    Script->>iptables: Allow established connections<br/>iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+    Script->>iptables: Allow DNS queries<br/>iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+    Script->>iptables: Allow allowed IPs<br/>iptables -A OUTPUT -m set --match-set allowed-domains dst -j ACCEPT
+
+    Note over Script,iptables: Verification Tests
+
+    Script->>Script: Test blocked domain<br/>curl -s -o /dev/null -w "%{http_code}" example.com
+    Script-->>Script: ❌ Should fail (timeout or refused)
+
+    Script->>Script: Test allowed domain<br/>curl -s -o /dev/null -w "%{http_code}" api.github.com
+    Script-->>Script: ✅ Should succeed (200 or redirect)
+
+    alt Verification Passed
+        Script->>User: ✅ Firewall initialized successfully
+    else Verification Failed
+        Script->>User: ❌ Firewall verification failed<br/>Check ALLOWED_DOMAINS configuration
+    end
+
+    Note over User,iptables: Application Runtime
+
+    User->>iptables: Application makes request to<br/>allowed domain (api.github.com)
+    iptables->>ipset: Check if IP in allowed-domains set
+    ipset-->>iptables: ✅ IP found
+    iptables-->>User: Allow connection
+
+    User->>iptables: Application makes request to<br/>blocked domain (malicious.com)
+    iptables->>ipset: Check if IP in allowed-domains set
+    ipset-->>iptables: ❌ IP not found
+    iptables-->>User: Drop packet (silent failure)

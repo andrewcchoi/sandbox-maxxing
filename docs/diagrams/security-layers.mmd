@@ -1,0 +1,64 @@
+flowchart TB
+    subgraph External["External Threats"]
+        T1[Code Execution]
+        T2[Network Exfiltration]
+        T3[Credential Theft]
+        T4[Resource Abuse]
+    end
+
+    subgraph Layer1["Layer 1: Container Isolation"]
+        C1[Linux Namespaces<br/>Process/network/mount isolation]
+        C2[cgroups<br/>Resource limits]
+        C3[Capabilities<br/>Restricted privileges]
+        C4[Read-only filesystem<br/>Immutable system files]
+    end
+
+    subgraph Layer2["Layer 2: Network Isolation"]
+        N1[Firewall Mode: disabled]
+        N2[Firewall Mode: strict]
+        N3[iptables + ipset]
+        N4[Domain Allowlist]
+        N5[DNS Resolution Control]
+    end
+
+    subgraph Layer3["Layer 3: Secret Management"]
+        S1[VS Code Input Variables<br/>User prompts at startup]
+        S2[Docker Build Secrets<br/>Temporary mount, not in layers]
+        S3[Docker Runtime Secrets<br/>tmpfs mount, memory only]
+        S4[Host Config Mounts<br/>Read-only credentials]
+    end
+
+    subgraph Protected["Protected Resources"]
+        P1[Host System]
+        P2[Network Services]
+        P3[Credentials & Secrets]
+        P4[User Data]
+    end
+
+    T1 --> Layer1
+    T2 --> Layer2
+    T3 --> Layer3
+    T4 --> Layer1
+
+    Layer1 --> |Prevents| T1Mitigation[Breakout attempts<br/>Privilege escalation]
+    Layer1 --> |Protects| P1
+
+    N1 --> |Relies on| ReliesOn[Container isolation only]
+    N2 --> N3
+    N3 --> N4
+    N4 --> N5
+    Layer2 --> |Prevents| T2Mitigation[Unauthorized connections<br/>Data exfiltration]
+    Layer2 --> |Protects| P2
+
+    Layer3 --> |Prevents| T3Mitigation[Credential exposure<br/>Hardcoded secrets]
+    Layer3 --> |Protects| P3
+
+    style Layer1 fill:#FFB366,stroke:#333,stroke-width:3px
+    style Layer2 fill:#87CEEB,stroke:#333,stroke-width:3px
+    style Layer3 fill:#DDA0DD,stroke:#333,stroke-width:3px
+    style External fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style Protected fill:#90EE90,stroke:#333,stroke-width:2px
+    style T1Mitigation fill:#FFE4B5,stroke:#999,stroke-width:1px
+    style T2Mitigation fill:#FFE4B5,stroke:#999,stroke-width:1px
+    style T3Mitigation fill:#FFE4B5,stroke:#999,stroke-width:1px
+    style ReliesOn fill:#f0f0f0,stroke:#999,stroke-width:1px

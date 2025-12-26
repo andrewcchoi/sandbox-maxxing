@@ -26,6 +26,10 @@ The security model adapts to your needs through two setup commands (interactive 
 
 ## Multi-Layer Security
 
+![Security Layers](../diagrams/svg/security-layers.svg)
+
+*Visual representation of the 3-layer defense-in-depth security model: Container Isolation, Network Isolation, and Secret Management.*
+
 ### Layer 1: Container Isolation (All Configurations)
 
 Every configuration uses Docker containers to provide fundamental isolation:
@@ -176,6 +180,10 @@ iptables -P OUTPUT ACCEPT
 2. **IP Set Creation**: IPs added to `allowed-domains` ipset
 3. **Firewall Rules**: iptables allows traffic to IPs in set
 4. **Verification**: Tests blocked domain (example.com) and allowed domain (api.github.com)
+
+![Firewall Resolution](../diagrams/svg/firewall-resolution.svg)
+
+*Sequence diagram showing how domains are resolved and enforced by the firewall at container startup and runtime.*
 
 **Security implications:**
 - Strong protection against unauthorized network access

@@ -337,6 +337,10 @@ az group delete --name rg-my-dev-env --yes
 
 ## CI/CD Integration
 
+![CI/CD Integration](../diagrams/svg/cicd-integration.svg)
+
+*GitHub Actions / Azure DevOps pipeline sequence showing authentication, build, push, deploy, and monitoring stages.*
+
 ### GitHub Actions
 
 Create `.github/workflows/deploy-azure.yml`:
