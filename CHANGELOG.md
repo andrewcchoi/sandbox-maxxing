@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Issue #88**: Docker Compose profiles for containerized app services
+  - New template: `docker-compose-profiles.yml` with optional backend/frontend services
+  - Automatic detection of `backend/` and `frontend/` directories in Step 1.8
+  - New Step 1.85: Ask about Docker Compose profiles when app directories detected
+  - Two modes: `docker compose up` (DevContainer only) vs `docker compose --profile app up` (full stack)
+  - Profile services include health checks and proper dependency ordering
+
+- **Issue #86**: Missing DevContainer features
+  - Added `cap_add: [NET_ADMIN, NET_RAW]` to all docker-compose templates for firewall support
+  - Added persistent volumes: `commandhistory` (bash history) and `claude-data` (Claude config)
+  - Added ESLint and Prettier extensions to devcontainer.json
+  - Added editor settings: `formatOnSave`, `defaultFormatter`, `codeActionsOnSave`
+  - Added `NODE_OPTIONS=--max-old-space-size=4096` to containerEnv
+  - Added `CLAUDE_CONFIG_DIR` and `POWERLEVEL9K_DISABLE_GITSTATUS` environment variables
+  - Updated `postStartCommand` to automatically run firewall initialization script
+
+### Fixed
+- **Issues #89/#91**: Volume mode failures and empty workspace
+  - Added `initializeCommand` to automatically create workspace volume if needed
+  - Added `onCreateCommand` to sync source code to volume on first container creation
+  - Added `/tmp/host-source` bind mount for initial sync in volume mode
+  - Updated volume mode documentation with clear explanation of sync mechanism
+
+### Changed
+- **Issue #90**: Closed as duplicate of #89
+- All docker-compose templates now include persistent volumes for better state management
+- Volume mode now handles automatic source code sync without manual intervention
+- DevContainer templates now include code quality tools by default
+
 ## [4.6.0] - 2025-12-25
 
 ### Breaking Changes

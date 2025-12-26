@@ -1,0 +1,164 @@
+# ============================================================================
+# Docker Compose Configuration with Application Service Profiles
+# ============================================================================
+# Standard: docker compose up (DevContainer + infrastructure only)
+# With Profiles: docker compose --profile app up (Full containerized stack)
+#
+# Issue #88: Docker Compose profiles for containerized app services
+# Issue #30: Includes Claude credentials mounting for persistence
+# ============================================================================
+
+services:
+  # ===========================================================================
+  # DevContainer Service (always active)
+  # ===========================================================================
+  app:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        - INSTALL_SHELL_EXTRAS=${INSTALL_SHELL_EXTRAS:-true}
+        - INSTALL_DEV_TOOLS=${INSTALL_DEV_TOOLS:-true}
+        - INSTALL_CA_CERT=${INSTALL_CA_CERT:-false}
+    ports:
+      - "${APP_PORT:-8000}:8000"
+      - "${FRONTEND_PORT:-3000}:3000"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - .:/workspace:cached
+      - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
+      - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
+      - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)
+      - commandhistory:/commandhistory             # Issue #86: Persist bash history
+      - claude-data:/home/node/.claude             # Issue #86: Persist Claude data
+    working_dir: /workspace
+    command: sleep infinity
+    networks:
+      - dev-network
+    depends_on:
+      - postgres
+      - redis
+
+  # ===========================================================================
+  # Infrastructure Services (always active)
+  # ===========================================================================
+  postgres:
+    image: postgres:16-bookworm
+    container_name: {{PROJECT_NAME}}-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-devdb}
+      POSTGRES_USER: ${POSTGRES_USER:-devuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-devuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dev-network
+
+  redis:
+    image: redis:7-bookworm
+    container_name: {{PROJECT_NAME}}-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dev-network
+
+  # ===========================================================================
+  # Application Services (activate with: docker compose --profile app up)
+  # ===========================================================================
+  # These services run your application in containers alongside the DevContainer
+  # Use when you want to test the full containerized stack
+
+  backend:
+    profiles: [app]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: {{PROJECT_NAME}}-backend
+    restart: unless-stopped
+    environment:
+      # Database connection
+      DATABASE_URL: postgresql://${POSTGRES_USER:-devuser}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-devdb}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-devdb}
+      POSTGRES_USER: ${POSTGRES_USER:-devuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      # Redis connection
+      REDIS_URL: redis://redis:6379/0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # Application settings
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      ENVIRONMENT: development
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    profiles: [app]
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: {{PROJECT_NAME}}-frontend
+    restart: unless-stopped
+    environment:
+      # Backend API connection
+      VITE_API_URL: http://localhost:${BACKEND_PORT:-8000}
+      NEXT_PUBLIC_API_URL: http://localhost:${BACKEND_PORT:-8000}
+      REACT_APP_API_URL: http://localhost:${BACKEND_PORT:-8000}
+      # Frontend settings
+      FRONTEND_PORT: ${FRONTEND_PORT:-3000}
+      NODE_ENV: development
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    name: {{PROJECT_NAME}}-network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  commandhistory:
+    driver: local
+  claude-data:
+    driver: local
+

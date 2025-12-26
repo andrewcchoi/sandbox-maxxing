@@ -408,6 +408,69 @@ if [ -n "$DETECTED_JS_FRAMEWORK" ] || [ -n "$DETECTED_PY_FRAMEWORK" ]; then
   [ -n "$DETECTED_JS_FRAMEWORK" ] && echo "  JavaScript: $DETECTED_JS_FRAMEWORK"
   [ -n "$DETECTED_PY_FRAMEWORK" ] && echo "  Python: $DETECTED_PY_FRAMEWORK"
 fi
+
+# Detect application service directories (for Docker Compose profiles - Issue #88)
+HAS_BACKEND_DIR=false
+HAS_FRONTEND_DIR=false
+
+# Check for backend directory with app indicators
+if [ -d "backend" ]; then
+  if [ -f "backend/Dockerfile" ] || [ -f "backend/pyproject.toml" ] || [ -f "backend/package.json" ] || [ -f "backend/go.mod" ]; then
+    HAS_BACKEND_DIR=true
+  fi
+fi
+
+# Check for frontend directory with app indicators
+if [ -d "frontend" ]; then
+  if [ -f "frontend/Dockerfile" ] || [ -f "frontend/package.json" ]; then
+    HAS_FRONTEND_DIR=true
+  fi
+fi
+
+# Report detection
+if [ "$HAS_BACKEND_DIR" = "true" ] || [ "$HAS_FRONTEND_DIR" = "true" ]; then
+  echo ""
+  echo "Detected application service directories:"
+  [ "$HAS_BACKEND_DIR" = "true" ] && echo "  - backend/ (containerizable)"
+  [ "$HAS_FRONTEND_DIR" = "true" ] && echo "  - frontend/ (containerizable)"
+fi
+```
+
+## Step 1.85: Ask About Docker Compose Profiles (Issue #88)
+
+If `HAS_BACKEND_DIR` or `HAS_FRONTEND_DIR` is true, use AskUserQuestion:
+
+```
+We detected application directories in your project:
+${HAS_BACKEND_DIR:+  - backend/ (containerizable)}
+${HAS_FRONTEND_DIR:+  - frontend/ (containerizable)}
+
+Do you want to add Docker Compose profiles for containerized app services?
+
+This enables two modes:
+  • docker compose up → DevContainer + infrastructure only
+  • docker compose --profile app up → Full containerized stack
+
+Options:
+1. Yes - Add app service profiles (Recommended)
+   → Use when you want to test the full containerized deployment
+2. No - DevContainer only
+   → Use for direct development in DevContainer without containerized app services
+```
+
+Store as `APP_PROFILES_CHOICE`.
+
+```bash
+# Initialize variable
+USE_APP_PROFILES=false
+
+# Check if user wants app profiles
+if [ "$APP_PROFILES_CHOICE" = "Yes - Add app service profiles (Recommended)" ]; then
+  USE_APP_PROFILES=true
+  echo "Will use docker-compose with app service profiles"
+else
+  echo "Will use standard docker-compose (DevContainer only)"
+fi
 ```
 
 ## Step 1.9: Confirm Detected Frameworks
@@ -918,6 +981,9 @@ elif [ "$WORKSPACE_MODE" = "volume" ]; then
   cp "$TEMPLATES/init-volume.sh" .devcontainer/;
   chmod +x .devcontainer/init-volume.sh;
   echo "Copied volume initialization script";
+elif [ "$USE_APP_PROFILES" = "true" ]; then
+  cp "$TEMPLATES/docker-compose-profiles.yml" ./docker-compose.yml;
+  echo "Using docker-compose-profiles.yml (with app service profiles)";
 else
   cp "$TEMPLATES/docker-compose.yml" ./docker-compose.yml;
   echo "Using docker-compose.yml (bind mount mode)";

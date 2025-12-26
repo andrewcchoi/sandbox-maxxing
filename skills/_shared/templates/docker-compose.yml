@@ -17,11 +17,16 @@ services:
     ports:
       - "${APP_PORT:-8000}:8000"
       - "${FRONTEND_PORT:-3000}:3000"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
     volumes:
       - .:/workspace:cached
       - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
       - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
       - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)
+      - commandhistory:/commandhistory             # Issue #86: Persist bash history
+      - claude-data:/home/node/.claude             # Issue #86: Persist Claude data
     working_dir: /workspace
     command: sleep infinity
     networks:
@@ -76,4 +81,8 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+    driver: local
+  commandhistory:
+    driver: local
+  claude-data:
     driver: local

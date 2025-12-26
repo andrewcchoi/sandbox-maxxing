@@ -15,6 +15,12 @@
           "zsh": {
             "path": "/bin/zsh"
           }
+        },
+        // Code formatting
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
         }
         // Dotfiles: Personalize your container with your shell configs, aliases, and preferences
         // Uncomment and configure to use your dotfiles repository:
@@ -33,6 +39,9 @@
         // Python (base stack includes Python 3.12)
         "ms-python.python",
         "ms-python.vscode-pylance",
+        // Code quality
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
         // Theme & UI
         "PKief.material-icon-theme",
         "johnpapa.vscode-peacock"
@@ -56,11 +65,11 @@
   // 5. postStartCommand - runs each time the container starts
   // 6. postAttachCommand - runs each time VS Code attaches to the container
 
-  "initializeCommand": "",
-  "onCreateCommand": "",
+  "initializeCommand": "if grep -q '{{PROJECT_NAME}}-workspace-volume' docker-compose.yml 2>/dev/null; then docker volume create {{PROJECT_NAME}}-workspace-volume 2>/dev/null || true; fi",
+  "onCreateCommand": "if [ -d '/tmp/host-source' ] && [ -z \"$(ls -A /workspace 2>/dev/null)\" ]; then cp -r /tmp/host-source/. /workspace/; fi",
   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
   "updateContentCommand": "",
-  "postStartCommand": "echo 'DevContainer ready!'",
+  "postStartCommand": "if [ -f '.devcontainer/init-firewall.sh' ]; then .devcontainer/init-firewall.sh; fi && echo 'DevContainer ready!'",
   "postAttachCommand": "",
   "waitFor": "postCreateCommand",
 
@@ -89,7 +98,10 @@
 
   "containerEnv": {
     "DEVCONTAINER": "true",
-    "TZ": "America/Los_Angeles"
+    "TZ": "America/Los_Angeles",
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "CLAUDE_CONFIG_DIR": "/home/node/.claude",
+    "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
   },
 
   "remoteEnv": {
