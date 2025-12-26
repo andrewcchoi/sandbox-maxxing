@@ -7,10 +7,8 @@ We currently support the following versions with security updates:
 | Version | Supported          |
 | ------- | ------------------ |
 | 4.x     | :white_check_mark: |
-| 3.0.x   | :white_check_mark: |
-| 2.2.x   | :white_check_mark: |
-| 2.1.x   | :white_check_mark: |
-| 2.0.x   | :white_check_mark: |
+| 3.x     | :white_check_mark: |
+| 2.x     | :white_check_mark: |
 | < 2.0   | :x:                |
 
 ## Reporting a Vulnerability
@@ -86,7 +84,7 @@ Choose the appropriate network security for your use case:
 - **Domain Allowlist**: Use for production-like environments and sensitive work
 - **Custom Configuration**: Use only if you understand the security implications
 
-See [docs/features/security-model.md](docs/features/security-model.md) for detailed security model documentation.
+See [docs/features/SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) for detailed security model documentation.
 
 ### 2. Network Restrictions
 
@@ -156,7 +154,7 @@ See [docs/features/SECRETS.md](docs/features/SECRETS.md) for comprehensive secre
 
 ### Threat Model
 
-See [docs/features/security-model.md](docs/features/security-model.md) for comprehensive threat model documentation.
+See [docs/features/SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) for comprehensive threat model documentation.
 
 ## Scope
 
@@ -220,7 +218,7 @@ We'll recognize security researchers who responsibly disclose vulnerabilities:
 
 For security-related questions that are not vulnerabilities:
 
-1. Check [docs/features/security-model.md](docs/features/security-model.md) for security architecture
+1. Check [docs/features/SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) for security architecture
 2. Use [GitHub Discussions](https://github.com/andrewcchoi/sandbox-maxxing/discussions) for public questions
 3. Open a regular GitHub issue for feature requests
 

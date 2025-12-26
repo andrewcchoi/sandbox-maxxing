@@ -210,19 +210,19 @@ Before submitting changes, please review the [`.internal/repo-keeper/ORGANIZATIO
 
 4. **Naming Conventions**:
    - Commands: `/sandboxxer:{action}`
-   - Skills: `sandbox-{action}/SKILL.md`
+   - Skills: `sandboxxer-{action}/SKILL.md`
    - Templates: `{component}.{ext}`
 
 5. **Validation**: Run these scripts before committing:
-   ```powershell
+   ```bash
    # Check version consistency
-   .\docs\repo-keeper\scripts\check-version-sync.ps1
+   .internal/repo-keeper/scripts/check-version-sync.sh
 
    # Check for broken links
-   .\docs\repo-keeper\scripts\check-links.ps1
+   .internal/repo-keeper/scripts/check-links.sh
 
    # Validate inventory
-   .\docs\repo-keeper\scripts\validate-inventory.ps1
+   .internal/repo-keeper/scripts/validate-inventory.sh
    ```
 
 See the full [Organization Checklist](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) for complete guidelines.

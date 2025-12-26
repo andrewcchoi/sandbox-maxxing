@@ -198,11 +198,11 @@ The example applications include test suites:
 
 ```bash
 # Start services first
-cd examples
+cd docs/examples
 docker compose up -d
 
 # Run backend tests
-cd demo-app/backend
+cd demo-app-shared/backend
 pytest
 pytest --cov=app --cov-report=html
 

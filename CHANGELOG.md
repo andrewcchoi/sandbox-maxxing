@@ -360,10 +360,10 @@ Update your usage:
 ## [3.0.0] - 2025-12-19
 
 ### Major Breaking Changes
-- **Plugin renamed**: `sandboxxer` → `devcontainer-setup`
-  - All slash commands updated: `/devcontainer-setup:*` → `/devcontainer-setup:*`
+- **Plugin renamed**: `devcontainer-setup` → `sandboxxer`
+  - All slash commands updated: `/devcontainer-setup:*` → `/sandboxxer:*`
   - Updated plugin.json and marketplace.json with new name
-  - Clarified purpose: Creates VS Code DevContainer configurations (not Claude Code's sandbox feature)
+  - Clarified purpose: Creates VS Code DevContainer configurations for sandboxed development
   - Repository name remains "sandbox-maxxing" for backwards compatibility
 
 ### Added
@@ -420,7 +420,7 @@ Update your usage:
 
 ### Added
 - **Documentation files** (5 new):
-  - `docs/security-model.md` - Comprehensive security architecture and threat model
+  - `docs/SECURITY-MODEL.md` - Comprehensive security architecture and threat model
   - `docs/TROUBLESHOOTING.md` - Complete troubleshooting guide for all common issues
   - `skills/README.md` - Skills index with comparison table and usage guide
   - `commands/README.md` - Commands index with syntax and examples
@@ -436,7 +436,7 @@ Update your usage:
   - Intermediate mode: Corrected to "Permissive (no restrictions)" from "100+ domains"
   - Advanced mode: Improved description to "Strict (customizable allowlist)"
 - **Broken cross-references** (8+ occurrences):
-  - Fixed security-model.md links in all example READMEs
+  - Fixed SECURITY-MODEL.md links in all example READMEs
   - Fixed TROUBLESHOOTING.md reference in examples/README.md
   - Fixed skills/README.md link in DEVELOPMENT.md
 - **Outdated references** (6 occurrences):
@@ -513,15 +513,7 @@ Update your usage:
 - Network isolation and security
 - Health checks for all services
 
-## [Unreleased]
-
-### Planned
-- Automated testing framework
-- More language templates (Go, Rust, Java)
-- GitHub Actions integration
-- Template customization CLI
-
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

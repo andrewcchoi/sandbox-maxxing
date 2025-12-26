@@ -322,7 +322,7 @@ Performs comprehensive security audits.
 
 The plugin includes comprehensive reference documentation:
 - `docs/features/CUSTOMIZATION.md` - Customization guide
-- `docs/features/security-model.md` - Security model and best practices
+- `docs/features/SECURITY-MODEL.md` - Security model and best practices
 - `docs/features/TROUBLESHOOTING.md` - Detailed troubleshooting guide
 
 ## Naming Convention
@@ -629,9 +629,9 @@ code .
 # Container builds in ~2 minutes, ready to edit plugin files immediately
 
 # Optional: Test examples (requires services)
-cd examples
+cd docs/examples
 docker compose up -d                    # Start PostgreSQL + Redis
-cd basic-streamlit
+cd streamlit-sandbox-basic
 uv add -r requirements.txt
 streamlit run app.py
 ```
@@ -668,24 +668,7 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
 
 ## Changelog
 
-### v2.0.0 (2025-12-16)
-- **Major Release**: Three-mode system (Basic, Advanced, YOLO)
-- Data-driven configuration with JSON registries
-  - `sandbox-templates.json`: Official Docker sandbox images
-  - `official-images.json`: Docker Hub official images
-  - `allowable-domains.json`: Mode-specific firewall whitelists
-- Modular template system with section markers
-- Enhanced firewall with mode-specific domain sets (30-100+ domains)
-- Updated slash commands: `/sandboxxer:quickstart`, `/sandboxxer:quickstart`, `/sandboxxer:yolo-vibe-maxxing`, `/sandboxxer:quickstart`
-- Comprehensive mode comparison guide (SETUP-OPTIONS.md)
-- Migration to simplified two-command system (interactive quickstart and non-interactive YOLO vibe maxxing)
-
-### v1.0.0 (2025-01-XX)
-- Initial release
-- Interactive setup wizard with configuration options
-- Troubleshooting assistant
-- Security auditor
-- Templates for Python, Node.js, and Full-stack projects
+See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
 ---
 
