@@ -375,7 +375,7 @@ sudo /usr/local/bin/init-firewall.sh
 - ✅ Use domain allowlist configuration for production development with strict security
 - ✅ Try custom configuration for maximum customization
 - 📖 Read configuration-specific READMEs for detailed guides
-- 🔒 Review [security-model.md](../features/security-model.md) for security best practices
+- 🔒 Review [SECURITY-MODEL.md](../features/SECURITY-MODEL.md) for security best practices
 - 🚀 Customize examples for your project needs
 
 ## About

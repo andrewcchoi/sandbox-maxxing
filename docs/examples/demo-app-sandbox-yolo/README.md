@@ -769,7 +769,7 @@ npm update
 ## Learn More
 
 - [Claude Code Sandbox Documentation](../../)
-- [Security Model](../../features/security-model.md)
+- [Security Model](../../features/SECURITY-MODEL.md)
 - [Development Guide](../../../DEVELOPMENT.md)
 - [Contributing](../../../CONTRIBUTING.md)
 
@@ -783,5 +783,5 @@ MIT
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

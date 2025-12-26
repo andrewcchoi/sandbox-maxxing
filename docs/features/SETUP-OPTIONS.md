@@ -220,7 +220,7 @@ data/
 ## See Also
 
 - [Customization Guide](CUSTOMIZATION.md) - Modify templates and add services
-- [Security Model](security-model.md) - Firewall architecture and domain management
+- [Security Model](SECURITY-MODEL.md) - Firewall architecture and domain management
 - [Troubleshooting](TROUBLESHOOTING.md) - Common issues and solutions
 
 ---

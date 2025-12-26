@@ -1298,10 +1298,11 @@ If you're still stuck:
    - Docker logs: Docker Desktop → Troubleshooting
 
 3. **Consult Documentation:**
-   - [Security Model](security-model.md)
+   - [Security Model](SECURITY-MODEL.md)
    - [Setup Options Guide](SETUP-OPTIONS.md)
    - [Variables Guide](VARIABLES.md)
    - [Secrets Guide](SECRETS.md)
+   - [Windows-Specific Guide](../windows/README.md) - Windows troubleshooting and hooks
 
 4. **Ask for Help:**
    - GitHub Issues: Report bugs or ask questions
@@ -1310,5 +1311,5 @@ If you're still stuck:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

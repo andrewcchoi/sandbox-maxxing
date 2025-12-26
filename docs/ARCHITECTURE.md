@@ -257,8 +257,9 @@ Skills can invoke each other for related tasks:
 
 ### Configuration
 - [Troubleshooting](features/TROUBLESHOOTING.md) - Common issues
-- [Security Model](features/security-model.md) - Security architecture
+- [Security Model](features/SECURITY-MODEL.md) - Security architecture
 - [Variables Guide](features/VARIABLES.md) - Environment configuration
+- [GitHub Codespaces](CODESPACES.md) - Using sandboxxer in GitHub Codespaces
 
 ### Examples
 - [Examples README](examples/README.md) - Example projects

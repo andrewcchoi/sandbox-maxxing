@@ -297,6 +297,6 @@ All three should work if the wrapper is correctly implemented!
 
 ---
 
-**Last Updated**: 2025-12-22
-**Version**: 1.0.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0
 **Adapted from**: superpowers plugin by Jesse Vincent (obra)

@@ -165,5 +165,5 @@ This example was generated using the **sandboxxer** plugin for Claude Code. It d
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0
