@@ -1,5 +1,5 @@
 ---
-name: sandbox-troubleshoot
+name: sandboxxer-troubleshoot
 description: Use when user encounters problems with Claude Code Docker sandbox - diagnose and fix container startup failures, network issues, service connectivity, firewall blocking, or permission errors
 ---
 

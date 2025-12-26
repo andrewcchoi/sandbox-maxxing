@@ -285,7 +285,7 @@ Interactive quickstart wizard with project type and firewall customization.
 4. Template generation
 5. Verification steps
 
-### sandbox-troubleshoot
+### sandboxxer-troubleshoot
 Diagnoses and resolves common sandbox issues.
 
 **Triggers**:
@@ -301,7 +301,7 @@ Diagnoses and resolves common sandbox issues.
 3. Apply systematic fixes
 4. Verify the fix
 
-### sandbox-security
+### sandboxxer-security
 Performs comprehensive security audits.
 
 **Triggers**:
@@ -390,8 +390,8 @@ sandbox-maxxing/
 │   │       ├── mcp-servers.json
 │   │       ├── secrets.json
 │   │       └── variables.json
-│   ├── sandbox-troubleshoot/    # Troubleshooting assistant
-│   └── sandbox-security/        # Security auditor
+│   ├── sandboxxer-troubleshoot/    # Troubleshooting assistant
+│   └── sandboxxer-security/        # Security auditor
 ├── commands/
 │   ├── quickstart.md            # /sandboxxer:quickstart (interactive mode selection)
 │   ├── yolo-vibe-maxxing.md     # /sandboxxer:yolo-vibe-maxxing (quick no-questions setup)

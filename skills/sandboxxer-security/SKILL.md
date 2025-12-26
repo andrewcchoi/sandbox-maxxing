@@ -1,5 +1,5 @@
 ---
-name: sandbox-security
+name: sandboxxer-security
 description: Use when user wants to audit sandbox security, review firewall configuration, check for security best practices, or harden their Claude Code Docker sandbox environment
 ---
 

@@ -76,8 +76,8 @@ sandbox/
 │
 ├── skills/                     # Plugin skills (main work here)
 │   ├── _shared/                # Shared templates and data
-│   ├── sandbox-troubleshoot/
-│   └── sandbox-security/
+│   ├── sandboxxer-troubleshoot/
+│   └── sandboxxer-security/
 │
 ├── commands/                   # Slash commands
 │   ├── quickstart.md

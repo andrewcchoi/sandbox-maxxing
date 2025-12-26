@@ -59,7 +59,7 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 
 ### Maintenance Skills
 
-#### sandbox-troubleshoot
+#### sandboxxer-troubleshoot
 **Command:** `/sandboxxer:troubleshoot`
 **When to use:** You're experiencing problems with your sandbox environment.
 
@@ -85,13 +85,13 @@ Skills are invoked through slash commands in Claude Code. When you use a command
 - Connection issues
 - Configuration problems
 
-**Location:** `skills/sandbox-troubleshoot/SKILL.md`
+**Location:** `skills/sandboxxer-troubleshoot/SKILL.md`
 
 See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 
 ---
 
-#### sandbox-security
+#### sandboxxer-security
 **Command:** `/sandboxxer:audit` (or manually invoked)
 **When to use:** You want to audit or harden your sandbox security.
 
@@ -115,7 +115,7 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 - Security-conscious development
 - Learning security best practices
 
-**Location:** `skills/sandbox-security/SKILL.md`
+**Location:** `skills/sandboxxer-security/SKILL.md`
 
 See also: [Security Model](../docs/features/security-model.md)
 
@@ -159,9 +159,9 @@ skills/
 │   │       ├── variables.json
 │   │       ├── vscode-extensions.json
 │   │       └── README.md
-├── sandbox-troubleshoot/
+├── sandboxxer-troubleshoot/
 │   └── SKILL.md                       # Troubleshooting workflow
-└── sandbox-security/
+└── sandboxxer-security/
     └── SKILL.md                       # Security audit workflow
 ```
 
@@ -210,7 +210,7 @@ Claude can also invoke skills directly when appropriate:
 
 ```
 User: "I'm getting a connection refused error from PostgreSQL"
-Claude: [Automatically uses sandbox-troubleshoot skill]
+Claude: [Automatically uses sandboxxer-troubleshoot skill]
 
 User: "Set up a secure development environment"
 Claude: [Automatically uses  skill]
@@ -234,8 +234,8 @@ The two remaining skills are utilities invoked by commands:
 
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| sandbox-troubleshoot | `/sandboxxer:troubleshoot` | Diagnose and fix issues |
-| sandbox-security | `/sandboxxer:audit` | Security audit and hardening |
+| sandboxxer-troubleshoot | `/sandboxxer:troubleshoot` | Diagnose and fix issues |
+| sandboxxer-security | `/sandboxxer:audit` | Security audit and hardening |
 
 ## When to Use Each Command
 
@@ -320,8 +320,8 @@ See [Examples README](../docs/examples/README.md) for detailed walkthroughs.
 | Command | Skill Used | Purpose |
 |---------|-----------|---------|
 | `/sandboxxer:quickstart` | (command-based) | Create/update sandbox configuration |
-| `/sandboxxer:troubleshoot` | sandbox-troubleshoot | Diagnose and fix issues |
-| `/sandboxxer:audit` | sandbox-security | Security audit and hardening |
+| `/sandboxxer:troubleshoot` | sandboxxer-troubleshoot | Diagnose and fix issues |
+| `/sandboxxer:audit` | sandboxxer-security | Security audit and hardening |
 
 See [Commands README](../commands/README.md) for full command documentation.
 

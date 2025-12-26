@@ -55,8 +55,8 @@ Note: Without the devcontainer, you won't be able to fully test the example appl
 ### Working on Skills
 
 Skills are located in the `skills/` directory:
-- `sandbox-troubleshoot/SKILL.md` - Troubleshooting assistant
-- `sandbox-security/SKILL.md` - Security auditor
+- `sandboxxer-troubleshoot/SKILL.md` - Troubleshooting assistant
+- `sandboxxer-security/SKILL.md` - Security auditor
 
 See [skills/README.md](skills/README.md) for detailed skill documentation.
 

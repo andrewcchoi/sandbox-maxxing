@@ -80,7 +80,7 @@ Each command loads and executes the corresponding skill with user-friendly promp
 
 #### `/sandboxxer:troubleshoot`
 **File:** `commands/troubleshoot.md`
-**Skill:** sandbox-troubleshoot
+**Skill:** sandboxxer-troubleshoot
 **Description:** Diagnose and fix common Claude Code sandbox issues
 
 **Usage:**
@@ -114,7 +114,7 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 
 #### `/sandboxxer:audit`
 **File:** `commands/audit.md`
-**Skill:** sandbox-security
+**Skill:** sandboxxer-security
 **Description:** Audit sandbox configuration for security best practices
 
 **Usage:**
