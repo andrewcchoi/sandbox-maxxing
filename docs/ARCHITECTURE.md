@@ -10,6 +10,10 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 - **Shared resources architecture** - Templates and data consolidated to `skills/_shared/`
 - **Simplified firewall** - Single init-firewall.sh script (v4.3.2)
 
+![Plugin Architecture](diagrams/svg/plugin-architecture.svg)
+
+*Visual overview of the plugin's component hierarchy showing commands, skills, agents, hooks, and shared resources.*
+
 ## Components
 
 ### 1. Skills
@@ -169,6 +173,10 @@ Skills reference these using: `skills/_shared/data/<filename>`
 | **Customization** | Moderate               | None                          |
 
 ## Data Flow
+
+![File Generation Process](diagrams/svg/file-generation.svg)
+
+*Visual representation of how templates, data catalogs, and language partials are processed to generate DevContainer files.*
 
 ### Setup Flow (v4.3.0+)
 

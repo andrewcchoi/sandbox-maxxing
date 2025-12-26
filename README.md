@@ -404,6 +404,10 @@ claude plugins add .
 
 ### Plugin Structure
 
+![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
+
+*Visual overview of the sandboxxer plugin components and their relationships. See [docs/diagrams/](docs/diagrams/) for more diagrams.*
+
 ```
 sandbox-maxxing/
 ├── .claude-plugin/

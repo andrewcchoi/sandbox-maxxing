@@ -1,0 +1,50 @@
+flowchart LR
+    subgraph Templates["skills/_shared/templates/"]
+        T1[base.dockerfile]
+        T2[devcontainer.json]
+        T3[docker-compose.yml]
+        T4[init-firewall.sh]
+        T5[partials/<br/>*.dockerfile]
+    end
+
+    subgraph Data["skills/_shared/data/"]
+        D1[allowable-domains.json<br/>Domain categories]
+        D2[vscode-extensions.json<br/>Extension catalog]
+        D3[official-images.json<br/>Docker images]
+    end
+
+    subgraph Process["Generation Process"]
+        P1[Copy templates]
+        P2[Append language<br/>partials]
+        P3[Replace placeholders:<br/>PROJECT_NAME,<br/>EXTENSIONS, etc.]
+        P4[Configure firewall<br/>if enabled]
+    end
+
+    subgraph Output[".devcontainer/"]
+        O1[Dockerfile<br/>Multi-stage build]
+        O2[devcontainer.json<br/>VS Code config]
+        O3[docker-compose.yml<br/>Services config]
+        O4[init-firewall.sh<br/>Network rules]
+    end
+
+    T1 --> P1
+    T2 --> P1
+    T3 --> P1
+    T4 --> P4
+    T5 --> P2
+
+    D1 --> P4
+    D2 --> P3
+    D3 --> P3
+
+    P1 --> P2
+    P2 --> P3
+    P3 --> O1
+    P3 --> O2
+    P3 --> O3
+    P4 --> O4
+
+    style Templates fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style Data fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Process fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Output fill:#90EE90,stroke:#333,stroke-width:2px
