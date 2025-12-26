@@ -215,6 +215,8 @@ RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
 
 # === LANGUAGE PARTIALS ===
 
+# === AZURE TOOLING (inserted when deploy-to-azure selected) ===
+
 # Firewall initialization script
 COPY .devcontainer/init-firewall.sh /usr/local/bin/
 USER root

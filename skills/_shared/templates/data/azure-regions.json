@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Azure regions for deployment selection",
+  "metadata": {
+    "last_updated": "2025-12-25",
+    "usage": "Referenced by deploy-to-azure command for region selection",
+    "documentation": "https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies/"
+  },
+  "regions": {
+    "recommended": [
+      {
+        "code": "eastus",
+        "name": "East US",
+        "description": "Virginia, USA - Low latency for East Coast"
+      },
+      {
+        "code": "westus2",
+        "name": "West US 2",
+        "description": "Washington, USA - Low latency for West Coast"
+      },
+      {
+        "code": "westeurope",
+        "name": "West Europe",
+        "description": "Netherlands - Primary European region"
+      },
+      {
+        "code": "northeurope",
+        "name": "North Europe",
+        "description": "Ireland - Secondary European region"
+      },
+      {
+        "code": "eastasia",
+        "name": "East Asia",
+        "description": "Hong Kong - Primary Asia Pacific region"
+      },
+      {
+        "code": "southeastasia",
+        "name": "Southeast Asia",
+        "description": "Singapore - Secondary Asia Pacific region"
+      }
+    ],
+    "all": [
+      {
+        "code": "australiaeast",
+        "name": "Australia East",
+        "description": "New South Wales"
+      },
+      {
+        "code": "australiasoutheast",
+        "name": "Australia Southeast",
+        "description": "Victoria"
+      },
+      {
+        "code": "brazilsouth",
+        "name": "Brazil South",
+        "description": "Sao Paulo"
+      },
+      {
+        "code": "canadacentral",
+        "name": "Canada Central",
+        "description": "Toronto"
+      },
+      {
+        "code": "canadaeast",
+        "name": "Canada East",
+        "description": "Quebec"
+      },
+      {
+        "code": "centralindia",
+        "name": "Central India",
+        "description": "Pune"
+      },
+      {
+        "code": "centralus",
+        "name": "Central US",
+        "description": "Iowa"
+      },
+      {
+        "code": "eastus",
+        "name": "East US",
+        "description": "Virginia"
+      },
+      {
+        "code": "eastus2",
+        "name": "East US 2",
+        "description": "Virginia"
+      },
+      {
+        "code": "francecentral",
+        "name": "France Central",
+        "description": "Paris"
+      },
+      {
+        "code": "francesouth",
+        "name": "France South",
+        "description": "Marseille"
+      },
+      {
+        "code": "germanywestcentral",
+        "name": "Germany West Central",
+        "description": "Frankfurt"
+      },
+      {
+        "code": "japaneast",
+        "name": "Japan East",
+        "description": "Tokyo"
+      },
+      {
+        "code": "japanwest",
+        "name": "Japan West",
+        "description": "Osaka"
+      },
+      {
+        "code": "koreacentral",
+        "name": "Korea Central",
+        "description": "Seoul"
+      },
+      {
+        "code": "koreasouth",
+        "name": "Korea South",
+        "description": "Busan"
+      },
+      {
+        "code": "northcentralus",
+        "name": "North Central US",
+        "description": "Illinois"
+      },
+      {
+        "code": "northeurope",
+        "name": "North Europe",
+        "description": "Ireland"
+      },
+      {
+        "code": "norwayeast",
+        "name": "Norway East",
+        "description": "Oslo"
+      },
+      {
+        "code": "norwaywest",
+        "name": "Norway West",
+        "description": "Stavanger"
+      },
+      {
+        "code": "southafricanorth",
+        "name": "South Africa North",
+        "description": "Johannesburg"
+      },
+      {
+        "code": "southafricawest",
+        "name": "South Africa West",
+        "description": "Cape Town"
+      },
+      {
+        "code": "southcentralus",
+        "name": "South Central US",
+        "description": "Texas"
+      },
+      {
+        "code": "southindia",
+        "name": "South India",
+        "description": "Chennai"
+      },
+      {
+        "code": "swedencentral",
+        "name": "Sweden Central",
+        "description": "Gavle"
+      },
+      {
+        "code": "switzerlandnorth",
+        "name": "Switzerland North",
+        "description": "Zurich"
+      },
+      {
+        "code": "switzerlandwest",
+        "name": "Switzerland West",
+        "description": "Geneva"
+      },
+      {
+        "code": "uaenorth",
+        "name": "UAE North",
+        "description": "Dubai"
+      },
+      {
+        "code": "uksouth",
+        "name": "UK South",
+        "description": "London"
+      },
+      {
+        "code": "ukwest",
+        "name": "UK West",
+        "description": "Cardiff"
+      },
+      {
+        "code": "westcentralus",
+        "name": "West Central US",
+        "description": "Wyoming"
+      },
+      {
+        "code": "westeurope",
+        "name": "West Europe",
+        "description": "Netherlands"
+      },
+      {
+        "code": "westindia",
+        "name": "West India",
+        "description": "Mumbai"
+      },
+      {
+        "code": "westus",
+        "name": "West US",
+        "description": "California"
+      },
+      {
+        "code": "westus2",
+        "name": "West US 2",
+        "description": "Washington"
+      },
+      {
+        "code": "westus3",
+        "name": "West US 3",
+        "description": "Arizona"
+      }
+    ]
+  }
+}

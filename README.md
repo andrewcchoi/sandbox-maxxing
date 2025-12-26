@@ -8,6 +8,7 @@ Interactive assistant for creating VS Code DevContainer configurations with Dock
 ## Features
 
 - **🚀 Two-Path Setup System** - Interactive quickstart with project type selection, or non-interactive YOLO vibe maxxing for instant defaults (Python+Node, container isolation)
+- **☁️ Azure Cloud Deployment** - Deploy DevContainers to Azure Container Apps for cloud-based development environments
 - **📊 Data-Driven Templates** - Configurations generated from curated registries of official Docker images and allowable domains
 - **🔧 Troubleshooting Assistant** - Diagnose and fix common sandbox issues automatically
 - **🔒 Security Auditor** - Review and harden sandbox configurations against best practices
@@ -40,6 +41,9 @@ claude plugins list
 
 # Security audit
 /sandboxxer:audit
+
+# Deploy to Azure
+/sandboxxer:deploy-to-azure
 ```
 
 **Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/sandboxxer:yolo-vibe-maxxing` (non-interactive YOLO vibe maxxing) for the fastest path with sensible defaults.
@@ -143,9 +147,11 @@ Claude: Creating DevContainer with defaults...
 | ------------------------------- | ----------------------------------------------------------------- |
 | `/sandboxxer:quickstart`        | Interactive quickstart - choose project type and firewall options |
 | `/sandboxxer:yolo-vibe-maxxing` | YOLO vibe-maxxing - no questions, sensible defaults (Python+Node) |
+| `/sandboxxer:deploy-to-azure`   | Deploy DevContainer to Azure Container Apps for cloud development |
 | `/sandboxxer:troubleshoot`      | Diagnose and fix sandbox issues                                   |
 | `/sandboxxer:audit`             | Security audit and recommendations                                |
 
+**v4.6.0:** Added Azure deployment support for cloud-based development environments.
 **v4.3.0:** Setup now offers interactive project-type selection or instant defaults with no questions.
 
 ## Auto-Detection
@@ -250,6 +256,40 @@ Claude: Let me diagnose...
       Would you like me to update your .env file?
 ```
 
+## Cloud Deployment
+
+### Deploy to Azure
+
+Deploy your DevContainer to Azure Container Apps for cloud-based development:
+
+```bash
+# Deploy to Azure
+/sandboxxer:deploy-to-azure
+```
+
+**Use cases:**
+- **Cloud Dev Environments** - Access from anywhere (like GitHub Codespaces)
+- **CI/CD Runners** - Use exact DevContainer config for builds
+- **Team Environments** - Shared, consistent dev environments
+- **Remote Development** - VS Code Remote to cloud containers
+
+**Features:**
+- Azure Developer CLI (`azd`) integration
+- Infrastructure-as-Code with Bicep
+- Auto-scaling Container Apps
+- Optional Azure Container Registry
+- Service Principal support for CI/CD
+- Complete monitoring with Log Analytics
+
+**Documentation:** See [docs/features/AZURE-DEPLOYMENT.md](docs/features/AZURE-DEPLOYMENT.md) for:
+- Prerequisites and setup
+- Step-by-step wizard walkthrough
+- Configuration options
+- Post-deployment management
+- CI/CD integration
+- Troubleshooting
+- Cost estimation
+
 ## Files Generated
 
 Both setup commands create:
@@ -257,6 +297,11 @@ Both setup commands create:
 - `.devcontainer/Dockerfile` - Container image with language tools
 - `.devcontainer/init-firewall.sh` - Firewall configuration (if enabled)
 - `docker-compose.yml` - Services configuration (PostgreSQL, Redis)
+
+Azure deployment additionally creates:
+- `azure.yaml` - Azure Developer CLI manifest
+- `infra/main.bicep` - Infrastructure-as-Code templates
+- `infra/modules/` - Azure resource modules
 
 ## Configuration Placeholders
 
@@ -321,6 +366,7 @@ Performs comprehensive security audits.
 ## Reference Documentation
 
 The plugin includes comprehensive reference documentation:
+- `docs/features/AZURE-DEPLOYMENT.md` - Azure deployment guide with reference links
 - `docs/features/CUSTOMIZATION.md` - Customization guide
 - `docs/features/SECURITY-MODEL.md` - Security model and best practices
 - `docs/features/TROUBLESHOOTING.md` - Detailed troubleshooting guide
@@ -383,9 +429,14 @@ sandbox-maxxing/
 │   │   │       ├── php.dockerfile
 │   │   │       ├── cpp-clang.dockerfile
 │   │   │       ├── cpp-gcc.dockerfile
-│   │   │       └── postgres.dockerfile
+│   │   │       ├── postgres.dockerfile
+│   │   │       └── azure-cli.dockerfile
+│   │   └── templates/azure/     # Azure deployment templates
+│   │       ├── azure.yaml       # Azure Developer CLI manifest
+│   │       └── infra/           # Bicep infrastructure templates
 │   │   └── templates/data/      # Configuration data
 │   │       ├── allowable-domains.json
+│   │       ├── azure-regions.json
 │   │       ├── mcp-servers.json
 │   │       ├── secrets.json
 │   │       └── variables.json
@@ -394,6 +445,7 @@ sandbox-maxxing/
 ├── commands/
 │   ├── quickstart.md            # /sandboxxer:quickstart (interactive mode selection)
 │   ├── yolo-vibe-maxxing.md     # /sandboxxer:yolo-vibe-maxxing (quick no-questions setup)
+│   ├── deploy-to-azure.md       # /sandboxxer:deploy-to-azure (Azure deployment)
 │   ├── troubleshoot.md          # /sandboxxer:troubleshoot
 │   └── audit.md                 # /sandboxxer:audit
 └── docs/examples/                    # Working example applications

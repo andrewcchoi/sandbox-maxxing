@@ -80,9 +80,20 @@
             "dotnet.microsoft.com",
             "dot.net",
             "visualstudio.com",
-            "dev.azure.com"
+            "dev.azure.com",
+            "management.azure.com",
+            "login.microsoftonline.com",
+            "graph.microsoft.com",
+            "azurecontainerapps.io",
+            "azurecr.io"
           ],
-          "wildcard_domains": ["*.microsoftonline.com"]
+          "wildcard_domains": [
+            "*.microsoftonline.com",
+            "*.azurecr.io",
+            "*.azurecontainerapps.io",
+            "*.blob.core.windows.net",
+            "*.management.azure.com"
+          ]
         },
         "oracle": {
           "domains": [

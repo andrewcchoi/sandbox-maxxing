@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: {{PROJECT_NAME}}
+metadata:
+  template: sandboxxer-devcontainer@{{VERSION}}
+
+services:
+  devcontainer:
+    project: .
+    language: docker
+    host: containerapp
+    docker:
+      path: ./.devcontainer/Dockerfile
+      context: .
+
+infra:
+  provider: bicep
+  path: ./infra
