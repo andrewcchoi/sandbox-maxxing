@@ -1,0 +1,109 @@
+flowchart TD
+    Start([Problem Reported]) --> Cat{Categorize Issue}
+
+    Cat -->|Container| ContainerFlow
+    Cat -->|Network| NetworkFlow
+    Cat -->|Service| ServiceFlow
+    Cat -->|Firewall| FirewallFlow
+    Cat -->|Permission| PermFlow
+    Cat -->|VS Code| VSCodeFlow
+
+    subgraph ContainerFlow["Container Issues"]
+        C1{Container starts?}
+        C1 -->|No| C2[Check: docker ps -a]
+        C2 --> C3[View logs: docker logs]
+        C3 --> C4{Build error?}
+        C4 -->|Yes| C5[Fix Dockerfile syntax]
+        C4 -->|No| C6{Memory/CPU issue?}
+        C6 -->|Yes| C7[Increase resources in<br/>Docker Desktop settings]
+        C6 -->|No| C8[Rebuild without cache:<br/>docker-compose build --no-cache]
+        C5 --> Verify
+        C7 --> Verify
+        C8 --> Verify
+        C1 -->|Yes, crashes| C9[Check logs for errors]
+        C9 --> C10[Fix identified issue]
+        C10 --> Verify
+    end
+
+    subgraph NetworkFlow["Network Issues"]
+        N1{Can reach internet?}
+        N1 -->|No| N2{Firewall enabled?}
+        N2 -->|Yes| N3[Check init-firewall.sh<br/>ALLOWED_DOMAINS]
+        N3 --> N4[Add missing domains]
+        N4 --> Verify
+        N2 -->|No| N5[Check Docker network:<br/>docker network inspect]
+        N5 --> N6[Recreate network:<br/>docker-compose down<br/>docker-compose up]
+        N6 --> Verify
+        N1 -->|DNS fails| N7[Add DNS servers to<br/>init-firewall.sh]
+        N7 --> Verify
+    end
+
+    subgraph ServiceFlow["Service Connection Issues"]
+        Sv1{Which service?}
+        Sv1 -->|PostgreSQL| Sv2[Check connection string<br/>Uses postgres:5432 not localhost?]
+        Sv1 -->|Redis| Sv3[Check connection string<br/>Uses redis:6379 not localhost?]
+        Sv1 -->|Other| Sv4[Verify service name<br/>matches docker-compose.yml]
+        Sv2 --> Sv5{Healthcheck passing?}
+        Sv3 --> Sv5
+        Sv4 --> Sv5
+        Sv5 -->|No| Sv6[Check service logs:<br/>docker-compose logs postgres]
+        Sv6 --> Sv7[Restart service:<br/>docker-compose restart postgres]
+        Sv7 --> Verify
+        Sv5 -->|Yes| Sv8[Check network:<br/>Same docker network?]
+        Sv8 --> Sv9[Verify in docker-compose.yml]
+        Sv9 --> Verify
+    end
+
+    subgraph FirewallFlow["Firewall Blocking"]
+        F1[Test with curl or wget]
+        F1 --> F2{Domain allowed?}
+        F2 -->|No| F3[Add to ALLOWED_DOMAINS]
+        F3 --> F4[Rebuild container]
+        F4 --> Verify
+        F2 -->|Yes, still blocked| F5[Check iptables rules:<br/>iptables -L -n]
+        F5 --> F6[Verify ipset:<br/>ipset list allowed-domains]
+        F6 --> F7[Manually add IP if needed]
+        F7 --> Verify
+    end
+
+    subgraph PermFlow["Permission Issues"]
+        Pm1{What operation fails?}
+        Pm1 -->|File access| Pm2[Check volume mount permissions]
+        Pm2 --> Pm3[Fix with chmod/chown in Dockerfile]
+        Pm3 --> Verify
+        Pm1 -->|Command denied| Pm4[Check CAP_ADD in docker-compose.yml]
+        Pm4 --> Pm5[Add required capability:<br/>NET_ADMIN, NET_RAW, etc.]
+        Pm5 --> Verify
+        Pm1 -->|Docker socket| Pm6[Ensure /var/run/docker.sock mounted]
+        Pm6 --> Verify
+    end
+
+    subgraph VSCodeFlow["VS Code DevContainer"]
+        V1{What fails?}
+        V1 -->|Won't open| V2[Check .devcontainer/devcontainer.json]
+        V2 --> V3[Validate JSON syntax]
+        V3 --> Verify
+        V1 -->|Extension issues| V4[Check extensions field]
+        V4 --> V5[Remove problematic extension]
+        V5 --> Verify
+        V1 -->|Connection lost| V6[Reopen in container]
+        V6 --> Verify
+    end
+
+    Verify{Fixed?}
+    Verify -->|Yes| Done([Resolved])
+    Verify -->|No| Escalate{Tried all steps?}
+    Escalate -->|Yes| Nuclear[Nuclear Reset:<br/>1. docker-compose down -v<br/>2. Remove .devcontainer/<br/>3. Re-run /sandboxxer:quickstart<br/>4. Rebuild from scratch]
+    Escalate -->|No| Cat
+    Nuclear --> Final{Now working?}
+    Final -->|Yes| Done
+    Final -->|No| Support[Report issue with:<br/>- Error logs<br/>- docker-compose.yml<br/>- System info]
+
+    style Start fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style Done fill:#90EE90,stroke:#333,stroke-width:2px
+    style Cat fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Nuclear fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style Support fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style Verify fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Escalate fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Final fill:#FFE4B5,stroke:#333,stroke-width:2px

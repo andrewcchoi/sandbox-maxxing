@@ -1,0 +1,69 @@
+flowchart TB
+    subgraph Host["Host Machine"]
+        Browser[Web Browser<br/>localhost:8000]
+        VSCode[VS Code]
+    end
+
+    subgraph DockerNetwork["Docker Network: project-network (bridge)"]
+        subgraph App["app container"]
+            AppProc[Application Process<br/>port 8000]
+            AppCode[Connection strings:<br/>✅ postgres:5432<br/>✅ redis:6379<br/>❌ localhost:5432]
+        end
+
+        subgraph PG["postgres container"]
+            PGProc[PostgreSQL<br/>Internal: 5432]
+        end
+
+        subgraph Redis["redis container"]
+            RedisProc[Redis<br/>Internal: 6379]
+        end
+
+        AppProc -->|DNS: postgres| PGProc
+        AppProc -->|DNS: redis| RedisProc
+    end
+
+    Browser -->|Port mapping<br/>8000:8000| AppProc
+    VSCode -->|DevContainer<br/>connection| App
+
+    subgraph PortMappings["Port Mappings (Host → Container)"]
+        PM1[8000:8000 → app]
+        PM2[5432:5432 → postgres]
+        PM3[6379:6379 → redis]
+    end
+
+    Host -.->|Exposed ports| PortMappings
+    PortMappings -.->|Maps to| DockerNetwork
+
+    subgraph Correct["✅ Correct Connection Patterns"]
+        C1["Application → postgres:5432<br/>(uses service name + Docker DNS)"]
+        C2["Application → redis:6379<br/>(uses service name + Docker DNS)"]
+        C3["Browser → localhost:8000<br/>(uses host port mapping)"]
+    end
+
+    subgraph Incorrect["❌ Incorrect Connection Patterns"]
+        I1["Application → localhost:5432<br/>(localhost = app container, not postgres)"]
+        I2["Application → 127.0.0.1:5432<br/>(same issue as localhost)"]
+        I3["Application → host IP:5432<br/>(unnecessary, use service name)"]
+    end
+
+    subgraph DNSResolution["Docker DNS Resolution"]
+        D1[1. Application requests 'postgres']
+        D2[2. Docker DNS resolves to postgres container IP]
+        D3[3. Connection established on internal network]
+        D1 --> D2 --> D3
+    end
+
+    subgraph Troubleshooting["Common Issues"]
+        T1[Connection refused:<br/>• Wrong service name<br/>• Service not running<br/>• Not on same network]
+        T2[Name not resolving:<br/>• Check docker-compose.yml<br/>• Verify network configuration<br/>• Restart containers]
+    end
+
+    style Host fill:#f0f0f0,stroke:#333,stroke-width:2px
+    style DockerNetwork fill:#e6f3ff,stroke:#333,stroke-width:3px
+    style App fill:#87CEEB,stroke:#333,stroke-width:2px
+    style PG fill:#FFB366,stroke:#333,stroke-width:2px
+    style Redis fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style Correct fill:#90EE90,stroke:#333,stroke-width:2px
+    style Incorrect fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style DNSResolution fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Troubleshooting fill:#DDA0DD,stroke:#333,stroke-width:2px

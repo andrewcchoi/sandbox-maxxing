@@ -28,6 +28,10 @@ This guide covers secure credential handling in DevContainers, including Docker 
 | Private Registry   | Docker Build Secret                 | Domain Allowlist, Custom     | NPM, PyPI tokens           |
 | SSL Certificates   | Docker Secret                       | Domain Allowlist, Custom     | TLS cert and key           |
 
+![Secrets Flow](../diagrams/svg/secrets-flow.svg)
+
+*Decision tree for selecting the appropriate secret management method based on secret type and lifecycle stage.*
+
 ## Why Secrets Management Matters
 
 ### The Problem

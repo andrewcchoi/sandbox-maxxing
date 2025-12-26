@@ -18,6 +18,10 @@ Deploy your DevContainer environment to Azure Container Apps for cloud-based dev
 - Docker running locally
 - Existing DevContainer configuration (`.devcontainer/`)
 
+![Azure Deployment Flow](../docs/diagrams/svg/azure-deployment-flow.svg)
+
+*Multi-step Azure Container Apps deployment pipeline from pre-flight validation to post-deployment verification.*
+
 ## Step 0: Pre-flight Validation
 
 Run these checks before proceeding.

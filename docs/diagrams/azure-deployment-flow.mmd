@@ -1,0 +1,84 @@
+flowchart TB
+    Start([User runs /sandboxxer:deploy-to-azure]) --> Preflight[Pre-flight Validation]
+
+    subgraph Preflight["Pre-flight Checks"]
+        P1[Check Docker running]
+        P2[Check DevContainer exists]
+        P3[Check Azure CLI installed]
+        P4[Check azd CLI installed]
+        P1 --> P2 --> P3 --> P4
+    end
+
+    Preflight --> Auth{Authentication Method?}
+
+    subgraph Auth["Authentication"]
+        A1[Interactive: az login<br/>Browser-based login]
+        A2[CI/CD: Service Principal<br/>AZURE_CLIENT_ID<br/>AZURE_CLIENT_SECRET<br/>AZURE_TENANT_ID]
+    end
+
+    Auth -->|Interactive| A1
+    Auth -->|CI/CD| A2
+    A1 --> Config
+    A2 --> Config
+
+    subgraph Config["Configuration"]
+        C1[Select Azure subscription]
+        C2[Choose environment:<br/>dev, staging, prod]
+        C3[Select region:<br/>eastus, westus2, etc.]
+        C4[Choose workload profile:<br/>Consumption, D4, etc.]
+        C5[Configure scaling:<br/>Min/max replicas]
+        C1 --> C2 --> C3 --> C4 --> C5
+    end
+
+    Config --> Generate
+
+    subgraph Generate["Infrastructure Generation"]
+        G1[Generate azure.yaml<br/>azd configuration]
+        G2[Generate main.bicep<br/>Resource definitions]
+        G3[Create modules:<br/>containerApp.bicep<br/>logAnalytics.bicep<br/>containerRegistry.bicep]
+        G4[Generate parameters file]
+        G1 --> G2 --> G3 --> G4
+    end
+
+    Generate --> Decision{Deploy Now?}
+
+    Decision -->|No| Save[Save files only<br/>User can review/modify]
+    Save --> End([Files Generated])
+
+    Decision -->|Yes| Deploy
+
+    subgraph Deploy["Deployment Process"]
+        D1[azd provision<br/>Create resource group]
+        D2[Deploy infrastructure<br/>Container Apps Environment]
+        D3[Create ACR<br/>Azure Container Registry]
+        D4[Create Log Analytics workspace]
+        D5[Build container image]
+        D6[Push to ACR]
+        D7[Deploy to Container App]
+        D8[Configure ingress]
+        D1 --> D2 --> D3 --> D4 --> D5 --> D6 --> D7 --> D8
+    end
+
+    Deploy --> Verify
+
+    subgraph Verify["Post-Deployment"]
+        V1[Check deployment status]
+        V2{Deployment successful?}
+        V2 -->|Yes| V3[Display endpoint URL]
+        V3 --> V4[Show logs command:<br/>azd logs]
+        V2 -->|No| V5[Display error logs]
+        V5 --> V6[Rollback if needed]
+    end
+
+    Verify --> Complete([Deployment Complete])
+
+    style Start fill:#90EE90,stroke:#333,stroke-width:2px
+    style End fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Complete fill:#90EE90,stroke:#333,stroke-width:2px
+    style Preflight fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Auth fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style Config fill:#FFB366,stroke:#333,stroke-width:2px
+    style Generate fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Deploy fill:#FFB366,stroke:#333,stroke-width:2px
+    style Verify fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Decision fill:#FFE4B5,stroke:#333,stroke-width:2px
