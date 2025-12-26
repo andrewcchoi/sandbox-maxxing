@@ -132,13 +132,13 @@
       "repository": "redis",
       "hub_url": "https://hub.docker.com/_/redis",
       "recommended_tags": [
-        "7-alpine",
         "7-bookworm",
-        "6-alpine"
+        "7-alpine",
+        "6-bookworm"
       ],
-      "default_tag": "7-alpine",
-      "pull_command": "docker pull redis:7-alpine",
-      "notes": "Redis 7 adds many features. Alpine recommended for size."
+      "default_tag": "7-bookworm",
+      "pull_command": "docker pull redis:7-bookworm",
+      "notes": "Redis 7 adds many features. Bookworm recommended for compatibility."
     },
     "mysql": {
       "registry": "docker.io",
