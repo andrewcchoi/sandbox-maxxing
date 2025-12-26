@@ -55,11 +55,8 @@ Note: Without the devcontainer, you won't be able to fully test the example appl
 ### Working on Skills
 
 Skills are located in the `skills/` directory:
-- `devcontainer-setup-basic/SKILL.md` - Basic mode setup
-- `devcontainer-setup-advanced/SKILL.md` - Advanced mode setup
-- `devcontainer-setup-yolo/SKILL.md` - YOLO mode setup
-- `sandbox-troubleshoot/SKILL.md` - Troubleshooting assistant
-- `sandbox-security/SKILL.md` - Security auditor
+- `sandboxxer-troubleshoot/SKILL.md` - Troubleshooting assistant
+- `sandboxxer-security/SKILL.md` - Security auditor
 
 See [skills/README.md](skills/README.md) for detailed skill documentation.
 
@@ -89,7 +86,7 @@ Template placeholders:
 After modifying templates:
 1. Test generation with the skill
 2. Verify the generated files work correctly
-3. Test in all modes (Basic/Advanced/YOLO)
+3. Test with different configurations (minimal, domain allowlist, full)
 
 ### Working on Example Applications
 
@@ -97,13 +94,13 @@ The `docs/examples/` directory contains working applications that validate the p
 
 #### Streamlit Examples
 - **Shared**: `docs/examples/streamlit-shared/` - Quick validation app for testing service connectivity
-- **Basic Mode**: `docs/examples/streamlit-sandbox-basic/` - Self-contained DevContainer
+- **Self-Contained**: `docs/examples/streamlit-sandbox-basic/` - Minimal configuration DevContainer
 
 #### Demo Blog Application
 - **Shared**: `docs/examples/demo-app-shared/` - Full-stack application code
-- **Basic Mode**: `docs/examples/demo-app-sandbox-basic/` - Minimal DevContainer configuration
-- **Advanced Mode**: `docs/examples/demo-app-sandbox-advanced/` - Balanced DevContainer with customization
-- **YOLO Mode**: `docs/examples/demo-app-sandbox-yolo/` - Full-control DevContainer with comprehensive tooling
+- **Minimal Configuration**: `docs/examples/demo-app-sandbox-basic/` - Minimal DevContainer configuration
+- **Domain Allowlist**: `docs/examples/demo-app-sandbox-advanced/` - Balanced DevContainer with customization
+- **Full Configuration**: `docs/examples/demo-app-sandbox-yolo/` - Full-control DevContainer with comprehensive tooling
 
 When modifying examples:
 1. Make your changes
@@ -128,7 +125,7 @@ If you modify the templates and want to regenerate this repository's devcontaine
    ```
    Then ask Claude:
    ```
-   Please regenerate the devcontainer configuration for this plugin using /devcontainer:quickstart
+   Please regenerate the devcontainer configuration for this plugin using /sandboxxer:quickstart
    ```
 
 3. **Review changes**:
@@ -173,9 +170,8 @@ When making changes, always test them using the plugin's own devcontainer to ens
 See `tests/README.md` for manual test procedures.
 
 Run all tests before submitting:
-- Basic mode test
-- Advanced mode test
-- YOLO mode test
+- Interactive quickstart setup test
+- Quick setup test
 - Troubleshooting test
 - Security audit test
 
@@ -213,25 +209,25 @@ Before submitting changes, please review the [`.internal/repo-keeper/ORGANIZATIO
 3. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
 
 4. **Naming Conventions**:
-   - Commands: `/devcontainer:{action}`
-   - Skills: `sandbox-{action}[-mode]/SKILL.md`
-   - Templates: `{component}.{mode}.{ext}`
+   - Commands: `/sandboxxer:{action}`
+   - Skills: `sandboxxer-{action}/SKILL.md`
+   - Templates: `{component}.{ext}`
 
 5. **Validation**: Run these scripts before committing:
-   ```powershell
+   ```bash
    # Check version consistency
-   .\docs\repo-keeper\scripts\check-version-sync.ps1
+   .internal/repo-keeper/scripts/check-version-sync.sh
 
    # Check for broken links
-   .\docs\repo-keeper\scripts\check-links.ps1
+   .internal/repo-keeper/scripts/check-links.sh
 
    # Validate inventory
-   .\docs\repo-keeper\scripts\validate-inventory.ps1
+   .internal/repo-keeper/scripts/validate-inventory.sh
    ```
 
 See the full [Organization Checklist](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) for complete guidelines.
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

@@ -4,12 +4,12 @@ This directory contains slash commands for the Claude Code Sandbox Plugin. Comma
 
 ## Overview
 
-Commands are invoked with the `/devcontainer:` prefix in Claude Code:
+Commands are invoked with the `/sandboxxer:` prefix in Claude Code:
 
 ```
-/devcontainer:quickstart         # Set up a new sandbox (interactive mode selection)
-/devcontainer:troubleshoot  # Diagnose and fix issues
-/devcontainer:audit         # Security audit
+/sandboxxer:quickstart         # Set up a new sandbox (interactive mode selection)
+/sandboxxer:troubleshoot  # Diagnose and fix issues
+/sandboxxer:audit         # Security audit
 ```
 
 Each command loads and executes the corresponding skill with user-friendly prompts and guidance.
@@ -18,46 +18,74 @@ Each command loads and executes the corresponding skill with user-friendly promp
 
 ### Primary Commands
 
-#### `/devcontainer:quickstart`
+#### `/sandboxxer:quickstart`
 **File:** `commands/quickstart.md`
-**Skill:** Routes to mode-specific setup skill
-**Description:** Set up a new Claude Code Docker sandbox environment
+**Description:** Interactive quickstart setup for Claude Code Docker sandbox environment
 
 **Usage:**
 ```bash
-# Interactive mode selection
-/devcontainer:quickstart
-
-# Quick setup with flags
-/devcontainer:quickstart --basic          # Fastest setup
-/devcontainer:quickstart --advanced       # Secure setup
-/devcontainer:quickstart --yolo           # Full control
+# Interactive setup with project type and firewall questions
+/sandboxxer:quickstart
 ```
 
 **What it does:**
-1. Asks user to choose setup mode (or uses flag)
-2. Routes to appropriate mode-specific skill:
-   - `--basic` → devcontainer-setup-basic skill
-   - `--advanced` → devcontainer-setup-advanced skill
-   - `--yolo` → devcontainer-setup-yolo skill
+1. Asks about project type (9 language options)
+2. Asks about network restrictions (optional domain allowlist)
+3. Generates DevContainer configuration
+4. Creates docker-compose.yml with services
 
-**Note:** All modes now include a planning phase (v4.0.0) where Claude scans your project, creates a plan, and gets your approval before implementing.
+**Features:**
+- Choose from 9 project types (Python/Node, Go, Ruby, Rust, Java, C++ Clang/GCC, PHP, PostgreSQL)
+- Optional firewall with domain allowlist
+- 2-3 questions for configuration
+- Ready in 2-3 minutes
 
 **When to use:**
 - Creating a new sandbox environment
 - Updating existing sandbox configuration
-- Switching between sandbox modes
+- Need specific language toolchains or firewall protection
 
 ---
 
-#### `/devcontainer:troubleshoot`
+#### `/sandboxxer:yolo-vibe-maxxing`
+**File:** `commands/yolo-vibe-maxxing.md`
+**Description:** Non-interactive YOLO vibe maxxing setup with instant defaults
+
+**Usage:**
+```bash
+# Quick setup with no questions
+/sandboxxer:yolo-vibe-maxxing
+```
+
+**What it does:**
+1. Copies templates with sensible defaults
+2. Uses Python 3.12 + Node 20 base
+3. Container isolation only (no firewall)
+4. Creates PostgreSQL + Redis services
+
+**Features:**
+- Zero questions asked
+- Python 3.12 + Node 20 base
+- Container isolation (no network firewall)
+- Essential VS Code extensions
+- Ready in < 1 minute
+
+**When to use:**
+- Rapid prototyping
+- Python/Node projects
+- Quick experimentation
+- Trusted code
+
+---
+
+#### `/sandboxxer:troubleshoot`
 **File:** `commands/troubleshoot.md`
-**Skill:** sandbox-troubleshoot
+**Skill:** sandboxxer-troubleshoot
 **Description:** Diagnose and fix common Claude Code sandbox issues
 
 **Usage:**
 ```bash
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 ```
 
 **What it does:**
@@ -84,14 +112,14 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 
 ---
 
-#### `/devcontainer:audit`
+#### `/sandboxxer:audit`
 **File:** `commands/audit.md`
-**Skill:** sandbox-security
+**Skill:** sandboxxer-security
 **Description:** Audit sandbox configuration for security best practices
 
 **Usage:**
 ```bash
-/devcontainer:audit
+/sandboxxer:audit
 ```
 
 **What it does:**
@@ -107,7 +135,7 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 - Learning security best practices
 - Hardening sandbox environment
 
-See also: [Security Model](../docs/features/security-model.md)
+See also: [Security Model](../docs/features/SECURITY-MODEL.md)
 
 ---
 
@@ -134,17 +162,16 @@ Use and follow the [skill-name] skill exactly as written.
 ### Naming Convention
 
 Commands follow the pattern:
-- **Primary commands**: `setup`, `troubleshoot`, `audit`
-- **Mode-specific**: `basic`, `advanced`, `yolo`
+- **Primary commands**: `quickstart`, `yolo-vibe-maxxing`, `troubleshoot`, `audit`
 
-All commands use the `/devcontainer:` namespace prefix when invoked.
+All commands use the `/sandboxxer:` namespace prefix when invoked.
 
 ## How Commands Invoke Skills
 
 Commands serve as user-friendly entry points that delegate to skills:
 
 ```
-User types: /devcontainer:quickstart
+User types: /sandboxxer:quickstart
     ↓
 Command file: commands/quickstart.md loaded
     ↓
@@ -157,47 +184,48 @@ Result: DevContainer configuration created
 
 ## Command Quick Reference
 
-| Command | Mode | Questions | Time | Security | Best For |
-|---------|------|-----------|------|----------|----------|
-| `/devcontainer:quickstart` | Interactive | Varies | Varies | Varies | Most users (choose mode) |
-| `/devcontainer:yolo-vibe-maxxing  | YOLO | 15-20+ | 15-30 min | User-controlled | Expert customization |
-| `/devcontainer:troubleshoot` | N/A | Diagnostic | Varies | N/A | Problem solving |
-| `/devcontainer:audit` | N/A | Audit | 5-10 min | N/A | Security review |
-
-**Note:** All setup commands now include a planning phase (v4.0.0). Times include planning + implementation.
+| Command | Questions | Time | Security | Best For |
+|---------|-----------|------|----------|----------|
+| `/sandboxxer:quickstart` | 2-3 | 2-3 min | Optional domain allowlist | Most users, specific languages |
+| `/sandboxxer:yolo-vibe-maxxing` | 0 | < 1 min | Container isolation | Quick prototyping, Python/Node |
+| `/sandboxxer:troubleshoot` | Diagnostic | Varies | N/A | Problem solving |
+| `/sandboxxer:audit` | Audit | 5-10 min | N/A | Security review |
 
 ## Usage Examples
 
 ### Setting Up a New Sandbox
 
-**Beginner (Interactive):**
+**Interactive Quickstart:**
 ```
-User: /devcontainer:quickstart
-Claude: Which setup mode do you prefer?
-        [Shows mode comparison with planning phase info]
-User: Basic
-Claude: [Enters planning mode, scans project, creates plan]
-Claude: [Presents plan for approval]
-User: Approve
-Claude: [Implements devcontainer configuration]
+User: /sandboxxer:quickstart
+Claude: What type of project are you setting up?
+        • Python/Node (base only)
+        • Go (adds Go toolchain)
+        • Ruby (adds Ruby, bundler)
+        ...
+User: Python/Node
+Claude: Do you need network restrictions?
+        • No - Container isolation only
+        • Yes - Domain allowlist (choose categories)
+User: Yes
+Claude: [Asks about domain categories]
+Claude: [Generates DevContainer configuration]
 ```
 
-**Experienced (Direct):**
+**Non-Interactive YOLO Vibe Maxxing:**
 ```
-User: /devcontainer:quickstart --advanced
-Claude: [Executes devcontainer-setup-advanced skill directly]
-```
-
-**Expert (Mode-Specific Command):**
-```
-User: /devcontainer:yolo
-Claude: [Executes devcontainer-setup-yolo skill directly]
+User: /sandboxxer:yolo-vibe-maxxing
+Claude: Creating DevContainer with defaults...
+        - Base: Python 3.12 + Node 20
+        - Firewall: Disabled (container isolation)
+        - Services: PostgreSQL 16 + Redis 7
+        ✓ Done in 18 seconds
 ```
 
 ### Troubleshooting
 
 ```
-User: /devcontainer:troubleshoot
+User: /sandboxxer:troubleshoot
 Claude: What problem are you experiencing?
 User: Container won't start
 Claude: [Runs diagnostics, applies fixes]
@@ -206,7 +234,7 @@ Claude: [Runs diagnostics, applies fixes]
 ### Security Audit
 
 ```
-User: /devcontainer:audit
+User: /sandboxxer:audit
 Claude: [Reviews configuration]
         Security Assessment:
         ✓ Firewall: Strict mode active
@@ -249,13 +277,13 @@ Test commands with:
 - New users (should be intuitive)
 - Experienced users (should be efficient)
 - Edge cases (unusual inputs, errors)
-- Mode transitions (switching between modes)
+- Different firewall configurations
 
 ## Related Documentation
 
 ### Core Documentation
 - [Skills README](../skills/README.md) - Skill details and workflows
-- [Modes Guide](../docs/features/MODES.md) - Mode comparison and selection
+- [Setup Options Guide](../docs/features/SETUP-OPTIONS.md) - Mode comparison and selection
 - [Troubleshooting](../docs/features/TROUBLESHOOTING.md) - Common issues
 
 ### Configuration
@@ -265,8 +293,8 @@ Test commands with:
 
 ### Examples
 - [Examples README](../docs/examples/README.md) - Example projects
-- [demo-app-sandbox-basic](../docs/examples/demo-app-sandbox-basic/) - Basic mode result
-- [demo-app-sandbox-advanced](../docs/examples/demo-app-sandbox-advanced/) - Advanced mode result
+- [demo-app-sandbox-basic](../docs/examples/demo-app-sandbox-basic/) - Minimal configuration
+- [demo-app-sandbox-advanced](../docs/examples/demo-app-sandbox-advanced/) - Domain allowlist configuration
 
 ## Plugin Integration
 
@@ -302,14 +330,14 @@ Claude Code automatically discovers commands in the `commands/` directory when:
 
 1. **Command Issues**: Check command file for description and usage
 2. **Skill Issues**: See [Skills README](../skills/README.md)
-3. **General Problems**: Use `/devcontainer:troubleshoot`
-4. **Security Questions**: Use `/devcontainer:audit`
+3. **General Problems**: Use `/sandboxxer:troubleshoot`
+4. **Security Questions**: Use `/sandboxxer:audit`
 5. **Documentation**: Review [Core Documentation](#related-documentation)
 
 ### Reporting Issues
 
 When reporting command-related issues, include:
-- Command used (e.g., `/devcontainer:quickstart --advanced`)
+- Command used (e.g., `/sandboxxer:quickstart` or `/sandboxxer:yolo-vibe-maxxing`)
 - Expected vs actual behavior
 - Error messages or logs
 - Project context (language, services, etc.)
@@ -324,5 +352,5 @@ See [Contributing Guide](../CONTRIBUTING.md) for:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

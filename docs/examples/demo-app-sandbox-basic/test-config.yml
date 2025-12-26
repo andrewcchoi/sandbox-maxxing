@@ -1,6 +1,6 @@
 metadata:
-  mode: basic
-  description: "Basic mode with Python backend, minimal setup"
+  config: minimal
+  description: "Minimal configuration with Python backend, minimal setup"
   expected_files:
     - .devcontainer/devcontainer.json
     - .devcontainer/Dockerfile

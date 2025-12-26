@@ -46,7 +46,7 @@ services:
       - dev-network
 
   redis:
-    image: redis:7-alpine
+    image: redis:7-bookworm
     container_name: {{PROJECT_NAME}}-redis
     restart: unless-stopped
     command: redis-server --appendonly yes

@@ -1,6 +1,6 @@
 metadata:
-  mode: advanced
-  description: "Advanced mode with Python backend, PostgreSQL database, strict firewall with custom ports"
+  config: domain-allowlist
+  description: "Domain allowlist configuration with Python backend, PostgreSQL database, strict firewall with custom ports"
   expected_files:
     - .devcontainer/devcontainer.json
     - .devcontainer/Dockerfile

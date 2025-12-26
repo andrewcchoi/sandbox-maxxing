@@ -52,12 +52,12 @@ Once both tests pass:
 - ✨ Your sandbox setup is working!
 - 📚 Explore the full demo apps:
   - Shared: `examples/demo-app-shared/`
-  - Basic mode: `examples/demo-app-sandbox-basic/`
-  - Advanced mode: `examples/demo-app-sandbox-advanced/`
-  - YOLO mode: `examples/demo-app-sandbox-yolo/`
+  - Minimal Configuration: `examples/demo-app-sandbox-basic/`
+  - Domain Allowlist Configuration: `examples/demo-app-sandbox-advanced/`
+  - Custom Configuration: `examples/demo-app-sandbox-yolo/`
 - 📖 Read the development guide: `docs/DEVELOPMENT.md`
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

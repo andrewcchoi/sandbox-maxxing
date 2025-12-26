@@ -8,15 +8,14 @@ The project includes automated testing for sandbox setup skills to ensure they g
 
 ## Test Coverage
 
-- ✅ Basic mode setup
-- ✅ Advanced mode setup
-- ✅ YOLO mode setup
+- ✅ Interactive quickstart setup
+- ✅ Non-interactive YOLO vibe maxxing setup
 - ✅ Troubleshooting diagnostics
 - ✅ Security auditing
 - ✅ Template generation
 - ✅ Placeholder replacement
 - ✅ Docker services
-- ✅ Firewall configuration
+- ✅ Firewall configuration (container isolation and domain allowlist)
 
 ## Skill Validation Testing
 
@@ -32,8 +31,8 @@ cd tests/skill-validation
 ### What Gets Tested
 
 The framework validates sandbox setup commands:
-- `/devcontainer:quickstart` - Interactive setup with project type selection
-- `/devcontainer:yolo-vibe-maxxing` - Quick setup with full control and allowlists
+- `/sandboxxer:quickstart` - Interactive setup with project type selection
+- `/sandboxxer:yolo-vibe-maxxing` - Quick setup with full control and allowlists
 
 ### Requirements
 
@@ -146,7 +145,7 @@ echo '{"name": "test"}' > package.json
 
 2. Run the command:
 ```bash
-# Use the correct command (e.g., /devcontainer:quickstart or /devcontainer:yolo-vibe-maxxing)
+# Use the correct command (e.g., /sandboxxer:quickstart or /sandboxxer:yolo-vibe-maxxing)
 ```
 
 3. Verify generated files:
@@ -283,5 +282,5 @@ For skill-specific issues:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

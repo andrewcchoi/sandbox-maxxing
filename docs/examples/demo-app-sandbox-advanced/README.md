@@ -1,18 +1,18 @@
-# Demo Blog Application - Advanced Mode Sandbox
+# Demo Blog Application - Domain Allowlist Configuration
 
-This is a **self-contained** example demonstrating the Claude Code Sandbox DevContainer setup in **Advanced mode**. It includes a full-stack blog application with Python FastAPI backend and React frontend, configured with enhanced customization options.
+This is a **self-contained** example demonstrating the Claude Code Sandbox DevContainer setup with **domain allowlist configuration**. It includes a full-stack blog application with Python FastAPI backend and React frontend, configured with enhanced customization options and strict network security.
 
-## What is Advanced Mode?
+## What is Domain Allowlist Configuration?
 
-Advanced mode is designed for developers who want:
-- **Balanced configuration** with 5-7 interactive prompts
-- **Strict firewall** with customizable allowlist (whitelist-based network access)
+Domain allowlist configuration is designed for developers who want:
+- **Balanced configuration** with 2-3 interactive prompts
+- **Strict firewall** with customizable domain allowlist (whitelist-based network access)
 - **Curated VS Code extensions** for productivity (10+ extensions)
 - **Configurable Dockerfile** with build arguments
 - **Resource limits** for containers
 - **Enhanced developer experience** with additional tools
 
-This example shows what the `sandbox-maxxing` plugin generates when run in Advanced mode on a full-stack application.
+This example shows what the `sandboxxer` plugin generates with domain allowlist configuration on a full-stack application.
 
 ## Features
 
@@ -29,7 +29,7 @@ This example shows what the `sandbox-maxxing` plugin generates when run in Advan
   - View counter with Redis caching
   - Component tests with React Testing Library
 
-### DevContainer Features (Advanced Mode)
+### DevContainer Features (Domain Allowlist Configuration)
 - **Configurable stack**: Python 3.12 + Node.js 20 (customizable via build args)
 - **Database services**: PostgreSQL 15 + Redis 7 with persistence
 - **Network security**: Strict firewall with customizable allowlist (whitelist-based)
@@ -143,11 +143,11 @@ frontend/
 └── vite.config.js
 ```
 
-## DevContainer Configuration (Advanced Mode)
+## DevContainer Configuration (Domain Allowlist Configuration)
 
 ### What the Plugin Generated
 
-**devcontainer.json** (Advanced Mode):
+**devcontainer.json** (Domain Allowlist Configuration):
 - Curated VS Code extensions for full-stack development
 - Code formatting on save (Black for Python, Prettier for JS)
 - Port attributes with labels and auto-forward behaviors
@@ -156,14 +156,14 @@ frontend/
 - Docker extension for container management
 - Optional Dev Container features (Zsh/Oh My Zsh)
 
-**Dockerfile** (Advanced Mode):
+**Dockerfile** (Domain Allowlist Configuration):
 - Configurable Python and Node.js versions via build args
 - Additional development tools (build-essential, vim, nano, less)
 - Pre-installed Python tools (black, pylint, pytest, ipython)
 - Enhanced shell prompt
 - Environment variables for development
 
-**docker-compose.yml** (Advanced Mode):
+**docker-compose.yml** (Domain Allowlist Configuration):
 - Build args for version customization
 - Environment variables with defaults (FIREWALL_MODE=strict, DATABASE_URL)
 - Resource limits (CPU and memory) for containers
@@ -320,9 +320,9 @@ Edit `.devcontainer/devcontainer.json`:
 }
 ```
 
-## What Makes This "Advanced Mode"
+## What Makes This "Domain Allowlist Configuration"
 
-According to the plan, Advanced mode is characterized by:
+This configuration is characterized by:
 
 1. **More Interactive Setup (5-7 questions)**
    - Firewall mode selection
@@ -356,7 +356,7 @@ According to the plan, Advanced mode is characterized by:
    - Domain verification on startup
 
 6. **Balanced Approach**
-   - More than Basic (flexible)
+   - More than Minimal (flexible)
    - Less than Pro (not overwhelming)
    - Production-ready patterns
    - Development-friendly defaults
@@ -368,7 +368,7 @@ According to the plan, Advanced mode is characterized by:
 | Questions asked     | 1-2                             | 3-5                  | 5-7               | 10-15+               |
 | Configuration style | Auto-detected                   | Platform-specific    | Customizable      | Fully explicit       |
 | Dockerfile          | Sandbox template/official image | Platform template    | Configurable      | Technology-optimized |
-| VS Code extensions  | Essential (2)                   | Basic (5)            | Curated (10+)     | Comprehensive (20+)  |
+| VS Code extensions  | Essential (2)                   | Minimal (5)            | Curated (10+)     | Comprehensive (20+)  |
 | Firewall            | None                            | Permissive           | Strict            | Configurable         |
 | Services            | Essential only                  | + Message queue      | + Resource limits | All available        |
 | Build args          | None                            | Python/Node versions | More options      | All dependencies     |
@@ -480,14 +480,14 @@ alembic init migrations
 ## Related Examples
 
 - `examples/demo-app-shared/` - Uses shared Docker Compose services
-- `examples/demo-app-sandbox-basic/` - Basic mode (no firewall, minimal config)
-- `examples/demo-app-sandbox-yolo/` - YOLO mode (full customization)
+- `examples/demo-app-sandbox-basic/` - Minimal configuration (container isolation only)
+- `examples/demo-app-sandbox-yolo/` - Custom configuration (full customization)
 - `examples/streamlit-sandbox-basic/` - Simpler Python-only app
 
 ## Learn More
 
 - [Claude Code Sandbox Documentation](../../)
-- [Security Model](../../features/security-model.md)
+- [Security Model](../../features/SECURITY-MODEL.md)
 - [Development Guide](../../../DEVELOPMENT.md)
 - [Contributing](../../../CONTRIBUTING.md)
 
@@ -497,5 +497,5 @@ MIT
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

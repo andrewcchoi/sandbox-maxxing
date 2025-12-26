@@ -1,18 +1,18 @@
-# DevContainer Setup Plugin
+# Sandboxxer Plugin
 
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
-> **Plugin Name:** devcontainer-setup (used in commands: /devcontainer:quickstart, /devcontainer:yolo-vibe-maxxing)
+> **Plugin Name:** sandboxxer (used in commands: /sandboxxer:quickstart, /sandboxxer:yolo-vibe-maxxing)
 
 Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Choose between interactive setup with project type selection and firewall customization, or quick one-command setup with defaults.
 
 ## Features
 
-- **🚀 Two-Path Setup System** - Interactive setup with project type selection, or YOLO mode for instant defaults (Python+Node, no firewall)
+- **🚀 Two-Path Setup System** - Interactive quickstart with project type selection, or non-interactive YOLO vibe maxxing for instant defaults (Python+Node, container isolation)
 - **📊 Data-Driven Templates** - Configurations generated from curated registries of official Docker images and allowable domains
 - **🔧 Troubleshooting Assistant** - Diagnose and fix common sandbox issues automatically
 - **🔒 Security Auditor** - Review and harden sandbox configurations against best practices
-- **🛡️ Smart Firewall Management** - Mode-specific domain whitelists with 30-100+ curated domains
-- **🎯 Intelligent Detection** - Auto-detects project type and suggests appropriate mode
+- **🛡️ Smart Firewall Management** - Optional domain allowlist with 30-100+ curated domains
+- **🎯 Intelligent Detection** - Auto-detects project type and suggests appropriate setup
 
 ## Quick Start
 
@@ -30,19 +30,19 @@ claude plugins list
 
 ```bash
 # Interactive quickstart - choose project type and firewall options
-/devcontainer:quickstart
+/sandboxxer:quickstart
 
 # YOLO vibe-maxxing - no questions, instant DevContainer (Python+Node, no firewall)
-/devcontainer:yolo-vibe-maxxing
+/sandboxxer:yolo-vibe-maxxing
 
 # Troubleshoot existing DevContainer
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 
 # Security audit
-/devcontainer:audit
+/sandboxxer:audit
 ```
 
-**Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/devcontainer:yolo-vibe-maxxing` for the fastest path with sensible defaults.
+**Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/sandboxxer:yolo-vibe-maxxing` (non-interactive YOLO vibe maxxing) for the fastest path with sensible defaults.
 
 ### Claude Code Installation
 
@@ -66,102 +66,87 @@ See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installati
 
 > **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues). For detailed Windows setup, see [Windows Guide](docs/windows/README.md).
 
-## Three-Mode System
+## Setup Options
 
-See [MODES.md](docs/features/MODES.md) for comprehensive comparison guide.
+The plugin offers two setup paths:
 
-### Basic Mode - Zero Configuration
+1. **Interactive Quickstart** (`/sandboxxer:quickstart`) - Guided configuration with project type and firewall customization
+2. **Non-Interactive YOLO Vibe Maxxing** (`/sandboxxer:yolo-vibe-maxxing`) - Instant defaults with no questions (Python+Node, container isolation)
 
-**Best for**: Beginners, rapid prototyping, learning projects
+See [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) for comprehensive guide.
+
+### Interactive Quickstart
+
+**Best for**: Projects needing specific languages or network restrictions
 
 **Key Features**:
-- Auto-detects project type (2-3 questions max)
-- Sensible defaults (PostgreSQL + Redis)
-- Base images: `docker/sandbox-templates:latest` or `claude-code`
-- Firewall: None (relies on container isolation)
-- VS Code: 5-8 essential extensions
-- Ready in 1-2 minutes
+- Choose from 9 project types (Python/Node, Go, Ruby, Rust, Java, C++ Clang/GCC, PHP, PostgreSQL)
+- Optional firewall with domain allowlist
+- Customizable security settings
+- 2-3 questions for configuration
+- Ready in 2-3 minutes
 
 **Example**:
 ```
-You: /devcontainer:quickstart
-Claude: I detected a Python FastAPI project. Setting up with:
-        - Base: docker/sandbox-templates:claude-code
-        - Database: PostgreSQL 16
-        - Cache: Redis 7
-        - Firewall: Strict (essential domains only)
+You: /sandboxxer:quickstart
+Claude: What type of project are you setting up?
+        • Python/Node (base only)
+        • Go (adds Go toolchain)
+        • Ruby (adds Ruby, bundler)
+        • Rust (adds Cargo, rustfmt)
+        • Java (adds JDK, Maven, Gradle)
+
+You: Python/Node
+
+Claude: Do you need network restrictions?
+        • No - Container isolation only (fastest)
+        • Yes - Domain allowlist (more secure)
+
+You: Yes
+
+Claude: Which domain categories should be allowed?
+        [x] Package managers (npm, PyPI)
+        [x] Version control (GitHub, GitLab)
+        [ ] Cloud platforms (AWS, GCP, Azure)
+
         Generating configs... Done!
 ```
 
-### Advanced Mode - Security-First Minimal
+### Non-Interactive YOLO Vibe Maxxing
 
-**Best for**: Security-conscious development, production prep, compliance
+**Best for**: Rapid prototyping, Python/Node projects, trusted code
 
 **Key Features**:
-- Detailed configuration (10-15 questions)
-- Multi-stage optimized Dockerfiles
-- Base images: Security-hardened official images
-- Firewall: Strict (customizable allowlist, explicit additions)
-- VS Code: 20+ comprehensive extensions (including security scanners)
-- Ready in 8-12 minutes
+- Zero questions asked
+- Python 3.12 + Node 20 base
+- Container isolation (no network firewall)
+- PostgreSQL + Redis services
+- Essential VS Code extensions
+- Ready in < 1 minute
 
 **Example**:
 ```
-You: /devcontainer:quickstart
-Claude: This mode creates security-hardened configurations.
+You: /sandboxxer:yolo-vibe-maxxing
 
-        **Step 1: Base Configuration**
-        Project name? [my-project]
+Claude: Creating DevContainer with defaults...
+        - Base: Python 3.12 + Node 20
+        - Firewall: Disabled (container isolation)
+        - Services: PostgreSQL 16 + Redis 7
+        ✓ Done in 18 seconds
 
-        **Step 2: Base Image Selection**
-        For security, we'll use hardened official images with:
-        - Minimal system packages
-        - Security updates
-        - Non-root user
-        - Small attack surface
-...
-```
-
-### YOLO Mode - Maximum Flexibility
-
-**Best for**: Experts, experimental setups, custom requirements
-
-**Key Features**:
-- Full customization (15-20+ questions)
-- Any base image (including nightly/experimental)
-- Base images: Any including `docker/sandbox-templates:nightly`, custom registries
-- Firewall: Optional (can disable entirely) or fully custom
-- VS Code: Complete control
-- Ready in 15-30 minutes (depends on choices)
-
-**Example**:
-```
-You: /devcontainer:yolo-vibe-maxxing
-Claude: YOLO vibe-maxxing mode - You're in control!
-
-        ⚠️  Warning: Maximum flexibility, minimal safety rails.
-
-        Base image source?
-        • Official Docker (python, node, etc.)
-        • Docker sandbox-templates (latest, claude-code, nightly)
-        • Custom registry (specify full path)
-
-You: sandbox-templates
-Claude: sandbox-templates tag?
-        • latest • claude-code • nightly • cagent • Custom
-...
+        Next: Open in VS Code → 'Reopen in Container'
 ```
 
 ## Slash Commands
 
-| Command                            | Description                                                           |
-| ---------------------------------- | --------------------------------------------------------------------- |
-| `/devcontainer:quickstart`        | Interactive quickstart - choose project type and firewall options          |
-| `/devcontainer:yolo-vibe-maxxing`         | YOLO vibe-maxxing - no questions, sensible defaults (Python+Node)           |
-| `/devcontainer:troubleshoot` | Diagnose and fix sandbox issues                                       |
-| `/devcontainer:audit`        | Security audit and recommendations                                    |
+| Command                         | Description                                                       |
+| ------------------------------- | ----------------------------------------------------------------- |
+| `/sandboxxer:quickstart`        | Interactive quickstart - choose project type and firewall options |
+| `/sandboxxer:yolo-vibe-maxxing` | YOLO vibe-maxxing - no questions, sensible defaults (Python+Node) |
+| `/sandboxxer:troubleshoot`      | Diagnose and fix sandbox issues                                   |
+| `/sandboxxer:audit`             | Security audit and recommendations                                |
 
-**v4.3.0:** Setup now offers interactive project-type selection or instant YOLO defaults.
+**v4.3.0:** Setup now offers interactive project-type selection or instant defaults with no questions.
 
 ## Auto-Detection
 
@@ -174,11 +159,12 @@ The plugin automatically activates when you:
 **Example**:
 ```
 You: I need to set up a Docker development environment for my Python project
-Claude: [Automatically uses /devcontainer:quickstart command]
-      What mode would you like?
-      • Basic (Zero config, 1-2 min)
-      • Advanced (Secure minimal, 8-12 min)
-      • YOLO (Full control, 15-30 min)
+Claude: [Automatically uses /sandboxxer:quickstart command]
+      What type of project are you setting up?
+      • Python/Node (base only)
+      • Go (adds Go toolchain)
+      • Ruby (adds Ruby, bundler)
+      ...
 ```
 
 ## Project Templates
@@ -207,17 +193,17 @@ Claude: [Automatically uses /devcontainer:quickstart command]
 
 ## Security Features
 
-### Firewall Modes
+### Firewall Options
 
-**Strict Mode** (Recommended):
+**Domain Allowlist** (Recommended):
 - Default policy: DROP all outbound traffic
 - Only whitelisted domains allowed
 - Prevents accidental data leakage
 - Protects against malicious dependencies
 
-**Permissive Mode**:
-- Default policy: ACCEPT all traffic
-- No restrictions
+**Container Isolation**:
+- No additional network firewall
+- Relies on Docker container isolation
 - Convenient for development
 - Use only on trusted networks
 
@@ -248,7 +234,7 @@ The troubleshooter handles:
 ### Example Troubleshooting Session
 
 ```
-You: /devcontainer:troubleshoot
+You: /sandboxxer:troubleshoot
 Claude: What issue are you experiencing?
 You: Can't connect to PostgreSQL
 Claude: Let me diagnose...
@@ -266,18 +252,11 @@ Claude: Let me diagnose...
 
 ## Files Generated
 
-### Basic/Advanced Mode
+Both setup commands create:
 - `.devcontainer/devcontainer.json` - VS Code DevContainer config
-- `.devcontainer/Dockerfile` - Flexible container image
-- `.devcontainer/init-firewall.sh` - Firewall configuration
-- `docker-compose.yml` - Services configuration
-
-### YOLO Mode
-- `.devcontainer/devcontainer.json` - Optimized for your stack
-- `.devcontainer/Dockerfile` - Technology-specific optimizations
-- `.devcontainer/init-firewall.sh` - Customized allowed domains
-- `docker-compose.yml` - Production-ready service configs
-- Language-specific files (requirements.txt, package.json, etc.)
+- `.devcontainer/Dockerfile` - Container image with language tools
+- `.devcontainer/init-firewall.sh` - Firewall configuration (if enabled)
+- `docker-compose.yml` - Services configuration (PostgreSQL, Redis)
 
 ## Configuration Placeholders
 
@@ -291,13 +270,8 @@ Templates use these placeholders:
 
 ## Skills Reference
 
-### /devcontainer:quickstart (Interactive Router)
-Interactive setup wizard with four experience modes.
-
-**Note:** This is a router command that delegates to mode-specific skills:
-- `devcontainer-setup-basic` - Basic mode setup
-- `devcontainer-setup-advanced` - Advanced mode setup
-- `devcontainer-setup-yolo` - YOLO mode setup
+### /sandboxxer:quickstart (Interactive Quickstart)
+Interactive quickstart wizard with project type and firewall customization.
 
 **Triggers**:
 - User mentions "devcontainer", "docker sandbox"
@@ -305,14 +279,13 @@ Interactive setup wizard with four experience modes.
 - User wants to configure firewalls for development
 
 **Workflow**:
-1. Mode selection (Basic/Advanced/YOLO)
-2. Project detection
-3. Configuration wizard
+1. Project type selection (9 languages)
+2. Network restrictions question
+3. Domain allowlist configuration (if enabled)
 4. Template generation
-5. Security review
-6. Verification steps
+5. Verification steps
 
-### sandbox-troubleshoot
+### sandboxxer-troubleshoot
 Diagnoses and resolves common sandbox issues.
 
 **Triggers**:
@@ -328,7 +301,7 @@ Diagnoses and resolves common sandbox issues.
 3. Apply systematic fixes
 4. Verify the fix
 
-### sandbox-security
+### sandboxxer-security
 Performs comprehensive security audits.
 
 **Triggers**:
@@ -349,26 +322,26 @@ Performs comprehensive security audits.
 
 The plugin includes comprehensive reference documentation:
 - `docs/features/CUSTOMIZATION.md` - Customization guide
-- `docs/features/security-model.md` - Security model and best practices
+- `docs/features/SECURITY-MODEL.md` - Security model and best practices
 - `docs/features/TROUBLESHOOTING.md` - Detailed troubleshooting guide
 
 ## Naming Convention
 
 This plugin uses consistent naming across different contexts:
 
-| Context           | Name                      | Example                                             |
-| ----------------- | ------------------------- | --------------------------------------------------- |
-| Plugin name       | devcontainer-setup        | Plugin installation and management                  |
-| GitHub repository | sandbox-maxxing           | github.com/andrewcchoi/sandbox-maxxing              |
-| Slash commands    | /devcontainer:*           | /devcontainer:quickstart, /devcontainer:yolo-vibe-maxxing |
-| Skills            | sandbox-*                 | devcontainer-setup-basic                            |
-| User-facing title | DevContainer Setup Plugin | In documentation headers                            |
+| Context           | Name              | Example                                               |
+| ----------------- | ----------------- | ----------------------------------------------------- |
+| Plugin name       | sandboxxer        | Plugin installation and management                    |
+| Marketplace name  | sandbox-maxxing   | Marketplace listing name                              |
+| GitHub repository | sandbox-maxxing   | github.com/andrewcchoi/sandbox-maxxing                |
+| Slash commands    | /sandboxxer:*     | /sandboxxer:quickstart, /sandboxxer:yolo-vibe-maxxing |
+| Skills            | sandboxxer-*      | Internal skill naming                                 |
+| User-facing title | Sandboxxer Plugin | In documentation headers                              |
 
 **Why different names?**
-- **devcontainer-setup**: Official plugin name used for installation and management
+- **sandboxxer**: Official plugin name used for installation and management
 - **sandbox-maxxing**: Repository and marketplace name (reflects Windows WSL 2 compatibility)
-- **sandbox**: Shorthand used in internal skills for brevity (skill files remain unchanged for backwards compatibility)
-- **DevContainer Setup Plugin**: Full descriptive name for user-facing documentation
+- **Sandboxxer Plugin**: Full descriptive name for user-facing documentation
 
 ## Development
 
@@ -416,13 +389,13 @@ sandbox-maxxing/
 │   │       ├── mcp-servers.json
 │   │       ├── secrets.json
 │   │       └── variables.json
-│   ├── sandbox-troubleshoot/    # Troubleshooting assistant
-│   └── sandbox-security/        # Security auditor
+│   ├── sandboxxer-troubleshoot/    # Troubleshooting assistant
+│   └── sandboxxer-security/        # Security auditor
 ├── commands/
-│   ├── quickstart.md            # /devcontainer:quickstart (interactive mode selection)
-│   ├── yolo-vibe-maxxing.md     # /devcontainer:yolo-vibe-maxxing (quick no-questions setup)
-│   ├── troubleshoot.md          # /devcontainer:troubleshoot
-│   └── audit.md                 # /devcontainer:audit
+│   ├── quickstart.md            # /sandboxxer:quickstart (interactive mode selection)
+│   ├── yolo-vibe-maxxing.md     # /sandboxxer:yolo-vibe-maxxing (quick no-questions setup)
+│   ├── troubleshoot.md          # /sandboxxer:troubleshoot
+│   └── audit.md                 # /sandboxxer:audit
 └── docs/examples/                    # Working example applications
     ├── streamlit-sandbox-basic/
     ├── demo-app-sandbox-basic/
@@ -432,10 +405,10 @@ sandbox-maxxing/
 
 ## Examples
 
-### Example 1: Quick Python Setup (Basic Mode)
+### Example 1: Interactive Quickstart Python Setup
 
 ```
-You: /devcontainer:quickstart
+You: /sandboxxer:quickstart
 Claude: I detected a Python FastAPI project. Setting up with:
         - Base: docker/sandbox-templates:claude-code
         - Database: PostgreSQL 16
@@ -466,9 +439,9 @@ Claude: MongoDB version? [7]
 You: 7
 Claude: Need Redis cache? [Y/n]
 You: Yes
-Claude: Firewall mode?
-        • Strict (essential domains)
-        • Expanded (includes cloud platforms)
+Claude: Do you need network restrictions?
+        • No - Container isolation only
+        • Yes - Domain allowlist (choose categories)
 You: Expanded
 Claude: Generating configuration for Node.js 20 + MongoDB 7 + Redis...
 ```
@@ -476,7 +449,7 @@ Claude: Generating configuration for Node.js 20 + MongoDB 7 + Redis...
 ### Example 3: Security Audit
 
 ```
-You: /devcontainer:audit
+You: /sandboxxer:audit
 Claude: Running security audit...
 
         # Security Audit Report
@@ -490,9 +463,9 @@ Claude: Running security audit...
            - Found: POSTGRES_PASSWORD: devpassword
            - Recommendation: Change for production use
 
-        2. Firewall in permissive mode
-           - Current: FIREWALL_MODE=permissive
-           - Recommendation: Switch to strict mode
+        2. Firewall disabled (container isolation only)
+           - Current: FIREWALL_MODE=disabled
+           - Recommendation: Enable domain allowlist for production
 
         ## Good Practices ✅
         1. Running as non-root user (node)
@@ -504,7 +477,7 @@ Claude: Running security audit...
 
 ## Example Applications
 
-The plugin includes comprehensive working examples in the `docs/examples/` directory, demonstrating all three experience modes (Basic, Advanced, YOLO) with real applications.
+The plugin includes comprehensive working examples in the `docs/examples/` directory, demonstrating different configuration approaches (minimal, domain allowlist, full) with real applications.
 
 ### Example Structure
 
@@ -514,18 +487,18 @@ docs/examples/
 ├── docker-compose.yml               # Shared PostgreSQL + Redis services
 │
 ├── streamlit-shared/                # Shared: Streamlit connection validator
-├── streamlit-sandbox-basic/         # Self-contained with Basic mode DevContainer
+├── streamlit-sandbox-basic/         # Self-contained with minimal configuration
 │
 ├── demo-app-shared/                 # Shared: Full-stack blog application
-├── demo-app-sandbox-basic/          # Demo app with Basic mode DevContainer
-├── demo-app-sandbox-advanced/       # Demo app with Advanced mode DevContainer
-└── demo-app-sandbox-yolo/            # Demo app with YOLO mode DevContainer
+├── demo-app-sandbox-basic/          # Demo app with minimal configuration
+├── demo-app-sandbox-advanced/       # Demo app with domain allowlist
+└── demo-app-sandbox-yolo/            # Demo app with full configuration
 ```
 
 ### Quick Validation: Streamlit App
 
 **Shared Code**: `docs/examples/streamlit-shared/`
-**Sandbox Example**: `docs/examples/streamlit-sandbox-basic/` (Basic mode)
+**Sandbox Example**: `docs/examples/streamlit-sandbox-basic/` (minimal configuration)
 
 Minimal Python Streamlit app for 30-second environment validation:
 - PostgreSQL connection test with visual feedback
@@ -552,33 +525,33 @@ A complete full-stack blogging platform with:
 - **Testing**: Pytest (backend) + Jest + React Testing Library (frontend)
 - **Features**: CRUD operations, caching, view counters, comprehensive tests
 
-**Four Example Sandbox Modes Available**:
+**Example Configurations Available**:
 
-#### 1. Basic Mode - Quick Start
+#### 1. Minimal Configuration
 **Location**: `docs/examples/demo-app-sandbox-basic/`
 
 **What's included**:
 - Auto-detected Python + Node.js stack
 - Minimal configuration (4 files)
 - Essential VS Code extensions (2)
-- Strict firewall by default
+- Domain allowlist by default
 - Ready in < 3 minutes
 
 **Best for**: Prototypes, solo developers, quick start
 
-#### 2. Advanced Mode - Balanced
+#### 2. Domain Allowlist
 **Location**: `docs/examples/demo-app-sandbox-advanced/`
 
 **What's included**:
 - Configurable Python/Node.js versions (build args)
 - Curated VS Code extensions (10+)
-- User-controlled firewall (strict/permissive/disabled)
+- User-controlled firewall (domain allowlist/container isolation)
 - Enhanced developer experience (formatting on save, SQLTools)
 - Development tools (Black, Pylint, IPython)
 
 **Best for**: Team development, active projects, customization needs
 
-#### 3. YOLO Mode - Full Control
+#### 3. Full Configuration
 **Location**: `docs/examples/demo-app-sandbox-yolo/`
 
 **What's included**:
@@ -601,7 +574,7 @@ cd docs/examples/streamlit-sandbox-basic
 streamlit run app.py
 ```
 
-**Full-stack demo** (any mode):
+**Full-stack demo** (any configuration):
 ```bash
 cd docs/examples/demo-app-sandbox-basic  # or -advanced or -yolo
 # Open in VS Code → Reopen in Container
@@ -633,7 +606,7 @@ See `docs/examples/README.md` for detailed comparison and customization guides
 
 ### Dogfooding Approach
 
-This plugin uses itself for development! The `.devcontainer/` configuration was generated using the plugin's **Basic mode**, which correctly detected this as a documentation/template repository and created a minimal development environment.
+This plugin uses itself for development! The `.devcontainer/` configuration was generated using the plugin's **interactive quickstart**, which correctly detected this as a documentation/template repository and created a minimal development environment.
 
 **What the plugin detected:**
 - Primary content: Markdown files (skills, documentation, commands)
@@ -655,9 +628,9 @@ code .
 # Container builds in ~2 minutes, ready to edit plugin files immediately
 
 # Optional: Test examples (requires services)
-cd examples
+cd docs/examples
 docker compose up -d                    # Start PostgreSQL + Redis
-cd basic-streamlit
+cd streamlit-sandbox-basic
 uv add -r requirements.txt
 streamlit run app.py
 ```
@@ -694,26 +667,9 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
 
 ## Changelog
 
-### v2.0.0 (2025-12-16)
-- **Major Release**: Three-mode system (Basic, Advanced, YOLO)
-- Data-driven configuration with JSON registries
-  - `sandbox-templates.json`: Official Docker sandbox images
-  - `official-images.json`: Docker Hub official images
-  - `allowable-domains.json`: Mode-specific firewall whitelists
-- Modular template system with section markers
-- Enhanced firewall with mode-specific domain sets (30-100+ domains)
-- Updated slash commands: `/devcontainer:quickstart`, `/devcontainer:quickstart`, `/devcontainer:yolo-vibe-maxxing`, `/devcontainer:quickstart`
-- Comprehensive mode comparison guide (MODES.md)
-- Migration from Basic/Advanced/YOLO to new three-mode system
-
-### v1.0.0 (2025-01-XX)
-- Initial release
-- Interactive setup wizard with Basic/Advanced/YOLO modes
-- Troubleshooting assistant
-- Security auditor
-- Templates for Python, Node.js, and Full-stack projects
+See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

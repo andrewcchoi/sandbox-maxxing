@@ -69,15 +69,15 @@ The devcontainer is **intentionally minimal** for plugin development:
 
 ```
 sandbox/
-├── .devcontainer/              # Generated using plugin Basic mode
+├── .devcontainer/              # Generated using plugin interactive quickstart
 │   ├── devcontainer.json       # VS Code configuration
 │   ├── Dockerfile              # Python + Node.js only
 │   └── init-firewall.sh        # Disabled (not needed)
 │
 ├── skills/                     # Plugin skills (main work here)
 │   ├── _shared/                # Shared templates and data
-│   ├── sandbox-troubleshoot/
-│   └── sandbox-security/
+│   ├── sandboxxer-troubleshoot/
+│   └── sandboxxer-security/
 │
 ├── commands/                   # Slash commands
 │   ├── quickstart.md
@@ -98,9 +98,9 @@ sandbox/
 │   ├── streamlit-shared/       # Quick validation (shared services)
 │   ├── streamlit-sandbox-basic/ # Self-contained Streamlit
 │   ├── demo-app-shared/        # Full-stack demo (shared services)
-│   ├── demo-app-sandbox-basic/  # Full-stack demo (Basic mode)
-│   ├── demo-app-sandbox-advanced/ # Full-stack demo (Advanced mode)
-│   └── demo-app-sandbox-yolo/   # Full-stack demo (YOLO mode)
+│   ├── demo-app-sandbox-basic/  # Full-stack demo (minimal configuration)
+│   ├── demo-app-sandbox-advanced/ # Full-stack demo (domain allowlist)
+│   └── demo-app-sandbox-yolo/   # Full-stack demo (full configuration)
 │
 └── docs/                       # Documentation
 ```
@@ -137,9 +137,9 @@ claude plugins list
 
 # Test slash commands
 claude
-> /devcontainer:quickstart --basic
-> /devcontainer:troubleshoot
-> /devcontainer:audit
+> /sandboxxer:quickstart
+> /sandboxxer:troubleshoot
+> /sandboxxer:audit
 ```
 
 ### 3. Running Example Applications (Optional)
@@ -185,7 +185,7 @@ cd /tmp/test-project
 
 # Use the plugin to generate configs
 claude
-> /devcontainer:quickstart --basic
+> /sandboxxer:quickstart
 
 # Verify generated files
 ls -la .devcontainer/
@@ -198,11 +198,11 @@ The example applications include test suites:
 
 ```bash
 # Start services first
-cd examples
+cd docs/examples
 docker compose up -d
 
 # Run backend tests
-cd demo-app/backend
+cd demo-app-shared/backend
 pytest
 pytest --cov=app --cov-report=html
 
@@ -223,7 +223,7 @@ The `.devcontainer/` in this repository was created using the plugin itself:
 
 ```bash
 # What was run (hypothetically, during setup)
-/devcontainer:quickstart
+/sandboxxer:quickstart
 
 # Plugin detection output:
 # ✓ Scanning repository...
@@ -257,7 +257,7 @@ When plugin templates change, regenerate the devcontainer to stay current:
 mv .devcontainer .devcontainer.backup
 
 # 2. Regenerate using latest plugin
-/devcontainer:quickstart
+/sandboxxer:quickstart
 
 # 3. Review changes
 diff -r .devcontainer.backup .devcontainer
@@ -324,7 +324,7 @@ lsof -i :6379
 
 ```bash
 # Reinstall plugin
-claude plugins remove devcontainer-setup
+claude plugins remove sandboxxer
 claude plugins add .
 
 # Verify installation
@@ -351,7 +351,7 @@ The devcontainer sets minimal environment variables:
 
 1. **Keep the devcontainer minimal** - Don't add services unless the plugin itself needs them
 2. **Use docs/examples/docker-compose.yml** - Keep example services separate
-3. **Test with the plugin** - Use `/devcontainer:quickstart` to validate changes
+3. **Test with the plugin** - Use `/sandboxxer:quickstart` to validate changes
 4. **Document changes** - Update this file when modifying the development workflow
 5. **Regenerate periodically** - Keep the devcontainer in sync with plugin templates
 
@@ -367,9 +367,9 @@ The devcontainer sets minimal environment variables:
 - **Issues**: https://github.com/andrewcchoi/sandbox-maxxing/issues
 - **Documentation**: See `docs/features/` directory
 - **Claude Code**: https://claude.ai/code
-- **Plugin Development**: Use `/devcontainer:troubleshoot` for debugging
+- **Plugin Development**: Use `/sandboxxer:troubleshoot` for debugging
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

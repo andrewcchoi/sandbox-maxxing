@@ -2,7 +2,7 @@
 description: Audit DevContainer configuration for security best practices
 ---
 
-Use and follow the sandbox-security skill exactly as written.
+Use and follow the sandboxxer-security skill exactly as written.
 
 Perform comprehensive security review of:
 - Firewall configuration and allowed domains
@@ -15,4 +15,4 @@ Perform comprehensive security review of:
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Version:** 4.6.0

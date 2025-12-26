@@ -1,6 +1,6 @@
 # Security Model
 
-This document describes the security architecture of the Claude Code Sandbox Plugin, covering container isolation, network restrictions, and credential handling across different sandbox modes.
+This document describes the security architecture of the Claude Code Sandbox Plugin, covering container isolation, network restrictions, and credential handling across different configuration options.
 
 ## Table of Contents
 
@@ -18,17 +18,17 @@ This document describes the security architecture of the Claude Code Sandbox Plu
 The Claude Code Sandbox Plugin implements a defense-in-depth security model with multiple layers of protection:
 
 - **Container Isolation**: All code runs in isolated Docker containers
-- **Network Restrictions**: Configurable firewall modes control outbound network access
+- **Network Restrictions**: Configurable firewall options control outbound network access
 - **Secret Management**: Multiple methods for handling sensitive credentials
-- **Mode-Based Security**: Four security profiles from minimal to maximum protection
+- **Flexible Security**: Adaptable security profiles from minimal to maximum protection
 
-The security model adapts to your needs through three sandbox modes: Basic, Advanced, and YOLO, each offering different trade-offs between security, flexibility, and ease of use.
+The security model adapts to your needs through two setup commands (interactive quickstart and non-interactive YOLO vibe maxxing) with firewall options ranging from container isolation only to strict domain allowlists.
 
 ## Multi-Layer Security
 
-### Layer 1: Container Isolation (All Modes)
+### Layer 1: Container Isolation (All Configurations)
 
-Every sandbox mode uses Docker containers to provide fundamental isolation:
+Every configuration uses Docker containers to provide fundamental isolation:
 
 - **Process Isolation**: Separate process namespace from host
 - **Filesystem Isolation**: Independent filesystem with controlled mount points
@@ -47,19 +47,19 @@ Every sandbox mode uses Docker containers to provide fundamental isolation:
 - Container escape vulnerabilities (mitigated by kernel/Docker security updates)
 - Malicious code contacting external services (handled by Layer 2)
 
-### Layer 2: Network Isolation (Mode-Dependent)
+### Layer 2: Network Isolation (Configurable)
 
-Network restrictions vary by sandbox mode using iptables-based firewalls:
+Network restrictions are configurable using iptables-based firewalls:
 
-| Mode | Network Policy | Protection Level |
+| Configuration | Network Policy | Protection Level |
 |------|---------------|-----------------|
-| **Basic** | No firewall | Container isolation only |
-| **Advanced** | Strict whitelist firewall | High (30-40 essential domains) |
-| **YOLO** | User-configurable | None/Low/High depending on configuration |
+| **Container Isolation Only** | No firewall | Container isolation only |
+| **Domain Allowlist** | Strict whitelist firewall | High (30-100+ curated domains) |
+| **Custom** | User-configurable | Variable depending on configuration |
 
 See [Network Isolation & Firewall Modes](#network-isolation--firewall-modes) for details.
 
-### Layer 3: Secret Management (All Modes)
+### Layer 3: Secret Management (All Configurations)
 
 Proper credential handling prevents accidental exposure:
 
@@ -110,14 +110,14 @@ Docker containers use Linux kernel features to provide isolation:
 
 ### When to Trust Container Isolation Alone
 
-**Safe scenarios (Basic modes):**
+**Safe scenarios (container isolation only):**
 - Working with your own code
 - Using well-known open-source dependencies
 - Development on single-user machines
 - Trusted development teams
 - Short-lived experimentation
 
-**Risky scenarios (consider Advanced mode):**
+**Risky scenarios (consider domain allowlist):**
 - Evaluating unknown/suspicious packages
 - Running code from untrusted sources
 - Multi-user development servers
@@ -126,17 +126,17 @@ Docker containers use Linux kernel features to provide isolation:
 
 ## Network Isolation & Firewall Modes
 
-### Firewall Mode Comparison
+### Firewall Options Comparison
 
-| Mode | Firewall | Default Policy | Use Case |
+| Option | Firewall | Default Policy | Use Case |
 |------|----------|---------------|----------|
-| **None** | Disabled | ACCEPT all | Basic modes, trusted environments |
+| **Container Isolation Only** | Disabled | ACCEPT all | Trusted environments, rapid development |
 | **Permissive** | Cleared rules | ACCEPT all | Legacy compatibility, debugging |
-| **Strict** | Whitelist-based | DROP by default | Advanced/YOLO modes, security-conscious development |
+| **Domain Allowlist** | Whitelist-based | DROP by default | Security-conscious development, production-like environments |
 
-### None (No Firewall)
+### Container Isolation Only (No Firewall)
 
-**Used by:** Basic mode
+**Available with:** Both interactive quickstart and non-interactive YOLO vibe maxxing
 
 **Configuration:**
 - No iptables rules configured
@@ -160,9 +160,9 @@ iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 ```
 
-### Strict (Whitelist-Based Firewall)
+### Domain Allowlist (Whitelist-Based Firewall)
 
-**Used by:** Advanced mode (curated list), YOLO mode (user-configurable)
+**Available with:** Interactive quickstart (optional), configurable after setup
 
 **Configuration:**
 - Default DROP policy on all chains
@@ -184,7 +184,7 @@ iptables -P OUTPUT ACCEPT
 - Requires manual domain additions for new services
 - DNS resolution can change IPs (run init-firewall.sh to refresh)
 
-**Example: Advanced mode strict firewall**
+**Example: Domain allowlist firewall**
 ```bash
 # Default DROP policy
 iptables -P INPUT DROP
@@ -206,7 +206,7 @@ iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 
 ### Allowed Domain Categories
 
-**Advanced Mode (Curated - ~30-40 domains):**
+**Standard Allowlist (Curated - ~30-40 domains):**
 - Anthropic services (api.anthropic.com, claude.ai)
 - Version control (github.com, gitlab.com, bitbucket.org)
 - Container registries (docker.io, ghcr.io, mcr.microsoft.com)
@@ -214,8 +214,8 @@ iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 - Linux repositories (ubuntu.com, security.ubuntu.com)
 - VS Code (marketplace.visualstudio.com)
 
-**YOLO Mode (Comprehensive - 200+ domains available):**
-- All Advanced mode domains
+**Extended Allowlist (Comprehensive - 200+ domains available):**
+- All standard allowlist domains
 - Cloud platforms (Google Cloud, Azure, Oracle)
 - Additional package managers (Ruby, Rust, Go, Maven, PHP, .NET, Dart, Perl, Haskell, Swift)
 - Development tools (Kubernetes, HashiCorp, Anaconda, Apache, Eclipse)
@@ -226,7 +226,7 @@ iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 
 ### Customizing the Firewall
 
-**Advanced Mode:**
+**Adding Custom Domains:**
 ```bash
 # Edit /usr/local/bin/init-firewall.sh
 ALLOWED_DOMAINS=(
@@ -242,7 +242,7 @@ ALLOWED_DOMAINS=(
 sudo /usr/local/bin/init-firewall.sh
 ```
 
-**YOLO Mode:**
+**Changing Firewall Mode:**
 ```bash
 # Set firewall mode in devcontainer.json
 {
@@ -283,10 +283,10 @@ The sandbox plugin supports multiple methods for handling sensitive credentials,
 
 | Method | When to Use | Security Level | Mode Availability |
 |--------|-------------|----------------|-------------------|
-| **VS Code Input** | Development credentials, user-specific tokens | Medium | Advanced+ |
-| **Docker Build Secret** | Private registry auth during build | High | Advanced+ |
-| **Docker Runtime Secret** | Production deployments | High | Advanced+ |
-| **Host Mount** | Cloud CLI credentials (~/.aws, ~/.gcloud) | Medium-High | Advanced+ |
+| **VS Code Input** | Development credentials, user-specific tokens | Medium | Domain Allowlist, Custom |
+| **Docker Build Secret** | Private registry auth during build | High | Domain Allowlist, Custom |
+| **Docker Runtime Secret** | Production deployments | High | Domain Allowlist, Custom |
+| **Host Mount** | Cloud CLI credentials (~/.aws, ~/.gcloud) | Medium-High | Domain Allowlist, Custom |
 | **Environment Variables** | Non-sensitive configuration only | Low | All modes |
 
 ### Critical Security Rules
@@ -379,21 +379,21 @@ secrets:
 - Preserves host credentials
 - No duplication or exposure
 
-### Secret Handling by Mode
+### Secret Handling by Configuration
 
-**Basic Mode:**
+**Minimal Configuration:**
 - Hardcoded development defaults (POSTGRES_PASSWORD=devpassword)
 - No user-prompted secrets
 - Acceptable for local development only
 
-**Advanced Mode:**
+**Production-Ready Configuration:**
 - Required VS Code inputs for all service credentials
 - Docker secrets for production deployment
 - Build secrets for private registries
 - Host mounts for cloud CLI tools
 - Comprehensive secret management
 
-**YOLO Mode:**
+**Custom Configuration:**
 - User-controlled secret management
 - All methods available
 - Responsibility on user to configure properly
@@ -410,13 +410,13 @@ See [Secrets Management Guide](SECRETS.md) for detailed examples and best practi
 - Installing conflicting software on host
 - Polluting host with development dependencies
 
-**Tier 2: Malicious Dependencies (Advanced/YOLO Strict)**
+**Tier 2: Malicious Dependencies (Domain Allowlist/Custom (Strict))**
 - Package dependencies contacting C2 servers
 - Cryptocurrency miners using network resources
 - Data exfiltration to attacker-controlled domains
 - Unexpected network reconnaissance
 
-**Tier 3: Supply Chain Attacks (Advanced/YOLO Strict + Secrets)**
+**Tier 3: Supply Chain Attacks (Domain Allowlist/Custom (Strict) + Secrets)**
 - Compromised packages attempting to steal credentials
 - Typosquatting packages reaching out to malicious domains
 - Backdoored dependencies attempting data exfiltration
@@ -451,7 +451,7 @@ See [Secrets Management Guide](SECRETS.md) for detailed examples and best practi
 
 ### Security Posture by Mode
 
-| Threat | Basic | Advanced | YOLO (Strict) |
+| Threat | Minimal | Domain Allowlist | Custom (Strict) |
 |--------|-------|--------------|----------|---------------|
 | Accidental host damage | ✓ Protected | ✓ Protected | ✓ Protected | ✓ Protected |
 | Dependency phone-home | ✗ Vulnerable | ✗ Vulnerable | ✓ Protected | ✓ Protected |
@@ -461,9 +461,9 @@ See [Secrets Management Guide](SECRETS.md) for detailed examples and best practi
 
 Legend: ✓ Protected, ~ Mitigated, ✗ Vulnerable
 
-## Best Practices by Mode
+## Best Practices by Configuration
 
-### Basic Mode
+### Container Isolation Only
 
 **Security Philosophy:** Trust + Convenience
 
@@ -476,15 +476,16 @@ Legend: ✓ Protected, ~ Mitigated, ✗ Vulnerable
 **Security practices:**
 - Accept that network is unrestricted
 - Don't use with untrusted code or unknown packages
-- Keep container updated with `docker pull sandbox-templates:latest`
+- Keep container updated regularly
 - Review container contents if sharing images
 
-**When to use Advanced mode:**
+**When to add domain allowlist:**
 - Working in team environments
-- Need Git authentication
-- Handling project-specific credentials
+- Evaluating unknown packages
+- Handling sensitive data or credentials
+- Need compliance with security policies
 
-### Advanced Mode
+### Domain Allowlist
 
 **Security Philosophy:** Security + Control
 
@@ -504,13 +505,13 @@ Legend: ✓ Protected, ~ Mitigated, ✗ Vulnerable
 - Monitor container logs for blocked connection attempts
 - Document all custom domains with justifications
 
-**When to upgrade to YOLO:**
-- Need domain categories not in Advanced mode
+**When to extend allowlist:**
+- Need additional domain categories
 - Require custom firewall configuration
 - Building specialized development environments
-- Expert-level Docker/security knowledge
+- Project-specific external services
 
-### YOLO Mode
+### Custom Configuration
 
 **Security Philosophy:** Complete Control + Responsibility
 
@@ -521,8 +522,8 @@ Legend: ✓ Protected, ~ Mitigated, ✗ Vulnerable
 - Experimental configurations
 
 **Security practices:**
-- Carefully review all uncommented domain categories
-- Start with strict mode, disable only if needed
+- Carefully review all domain categories before enabling
+- Start with domain allowlist, customize as needed
 - Document all security decisions
 - Regular security audits of configuration
 - Implement additional monitoring if needed
@@ -531,7 +532,7 @@ Legend: ✓ Protected, ~ Mitigated, ✗ Vulnerable
 
 **Security anti-patterns to avoid:**
 - Disabling firewall "just to get it working"
-- Uncommenting all domain categories indiscriminately
+- Adding all domain categories indiscriminately
 - Skipping firewall verification
 - Assuming container isolation is sufficient
 
@@ -539,7 +540,7 @@ Legend: ✓ Protected, ~ Mitigated, ✗ Vulnerable
 
 - [Secrets Management Guide](SECRETS.md) - Detailed secret handling methods and examples
 - [Variables Guide](VARIABLES.md) - Environment variables and build arguments
-- [Mode Comparison Guide](MODES.md) - Choosing the right sandbox mode
+- [Mode Comparison Guide](SETUP-OPTIONS.md) - Choosing the right sandbox mode
 - [Docker Security Best Practices](https://docs.docker.com/engine/security/) - Official Docker security documentation
 - [CIS Docker Benchmark](https://www.cisecurity.org/benchmark/docker) - Security hardening guidelines
 
@@ -549,9 +550,9 @@ If you have security questions or discover vulnerabilities:
 
 1. **General questions**: Open a discussion on GitHub
 2. **Security vulnerabilities**: Follow responsible disclosure (see SECURITY.md in repository root, if available)
-3. **Configuration help**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or `/devcontainer:troubleshoot` command
+3. **Configuration help**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or `/sandboxxer:troubleshoot` command
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

@@ -1,10 +1,10 @@
-# Demo Blog Application - YOLO Mode Sandbox
+# Demo Blog Application - Custom Configuration Sandbox
 
-This is a **self-contained** example demonstrating the Claude Code Sandbox DevContainer setup in **YOLO mode**. It includes a production-ready full-stack blog application with Python FastAPI backend and React frontend, configured with comprehensive tooling and optimizations.
+This is a **self-contained** example demonstrating the Claude Code Sandbox DevContainer setup in **Custom Configuration**. It includes a production-ready full-stack blog application with Python FastAPI backend and React frontend, configured with comprehensive tooling and optimizations.
 
-## What is YOLO Mode?
+## What is Custom Configuration?
 
-YOLO mode is designed for teams and production-ready projects that require:
+Custom Configuration is designed for teams and production-ready projects that require:
 - **Comprehensive setup** with 10-15+ configuration prompts
 - **Fully explicit configuration** with no hidden defaults
 - **Technology-optimized Dockerfile** with multi-stage builds
@@ -13,7 +13,7 @@ YOLO mode is designed for teams and production-ready projects that require:
 - **Full observability** with debugging and profiling tools
 - **Complete documentation** of all configuration options
 
-This example shows what the `sandbox-maxxing` plugin generates when run in YOLO mode on a full-stack application.
+This example shows what the `sandboxxer` plugin generates when run in Custom Configuration on a full-stack application.
 
 ## Features
 
@@ -32,7 +32,7 @@ This example shows what the `sandbox-maxxing` plugin generates when run in YOLO 
   - Component tests with React Testing Library
   - Modern build tooling with Vite
 
-### DevContainer Features (YOLO Mode)
+### DevContainer Features (Custom Configuration)
 - **Multi-stage Dockerfile**: Optimized layers for minimal image size and fast builds
 - **VS Code extensions**: 35+ including all language support, themes (Material Icons, GitHub, Dracula, Andromeda, One Dark Pro, Night Owl, Nord, Atom One Dark, Monokai Pro), productivity tools (GitLens, Git Graph, Code Spell Checker, Error Lens, Path Intellisense, Auto Rename Tag), database clients (SQLTools, MongoDB, Database Client), and fun extensions (Peacock, Power Mode, VS Code Pets, TODO Highlight, Discord Presence, GlassIt, Custom CSS/JS)
 - **MCP servers**: 11+ servers for maximum AI integration including filesystem, memory, sqlite, fetch, github, postgres, docker, brave-search, puppeteer, slack, and google-drive
@@ -186,7 +186,7 @@ npm run lint              # ESLint
 npm run format            # Prettier
 ```
 
-## DevContainer Configuration (YOLO Mode)
+## DevContainer Configuration (Custom Configuration)
 
 ### Multi-Stage Dockerfile
 
@@ -435,9 +435,9 @@ my_function() {
 }
 ```
 
-## What Makes This "YOLO Mode"
+## What Makes This "Custom Configuration"
 
-According to the plan, YOLO mode is characterized by:
+According to the plan, Custom Configuration is characterized by:
 
 ### 1. Comprehensive Setup (10-15+ questions)
 The plugin would ask about:
@@ -762,14 +762,14 @@ npm update
 ## Related Examples
 
 - `examples/demo-app-shared/` - Shared application code
-- `examples/demo-app-sandbox-basic/` - Basic mode (quick start)
-- `examples/demo-app-sandbox-advanced/` - Advanced mode (balanced)
+- `examples/demo-app-sandbox-basic/` - Minimal Configuration (quick start)
+- `examples/demo-app-sandbox-advanced/` - Domain Allowlist Configuration (balanced)
 - `examples/streamlit-sandbox-basic/` - Python-only example
 
 ## Learn More
 
 - [Claude Code Sandbox Documentation](../../)
-- [Security Model](../../features/security-model.md)
+- [Security Model](../../features/SECURITY-MODEL.md)
 - [Development Guide](../../../DEVELOPMENT.md)
 - [Contributing](../../../CONTRIBUTING.md)
 
@@ -779,9 +779,9 @@ MIT
 
 ---
 
-**YOLO Mode** - Production-ready development environments with comprehensive tooling and best practices.
+**Custom Configuration** - Production-ready development environments with comprehensive tooling and best practices.
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

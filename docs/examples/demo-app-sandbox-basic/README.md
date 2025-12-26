@@ -1,17 +1,17 @@
-# Demo Blog Application - Basic Mode Sandbox
+# Demo Blog Application - Minimal Configuration
 
-This is a **self-contained** example demonstrating the Claude Code Sandbox DevContainer setup in **Basic mode**. It includes a full-stack blog application with Python FastAPI backend and React frontend.
+This is a **self-contained** example demonstrating the Claude Code Sandbox DevContainer setup with **minimal configuration**. It includes a full-stack blog application with Python FastAPI backend and React frontend.
 
-## What is Basic Mode?
+## What is Minimal Configuration?
 
-Basic mode is designed for developers who want:
-- **Quick setup** with minimal configuration (using sandbox templates or official images)
-- **No firewall** - relies on hypervisor-level Windows Sandbox isolation
+Minimal configuration is designed for developers who want:
+- **Quick setup** with zero questions (using base Python + Node image)
+- **Container isolation only** - no network firewall
 - **Sensible defaults** automatically applied
 - **Auto-detection** of project type and dependencies
 - **Minimal configuration files** for fastest setup
 
-This example shows what the `sandbox-maxxing` plugin generates when run in Basic mode on a full-stack application.
+This example shows what the `sandboxxer` plugin generates with minimal configuration on a full-stack application.
 
 ## Features
 
@@ -28,10 +28,10 @@ This example shows what the `sandbox-maxxing` plugin generates when run in Basic
   - View counter with Redis caching
   - Component tests with React Testing Library
 
-### DevContainer Features (Basic Mode)
+### DevContainer Features (Minimal Configuration)
 - **Auto-detected stack**: Python 3.12 + Node.js 20
 - **Database services**: PostgreSQL 15 + Redis 7
-- **Network security**: No firewall (relies on Windows Sandbox hypervisor isolation)
+- **Network security**: Container isolation only (no network firewall)
 - **VS Code extensions**: 6-8 total including Python, ESLint, GitLens, Material Icon Theme, and Peacock
 - **MCP servers**: 2 servers (filesystem, memory) for AI assistant integration
 - **Port forwarding**: Backend (8000), Frontend (5173), PostgreSQL (5432), Redis (6379)
@@ -139,7 +139,7 @@ frontend/
 └── vite.config.js
 ```
 
-## DevContainer Configuration (Basic Mode)
+## DevContainer Configuration (Minimal Configuration)
 
 ### What the Plugin Generated
 
@@ -148,7 +148,7 @@ frontend/
 - Auto-detected Python + Node.js stack
 - Essential VS Code extensions (Python, ESLint)
 - Simple post-create command for dependency installation
-- No firewall initialization (Basic mode relies on sandbox isolation)
+- No firewall initialization (minimal configuration relies on container isolation)
 
 **Dockerfile**:
 - Flexible base image: `python:3.12-slim-bookworm`
@@ -166,7 +166,7 @@ frontend/
 - No NET_ADMIN/NET_RAW capabilities (not needed without firewall)
 
 **init-firewall.sh**:
-- No firewall configured (Basic mode)
+- No firewall configured (minimal configuration - container isolation only)
 - Outputs informational message about security model
 - Relies on Windows Sandbox hypervisor-level isolation
 - Ephemeral environment provides security
@@ -209,12 +209,12 @@ The new credentials will be saved in the container's `~/.claude` directory.
 
 If you need network-level security controls:
 
-Advanced Mode: Add permissive firewall (no restrictions, but audit logging)
+Upgrade Path: Add permissive firewall (no restrictions, but audit logging)
 
-**Advanced Mode**: Add strict firewall with customizable allowlist
+**Domain Allowlist Configuration**: Add strict firewall with customizable domain allowlist
 - Copy configuration from `demo-app-sandbox-advanced/`
 
-**YOLO Mode**: Full customization with optional firewall
+**Custom Configuration**: Full customization with optional firewall
 - Copy configuration from `demo-app-sandbox-yolo/`
 
 ### Add VS Code Extensions
@@ -244,7 +244,7 @@ docker-compose logs postgres
 ```
 
 ### Network Access Issues
-Basic mode has no firewall restrictions. If you experience network issues:
+Minimal configuration has no firewall restrictions. If you experience network issues:
 ```bash
 # Check DNS resolution
 nslookup example.com
@@ -267,12 +267,12 @@ docker-compose down
 
 ## Comparing to Other Modes
 
-| Feature | Basic | Advanced | YOLO |
+| Feature | Minimal | Domain Allowlist | Custom |
 |---------|-------|--------------|----------|------|
 | Questions asked | 1-2 | 3-5 | 5-7 | 10-15+ |
 | Configuration style | Auto-detected | Platform-specific | Customizable | Fully explicit |
 | Dockerfile | Sandbox template/official image | Platform template | Configurable | Technology-optimized |
-| VS Code extensions | Essential (2) | Basic (5) | Curated (10+) | Comprehensive (20+) |
+| VS Code extensions | Essential (2) | Minimal (5) | Curated (10+) | Comprehensive (20+) |
 | Firewall | None | Permissive | Strict | Configurable |
 | Services | Essential only | + Message queue | + Resource limits | All available |
 | Best for | Quick start | Learning | Production dev | Full control |
@@ -280,14 +280,14 @@ docker-compose down
 ## Related Examples
 
 - `examples/demo-app-shared/` - Uses shared Docker Compose services
-- `examples/demo-app-sandbox-advanced/` - Advanced mode with strict firewall
-- `examples/demo-app-sandbox-yolo/` - YOLO mode with full customization
+- `examples/demo-app-sandbox-advanced/` - Domain allowlist configuration with strict firewall
+- `examples/demo-app-sandbox-yolo/` - Custom configuration with full customization
 - `examples/streamlit-sandbox-basic/` - Simpler Python-only app
 
 ## Learn More
 
 - [Claude Code Sandbox Documentation](../../)
-- [Security Model](../../features/security-model.md)
+- [Security Model](../../features/SECURITY-MODEL.md)
 - [Development Guide](../../../DEVELOPMENT.md)
 - [Contributing](../../../CONTRIBUTING.md)
 
@@ -297,5 +297,5 @@ MIT
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

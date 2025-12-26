@@ -7,7 +7,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        // Python Development (curated for Advanced mode)
+        // Python Development (curated for domain allowlist configuration)
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",

@@ -592,11 +592,11 @@ And update firewall for AI provider APIs.
 
 ## Next Steps
 
-- Review [security model](security-model.md) to understand the security model
+- Review [security model](SECURITY-MODEL.md) to understand the security model
 - Check [troubleshooting](TROUBLESHOOTING.md) for common issues
 - Browse [examples/](../examples/) for complete configuration examples
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

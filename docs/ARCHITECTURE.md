@@ -15,24 +15,22 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 ### 1. Skills
 
 **Active Skills:**
-- `devcontainer-setup-basic` - Basic mode setup (quick, minimal questions)
-- `devcontainer-setup-advanced` - Advanced mode setup (security-focused)
-- `devcontainer-setup-yolo` - YOLO mode setup (full control)
-- `sandbox-troubleshoot` - Diagnostic assistant
-- `sandbox-security` - Security auditor
+- `sandboxxer-troubleshoot` - Diagnostic assistant
+- `sandboxxer-security` - Security auditor
 
 **Deprecated Skills:**
+- `devcontainer-setup-basic`, `devcontainer-setup-advanced`, `devcontainer-setup-yolo` (v4.6.0)
 
 ### 2. Commands
 
 **Primary Commands:**
-- `/devcontainer:quickstart` - Interactive mode selection (or use `--basic`, `--advanced`, `--yolo`)
-- `/devcontainer:troubleshoot` - Invokes troubleshoot skill
-- `/devcontainer:audit` - Invokes security skill
+- `/sandboxxer:quickstart` - Interactive quickstart with project type selection
+- `/sandboxxer:troubleshoot` - Invokes troubleshoot skill
+- `/sandboxxer:audit` - Invokes security skill
 
 **Setup Commands:**
-- `/devcontainer:quickstart` - Interactive DevContainer setup with mode selection
-- `/devcontainer:yolo-vibe-maxxing` - Quick setup with no questions (Python+Node base, no firewall)
+- `/sandboxxer:quickstart` - Interactive DevContainer setup with mode selection
+- `/sandboxxer:yolo-vibe-maxxing` - Quick setup with no questions (Python+Node base, no firewall)
 
 ### 3. Shared Resources Architecture (v4.0.0)
 
@@ -73,9 +71,9 @@ skills/
 │   │       ├── variables.json         # Variable catalog
 │   │       ├── vscode-extensions.json # Extension catalog (comprehensive)
 │   │       └── README.md              # Data file documentation
-├── sandbox-troubleshoot/
+├── sandboxxer-troubleshoot/
 │   └── SKILL.md                       # Troubleshooting workflow
-└── sandbox-security/
+└── sandboxxer-security/
     └── SKILL.md                       # Security audit workflow
 ```
 
@@ -103,7 +101,7 @@ Skills reference these using: `skills/_shared/data/<filename>`
 
 ## Command-Based Setup (v4.3.0+)
 
-### Interactive Setup (`/devcontainer:quickstart`)
+### Interactive Setup (`/sandboxxer:quickstart`)
 
 **Philosophy:** Flexible configuration through guided questions
 
@@ -126,7 +124,7 @@ Skills reference these using: `skills/_shared/data/<filename>`
 - Users wanting firewall protection
 - Customizable setups
 
-### Quick Setup (`/devcontainer:yolo-vibe-maxxing )
+### Quick Setup (`/sandboxxer:yolo-vibe-maxxing`)
 
 **Philosophy:** Zero questions, instant setup
 
@@ -151,20 +149,20 @@ Skills reference these using: `skills/_shared/data/<filename>`
 
 ### Command Comparison
 
-| Aspect | /devcontainer:quickstart | /devcontainer:yolo-vibe-maxxing |
-|--------|---------------------|-------------------|
-| **Questions** | 2-3+ | 0 |
-| **Languages** | 9 options | Python + Node only |
-| **Firewall** | Optional | Disabled |
-| **Time** | 1-3 min | < 30 sec |
-| **Customization** | Moderate | None |
+| Aspect            | /sandboxxer:quickstart | /sandboxxer:yolo-vibe-maxxing |
+| ----------------- | ---------------------- | ----------------------------- |
+| **Questions**     | 2-3+                   | 0                             |
+| **Languages**     | 9 options              | Python + Node only            |
+| **Firewall**      | Optional               | Disabled                      |
+| **Time**          | 1-3 min                | < 30 sec                      |
+| **Customization** | Moderate               | None                          |
 
 ## Data Flow
 
 ### Setup Flow (v4.3.0+)
 
 1. **User Invocation**
-   - User runs `/devcontainer:quickstart` (interactive) or `/devcontainer:yolo-vibe-maxxing  (quick)
+   - User runs `/sandboxxer:quickstart` (interactive) or `/sandboxxer:yolo-vibe-maxxing` (non-interactive)
    - Command executes directly (bash-based, not skill-based)
 
 2. **Interactive Questions** (setup command only)
@@ -209,9 +207,9 @@ Templates use `{{PLACEHOLDER}}` syntax:
 
 Skills can invoke each other for related tasks:
 
-- **After setup** → Suggest `/devcontainer:audit` for security review
-- **During errors** → Auto-invoke `/devcontainer:troubleshoot`
-- **Before production** → Recommend Advanced mode review
+- **After setup** → Suggest `/sandboxxer:audit` for security review
+- **During errors** → Auto-invoke `/sandboxxer:troubleshoot`
+- **Before production** → Recommend domain allowlist configuration review
 
 ## Version History
 
@@ -240,7 +238,7 @@ Skills can invoke each other for related tasks:
 
 ### Version 2.0.0 (2025-12-16)
 
-- Four-mode system (Basic, Intermediate, Advanced, YOLO)
+- Four-mode system (Basic, Intermediate, Advanced, YOLO) - deprecated in v4.6.0
 - Data-driven configuration with JSON files
 - Modular template system
 
@@ -254,20 +252,21 @@ Skills can invoke each other for related tasks:
 ### Core Docs
 - [Skills README](../skills/README.md) - Detailed skill documentation
 - [Commands README](../commands/README.md) - Command reference
-- [Modes Guide](features/MODES.md) - Mode comparison and selection
+- [Setup Options Guide](features/SETUP-OPTIONS.md) - Mode comparison and selection
 - [Shared Data](../skills/_shared/templates/data/README.md) - Data file reference
 
 ### Configuration
 - [Troubleshooting](features/TROUBLESHOOTING.md) - Common issues
-- [Security Model](features/security-model.md) - Security architecture
+- [Security Model](features/SECURITY-MODEL.md) - Security architecture
 - [Variables Guide](features/VARIABLES.md) - Environment configuration
+- [GitHub Codespaces](CODESPACES.md) - Using sandboxxer in GitHub Codespaces
 
 ### Examples
 - [Examples README](examples/README.md) - Example projects
-- [Basic Example](examples/demo-app-sandbox-basic/) - Basic mode result
-- [Advanced Example](examples/demo-app-sandbox-advanced/) - Advanced mode result
+- [Minimal Configuration](examples/demo-app-sandbox-basic/) - Minimal configuration result
+- [Domain Allowlist](examples/demo-app-sandbox-advanced/) - Domain allowlist result
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

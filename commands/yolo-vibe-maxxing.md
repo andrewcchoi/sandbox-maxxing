@@ -11,7 +11,7 @@ allowed-tools: [Bash]
 - No firewall (Docker isolation only)
 - All standard development tools
 
-**Need customization?** Use `/devcontainer:quickstart` for interactive mode with project type selection and firewall options.
+**Need customization?** Use `/sandboxxer:quickstart` for interactive mode with project type selection and firewall options.
 
 ## Determine Project Name
 
@@ -36,7 +36,7 @@ elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
   echo "Using current directory as plugin root";
 elif [ -d "$HOME/.claude/plugins" ]; then
   PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
-    -exec grep -l '"name": "devcontainer-setup"' {} \; 2>/dev/null | head -1);
+    -exec grep -l '"name": "sandboxxer"' {} \; 2>/dev/null | head -1);
   if [ -n "$PLUGIN_JSON" ]; then
     PLUGIN_ROOT=$(dirname "$(dirname "$PLUGIN_JSON")");
     echo "Found installed plugin: $PLUGIN_ROOT";
@@ -71,7 +71,7 @@ done
 chmod +x .devcontainer/*.sh
 
 echo "=========================================="
-echo "DevContainer Created (YOLO Mode)"
+echo "DevContainer Created (Non-Interactive YOLO Vibe Maxxing)"
 echo "=========================================="
 echo "Project: $PROJECT_NAME"
 echo "Language: Python 3.12 + Node 20"
@@ -92,4 +92,4 @@ echo "=========================================="
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.5.0 (Command Rename)
+**Version:** 4.6.0 (Command Rename)

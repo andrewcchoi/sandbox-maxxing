@@ -11,7 +11,7 @@ Create a customized VS Code DevContainer configuration with:
 - Optional network firewall with domain allowlist
 - All standard Claude Code sandbox features
 
-**Quick path:** Use `/devcontainer:yolo-vibe-maxxing` for instant setup with no questions (Python+Node, no firewall).
+**Quick path:** Use `/sandboxxer:yolo-vibe-maxxing` for instant setup with no questions (Python+Node, no firewall).
 
 ## Step 0: Pre-flight Validation
 
@@ -154,6 +154,91 @@ fi
 
 **Note:** For interactive port selection, users can add `--interactive` flag support in the future. Currently, the command auto-assigns the next available port for any conflicts.
 
+## Step 0.8: Detect Existing Configuration
+
+```bash
+EXISTING_CONFIG_FOUND=false
+EXISTING_EXTENSIONS=""
+EXISTING_CONTAINER_ENV=""
+EXISTING_REMOTE_ENV=""
+EXISTING_FORWARD_PORTS=""
+EXISTING_POST_CREATE=""
+EXISTING_POST_START=""
+EXISTING_FEATURES=""
+EXISTING_CUSTOM_SERVICES=""
+
+if [ -f ".devcontainer/devcontainer.json" ]; then
+  EXISTING_CONFIG_FOUND=true
+  echo "Existing DevContainer configuration detected"
+
+  # Extract custom extensions (exclude base extensions)
+  EXISTING_EXTENSIONS=$(jq -r '.customizations.vscode.extensions[]?' .devcontainer/devcontainer.json 2>/dev/null | \
+    grep -v "anthropic.claude-code\|ms-azuretools.vscode-docker\|ms-python.python\|ms-python.vscode-pylance\|redhat.vscode-yaml\|eamodio.gitlens\|PKief.material-icon-theme\|johnpapa.vscode-peacock" | \
+    tr '\n' ' ')
+
+  # Extract environment variables
+  EXISTING_CONTAINER_ENV=$(jq -c '.containerEnv // {}' .devcontainer/devcontainer.json 2>/dev/null)
+  EXISTING_REMOTE_ENV=$(jq -c '.remoteEnv // {}' .devcontainer/devcontainer.json 2>/dev/null)
+
+  # Extract custom ports (beyond defaults)
+  EXISTING_FORWARD_PORTS=$(jq -r '.forwardPorts[]?' .devcontainer/devcontainer.json 2>/dev/null | \
+    grep -v "^8000$\|^3000$\|^5432$\|^6379$" | tr '\n' ' ')
+
+  # Extract lifecycle hooks
+  EXISTING_POST_CREATE=$(jq -r '.postCreateCommand // empty' .devcontainer/devcontainer.json 2>/dev/null)
+  EXISTING_POST_START=$(jq -r '.postStartCommand // empty' .devcontainer/devcontainer.json 2>/dev/null)
+
+  # Extract existing features
+  EXISTING_FEATURES=$(jq -c '.features // {}' .devcontainer/devcontainer.json 2>/dev/null)
+
+  # Backup existing configuration
+  mkdir -p .devcontainer.backup
+  cp -r .devcontainer/* .devcontainer.backup/ 2>/dev/null || true
+  [ -f "docker-compose.yml" ] && cp docker-compose.yml .devcontainer.backup/
+  [ -f ".env" ] && cp .env .devcontainer.backup/
+  echo "Backed up existing configuration to .devcontainer.backup/"
+fi
+
+# Extract custom services from docker-compose.yml
+if [ -f "docker-compose.yml" ]; then
+  EXISTING_CUSTOM_SERVICES=$(docker compose config --services 2>/dev/null | \
+    grep -v "^app$\|^postgres$\|^redis$" | tr '\n' ' ')
+fi
+
+# Report findings
+if [ "$EXISTING_CONFIG_FOUND" = "true" ]; then
+  echo ""
+  echo "Extractable settings found:"
+  [ -n "$EXISTING_EXTENSIONS" ] && echo "  - VS Code extensions: $(echo $EXISTING_EXTENSIONS | wc -w) custom"
+  [ "$EXISTING_CONTAINER_ENV" != "{}" ] && echo "  - Container environment variables"
+  [ -n "$EXISTING_FORWARD_PORTS" ] && echo "  - Custom ports: $EXISTING_FORWARD_PORTS"
+  [ -n "$EXISTING_POST_CREATE" ] && echo "  - postCreateCommand hook"
+  [ -n "$EXISTING_CUSTOM_SERVICES" ] && echo "  - Custom services: $EXISTING_CUSTOM_SERVICES"
+  echo ""
+fi
+```
+
+## Step 0.9: Confirm Configuration Handling
+
+If `EXISTING_CONFIG_FOUND` is true, use AskUserQuestion:
+
+```
+Existing DevContainer configuration detected.
+
+We can preserve these settings:
+- Custom VS Code extensions
+- Environment variables
+- Custom port forwards
+- Lifecycle hooks (postCreateCommand, etc.)
+- Custom docker-compose services
+
+Options:
+1. Merge existing settings into new configuration (Recommended)
+2. Start fresh (backup saved to .devcontainer.backup/)
+```
+
+Store as `CONFIG_MERGE_CHOICE`.
+
 ## Step 1: Initialize Tool Selection Tracking
 
 ```bash
@@ -265,6 +350,86 @@ echo "[Base: Python 3.12 + Node 20]"
 echo ""
 ```
 
+## Step 1.8: Detect Web Frameworks
+
+```bash
+DETECTED_JS_FRAMEWORK=""
+DETECTED_PY_FRAMEWORK=""
+JS_FRAMEWORK_EXTENSIONS=""
+PY_FRAMEWORK_EXTENSIONS=""
+
+# Detect JavaScript frameworks from package.json
+if [ -f "package.json" ]; then
+  if jq -e '.dependencies.react // .devDependencies.react' package.json > /dev/null 2>&1; then
+    DETECTED_JS_FRAMEWORK="React"
+    JS_FRAMEWORK_EXTENSIONS="dsznajder.es7-react-js-snippets"
+  elif jq -e '.dependencies.vue // .devDependencies.vue' package.json > /dev/null 2>&1; then
+    DETECTED_JS_FRAMEWORK="Vue"
+    JS_FRAMEWORK_EXTENSIONS="Vue.volar"
+  elif jq -e '.dependencies.next // .devDependencies.next' package.json > /dev/null 2>&1; then
+    DETECTED_JS_FRAMEWORK="Next.js"
+    JS_FRAMEWORK_EXTENSIONS="dsznajder.es7-react-js-snippets"
+  elif jq -e '.dependencies.svelte // .devDependencies.svelte' package.json > /dev/null 2>&1; then
+    DETECTED_JS_FRAMEWORK="Svelte"
+    JS_FRAMEWORK_EXTENSIONS="svelte.svelte-vscode"
+  elif jq -e '.dependencies["@angular/core"]' package.json > /dev/null 2>&1; then
+    DETECTED_JS_FRAMEWORK="Angular"
+    JS_FRAMEWORK_EXTENSIONS="Angular.ng-template"
+  fi
+fi
+
+# Detect Python frameworks from pyproject.toml or requirements.txt
+if [ -f "pyproject.toml" ]; then
+  PY_DEPS=$(cat pyproject.toml)
+elif [ -f "requirements.txt" ]; then
+  PY_DEPS=$(cat requirements.txt)
+else
+  PY_DEPS=""
+fi
+
+if [ -n "$PY_DEPS" ]; then
+  if echo "$PY_DEPS" | grep -qi "fastapi"; then
+    DETECTED_PY_FRAMEWORK="FastAPI"
+  elif echo "$PY_DEPS" | grep -qi "django"; then
+    DETECTED_PY_FRAMEWORK="Django"
+    PY_FRAMEWORK_EXTENSIONS="batisteo.vscode-django"
+  elif echo "$PY_DEPS" | grep -qi "flask"; then
+    DETECTED_PY_FRAMEWORK="Flask"
+  elif echo "$PY_DEPS" | grep -qi "quart"; then
+    DETECTED_PY_FRAMEWORK="Quart"
+  elif echo "$PY_DEPS" | grep -qi "starlette"; then
+    DETECTED_PY_FRAMEWORK="Starlette"
+  fi
+fi
+
+# Report detection results
+if [ -n "$DETECTED_JS_FRAMEWORK" ] || [ -n "$DETECTED_PY_FRAMEWORK" ]; then
+  echo "Detected web frameworks:"
+  [ -n "$DETECTED_JS_FRAMEWORK" ] && echo "  JavaScript: $DETECTED_JS_FRAMEWORK"
+  [ -n "$DETECTED_PY_FRAMEWORK" ] && echo "  Python: $DETECTED_PY_FRAMEWORK"
+fi
+```
+
+## Step 1.9: Confirm Detected Frameworks
+
+If `DETECTED_JS_FRAMEWORK` or `DETECTED_PY_FRAMEWORK` is set, use AskUserQuestion:
+
+```
+We detected web frameworks in your project:
+${DETECTED_JS_FRAMEWORK:+  - JavaScript: $DETECTED_JS_FRAMEWORK}
+${DETECTED_PY_FRAMEWORK:+  - Python: $DETECTED_PY_FRAMEWORK}
+
+Options:
+1. Accept detected frameworks (install extensions & configure ports)
+2. Skip framework-specific configuration
+```
+
+Store as `FRAMEWORK_CHOICE`.
+
+If "Accept detected frameworks":
+- Add framework extensions to `FRAMEWORK_EXTENSIONS` variable
+- Note: Port configuration uses existing defaults (APP_PORT=8000, FRONTEND_PORT=3000)
+
 ## Step 2: Ask About Tool Category (LOOP START)
 
 Use AskUserQuestion:
@@ -282,7 +447,10 @@ Options:
 3. C++ development
    → Clang 17 or GCC compiler toolchain
 
-4. None - use base only
+4. Web framework support (React, Vue, Django, FastAPI, etc.)
+   → Install framework-specific VS Code extensions
+
+5. None - use base only
    → Just Python 3.12 + Node 20 - ready to code!
 ```
 
@@ -291,6 +459,7 @@ Store as `TOOL_CATEGORY`.
 - If "Backend language" → continue to Step 3
 - If "Database tools" → add "postgres" to SELECTED_PARTIALS, go to Step 6
 - If "C++ development" → continue to Step 4
+- If "Web framework support" → continue to Step 5
 - If "None - use base only" → skip to Step 7 (Find Plugin Directory)
 
 ## Step 3: Backend Language Selection
@@ -401,6 +570,59 @@ esac
 
 Continue to Step 6.
 
+## Step 5: Web Framework Selection
+
+Use AskUserQuestion:
+
+```
+Which web framework(s) are you using?
+
+Options:
+1. React / Next.js
+2. Vue
+3. Svelte
+4. Angular
+5. FastAPI / Starlette
+6. Django
+7. Flask / Quart
+8. None / Other
+```
+
+Store as `WEB_FRAMEWORK_CHOICE`.
+
+```bash
+case "$WEB_FRAMEWORK_CHOICE" in
+  "React / Next.js")
+    FRAMEWORK_EXTENSIONS="dsznajder.es7-react-js-snippets"
+    echo "Selected: React/Next.js"
+    ;;
+  "Vue")
+    FRAMEWORK_EXTENSIONS="Vue.volar"
+    echo "Selected: Vue"
+    ;;
+  "Svelte")
+    FRAMEWORK_EXTENSIONS="svelte.svelte-vscode"
+    echo "Selected: Svelte"
+    ;;
+  "Angular")
+    FRAMEWORK_EXTENSIONS="Angular.ng-template"
+    echo "Selected: Angular"
+    ;;
+  "FastAPI / Starlette")
+    echo "Selected: FastAPI/Starlette (Python extensions already included)"
+    ;;
+  "Django")
+    FRAMEWORK_EXTENSIONS="batisteo.vscode-django"
+    echo "Selected: Django"
+    ;;
+  "Flask / Quart")
+    echo "Selected: Flask/Quart (Python extensions already included)"
+    ;;
+esac
+```
+
+Continue to Step 6.
+
 ## Step 6: Add More Tools?
 
 Use AskUserQuestion:
@@ -476,7 +698,7 @@ elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
   echo "Using current directory as plugin root";
 elif [ -d "$HOME/.claude/plugins" ]; then
   PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
-    -exec grep -l '"name": "devcontainer-setup"' {} \; 2>/dev/null | head -1);
+    -exec grep -l '"name": "sandboxxer"' {} \; 2>/dev/null | head -1);
   if [ -n "$PLUGIN_JSON" ]; then
     PLUGIN_ROOT=$(dirname "$(dirname "$PLUGIN_JSON")");
     echo "Found installed plugin: $PLUGIN_ROOT";
@@ -823,12 +1045,99 @@ for partial in "${SELECTED_PARTIALS[@]}"; do
   esac;
 done
 
+# Add framework-specific extensions
+if [ -n "$FRAMEWORK_EXTENSIONS" ]; then
+  for ext in $FRAMEWORK_EXTENSIONS; do
+    EXTENSIONS_TO_ADD+=',\n        "'"$ext"'"'
+  done
+  echo "Added framework extensions: $FRAMEWORK_EXTENSIONS"
+fi
+
+# Also add auto-detected framework extensions
+if [ -n "$JS_FRAMEWORK_EXTENSIONS" ]; then
+  EXTENSIONS_TO_ADD+=',\n        "'"$JS_FRAMEWORK_EXTENSIONS"'"'
+fi
+if [ -n "$PY_FRAMEWORK_EXTENSIONS" ]; then
+  EXTENSIONS_TO_ADD+=',\n        "'"$PY_FRAMEWORK_EXTENSIONS"'"'
+fi
+
+# Merge preserved extensions from existing config
+if [ "$CONFIG_MERGE_CHOICE" = "Merge existing settings into new configuration (Recommended)" ] && [ -n "$EXISTING_EXTENSIONS" ]; then
+  for ext in $EXISTING_EXTENSIONS; do
+    EXTENSIONS_TO_ADD+=',\n        "'"$ext"'"'
+  done
+  echo "Preserved $(echo $EXISTING_EXTENSIONS | wc -w) custom extensions from existing config"
+fi
+
 # Insert extensions before the closing bracket of extensions array
 if [ -n "$EXTENSIONS_TO_ADD" ]; then
   sed "s/\"johnpapa.vscode-peacock\"/\"johnpapa.vscode-peacock\"$EXTENSIONS_TO_ADD/g" \
     .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp && \
     mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json;
   echo "Added language-specific VS Code extensions";
+fi
+
+# Merge preserved environment variables and settings
+if [ "$CONFIG_MERGE_CHOICE" = "Merge existing settings into new configuration (Recommended)" ]; then
+
+  # Merge containerEnv (existing values, new takes precedence on conflict)
+  if [ "$EXISTING_CONTAINER_ENV" != "{}" ]; then
+    jq --argjson existing "$EXISTING_CONTAINER_ENV" \
+      '.containerEnv = ($existing + .containerEnv)' \
+      .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp
+    mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
+    echo "Merged existing containerEnv variables"
+  fi
+
+  # Merge remoteEnv
+  if [ "$EXISTING_REMOTE_ENV" != "{}" ]; then
+    jq --argjson existing "$EXISTING_REMOTE_ENV" \
+      '.remoteEnv = ($existing + .remoteEnv)' \
+      .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp
+    mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
+    echo "Merged existing remoteEnv variables"
+  fi
+
+  # Add custom forward ports
+  if [ -n "$EXISTING_FORWARD_PORTS" ]; then
+    for port in $EXISTING_FORWARD_PORTS; do
+      jq ".forwardPorts += [$port]" \
+        .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp
+      mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
+    done
+    echo "Added custom ports: $EXISTING_FORWARD_PORTS"
+  fi
+
+  # Chain postCreateCommand (run new setup, then existing)
+  if [ -n "$EXISTING_POST_CREATE" ] && [ "$EXISTING_POST_CREATE" != ".devcontainer/setup-claude-credentials.sh" ]; then
+    CHAINED_POST_CREATE=".devcontainer/setup-claude-credentials.sh && $EXISTING_POST_CREATE"
+    jq --arg cmd "$CHAINED_POST_CREATE" '.postCreateCommand = $cmd' \
+      .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp
+    mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
+    echo "Chained existing postCreateCommand"
+  fi
+
+  # Merge existing features
+  if [ "$EXISTING_FEATURES" != "{}" ]; then
+    jq --argjson existing "$EXISTING_FEATURES" \
+      '.features = (.features + $existing)' \
+      .devcontainer/devcontainer.json > .devcontainer/devcontainer.json.tmp
+    mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
+    echo "Merged existing Dev Container Features"
+  fi
+
+  # Preserve .env values (API keys, custom vars)
+  if [ -f ".devcontainer.backup/.env" ]; then
+    while IFS='=' read -r key value; do
+      # Skip empty lines and comments
+      [[ -z "$key" || "$key" =~ ^# ]] && continue
+      # Only preserve non-empty values that aren't in new .env
+      if [ -n "$value" ] && ! grep -q "^${key}=" .env 2>/dev/null; then
+        echo "${key}=${value}" >> .env
+      fi
+    done < .devcontainer.backup/.env
+    echo "Preserved existing .env values"
+  fi
 fi
 
 # Set permissions
@@ -859,8 +1168,25 @@ if [ ${#SELECTED_PARTIALS[@]} -gt 0 ]; then
     esac;
   done;
 fi
+if [ -n "$DETECTED_JS_FRAMEWORK" ] || [ -n "$WEB_FRAMEWORK_CHOICE" ]; then
+  echo "  Framework: ${DETECTED_JS_FRAMEWORK:-$WEB_FRAMEWORK_CHOICE}"
+fi
+if [ -n "$DETECTED_PY_FRAMEWORK" ]; then
+  echo "  Framework: $DETECTED_PY_FRAMEWORK"
+fi
 echo ""
 echo "Firewall: $([ "$NEEDS_FIREWALL" = "Yes" ] && echo "Enabled (strict allowlist)" || echo "Disabled (Docker isolation only)")"
+echo ""
+
+# Report merged settings
+if [ "$CONFIG_MERGE_CHOICE" = "Merge existing settings into new configuration (Recommended)" ]; then
+  echo "Merged from existing configuration:"
+  [ -n "$EXISTING_EXTENSIONS" ] && echo "  - $(echo $EXISTING_EXTENSIONS | wc -w) custom VS Code extensions"
+  [ "$EXISTING_CONTAINER_ENV" != "{}" ] && echo "  - Container environment variables"
+  [ -n "$EXISTING_FORWARD_PORTS" ] && echo "  - Custom ports: $EXISTING_FORWARD_PORTS"
+  [ -n "$EXISTING_POST_CREATE" ] && echo "  - postCreateCommand hook (chained)"
+  echo "  - Backup saved to .devcontainer.backup/"
+fi
 echo ""
 echo "Port Configuration:"
 echo "  App:        localhost:$APP_PORT -> container:8000"
@@ -959,4 +1285,4 @@ Replace `YOUR-PROJECT` with your project name. This approach bypasses the host s
 ---
 
 **Last Updated:** 2025-12-25
-**Version:** 4.5.0
+**Version:** 4.6.0

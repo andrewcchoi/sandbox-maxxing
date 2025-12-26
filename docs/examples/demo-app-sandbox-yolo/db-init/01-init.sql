@@ -1,4 +1,4 @@
--- PostgreSQL initialization script for YOLO mode
+-- PostgreSQL initialization script for Custom Configuration
 -- This script runs on first database creation
 
 -- Create extensions
@@ -25,5 +25,5 @@ GRANT ALL PRIVILEGES ON DATABASE sandbox_dev TO sandbox_user;
 -- Log initialization
 DO $$
 BEGIN
-    RAISE NOTICE 'Database initialized for YOLO mode development';
+    RAISE NOTICE 'Database initialized for Custom Configuration development';
 END $$;

@@ -119,4 +119,4 @@ This chain avoids the `/bin/bash` error completely.
 ---
 
 **Last Updated:** 2025-12-21
-**Version:** 4.5.0
+**Version:** 4.6.0

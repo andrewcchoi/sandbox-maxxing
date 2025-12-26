@@ -2,7 +2,7 @@
 description: Diagnose and fix common VS Code DevContainer issues
 ---
 
-Use and follow the sandbox-troubleshoot skill exactly as written.
+Use and follow the sandboxxer-troubleshoot skill exactly as written.
 
 Focus on identifying and resolving:
 - Container startup failures
@@ -15,4 +15,4 @@ Focus on identifying and resolving:
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Version:** 4.6.0

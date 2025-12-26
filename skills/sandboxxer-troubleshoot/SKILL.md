@@ -1,5 +1,5 @@
 ---
-name: sandbox-troubleshoot
+name: sandboxxer-troubleshoot
 description: Use when user encounters problems with Claude Code Docker sandbox - diagnose and fix container startup failures, network issues, service connectivity, firewall blocking, or permission errors
 ---
 
@@ -11,11 +11,11 @@ Diagnoses and resolves common issues with Claude Code Docker sandbox environment
 
 ## Usage
 
-This skill is invoked via the `/devcontainer:troubleshoot` command.
+This skill is invoked via the `/sandboxxer:troubleshoot` command.
 
 **Command:**
 ```
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 ```
 
 The skill will:
@@ -38,14 +38,14 @@ Use this skill when:
 - Claude Code CLI not working
 
 Do NOT use this skill when:
-- Setting up a new sandbox (use `/devcontainer:quickstart` instead)
-- Performing security audit (use `/devcontainer:audit` instead)
+- Setting up a new sandbox (use `/sandboxxer:quickstart` instead)
+- Performing security audit (use `/sandboxxer:audit` instead)
 
 ## Usage
 
 **Via slash command:**
 ```
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 ```
 
 **Via natural language:**
@@ -248,7 +248,7 @@ User reports container won't start:
 ```
 User: My container won't build. It says "ERROR: failed to solve"
 Assistant: I'll help troubleshoot this build failure.
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 ```
 
 The skill guides through checking Docker logs, Dockerfile syntax, network connectivity during build, and provides specific fix for the identified issue.
@@ -260,7 +260,7 @@ User can't connect to PostgreSQL:
 ```
 User: My app can't connect to PostgreSQL. Connection refused on port 5432.
 Assistant: I'll diagnose this database connectivity issue.
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 ```
 
 The skill checks if PostgreSQL service is running, verifies port mappings, tests connectivity from container, and ensures connection string is correct.
@@ -272,7 +272,7 @@ User's API calls are being blocked:
 ```
 User: I'm getting network errors when calling the OpenAI API. It works outside the container.
 Assistant: This sounds like a firewall configuration issue. Let me troubleshoot.
-/devcontainer:troubleshoot
+/sandboxxer:troubleshoot
 ```
 
 The skill checks firewall mode, reviews allowed domains list, tests connectivity to specific domain, and provides guidance on adding OpenAI domains to allowlist.
@@ -280,4 +280,4 @@ The skill checks firewall mode, reviews allowed domains list, tests connectivity
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Version:** 4.6.0

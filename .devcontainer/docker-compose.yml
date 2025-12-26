@@ -1,5 +1,5 @@
 # ============================================================================
-# Sandbox Plugin Development - Intermediate Mode Services
+# Sandbox Plugin Development Services
 # ============================================================================
 # Services for testing plugin examples locally
 # Includes: postgres, redis, rabbitmq with healthchecks

@@ -291,7 +291,7 @@ Skills reference these files using relative paths from the plugin root directory
 
 Reference: `skills/_shared/data/sandbox-templates.json`
 
-**Sandbox Templates** (recommended for Basic mode):
+**Sandbox Templates** (recommended for minimal configuration):
 - `docker/sandbox-templates:latest` - Default choice
 - `docker/sandbox-templates:claude-code` - Optimized for Claude Code
 ```
@@ -302,7 +302,7 @@ When updating these files:
 
 1. Ensure JSON schema validation passes
 2. Update version numbers in file metadata
-3. Test with both `/devcontainer:quickstart` and `/devcontainer:yolo-vibe-maxxing  commands
+3. Test with both `/sandboxxer:quickstart` and `/sandboxxer:yolo-vibe-maxxing  commands
 4. Update INVENTORY.json if files are added/removed
 
 ## Maintenance Schedule
@@ -323,9 +323,9 @@ These data files are tracked in git. When updating:
 
 For questions about data file structure or usage, see:
 - Plugin documentation: `../docs/ARCHITECTURE.md`
-- Mode guide: `../docs/MODES.md`
+- Mode guide: `../docs/SETUP-OPTIONS.md`
 
 ---
 
 **Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Version:** 4.6.0

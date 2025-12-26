@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-This guide helps diagnose and resolve common issues with Claude Code sandbox environments. For interactive troubleshooting assistance, use the `/devcontainer:troubleshoot` command.
+This guide helps diagnose and resolve common issues with Claude Code sandbox environments. For interactive troubleshooting assistance, use the `/sandboxxer:troubleshoot` command.
 
 ## Table of Contents
 
@@ -1289,7 +1289,7 @@ If you're still stuck:
 
 1. **Use Interactive Troubleshooting:**
    ```
-   /devcontainer:troubleshoot
+   /sandboxxer:troubleshoot
    ```
 
 2. **Check Logs:**
@@ -1298,10 +1298,11 @@ If you're still stuck:
    - Docker logs: Docker Desktop → Troubleshooting
 
 3. **Consult Documentation:**
-   - [Security Model](security-model.md)
-   - [Modes Guide](MODES.md)
+   - [Security Model](SECURITY-MODEL.md)
+   - [Setup Options Guide](SETUP-OPTIONS.md)
    - [Variables Guide](VARIABLES.md)
    - [Secrets Guide](SECRETS.md)
+   - [Windows-Specific Guide](../windows/README.md) - Windows troubleshooting and hooks
 
 4. **Ask for Help:**
    - GitHub Issues: Report bugs or ask questions
@@ -1310,5 +1311,5 @@ If you're still stuck:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

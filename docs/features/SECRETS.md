@@ -20,13 +20,13 @@ This guide covers secure credential handling in DevContainers, including Docker 
 
 | Secret Type        | Best Method                         | Mode          | Example                    |
 | ------------------ | ----------------------------------- | ------------- | -------------------------- |
-| API Keys (dev)     | VS Code Input                       | Advanced+ | GitHub token, OpenAI key   |
-| API Keys (prod)    | Docker Secret                       | Advanced+     | Production API credentials |
-| Database Passwords | VS Code Input (dev) / Secret (prod) | Basic+        | PostgreSQL password        |
-| Git Auth           | VS Code Input or SSH                | Advanced+ | GitHub/GitLab tokens       |
-| Cloud Credentials  | Host Mount                          | Advanced+     | ~/.aws, ~/.gcloud          |
-| Private Registry   | Docker Build Secret                 | Advanced+     | NPM, PyPI tokens           |
-| SSL Certificates   | Docker Secret                       | Advanced+     | TLS cert and key           |
+| API Keys (dev)     | VS Code Input                       | Domain Allowlist, Custom | GitHub token, OpenAI key   |
+| API Keys (prod)    | Docker Secret                       | Domain Allowlist, Custom     | Production API credentials |
+| Database Passwords | VS Code Input (dev) / Secret (prod) | All configurations        | PostgreSQL password        |
+| Git Auth           | VS Code Input or SSH                | Domain Allowlist, Custom | GitHub/GitLab tokens       |
+| Cloud Credentials  | Host Mount                          | Domain Allowlist, Custom     | ~/.aws, ~/.gcloud          |
+| Private Registry   | Docker Build Secret                 | Domain Allowlist, Custom     | NPM, PyPI tokens           |
+| SSL Certificates   | Docker Secret                       | Domain Allowlist, Custom     | TLS cert and key           |
 
 ## Why Secrets Management Matters
 
@@ -307,9 +307,9 @@ def get_db_password():
 - More complex setup
 - Not for local development
 
-## Mode-Specific Approaches
+## Secret Management by Configuration
 
-### Basic Mode
+### Minimal Configuration
 
 **Philosophy:** Development defaults, no secret management
 
@@ -332,9 +332,9 @@ environment:
 **Security Notes:**
 - Only for local development
 - Change all defaults for production
-- No network firewall
+- Container isolation only
 
-### Advanced Mode
+### Production-Ready Configuration
 
 **Philosophy:** Comprehensive secret management with multiple methods
 
@@ -375,7 +375,7 @@ RUN --mount=type=secret,id=npm_token \
 - Strict network controls
 - Resource limits
 
-### YOLO Mode
+### Custom Configuration
 
 **Philosophy:** Full flexibility, all secret methods available
 
@@ -758,8 +758,8 @@ secrets:
 ## Related Documentation
 
 - [Variables Guide](./VARIABLES.md) - Variable types and usage
-- [Modes Comparison](./MODES.md) - Secret counts per mode
-- [Security Model](./security-model.md) - Overall security approach
+- [Modes Comparison](./SETUP-OPTIONS.md) - Secret counts per mode
+- [Security Model](./SECURITY-MODEL.md) - Overall security approach
 - [Docker Build Secrets](https://docs.docker.com/build/building/secrets/)
 - [VS Code Variables Reference](https://code.visualstudio.com/docs/reference/variables-reference)
 
@@ -771,5 +771,5 @@ secrets:
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

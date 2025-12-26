@@ -223,9 +223,9 @@ docker build --ssh default .
 - API keys needed during build
 - Any credential that shouldn't persist in image
 
-## Mode-Specific Variable Usage
+## Variable Usage by Configuration
 
-### Basic Mode
+### Minimal Configuration
 
 **Variable Count:** 5 build ARGs, 6 runtime ENVs
 
@@ -252,7 +252,7 @@ docker build --ssh default .
 
 **Security:** Development defaults only, no secrets management
 
-### Advanced Mode
+### Production-Ready Configuration
 
 **Variable Count:** 12+ build ARGs, 20+ runtime ENVs, 5+ VS Code inputs, 5+ secrets
 
@@ -283,7 +283,7 @@ docker build --ssh default .
 }
 ```
 
-### YOLO Mode
+### Custom Configuration
 
 **Variable Count:** Custom (all available)
 
@@ -538,8 +538,8 @@ RUN --mount=type=secret,id=npm_token \
 ## Related Documentation
 
 - [Secrets Management](./SECRETS.md) - Comprehensive secret handling guide
-- [Modes Comparison](./MODES.md) - Variable counts per mode
-- [Security Model](./security-model.md) - Overall security approach
+- [Modes Comparison](./SETUP-OPTIONS.md) - Variable counts per mode
+- [Security Model](./SECURITY-MODEL.md) - Overall security approach
 - [Docker Build Variables](https://docs.docker.com/build/building/variables/)
 - [VS Code Variables Reference](https://code.visualstudio.com/docs/reference/variables-reference)
 
@@ -551,5 +551,5 @@ RUN --mount=type=secret,id=npm_token \
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

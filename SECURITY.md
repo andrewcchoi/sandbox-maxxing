@@ -7,10 +7,8 @@ We currently support the following versions with security updates:
 | Version | Supported          |
 | ------- | ------------------ |
 | 4.x     | :white_check_mark: |
-| 3.0.x   | :white_check_mark: |
-| 2.2.x   | :white_check_mark: |
-| 2.1.x   | :white_check_mark: |
-| 2.0.x   | :white_check_mark: |
+| 3.x     | :white_check_mark: |
+| 2.x     | :white_check_mark: |
 | < 2.0   | :x:                |
 
 ## Reporting a Vulnerability
@@ -78,19 +76,19 @@ When a security vulnerability is fixed:
 
 When using the Claude Code Sandbox Plugin, follow these security best practices:
 
-### 1. Mode Selection
+### 1. Firewall Configuration Selection
 
-Choose the appropriate security mode for your use case:
+Choose the appropriate network security for your use case:
 
-- **Basic Mode**: Use only for trusted code and quick prototyping
-- **Advanced Mode**: Use for production-like environments and sensitive work
-- **YOLO Mode**: Use only if you understand the security implications
+- **Container Isolation Only**: Use for trusted code and quick prototyping
+- **Domain Allowlist**: Use for production-like environments and sensitive work
+- **Custom Configuration**: Use only if you understand the security implications
 
-See [docs/features/security-model.md](docs/features/security-model.md) for detailed security model documentation.
+See [docs/features/SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) for detailed security model documentation.
 
-### 2. Firewall Configuration
+### 2. Network Restrictions
 
-- Use **strict firewall mode** (Advanced/YOLO) when working with untrusted code
+- Use **domain allowlist** when working with untrusted code
 - Regularly review and update allowed domain lists
 - Never disable firewall for production-like environments
 - Test firewall rules after making changes
@@ -107,10 +105,10 @@ See [docs/features/SECRETS.md](docs/features/SECRETS.md) for comprehensive secre
 
 ### 4. Container Security
 
-- Run containers as non-root user (default in all modes)
+- Run containers as non-root user (default in all configurations)
 - Keep base images updated (`docker pull` regularly)
 - Scan images for vulnerabilities (`docker scan` or `trivy`)
-- Minimize installed packages (use appropriate mode)
+- Minimize installed packages (use minimal configuration)
 - Drop unnecessary Linux capabilities
 
 ### 5. Network Security
@@ -143,12 +141,12 @@ See [docs/features/SECRETS.md](docs/features/SECRETS.md) for comprehensive secre
 
 ### Network Firewall
 
-**Basic mode:**
-- No firewall restrictions
-- Relies solely on container isolation
+**Container Isolation Only:**
+- No network firewall restrictions
+- Relies solely on Docker container isolation
 - Suitable for trusted code only
 
-**Advanced/YOLO strict modes:**
+**Domain Allowlist:**
 - Whitelist-based firewall
 - Prevents unauthorized network access
 - Protects against malicious dependencies
@@ -156,7 +154,7 @@ See [docs/features/SECRETS.md](docs/features/SECRETS.md) for comprehensive secre
 
 ### Threat Model
 
-See [docs/features/security-model.md](docs/features/security-model.md) for comprehensive threat model documentation.
+See [docs/features/SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) for comprehensive threat model documentation.
 
 ## Scope
 
@@ -220,11 +218,11 @@ We'll recognize security researchers who responsibly disclose vulnerabilities:
 
 For security-related questions that are not vulnerabilities:
 
-1. Check [docs/features/security-model.md](docs/features/security-model.md) for security architecture
+1. Check [docs/features/SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) for security architecture
 2. Use [GitHub Discussions](https://github.com/andrewcchoi/sandbox-maxxing/discussions) for public questions
 3. Open a regular GitHub issue for feature requests
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

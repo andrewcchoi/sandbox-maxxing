@@ -1,22 +1,21 @@
 # DevContainer Setup Options
 
-This guide explains the two ways to create a DevContainer with this plugin: **Interactive Setup** and **YOLO Mode**.
+This guide explains how to create a DevContainer with this plugin using **Interactive Setup**.
 
-## Quick Comparison
+## Interactive Setup Features
 
-| Feature                   | Interactive Setup (`/devcontainer:quickstart`) | YOLO Mode (`/devcontainer:yolo-vibe-maxxing )     |
-| ------------------------- | ----------------------------------------- | ------------------------------------- |
-| **Questions Asked**       | 2-3                                       | 0 (instant)                          |
-| **Project Type Selection**| Yes (Python/Node, Go, Ruby, Rust, Java)   | Python 3.12 + Node 20 (base)         |
-| **Firewall Customization**| Yes (interactive domain selection)        | Disabled (Docker isolation only)     |
-| **Setup Time**            | 2-3 minutes                               | <30 seconds                          |
-| **Best For**              | Custom requirements, security needs       | Quick start, sensible defaults       |
-| **Base Image**            | Base + optional language partial          | Base only (multi-language)           |
-| **Network Security**      | Optional strict firewall with allowlist   | No firewall (container isolation)    |
+| Feature                    | Details                                             |
+| -------------------------- | --------------------------------------------------- |
+| **Questions Asked**        | 2-3 (minimal configuration)                         |
+| **Project Type Selection** | Yes (Python/Node, Go, Ruby, Rust, Java)             |
+| **Firewall Customization** | Yes (optional, interactive domain selection)        |
+| **Setup Time**             | 2-3 minutes                                         |
+| **Base Image**             | Base + optional language partial                    |
+| **Network Security**       | Optional strict firewall with allowlist or disabled |
 
 ## Interactive Setup
 
-**Command:** `/devcontainer:quickstart`
+**Command:** `/sandboxxer:quickstart`
 
 **Philosophy:** Choose exactly what you need through an interactive flow.
 
@@ -73,7 +72,7 @@ Which domain categories should be allowed?
 ### Example: Go Project with Firewall
 
 ```
-You: /devcontainer:quickstart
+You: /sandboxxer:quickstart
 
 Claude: What type of project are you setting up?
 You: Go
@@ -91,9 +90,9 @@ Claude: Creating DevContainer...
         ✓ Done in 32 seconds
 ```
 
-## YOLO Mode
+## YOLO Vibe Maxxing Mode
 
-**Command:** `/devcontainer:yolo-vibe-maxxing 
+**Command:** `/sandboxxer:yolo-vibe-maxxing`
 
 **Philosophy:** Zero questions, instant setup with sensible defaults.
 
@@ -118,9 +117,9 @@ No questions asked - creates a DevContainer with:
 ### Example: Instant Setup
 
 ```
-You: /devcontainer:yolo
+You: /sandboxxer:yolo-vibe-maxxing
 
-Claude: Creating DevContainer (YOLO mode)...
+Claude: Creating DevContainer (YOLO Vibe Maxxing mode)...
         - Project: my-app
         - Language: Python 3.12 + Node 20
         - Firewall: Disabled
@@ -131,7 +130,7 @@ Claude: Creating DevContainer (YOLO mode)...
 
 ## Language Support
 
-Both options use the same base image (Python 3.12 + Node 20) with different approaches:
+The interactive setup uses a base image (Python 3.12 + Node 20) with optional language partials:
 
 ### Base Image Includes
 
@@ -142,29 +141,29 @@ Both options use the same base image (Python 3.12 + Node 20) with different appr
 - **DevOps tools:** Docker-in-Docker capabilities
 - **Firewall tools:** iptables, ipset (if firewall enabled)
 
-### Language Partials (Interactive Setup Only)
+### Language Partials (Interactive Quickstart Setup Only)
 
 When you select a language in interactive mode, a partial is **appended** to the base Dockerfile:
 
-| Language | What Gets Added |
-|----------|-----------------|
-| Go       | Go 1.22, gopls, delve, staticcheck, golint |
-| Ruby     | Ruby 3.3, bundler, rake, rspec, rubocop |
+| Language | What Gets Added                                       |
+| -------- | ----------------------------------------------------- |
+| Go       | Go 1.22, gopls, delve, staticcheck, golint            |
+| Ruby     | Ruby 3.3, bundler, rake, rspec, rubocop               |
 | Rust     | Rust toolchain, Cargo, rustfmt, clippy, rust-analyzer |
-| Java     | OpenJDK 21, Maven, Gradle |
+| Java     | OpenJDK 21, Maven, Gradle                             |
 
-**YOLO mode** uses only the base image - if you need additional language tools, use interactive setup.
+**YOLO Vibe Maxxing mode** uses only the base image - if you need additional language tools, use interactive setup.
 
 ## Firewall Behavior
 
-### No Firewall (YOLO Mode Default)
+### No Firewall (YOLO Vibe Maxxing Mode Default)
 
 - Relies on Docker container isolation
 - All outbound network traffic allowed
 - Fastest setup, no configuration needed
 - Suitable for trusted code and local development
 
-### Strict Firewall (Interactive Setup Option)
+### Strict Firewall (Interactive Quickstart Setup Option)
 
 - Whitelist-based: deny by default
 - Domain categories map to ~10-100 domains each
@@ -183,7 +182,7 @@ When you select a language in interactive mode, a partial is **appended** to the
 
 ### Dockerfile Build Process
 
-**Interactive Setup:**
+**Interactive Quickstart Setup:**
 ```bash
 # Copy base dockerfile
 cp base.dockerfile .devcontainer/Dockerfile
@@ -195,7 +194,7 @@ cat partials/go.dockerfile >> .devcontainer/Dockerfile  # example
 # (or copy disabled.sh if firewall not wanted)
 ```
 
-**YOLO Mode:**
+**YOLO Vibe Maxxing Mode:**
 ```bash
 # Copy templates as-is
 cp base.dockerfile .devcontainer/Dockerfile
@@ -205,7 +204,7 @@ cp init-firewall/disabled.sh .devcontainer/init-firewall.sh
 
 ### Files Created
 
-Both modes create the same file structure:
+Interactive Quickstart setup creates the following file structure:
 
 ```
 .devcontainer/
@@ -221,10 +220,10 @@ data/
 ## See Also
 
 - [Customization Guide](CUSTOMIZATION.md) - Modify templates and add services
-- [Security Model](security-model.md) - Firewall architecture and domain management
+- [Security Model](SECURITY-MODEL.md) - Firewall architecture and domain management
 - [Troubleshooting](TROUBLESHOOTING.md) - Common issues and solutions
 
 ---
 
-**Last Updated:** 2025-12-24
-**Version:** 4.5.0
+**Last Updated:** 2025-12-25
+**Version:** 4.6.0

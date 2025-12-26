@@ -1,6 +1,6 @@
 metadata:
-  mode: yolo
-  description: "YOLO mode with Python backend, comprehensive configuration, full control"
+  config: custom
+  description: "Custom configuration with Python backend, comprehensive configuration, full control"
   expected_files:
     - .devcontainer/devcontainer.json
     - .devcontainer/Dockerfile
