@@ -131,10 +131,15 @@ RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
   fi
 
 # Copy domain allowlist and extract all domains (Issue #32)
-COPY data/allowable-domains.json /tmp/allowable-domains.json
-RUN jq -r '[.categories | to_entries[] | .value | ((.domains // []), (.wildcard_domains // []), (.sub_categories // {} | to_entries[] | .value | (.domains // []), (.wildcard_domains // [])))] | flatten | unique | .[]' \
-    /tmp/allowable-domains.json > /etc/claude-allowed-domains.txt && \
-    rm /tmp/allowable-domains.json
+# Wildcard makes COPY succeed even if file doesn't exist
+COPY data/allowable-domains.jso[n] /tmp/
+RUN if [ -f /tmp/allowable-domains.json ]; then \
+      jq -r '[.categories | to_entries[] | .value | ((.domains // []), (.wildcard_domains // []), (.sub_categories // {} | to_entries[] | .value | (.domains // []), (.wildcard_domains // [])))] | flatten | unique | .[]' \
+        /tmp/allowable-domains.json > /etc/claude-allowed-domains.txt && \
+      rm /tmp/allowable-domains.json; \
+    else \
+      touch /etc/claude-allowed-domains.txt; \
+    fi
 
 USER node
 
