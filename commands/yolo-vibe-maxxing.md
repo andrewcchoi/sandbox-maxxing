@@ -82,6 +82,7 @@ cp "$TEMPLATES/base.dockerfile" .devcontainer/Dockerfile
 cp "$TEMPLATES/devcontainer.json" .devcontainer/
 cp "$TEMPLATES/docker-compose.yml" ./
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
+cp "$TEMPLATES/setup-frontend.sh" .devcontainer/
 
 # Generate no-op firewall script (YOLO mode)
 cat > .devcontainer/init-firewall.sh << 'EOF'
@@ -123,6 +124,7 @@ echo "Files created:"
 echo "  .devcontainer/Dockerfile"
 echo "  .devcontainer/devcontainer.json"
 echo "  .devcontainer/setup-claude-credentials.sh"
+echo "  .devcontainer/setup-frontend.sh"
 echo "  docker-compose.yml"
 echo ""
 echo "Next: Open in VS Code → 'Reopen in Container'"

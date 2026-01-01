@@ -995,6 +995,7 @@ fi
 
 # Copy credential setup script
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
+cp "$TEMPLATES/setup-frontend.sh" .devcontainer/
 
 # Copy data files
 cp "$TEMPLATES/data/allowable-domains.json" data/
@@ -1275,6 +1276,7 @@ if [ "$NEEDS_FIREWALL" = "Yes" ]; then
   echo "  .devcontainer/init-firewall.sh";
 fi
 echo "  .devcontainer/setup-claude-credentials.sh"
+echo "  .devcontainer/setup-frontend.sh"
 echo "  docker-compose.yml"
 echo "  data/allowable-domains.json"
 echo "  .env.example"
