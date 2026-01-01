@@ -8,6 +8,7 @@
 #   INSTALL_SHELL_EXTRAS=true  - git-delta, zsh plugins (default: true)
 #   INSTALL_DEV_TOOLS=true     - Language dev tools, linters (default: true)
 #   INSTALL_CA_CERT=false      - Corporate CA certificate (default: false)
+#   ENABLE_FIREWALL=false      - Install firewall packages and script (default: false)
 #
 # PROXY-FRIENDLY: Set INSTALL_SHELL_EXTRAS/INSTALL_DEV_TOOLS to "false" for
 # minimal builds behind corporate proxies that block GitHub releases.
@@ -20,6 +21,7 @@
 ARG INSTALL_SHELL_EXTRAS=true
 ARG INSTALL_DEV_TOOLS=true
 ARG INSTALL_CA_CERT=false
+ARG ENABLE_FIREWALL=false
 
 # === MULTI-STAGE SOURCES ===
 # Stage 1: Get Python + uv from official Astral image
@@ -32,13 +34,14 @@ FROM node:20-bookworm-slim
 ARG INSTALL_SHELL_EXTRAS=true
 ARG INSTALL_DEV_TOOLS=true
 ARG INSTALL_CA_CERT=false
+ARG ENABLE_FIREWALL=false
 
 # Timezone configuration
 ARG TZ=America/Los_Angeles
 ENV TZ="$TZ"
 
 
-# Install system packages including iptables for firewall
+# Install base system packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
   # Core utilities
   git vim nano less procps sudo unzip wget curl ca-certificates gnupg gnupg2 \
@@ -49,9 +52,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   # GitHub CLI
   gh \
   build-essential \
-  # Network security tools (firewall)
-  iptables ipset iproute2 dnsutils \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Firewall packages (conditionally installed based on ENABLE_FIREWALL)
+RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
+    apt-get update && apt-get install -y --no-install-recommends \
+      iptables ipset iproute2 dnsutils \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    echo "Firewall packages installed"; \
+  else \
+    echo "Firewall packages skipped (YOLO mode)"; \
+  fi
 
 # Corporate CA certificate support (for SSL inspection)
 # To use: place your CA cert as 'corporate-ca.crt' in .devcontainer/ and set INSTALL_CA_CERT=true
@@ -130,16 +141,13 @@ RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
     rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"; \
   fi
 
-# Copy domain allowlist and extract all domains (Issue #32)
-# Wildcard makes COPY succeed even if file doesn't exist
-COPY data/allowable-domains.jso[n] /tmp/
-RUN if [ -f /tmp/allowable-domains.json ]; then \
-      jq -r '[.categories | to_entries[] | .value | ((.domains // []), (.wildcard_domains // []), (.sub_categories // {} | to_entries[] | .value | (.domains // []), (.wildcard_domains // [])))] | flatten | unique | .[]' \
-        /tmp/allowable-domains.json > /etc/claude-allowed-domains.txt && \
-      rm /tmp/allowable-domains.json; \
-    else \
-      touch /etc/claude-allowed-domains.txt; \
-    fi
+# Domain allowlist - conditional based on ENABLE_FIREWALL
+RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
+    echo "Domain allowlist will be configured by init-firewall.sh"; \
+  else \
+    touch /etc/claude-allowed-domains.txt && \
+    echo "Empty domain allowlist created (YOLO mode)"; \
+  fi
 
 USER node
 
@@ -232,12 +240,27 @@ RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
 
 # === AZURE TOOLING (inserted when deploy-to-azure selected) ===
 
-# Firewall initialization script
-COPY .devcontainer/init-firewall.sh /usr/local/bin/
+# Firewall initialization script - conditional setup
+# File is copied by setup commands (quickstart or yolo-vibe-maxxing)
+COPY .devcontainer/init-firewall.s[h] /tmp/firewall/
+
 USER root
-RUN chmod +x /usr/local/bin/init-firewall.sh && \
+RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
+    # Verify firewall script exists when firewall is enabled
+    if [ ! -f /tmp/firewall/init-firewall.sh ]; then \
+      echo "ERROR: ENABLE_FIREWALL=true but init-firewall.sh not found" && exit 1; \
+    fi && \
+    cp /tmp/firewall/init-firewall.sh /usr/local/bin/ && \
+    chmod +x /usr/local/bin/init-firewall.sh; \
+  else \
+    # Create no-op firewall script for YOLO mode
+    printf '#!/bin/bash\necho "Firewall disabled (YOLO mode)"\nexit 0\n' > /usr/local/bin/init-firewall.sh && \
+    chmod +x /usr/local/bin/init-firewall.sh; \
+  fi && \
+  # Sudoers entry needed for both modes (postStartCommand compatibility)
   echo "node ALL=(root) NOPASSWD: SETENV: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
-  chmod 0440 /etc/sudoers.d/node-firewall
+  chmod 0440 /etc/sudoers.d/node-firewall && \
+  rm -rf /tmp/firewall
 USER node
 
 # Set the default command

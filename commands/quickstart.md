@@ -862,6 +862,10 @@ echo ""
 
 ```bash
 if [ "$NEEDS_FIREWALL" = "Yes" ]; then
+  # Update .env to enable firewall
+  sed -i 's/ENABLE_FIREWALL=false/ENABLE_FIREWALL=true/' .env || \
+    sed 's/ENABLE_FIREWALL=false/ENABLE_FIREWALL=true/' .env > .env.tmp && mv .env.tmp .env
+
   # Generate firewall script from selected categories
   cp "$TEMPLATES/init-firewall.sh" .devcontainer/init-firewall.sh;
 
@@ -1050,6 +1054,7 @@ GITHUB_TOKEN=
 INSTALL_SHELL_EXTRAS=true
 INSTALL_DEV_TOOLS=true
 INSTALL_CA_CERT=false
+ENABLE_FIREWALL=false
 EOF
 echo "Generated .env file with port configuration"
 

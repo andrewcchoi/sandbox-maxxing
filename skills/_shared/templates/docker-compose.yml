@@ -14,6 +14,7 @@ services:
         - INSTALL_SHELL_EXTRAS=${INSTALL_SHELL_EXTRAS:-true}
         - INSTALL_DEV_TOOLS=${INSTALL_DEV_TOOLS:-true}
         - INSTALL_CA_CERT=${INSTALL_CA_CERT:-false}
+        - ENABLE_FIREWALL=${ENABLE_FIREWALL:-false}
     ports:
       - "${APP_PORT:-8000}:8000"
       - "${FRONTEND_PORT:-3000}:3000"

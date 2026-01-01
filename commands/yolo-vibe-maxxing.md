@@ -54,7 +54,7 @@ TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 DATA="$PLUGIN_ROOT/skills/_shared/templates/data"
 
 # Create directories
-mkdir -p .devcontainer data
+mkdir -p .devcontainer
 
 # Copy templates
 cp "$TEMPLATES/base.dockerfile" .devcontainer/Dockerfile
@@ -62,15 +62,20 @@ cp "$TEMPLATES/devcontainer.json" .devcontainer/
 cp "$TEMPLATES/docker-compose.yml" ./
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
 
-# Create minimal no-op firewall script (Dockerfile always expects it)
-cat > .devcontainer/init-firewall.sh << 'NOOP_EOF'
+# Generate no-op firewall script (YOLO mode)
+cat > .devcontainer/init-firewall.sh << 'EOF'
 #!/bin/bash
-# Firewall disabled - this is a no-op script
-# The Dockerfile requires this file to exist even when firewall is not enabled
-echo "Firewall is disabled. Using Docker container isolation only."
+# YOLO Mode - No Firewall
+echo "Firewall disabled (YOLO mode) - using Docker container isolation"
 exit 0
-NOOP_EOF
+EOF
 chmod +x .devcontainer/init-firewall.sh
+
+# Create .env with ENABLE_FIREWALL=false
+cat > .env << 'EOF'
+# YOLO Mode Configuration
+ENABLE_FIREWALL=false
+EOF
 
 # Replace placeholders (portable sed without -i)
 for f in .devcontainer/devcontainer.json docker-compose.yml; do
