@@ -904,6 +904,37 @@ if [ "$NEEDS_FIREWALL" = "Yes" ]; then
     esac;
   done;
 
+  # Add language-specific package manager domains based on SELECTED_PARTIALS
+  for partial in "${SELECTED_PARTIALS[@]}"; do
+    case "$partial" in
+      "go")
+        echo "Adding Go domains for selected language...";
+        FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.go.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/');
+        FIREWALL_DOMAINS+="\n";
+        ;;
+      "rust")
+        echo "Adding Rust domains for selected language...";
+        FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.rust.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/');
+        FIREWALL_DOMAINS+="\n";
+        ;;
+      "ruby")
+        echo "Adding Ruby domains for selected language...";
+        FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.ruby.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/');
+        FIREWALL_DOMAINS+="\n";
+        ;;
+      "java")
+        echo "Adding Maven/Java domains for selected language...";
+        FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.maven.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/');
+        FIREWALL_DOMAINS+="\n";
+        ;;
+      "php")
+        echo "Adding PHP domains for selected language...";
+        FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.php.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/');
+        FIREWALL_DOMAINS+="\n";
+        ;;
+    esac;
+  done;
+
   # Add Anthropic services (always required)
   ANTHROPIC_DOMAINS=$(jq -r '.categories.anthropic_services.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/');
 

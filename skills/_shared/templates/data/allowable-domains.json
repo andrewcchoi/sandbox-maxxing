@@ -167,7 +167,7 @@
           ]
         },
         "go": {
-          "description": "Go modules",
+          "description": "Go modules and toolchain downloads",
           "domains": [
             "proxy.golang.org",
             "sum.golang.org",
@@ -175,7 +175,11 @@
             "golang.org",
             "www.golang.org",
             "goproxy.io",
-            "pkg.go.dev"
+            "pkg.go.dev",
+            "go.dev",
+            "www.go.dev",
+            "dl.google.com",
+            "storage.googleapis.com"
           ]
         },
         "maven": {

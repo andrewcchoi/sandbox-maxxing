@@ -25,8 +25,8 @@ IFS=$'\n\t'       # Stricter word splitting
 # CONFIGURATION
 # ----------------------------------------------------------------------------
 
-# Firewall mode is always strict for domain allowlist configuration
-FIREWALL_MODE="strict"
+# Firewall mode: use environment variable if set, default to strict
+FIREWALL_MODE="${FIREWALL_MODE:-strict}"
 
 # CUSTOMIZE: Add your project-specific domains to this array
 # These domains will be allowed in addition to the defaults below
@@ -91,6 +91,21 @@ ALLOWED_DOMAINS=(
   "pypi.python.org"
   "pypa.io"
   "www.pypa.io"
+  # ===END_CATEGORY===
+
+  # ===CATEGORY:package_managers_go===
+  # Go modules and toolchain downloads
+  "proxy.golang.org"
+  "sum.golang.org"
+  "index.golang.org"
+  "golang.org"
+  "www.golang.org"
+  "goproxy.io"
+  "pkg.go.dev"
+  "go.dev"
+  "www.go.dev"
+  "dl.google.com"
+  "storage.googleapis.com"
   # ===END_CATEGORY===
 
   # ===CATEGORY:linux_distributions===
