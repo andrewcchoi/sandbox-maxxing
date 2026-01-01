@@ -1,0 +1,54 @@
+{
+  "models": [
+    {
+      "name": "llama3.2:3b",
+      "size_gb": 2.0,
+      "specialty": "Fast general-purpose assistant, good for chat and code",
+      "downloads": 50000000
+    },
+    {
+      "name": "qwen2.5:7b",
+      "size_gb": 4.7,
+      "specialty": "Strong reasoning and coding, multilingual support",
+      "downloads": 25000000
+    },
+    {
+      "name": "mistral:7b",
+      "size_gb": 4.1,
+      "specialty": "Balanced performance for reasoning and creative tasks",
+      "downloads": 20000000
+    },
+    {
+      "name": "codellama:7b",
+      "size_gb": 3.8,
+      "specialty": "Code generation and completion specialist",
+      "downloads": 15000000
+    },
+    {
+      "name": "phi3:mini",
+      "size_gb": 2.3,
+      "specialty": "Microsoft's compact model for reasoning tasks",
+      "downloads": 10000000
+    },
+    {
+      "name": "gemma2:9b",
+      "size_gb": 5.4,
+      "specialty": "Google's efficient model for diverse tasks",
+      "downloads": 8000000
+    },
+    {
+      "name": "deepseek-coder:6.7b",
+      "size_gb": 3.8,
+      "specialty": "Specialized for code understanding and generation",
+      "downloads": 7000000
+    },
+    {
+      "name": "neural-chat:7b",
+      "size_gb": 4.1,
+      "specialty": "Optimized for conversational AI applications",
+      "downloads": 5000000
+    }
+  ],
+  "max_size_gb": 10,
+  "default_limit": 4
+}

@@ -31,7 +31,7 @@
     }
   },
   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
-  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
+  "postStartCommand": "sudo FIREWALL_MODE=\"$FIREWALL_MODE\" /usr/local/bin/init-firewall.sh",
 
   "forwardPorts": [8000, 3000, 5432, 6379],
 

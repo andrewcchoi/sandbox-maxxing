@@ -24,6 +24,8 @@ services:
     volumes:
       # Workspace volume with optimal caching
       - .:/workspace:cached
+      # Issue #108: Anonymous volume - isolates .venv from bind mount
+      - /workspace/.venv
       # Host Claude config (read-only)
       - ~/.claude:/tmp/host-claude:ro
       # Named volumes for better performance

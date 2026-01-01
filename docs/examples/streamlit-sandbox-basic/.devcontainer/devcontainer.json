@@ -9,7 +9,7 @@
       "extensions": ["ms-python.python"]
     }
   },
-  "postStartCommand": ".devcontainer/init-firewall.sh",
+  "postStartCommand": "sudo FIREWALL_MODE=\"$FIREWALL_MODE\" /usr/local/bin/init-firewall.sh",
   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh && uv add -r requirements.txt",
   "forwardPorts": [8501, 5432, 6379]
 }

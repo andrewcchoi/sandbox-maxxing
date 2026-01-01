@@ -28,6 +28,7 @@ services:
       - NET_RAW
     volumes:
       - .:/workspace:cached
+      - /workspace/.venv                           # Issue #108: Anonymous volume - isolates .venv from bind mount
       - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
       - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
       - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)
@@ -78,6 +79,29 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - dev-network
+
+  # ===========================================================================
+  # AI Services (activate with: docker compose --profile ai up)
+  # ===========================================================================
+  ollama:
+    profiles: [ai]
+    image: ollama/ollama:latest
+    container_name: {{PROJECT_NAME}}-ollama
+    restart: unless-stopped
+    environment:
+      OLLAMA_MODELS: ${OLLAMA_MODELS:-}
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     networks:
       - dev-network
 
@@ -160,5 +184,7 @@ volumes:
   commandhistory:
     driver: local
   claude-data:
+    driver: local
+  ollama_models:
     driver: local
 

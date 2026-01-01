@@ -67,9 +67,9 @@
 
   "initializeCommand": "if grep -q '{{PROJECT_NAME}}-workspace-volume' docker-compose.yml 2>/dev/null; then docker volume create {{PROJECT_NAME}}-workspace-volume 2>/dev/null || true; fi",
   "onCreateCommand": "rm -rf /workspace/.venv 2>/dev/null || true; if [ -d '/tmp/host-source' ] && [ -z \"$(ls -A /workspace 2>/dev/null)\" ]; then cp -r /tmp/host-source/. /workspace/; fi",
-  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
+  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh && .devcontainer/setup-frontend.sh",
   "updateContentCommand": "echo '🧹 Cleaning stale .venv after rebuild...' && rm -rf /workspace/.venv 2>/dev/null || true",
-  "postStartCommand": "if [ -f '.devcontainer/init-firewall.sh' ]; then .devcontainer/init-firewall.sh; fi && echo 'DevContainer ready!'",
+  "postStartCommand": "if [ -f '.devcontainer/init-firewall.sh' ]; then sudo FIREWALL_MODE=\"$FIREWALL_MODE\" /usr/local/bin/init-firewall.sh; fi && echo 'DevContainer ready!'",
   "postAttachCommand": "",
   "waitFor": "postCreateCommand",
 

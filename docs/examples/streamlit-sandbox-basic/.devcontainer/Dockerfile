@@ -75,6 +75,14 @@ WORKDIR /workspace
 # Switch to non-root user
 USER node
 
+# Download fzf shell integration files (not included in Debian package)
+# Issue #110: Debian fzf package doesn't include shell integration scripts
+RUN mkdir -p /usr/share/doc/fzf/examples && \
+    wget -q -O /usr/share/doc/fzf/examples/key-bindings.zsh \
+      https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.zsh && \
+    wget -q -O /usr/share/doc/fzf/examples/completion.zsh \
+      https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.zsh
+
 # Install ZSH with Powerlevel10k (as non-root user)
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
 ENV SHELL=/bin/zsh

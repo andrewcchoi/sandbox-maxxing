@@ -9,7 +9,7 @@
       "extensions": ["ms-python.python", "dbaeumer.vscode-eslint"]
     }
   },
-  "postStartCommand": ".devcontainer/init-firewall.sh",
+  "postStartCommand": "sudo FIREWALL_MODE=\"$FIREWALL_MODE\" /usr/local/bin/init-firewall.sh",
   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh && cd backend && uv add -r requirements.txt && cd ../frontend && npm install",
   "forwardPorts": [8000, 5173, 5432, 6379]
 }

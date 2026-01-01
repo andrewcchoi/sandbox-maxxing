@@ -142,6 +142,16 @@ USER node
 ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
 ENV PATH=$PATH:/usr/local/share/npm-global/bin
 
+# Download fzf shell integration files (not included in Debian package)
+# Issue #110: Debian fzf package doesn't include shell integration scripts
+RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
+    mkdir -p /usr/share/doc/fzf/examples && \
+    wget -q -O /usr/share/doc/fzf/examples/key-bindings.zsh \
+      https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.zsh && \
+    wget -q -O /usr/share/doc/fzf/examples/completion.zsh \
+      https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.zsh; \
+  fi
+
 # ZSH with Powerlevel10k - conditional on INSTALL_SHELL_EXTRAS
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
 ENV SHELL=/bin/zsh
@@ -221,7 +231,7 @@ RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
 COPY .devcontainer/init-firewall.sh /usr/local/bin/
 USER root
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
-  echo "node ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
+  echo "node ALL=(root) NOPASSWD: SETENV: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
   chmod 0440 /etc/sudoers.d/node-firewall
 USER node
 
