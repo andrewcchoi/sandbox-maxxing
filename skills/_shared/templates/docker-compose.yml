@@ -22,6 +22,7 @@ services:
       - NET_RAW
     volumes:
       - .:/workspace:cached
+      - /workspace/.venv                           # Issue #108: Anonymous volume - isolates .venv from bind mount
       - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
       - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
       - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)

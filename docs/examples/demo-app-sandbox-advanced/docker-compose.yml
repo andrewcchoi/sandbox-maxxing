@@ -11,6 +11,7 @@ services:
         NODE_VERSION: "20"
     volumes:
       - .:/workspace:cached
+      - /workspace/.venv  # Issue #108: Anonymous volume - isolates .venv from bind mount
       - ~/.claude:/tmp/host-claude:ro  # Host Claude config (read-only)
     environment:
       # Database Configuration
