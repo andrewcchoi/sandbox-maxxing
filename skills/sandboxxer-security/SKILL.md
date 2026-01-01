@@ -259,7 +259,7 @@ npm audit fix
 **Example Configuration**:
 ```json
 {
-  "initializeCommand": "echo 'Running on host!'",
+  "initializeCommand": ["docker", "version"],
   "onCreateCommand": "npm install",
   "postCreateCommand": "npm run build",
   "postAttachCommand": "echo 'Container attached'"

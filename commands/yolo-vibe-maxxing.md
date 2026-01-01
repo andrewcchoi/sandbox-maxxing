@@ -62,6 +62,16 @@ cp "$TEMPLATES/devcontainer.json" .devcontainer/
 cp "$TEMPLATES/docker-compose.yml" ./
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
 
+# Create minimal no-op firewall script (Dockerfile always expects it)
+cat > .devcontainer/init-firewall.sh << 'NOOP_EOF'
+#!/bin/bash
+# Firewall disabled - this is a no-op script
+# The Dockerfile requires this file to exist even when firewall is not enabled
+echo "Firewall is disabled. Using Docker container isolation only."
+exit 0
+NOOP_EOF
+chmod +x .devcontainer/init-firewall.sh
+
 # Replace placeholders (portable sed without -i)
 for f in .devcontainer/devcontainer.json docker-compose.yml; do
   sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$f" > "$f.tmp" && mv "$f.tmp" "$f";
