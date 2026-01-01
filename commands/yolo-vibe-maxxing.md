@@ -53,6 +53,27 @@ PROJECT_NAME="$(basename $(pwd))"
 TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 DATA="$PLUGIN_ROOT/skills/_shared/templates/data"
 
+# Initialize port variables with defaults
+APP_PORT=8000
+FRONTEND_PORT=3000
+POSTGRES_PORT=5432
+REDIS_PORT=6379
+
+# Function to find the next available port
+find_available_port() {
+  local port=$1
+  while lsof -i :$port > /dev/null 2>&1 || netstat -tuln 2>/dev/null | grep -q ":$port "; do
+    port=$((port + 1))
+  done
+  echo $port
+}
+
+# Check and reassign ports if occupied
+APP_PORT=$(find_available_port $APP_PORT)
+FRONTEND_PORT=$(find_available_port $FRONTEND_PORT)
+POSTGRES_PORT=$(find_available_port $POSTGRES_PORT)
+REDIS_PORT=$(find_available_port $REDIS_PORT)
+
 # Create directories
 mkdir -p .devcontainer
 
@@ -79,7 +100,12 @@ EOF
 
 # Replace placeholders (portable sed without -i)
 for f in .devcontainer/devcontainer.json docker-compose.yml; do
-  sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$f" > "$f.tmp" && mv "$f.tmp" "$f";
+  sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g; \
+       s/{{APP_PORT}}/$APP_PORT/g; \
+       s/{{FRONTEND_PORT}}/$FRONTEND_PORT/g; \
+       s/{{POSTGRES_PORT}}/$POSTGRES_PORT/g; \
+       s/{{REDIS_PORT}}/$REDIS_PORT/g" \
+    "$f" > "$f.tmp" && mv "$f.tmp" "$f";
 done
 
 # Make scripts executable
@@ -91,6 +117,7 @@ echo "=========================================="
 echo "Project: $PROJECT_NAME"
 echo "Language: Python 3.12 + Node 20"
 echo "Firewall: Disabled"
+echo "Ports: App=$APP_PORT, Frontend=$FRONTEND_PORT, PostgreSQL=$POSTGRES_PORT, Redis=$REDIS_PORT"
 echo ""
 echo "Files created:"
 echo "  .devcontainer/Dockerfile"
