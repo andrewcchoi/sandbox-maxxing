@@ -371,24 +371,6 @@ Update your usage:
 - ~70% reduction in skill file sizes
 - Eliminated template duplication
 
-## [Unreleased]
-
-### Changed
-- Reorganized repository structure for better clarity
-  - Moved maintenance files to `.internal/`: repo-keeper, audits, archive, plans, legacy-templates, tests, scripts, bin, hooks, node_modules
-  - Moved examples to `docs/examples/`
-  - Core plugin files remain at root: .claude-plugin/, agents/, commands/, data/, skills/, templates/master/
-
-### Fixed
-- **Template path discovery failure**: Fixed silent template copy failures when running from user projects
-  - Root cause: Plugin directory discovery using `find ~/.claude/plugins` was unreliable
-  - Solution: Reorganized templates with hybrid approach using skill-relative paths
-  - Changed: Mode-specific files moved to `skills/*/templates/` for self-contained discovery
-  - Changed: Shared files (Dockerfiles, compose, credentials) moved to `templates/shared/`
-  - Result: Templates now work reliably regardless of execution directory
-  - Updated all four skill files with simpler path discovery logic
-  - Updated INVENTORY.json and ARCHITECTURE.md with new structure
-
 ## [3.0.0] - 2025-12-19
 
 ### Major Breaking Changes

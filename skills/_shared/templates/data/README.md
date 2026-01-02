@@ -18,7 +18,7 @@ Official Docker images registry for common languages, databases, and tools.
 
 **Usage in skills:**
 ```markdown
-Reference: `skills/_shared/data/official-images.json`
+Reference: `skills/_shared/templates/data/official-images.json`
 ```
 
 **Update procedure:**
@@ -39,7 +39,7 @@ Azure regions catalog for cloud deployment location selection.
 
 **Usage in skills:**
 ```markdown
-Reference: `skills/_shared/data/azure-regions.json`
+Reference: `skills/_shared/templates/data/azure-regions.json`
 
 # Get recommended regions
 Use `regions.recommended` array for common deployments
@@ -64,7 +64,7 @@ Ollama local LLM models catalog for sandbox AI integration.
 
 **Usage in skills:**
 ```markdown
-Reference: `skills/_shared/data/ollama-models.json`
+Reference: `skills/_shared/templates/data/ollama-models.json`
 
 # Get popular models under size limit
 Filter models by `size_gb <= max_size_gb`
@@ -91,7 +91,7 @@ Firewall domain allowlist organized by category for different mode defaults.
 
 **Usage in skills:**
 ```markdown
-Reference: `skills/_shared/data/allowable-domains.json`
+Reference: `skills/_shared/templates/data/allowable-domains.json`
 
 # Extract domains for specific mode
 Use `mode_defaults.<mode_name>` to get included categories
@@ -118,7 +118,7 @@ MCP (Model Context Protocol) servers catalog for configuring Claude Code integra
 
 **Usage in skills:**
 ```markdown
-Reference: `skills/_shared/data/mcp-servers.json`
+Reference: `skills/_shared/templates/data/mcp-servers.json`
 
 # Get default servers for a mode
 Use `mode_defaults.<mode_name>.servers` array
@@ -159,7 +159,7 @@ VS Code extensions catalog organized by language and category.
 
 **Usage in skills:**
 ```markdown
-Reference: `skills/_shared/data/vscode-extensions.json`
+Reference: `skills/_shared/templates/data/vscode-extensions.json`
 
 # Get extensions for language
 Use categories.<language>.extensions array
@@ -196,13 +196,13 @@ Skills reference these files using relative paths from the plugin root directory
 
 **Example skill reference:**
 ```markdown
-## Available Base Images
+## Official Docker Images
 
-Reference: `skills/_shared/data/sandbox-templates.json`
+Reference: `skills/_shared/templates/data/official-images.json`
 
-**Sandbox Templates** (recommended for minimal configuration):
-- `docker/sandbox-templates:latest` - Default choice
-- `docker/sandbox-templates:claude-code` - Optimized for Claude Code
+**Available Images:**
+- Python, Node.js, Go, Rust, Ruby, PHP
+- PostgreSQL, MySQL, Redis, MongoDB
 ```
 
 ## Maintenance

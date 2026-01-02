@@ -152,7 +152,6 @@ skills/
 │   │   │   ├── go.dockerfile          # Go toolchain
 │   │   │   ├── ruby.dockerfile        # Ruby toolchain
 │   │   │   ├── rust.dockerfile        # Rust toolchain
-│   │   │   ├── java.dockerfile        # Java toolchain
 │   │   │   ├── cpp-clang.dockerfile   # C++ Clang
 │   │   │   ├── cpp-gcc.dockerfile     # C++ GCC
 │   │   │   ├── php.dockerfile         # PHP 8.3
@@ -160,7 +159,6 @@ skills/
 │   │   └── data/                      # Reference catalogs
 │   │       ├── allowable-domains.json
 │   │       ├── azure-regions.json
-│   │       ├── sandbox-templates.json
 │   │       ├── official-images.json
 │   │       ├── uv-images.json
 │   │       ├── mcp-servers.json

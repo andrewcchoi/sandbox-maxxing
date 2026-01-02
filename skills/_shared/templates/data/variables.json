@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Environment variables catalog for DevContainer configurations",
+  "metadata": {
+    "last_updated": "2026-01-02",
+    "usage": "Skills reference this file for variable validation and documentation"
+  },
+  "variable_types": {
+    "build_args": {
+      "description": "Dockerfile ARG values - build-time only",
+      "variables": {
+        "PYTHON_VERSION": {"default": "3.12", "description": "Python version for base image"},
+        "NODE_VERSION": {"default": "20", "description": "Node.js version"},
+        "GO_VERSION": {"default": "1.22", "description": "Go version"},
+        "RUST_VERSION": {"default": "stable", "description": "Rust toolchain version"},
+        "TZ": {"default": "UTC", "description": "Timezone for container"},
+        "DEBIAN_FRONTEND": {"default": "noninteractive", "description": "Suppress apt prompts"}
+      }
+    },
+    "runtime_env": {
+      "description": "Environment variables available at runtime",
+      "variables": {
+        "NODE_ENV": {"default": "development", "description": "Application environment"},
+        "PYTHONUNBUFFERED": {"default": "1", "description": "Disable Python output buffering"},
+        "PYTHONDONTWRITEBYTECODE": {"default": "1", "description": "Disable .pyc file generation"},
+        "GOPATH": {"default": "/home/node/go", "description": "Go workspace path"}
+      }
+    },
+    "compose_env": {
+      "description": "Docker Compose service variables",
+      "variables": {
+        "POSTGRES_USER": {"default": "sandbox_user", "description": "PostgreSQL username"},
+        "POSTGRES_PASSWORD": {"default": "devpassword", "description": "PostgreSQL password (dev only)"},
+        "POSTGRES_DB": {"default": "sandbox_dev", "description": "PostgreSQL database name"},
+        "REDIS_HOST": {"default": "redis", "description": "Redis service hostname"},
+        "REDIS_PORT": {"default": "6379", "description": "Redis service port"}
+      }
+    },
+    "placeholder": {
+      "description": "Template placeholders replaced during setup",
+      "variables": {
+        "PROJECT_NAME": {"description": "Current directory name, used for container naming"}
+      }
+    }
+  },
+  "mode_defaults": {
+    "basic": {
+      "build_args": ["TZ", "DEBIAN_FRONTEND"],
+      "runtime_env": ["NODE_ENV", "PYTHONUNBUFFERED"],
+      "compose_env": ["POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB"]
+    },
+    "advanced": {
+      "build_args": ["PYTHON_VERSION", "NODE_VERSION", "TZ", "DEBIAN_FRONTEND"],
+      "runtime_env": ["NODE_ENV", "PYTHONUNBUFFERED", "PYTHONDONTWRITEBYTECODE"],
+      "compose_env": ["POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "REDIS_HOST", "REDIS_PORT"]
+    },
+    "yolo": {
+      "build_args": "all",
+      "runtime_env": "all",
+      "compose_env": "all"
+    }
+  }
+}

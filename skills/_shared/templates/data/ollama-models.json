@@ -1,4 +1,10 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Ollama local LLM models catalog for sandbox AI integration",
+  "metadata": {
+    "last_updated": "2026-01-02",
+    "usage": "Skills reference this file to configure Ollama model recommendations"
+  },
   "models": [
     {
       "name": "llama3.2:3b",

@@ -502,7 +502,7 @@ The plugin would ask about:
 
 ## Comparing Modes
 
-| Feature                  | Basic       | Advanced     | YOLO              |
+| Feature                  | Basic       | Advanced     | YOLO         | Custom            |
 | ------------------------ | ----------- | ------------ | ------------ | ----------------- |
 | **Setup**                |
 | Questions asked          | 1-2         | 3-5          | 5-7          | 10-15+            |

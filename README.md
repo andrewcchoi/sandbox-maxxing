@@ -1,5 +1,10 @@
 # Sandboxxer Plugin
 
+![Version](https://img.shields.io/badge/version-4.6.0-blue)
+![Claude Code](https://img.shields.io/badge/claude--code-plugin-purple)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
+
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
 > **Plugin Name:** sandboxxer (used in commands: /sandboxxer:quickstart, /sandboxxer:yolo-vibe-maxxing)
 
@@ -14,6 +19,60 @@ Interactive assistant for creating VS Code DevContainer configurations with Dock
 - **🔒 Security Auditor** - Review and harden sandbox configurations against best practices
 - **🛡️ Smart Firewall Management** - Optional domain allowlist with 30-100+ curated domains
 - **🎯 Intelligent Detection** - Auto-detects project type and suggests appropriate setup
+
+## Important: Experimental Status
+
+> **This plugin is experimental and provided as-is.** Most features have received minimal to no testing. Generated configurations may not work correctly on the first try and may require several iterations to get working.
+>
+> **Testing levels:**
+> - `/sandboxxer:yolo-vibe-maxxing` - **Moderate testing** (most reliable)
+> - `/sandboxxer:quickstart` - **Very minimal testing**
+> - Firewall features - **No testing** (highly experimental)
+> - Azure deployment - **No testing** (highly experimental)
+> - Agents and skills - **Not tested**
+>
+> If you encounter issues, expect to iterate on the generated configuration files.
+
+![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
+*Plugin component overview - see [docs/diagrams/](docs/diagrams/) for detailed diagrams*
+
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Setup Options](#setup-options)
+- [Slash Commands](#slash-commands)
+- [Auto-Detection](#auto-detection)
+- [Security Features](#security-features)
+- [Troubleshooting Features](#troubleshooting-features)
+- [Cloud Deployment](#cloud-deployment)
+- [Files Generated](#files-generated)
+- [Configuration Placeholders](#configuration-placeholders)
+- [Skills Reference](#skills-reference)
+- [Reference Documentation](#reference-documentation)
+- [Naming Convention](#naming-convention)
+- [Development](#development)
+- [Examples](#examples)
+- [Example Applications](#example-applications)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
+- [Repository Maintenance](#repository-maintenance)
+- [Changelog](#changelog)
+
+## Prerequisites
+
+Before using this plugin, ensure you have:
+
+- **Docker Desktop** (v4.0+) or Docker Engine with Compose v2
+- **VS Code** with Dev Containers extension (`ms-vscode-remote.remote-containers`)
+- **Claude Code CLI** installed ([installation guide](https://claude.ai/code))
+- **Git** for version control
+
+**Platform-specific:**
+- **Windows:** WSL 2 required; clone repos to WSL filesystem (`~/projects/`)
+- **macOS/Linux:** Native Docker support
 
 ## Quick Start
 
@@ -74,6 +133,8 @@ See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installati
 
 The plugin offers two setup paths:
 
+> **Testing Status:** `/yolo-vibe-maxxing` has moderate testing and is the most reliable option. `/quickstart` has very minimal testing - generated configurations may need manual adjustments.
+
 1. **Interactive Quickstart** (`/sandboxxer:quickstart`) - Guided configuration with project type and firewall customization
 2. **Non-Interactive YOLO Vibe Maxxing** (`/sandboxxer:yolo-vibe-maxxing`) - Instant defaults with no questions (Python+Node, container isolation)
 
@@ -83,8 +144,10 @@ See [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) for comprehensive guide.
 
 **Best for**: Projects needing specific languages or network restrictions
 
+> **Testing:** Very minimal. Configuration files may require iteration to work correctly.
+
 **Key Features**:
-- Choose from 9 project types (Python/Node, Go, Ruby, Rust, Java, C++ Clang/GCC, PHP, PostgreSQL)
+- Choose from 8 project types (Python/Node, Go, Ruby, Rust, C++ Clang, C++ GCC, PHP, PostgreSQL)
 - Optional firewall with domain allowlist
 - Customizable security settings
 - 2-3 questions for configuration
@@ -98,7 +161,7 @@ Claude: What type of project are you setting up?
         • Go (adds Go toolchain)
         • Ruby (adds Ruby, bundler)
         • Rust (adds Cargo, rustfmt)
-        • Java (adds JDK, Maven, Gradle)
+        • PHP (adds PHP, Composer)
 
 You: Python/Node
 
@@ -173,31 +236,9 @@ Claude: [Automatically uses /sandboxxer:quickstart command]
       ...
 ```
 
-## Project Templates
-
-### Python (FastAPI + PostgreSQL + Redis)
-- Optimized Python 3.12 with uv
-- FastAPI web framework
-- PostgreSQL database
-- Redis cache
-- Async SQLAlchemy
-- Alembic migrations
-
-### Node.js (Express + MongoDB + Redis)
-- Node.js 20 with TypeScript
-- Express web framework
-- MongoDB database
-- Redis cache
-- ESLint + Prettier
-
-### Full-Stack (React + FastAPI + PostgreSQL + AI)
-- Python FastAPI backend
-- React + TypeScript frontend
-- PostgreSQL database
-- Redis cache
-- Ollama (optional local AI)
-
 ## Security Features
+
+> **Testing:** Firewall features have received **no testing**. The `init-firewall.sh` script and domain allowlist configuration are highly experimental. Generated configurations may not correctly block/allow traffic and will likely require manual adjustment and iteration.
 
 ### Firewall Options
 
@@ -225,6 +266,8 @@ The security auditor checks:
 - ✅ Dependency vulnerabilities
 
 ## Troubleshooting Features
+
+> **Testing:** Not tested. Diagnostic commands and suggestions may need verification.
 
 ### Automatic Issue Detection
 
@@ -261,6 +304,8 @@ Claude: Let me diagnose...
 ### Deploy to Azure
 
 Deploy your DevContainer to Azure Container Apps for cloud-based development:
+
+> **Testing:** Azure deployment has received **no testing**. Generated Bicep templates, azure.yaml, and deployment scripts are highly experimental. Configurations may fail to deploy or create incorrect resources. Expect multiple iterations and manual debugging.
 
 ```bash
 # Deploy to Azure
@@ -318,20 +363,24 @@ Templates use these placeholders:
 ### /sandboxxer:quickstart (Interactive Quickstart)
 Interactive quickstart wizard with project type and firewall customization.
 
+**Testing:** Very minimal
+
 **Triggers**:
 - User mentions "devcontainer", "docker sandbox"
 - User asks about isolated development environments
 - User wants to configure firewalls for development
 
 **Workflow**:
-1. Project type selection (9 languages)
+1. Project type selection (8 languages)
 2. Network restrictions question
 3. Domain allowlist configuration (if enabled)
 4. Template generation
 5. Verification steps
 
-### sandboxxer-troubleshoot
+### /sandboxxer:troubleshoot
 Diagnoses and resolves common sandbox issues.
+
+**Testing:** Not tested
 
 **Triggers**:
 - Container won't start
@@ -346,8 +395,10 @@ Diagnoses and resolves common sandbox issues.
 3. Apply systematic fixes
 4. Verify the fix
 
-### sandboxxer-audit
+### /sandboxxer:audit
 Performs comprehensive security audits.
+
+**Testing:** Not tested
 
 **Triggers**:
 - User wants security audit
@@ -363,13 +414,63 @@ Performs comprehensive security audits.
 5. Container permissions audit
 6. Generate security report
 
+### /sandboxxer:yolo-vibe-maxxing
+Non-interactive instant DevContainer setup with sensible defaults.
+
+**Testing:** Moderate (most reliable)
+
+**Triggers**:
+- User wants fastest path to sandbox
+- User mentions "yolo", "quick setup", "no questions"
+- User needs rapid prototyping environment
+
+**Workflow**:
+1. Apply default configuration (Python 3.12 + Node 20)
+2. Set container isolation (no firewall)
+3. Add PostgreSQL 16 + Redis 7 services
+4. Generate all configuration files
+5. Display next steps
+
+### /sandboxxer:deploy-to-azure
+Deploy DevContainer configurations to Azure Container Apps.
+
+**Testing:** No testing
+
+**Triggers**:
+- User wants cloud-based development
+- User mentions "Azure", "cloud deployment", "remote container"
+- User needs team/shared environments
+
+**Workflow**:
+1. Verify Azure CLI and subscription
+2. Configure deployment options
+3. Generate Azure Developer CLI manifest
+4. Generate Bicep infrastructure templates
+5. Execute deployment
+6. Provide connection instructions
+
 ## Reference Documentation
 
-The plugin includes comprehensive reference documentation:
-- `docs/features/AZURE-DEPLOYMENT.md` - Azure deployment guide with reference links
-- `docs/features/CUSTOMIZATION.md` - Customization guide
-- `docs/features/SECURITY-MODEL.md` - Security model and best practices
-- `docs/features/TROUBLESHOOTING.md` - Detailed troubleshooting guide
+The plugin includes comprehensive documentation in the `docs/` directory:
+
+### Feature Documentation (`docs/features/`)
+- [AZURE-DEPLOYMENT.md](docs/features/AZURE-DEPLOYMENT.md) - Azure Container Apps deployment guide
+- [CUSTOMIZATION.md](docs/features/CUSTOMIZATION.md) - Template and configuration customization
+- [EXTENSIONS.md](docs/features/EXTENSIONS.md) - VS Code extensions configuration
+- [MCP.md](docs/features/MCP.md) - Model Context Protocol server integration
+- [NPM_PLATFORM_FIX.md](docs/features/NPM_PLATFORM_FIX.md) - npm platform compatibility fixes
+- [OLLAMA_INTEGRATION.md](docs/features/OLLAMA_INTEGRATION.md) - Local AI with Ollama setup
+- [SECRETS.md](docs/features/SECRETS.md) - Secrets management and security
+- [SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) - Security architecture and best practices
+- [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) - Interactive vs non-interactive setup guide
+- [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md) - Common issues and solutions
+- [VARIABLES.md](docs/features/VARIABLES.md) - Template variables reference
+
+### Additional Documentation
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Plugin architecture overview
+- [docs/CODESPACES.md](docs/CODESPACES.md) - GitHub Codespaces integration
+- [docs/TESTING.md](docs/TESTING.md) - Testing guide for examples
+- [docs/windows/README.md](docs/windows/README.md) - Windows-specific setup guide
 
 ## Naming Convention
 
@@ -444,23 +545,19 @@ sandbox-maxxing/
 │   │       │   └── infra/
 │   │       ├── partials/        # Language-specific Dockerfile sections
 │   │       │   ├── azure-cli.dockerfile
-│   │       │   ├── go.dockerfile
-│   │       │   ├── rust.dockerfile
-│   │       │   ├── java.dockerfile
-│   │       │   ├── ruby.dockerfile
-│   │       │   ├── php.dockerfile
 │   │       │   ├── cpp-clang.dockerfile
 │   │       │   ├── cpp-gcc.dockerfile
-│   │       │   └── postgres.dockerfile
+│   │       │   ├── go.dockerfile
+│   │       │   ├── php.dockerfile
+│   │       │   ├── postgres.dockerfile
+│   │       │   ├── ruby.dockerfile
+│   │       │   └── rust.dockerfile
 │   │       └── data/            # Configuration data
 │   │           ├── allowable-domains.json
 │   │           ├── azure-regions.json
 │   │           ├── mcp-servers.json
 │   │           ├── official-images.json
-│   │           ├── sandbox-templates.json
-│   │           ├── secrets.json
-│   │           ├── uv-images.json
-│   │           ├── variables.json
+│   │           ├── ollama-models.json
 │   │           └── vscode-extensions.json
 │   ├── sandboxxer-troubleshoot/ # Troubleshooting assistant
 │   │   └── SKILL.md
@@ -743,5 +840,5 @@ See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
 ---
 
-**Last Updated:** 2025-12-25
+**Last Updated:** 2026-01-02
 **Version:** 4.6.0

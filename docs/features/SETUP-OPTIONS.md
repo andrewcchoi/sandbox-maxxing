@@ -150,7 +150,6 @@ When you select a language in interactive mode, a partial is **appended** to the
 | Go       | Go 1.22, gopls, delve, staticcheck, golint            |
 | Ruby     | Ruby 3.3, bundler, rake, rspec, rubocop               |
 | Rust     | Rust toolchain, Cargo, rustfmt, clippy, rust-analyzer |
-| Java     | OpenJDK 21, Maven, Gradle                             |
 
 **YOLO Vibe Maxxing mode** uses only the base image - if you need additional language tools, use interactive setup.
 

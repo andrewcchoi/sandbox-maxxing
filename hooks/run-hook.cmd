@@ -20,7 +20,16 @@ if "%SCRIPT_NAME%"=="" (
     echo run-hook.cmd: missing script name >&2
     exit /b 1
 )
-"C:\Program Files\Git\bin\bash.exe" -l -c "cd \"$(cygpath -u \"%SCRIPT_DIR%\")\" && \"./%SCRIPT_NAME%\""
+REM Find Git Bash
+set "BASH_EXE="
+if exist "%ProgramFiles%\Git\bin\bash.exe" set "BASH_EXE=%ProgramFiles%\Git\bin\bash.exe"
+if "%BASH_EXE%"=="" if exist "%ProgramFiles(x86)%\Git\bin\bash.exe" set "BASH_EXE=%ProgramFiles(x86)%\Git\bin\bash.exe"
+if "%BASH_EXE%"=="" if exist "%LOCALAPPDATA%\Programs\Git\bin\bash.exe" set "BASH_EXE=%LOCALAPPDATA%\Programs\Git\bin\bash.exe"
+if "%BASH_EXE%"=="" (
+    echo Git Bash not found. Please install Git for Windows. >&2
+    exit /b 1
+)
+"%BASH_EXE%" -l -c "cd \"$(cygpath -u \"%SCRIPT_DIR%\")\" && \"./%SCRIPT_NAME%\""
 exit /b
 CMDBLOCK
 
