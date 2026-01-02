@@ -45,10 +45,10 @@ RUN groupadd -g 1000 node && \
     echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Install Python development tools via uv
-RUN uv add --system poetry black pytest ruff ipython
+RUN uv pip install --system poetry black pytest ruff ipython
 
 # Install DeepAgents + Tavily (AI/LLM Tools)
-RUN uv add --system deepagents tavily-python
+RUN uv pip install --system deepagents tavily-python
 
 # Set Python environment variables
 ENV UV_COMPILE_BYTECODE=1 \

@@ -70,7 +70,6 @@ skills/
 │   │   │   ├── go.dockerfile          # Go 1.22 toolchain
 │   │   │   ├── ruby.dockerfile        # Ruby 3.3 and bundler
 │   │   │   ├── rust.dockerfile        # Rust toolchain
-│   │   │   ├── java.dockerfile        # OpenJDK 21, Maven, Gradle
 │   │   │   ├── cpp-clang.dockerfile   # Clang 17, CMake, vcpkg
 │   │   │   ├── cpp-gcc.dockerfile     # GCC, CMake, vcpkg
 │   │   │   ├── php.dockerfile         # PHP 8.3, Composer

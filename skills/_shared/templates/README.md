@@ -51,7 +51,6 @@ Language-specific dockerfiles that are **appended** to `base.dockerfile` when us
 - `go.dockerfile` - Go 1.22 toolchain
 - `ruby.dockerfile` - Ruby 3.3 and bundler
 - `rust.dockerfile` - Rust toolchain and Cargo
-- `java.dockerfile` - OpenJDK 21, Maven, Gradle
 - `cpp-clang.dockerfile` - Clang 17, CMake, vcpkg
 - `cpp-gcc.dockerfile` - GCC, CMake, vcpkg
 - `php.dockerfile` - PHP 8.3 and Composer

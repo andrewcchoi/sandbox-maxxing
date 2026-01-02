@@ -152,7 +152,6 @@ skills/
 │   │   │   ├── go.dockerfile          # Go toolchain
 │   │   │   ├── ruby.dockerfile        # Ruby toolchain
 │   │   │   ├── rust.dockerfile        # Rust toolchain
-│   │   │   ├── java.dockerfile        # Java toolchain
 │   │   │   ├── cpp-clang.dockerfile   # C++ Clang
 │   │   │   ├── cpp-gcc.dockerfile     # C++ GCC
 │   │   │   ├── php.dockerfile         # PHP 8.3

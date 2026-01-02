@@ -459,8 +459,8 @@ See [Secrets Management Guide](SECRETS.md) for detailed examples and best practi
 
 ### Security Posture by Mode
 
-| Threat | Minimal | Domain Allowlist | Custom (Strict) |
-|--------|-------|--------------|----------|---------------|
+| Threat | Minimal | Domain Allowlist | Permissive | Custom (Strict) |
+|--------|---------|------------------|------------|-----------------|
 | Accidental host damage | ✓ Protected | ✓ Protected | ✓ Protected | ✓ Protected |
 | Dependency phone-home | ✗ Vulnerable | ✗ Vulnerable | ✓ Protected | ✓ Protected |
 | Data exfiltration | ✗ Vulnerable | ✗ Vulnerable | ✓ Mitigated | ✓ Mitigated |

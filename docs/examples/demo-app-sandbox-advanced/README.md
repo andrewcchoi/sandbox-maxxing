@@ -363,7 +363,7 @@ This configuration is characterized by:
 
 ## Comparing Modes
 
-| Feature             | Basic                           | Advanced          | YOLO                 |
+| Feature             | Basic                           | Advanced             | YOLO              | Custom               |
 | ------------------- | ------------------------------- | -------------------- | ----------------- | -------------------- |
 | Questions asked     | 1-2                             | 3-5                  | 5-7               | 10-15+               |
 | Configuration style | Auto-detected                   | Platform-specific    | Customizable      | Fully explicit       |
