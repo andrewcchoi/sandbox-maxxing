@@ -62,10 +62,16 @@ REDIS_PORT=6379
 # Function to find the next available port
 find_available_port() {
   local port=$1
-  while lsof -i :$port > /dev/null 2>&1 || netstat -tuln 2>/dev/null | grep -q ":$port "; do
+  local max_port=65535
+  while [ $port -le $max_port ]; do
+    if ! (lsof -i :$port > /dev/null 2>&1 || netstat -tuln 2>/dev/null | grep -q ":$port "); then
+      echo $port
+      return 0
+    fi
     port=$((port + 1))
   done
-  echo $port
+  echo "ERROR: No available port found" >&2
+  return 1
 }
 
 # Check and reassign ports if occupied

@@ -68,6 +68,11 @@ for port in 8000 3000 5432 6379; do
   fi
 done
 
+# Warn if neither port checking tool is available
+if ! command -v lsof > /dev/null 2>&1 && ! command -v netstat > /dev/null 2>&1; then
+  echo "  WARNING: Neither lsof nor netstat available - port checks may be unreliable"
+fi
+
 if [ "$PORT_CONFLICTS_FOUND" = "false" ]; then
   echo "  ✓ All ports available"
 fi
@@ -106,10 +111,16 @@ If port conflicts were detected in Step 0, resolve them automatically or interac
 # Function to find the next available port
 find_available_port() {
   local port=$1
-  while lsof -i :$port > /dev/null 2>&1 || netstat -tuln 2>/dev/null | grep -q ":$port "; do
+  local max_port=65535
+  while [ $port -le $max_port ]; do
+    if ! (lsof -i :$port > /dev/null 2>&1 || netstat -tuln 2>/dev/null | grep -q ":$port "); then
+      echo $port
+      return 0
+    fi
     port=$((port + 1))
   done
-  echo $port
+  echo "ERROR: No available port found" >&2
+  return 1
 }
 
 # Only run if conflicts were detected
