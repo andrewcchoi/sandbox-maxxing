@@ -78,7 +78,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Firewall packages (conditionally installed based on ENABLE_FIREWALL)
 RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
     apt-get update && apt-get install -y --no-install-recommends \
-      iptables ipset iproute2 dnsutils \
+      iptables ipset iproute2 dnsutils aggregate \
     && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "Firewall packages installed"; \
   else \
