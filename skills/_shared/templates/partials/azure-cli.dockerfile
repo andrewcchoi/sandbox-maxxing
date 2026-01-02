@@ -7,11 +7,11 @@
 
 USER root
 
-# Install Azure CLI
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+# Install Azure CLI (use --http1.1 to avoid HTTP/2 stream errors)
+RUN curl --http1.1 -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-# Install Azure Developer CLI (azd)
-RUN curl -fsSL https://aka.ms/install-azd.sh | bash
+# Install Azure Developer CLI (azd) (use --http1.1 to avoid HTTP/2 stream errors)
+RUN curl --http1.1 -fsSL https://aka.ms/install-azd.sh | bash
 
 # Install Bicep CLI
 RUN az bicep install

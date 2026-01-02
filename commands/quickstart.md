@@ -436,40 +436,24 @@ if [ "$HAS_BACKEND_DIR" = "true" ] || [ "$HAS_FRONTEND_DIR" = "true" ]; then
 fi
 ```
 
-## Step 1.85: Ask About Docker Compose Profiles (Issue #88)
+## Step 1.85: Auto-Enable Docker Compose App Profiles (Issue #88)
 
-If `HAS_BACKEND_DIR` or `HAS_FRONTEND_DIR` is true, use AskUserQuestion:
-
-```
-We detected application directories in your project:
-${HAS_BACKEND_DIR:+  - backend/ (containerizable)}
-${HAS_FRONTEND_DIR:+  - frontend/ (containerizable)}
-
-Do you want to add Docker Compose profiles for containerized app services?
-
-This enables two modes:
-  • docker compose up → DevContainer + infrastructure only
-  • docker compose --profile app up → Full containerized stack
-
-Options:
-1. Yes - Add app service profiles (Recommended)
-   → Use when you want to test the full containerized deployment
-2. No - DevContainer only
-   → Use for direct development in DevContainer without containerized app services
-```
-
-Store as `APP_PROFILES_CHOICE`.
+If `HAS_BACKEND_DIR` or `HAS_FRONTEND_DIR` is true, automatically enable app profiles for containerized deployment testing.
 
 ```bash
 # Initialize variable
 USE_APP_PROFILES=false
 
-# Check if user wants app profiles
-if [ "$APP_PROFILES_CHOICE" = "Yes - Add app service profiles (Recommended)" ]; then
+# Auto-enable app profiles when app directories detected
+if [ "$HAS_BACKEND_DIR" = "true" ] || [ "$HAS_FRONTEND_DIR" = "true" ]; then
   USE_APP_PROFILES=true
-  echo "Will use docker-compose with app service profiles"
-else
-  echo "Will use standard docker-compose (DevContainer only)"
+  echo "Detected app directories - adding Docker Compose profiles for containerized deployment testing"
+  [ "$HAS_BACKEND_DIR" = "true" ] && echo "  - backend/ (containerizable)"
+  [ "$HAS_FRONTEND_DIR" = "true" ] && echo "  - frontend/ (containerizable)"
+  echo ""
+  echo "This enables two modes:"
+  echo "  • docker compose up → DevContainer + infrastructure only"
+  echo "  • docker compose --profile app up → Full containerized stack"
 fi
 ```
 
@@ -544,8 +528,12 @@ Store as `BACKEND_CHOICE`.
 ```bash
 case "$BACKEND_CHOICE" in
   "Go")
+    # Force partial mode for Go to avoid HTTP/2 curl issues with dl.google.com
+    # The Go feature uses curl which can fail with error 18 on some networks
     SELECTED_PARTIALS+=("go")
-    SELECTED_FEATURES+=("ghcr.io/devcontainers/features/go:1")
+    if [ "$INSTALL_MODE" = "features" ]; then
+      echo "Note: Using Go partial (avoids HTTP/2 download issues)"
+    fi
     echo "Selected: Go toolchain"
     ;;
   "Rust")

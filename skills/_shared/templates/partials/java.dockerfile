@@ -20,7 +20,11 @@ RUN wget "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin
     mv "gradle-${GRADLE_VERSION}" /opt/gradle && \
     rm "gradle-${GRADLE_VERSION}-bin.zip"
 
-# Java and Gradle environment
+# Java and Gradle environment (architecture-aware)
+RUN ARCH=$(dpkg --print-architecture) && \
+    mkdir -p /etc/profile.d && \
+    echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-${ARCH}" > /etc/profile.d/java.sh && \
+    chmod +x /etc/profile.d/java.sh
 ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ENV GRADLE_HOME=/opt/gradle
 ENV PATH=$PATH:$GRADLE_HOME/bin

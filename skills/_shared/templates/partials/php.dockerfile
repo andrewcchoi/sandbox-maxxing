@@ -32,8 +32,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php8.3-mysql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install Composer (use --http1.1 to avoid HTTP/2 stream errors)
+RUN curl --http1.1 -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # PHP configuration
 RUN mkdir -p /usr/local/etc/php/conf.d && \
