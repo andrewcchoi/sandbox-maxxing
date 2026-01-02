@@ -267,8 +267,8 @@ docker-compose down
 
 ## Comparing to Other Modes
 
-| Feature | Minimal | Domain Allowlist | Custom |
-|---------|-------|--------------|----------|------|
+| Feature | Minimal | Domain Allowlist | Custom | YOLO |
+|---------|---------|------------------|--------|------|
 | Questions asked | 1-2 | 3-5 | 5-7 | 10-15+ |
 | Configuration style | Auto-detected | Platform-specific | Customizable | Fully explicit |
 | Dockerfile | Sandbox template/official image | Platform template | Configurable | Technology-optimized |

@@ -20,17 +20,19 @@ Run these checks before proceeding. Use `--skip-validation` to bypass.
 ```bash
 # Parse command-line arguments
 USE_FEATURES_FLAG=false
+SKIP_VALIDATION=false
 for arg in "$@"; do
   case $arg in
     --use-features)
       USE_FEATURES_FLAG=true
       shift
       ;;
+    --skip-validation)
+      SKIP_VALIDATION=true
+      shift
+      ;;
   esac
 done
-
-echo "Running pre-flight checks..."
-VALIDATION_FAILED=false
 
 # Initialize port variables with defaults
 APP_PORT=8000
@@ -38,6 +40,16 @@ FRONTEND_PORT=3000
 POSTGRES_PORT=5432
 REDIS_PORT=6379
 
+if [ "$SKIP_VALIDATION" = "false" ]; then
+  echo "Running pre-flight checks..."
+  VALIDATION_FAILED=false
+else
+  echo "Skipping pre-flight validation (--skip-validation flag set)"
+  VALIDATION_FAILED=false
+  PORT_CONFLICTS_FOUND=false
+fi
+
+if [ "$SKIP_VALIDATION" = "false" ]; then
 # Check 1: Docker daemon running
 if ! docker info > /dev/null 2>&1; then
   echo "ERROR: Docker is not running"
@@ -112,6 +124,7 @@ else
   echo "Pre-flight checks passed!"
 fi
 echo ""
+fi
 ```
 
 ## Step 0.5: Port Configuration (If Conflicts Detected)
@@ -701,7 +714,7 @@ Store the answer as `NEEDS_FIREWALL`.
 
 ## Step 8: Domain Categories (If Firewall Enabled)
 
-If `NEEDS_FIREWALL` is "Yes", read `/skills/_shared/data/allowable-domains.json` and present domain categories:
+If `NEEDS_FIREWALL` is "Yes", read `/skills/_shared/templates/data/allowable-domains.json` and present domain categories:
 
 ```
 Which domain categories should be allowed?
