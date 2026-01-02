@@ -4,28 +4,6 @@ This directory contains reference data used by the Claude Code Sandbox Plugin sk
 
 ## Files
 
-### `sandbox-templates.json`
-Docker sandbox-templates image registry with available tags, architectures, and recommended modes.
-
-**Structure:**
-- `metadata`: Registry information and update date
-- `tags`: Array of available sandbox template tags with:
-  - Image details (OS, architectures, sizes)
-  - Descriptions
-  - Recommended modes
-  - Pull commands
-
-**Usage in skills:**
-```markdown
-Reference: `skills/_shared/data/sandbox-templates.json`
-```
-
-**Update procedure:**
-1. Visit https://hub.docker.com/r/docker/sandbox-templates/tags
-2. Update tag list with new/changed tags
-3. Update `metadata.last_updated` date
-4. Verify pull commands are correct
-
 ### `official-images.json`
 Official Docker images registry for common languages, databases, and tools.
 
@@ -50,55 +28,53 @@ Reference: `skills/_shared/data/official-images.json`
 4. Update `metadata.last_updated` date
 5. Test pull commands are valid
 
-### `uv-images.json`
-Astral UV Docker images registry - Python package manager with fast dependency resolution.
+### `azure-regions.json`
+Azure regions catalog for cloud deployment location selection.
 
 **Structure:**
-- `metadata`: Registry information, API endpoint, and update date
-- `categories`: Image categories (alpine, debian-slim, bookworm, trixie) with:
-  - Description
-  - Recommended modes
-- `tags`: Array of filtered image tags with:
-  - Tag name, category, Python version
-  - Base image type
-  - Size (MB) per architecture
-  - Last updated timestamp
-  - Digest and architectures
-  - Recommended tier
-  - Pull command
-- `mode_defaults`: Which tags are included per mode
+- `metadata`: Last updated date, usage notes, documentation URL
+- `regions`:
+  - `recommended`: Array of 6 primary regions with code, name, description
+  - `all`: Complete list of 40+ Azure regions worldwide
 
 **Usage in skills:**
 ```markdown
-Reference: `skills/_shared/data/uv-images.json`
+Reference: `skills/_shared/data/azure-regions.json`
 
-# Get recommended tags for a mode
-Use `mode_defaults.<mode_name>` array
+# Get recommended regions
+Use `regions.recommended` array for common deployments
 ```
 
 **Update procedure:**
-1. Run `.internal/scripts/update-uv-images.sh` (Python script)
-2. Script automatically:
-   - Fetches all tags from Docker Hub API
-   - Filters to floating tags (excludes version-pinned like 0.9.18-)
-   - Deduplicates by Python version + base image
-   - Updates `metadata.last_updated` date
-3. Verify JSON output is valid
-4. Commit changes
+1. Check Azure documentation for new regions
+2. Add new regions to `all` array
+3. Update `recommended` if primary regions change
+4. Update `metadata.last_updated` date
 
-**Mode-Specific Tag Selection:**
+### `ollama-models.json`
+Ollama local LLM models catalog for sandbox AI integration.
 
-| Mode             | Tag Strategy                    | Tags Included                                        |
-| ---------------- | ------------------------------- | ---------------------------------------------------- |
-| **Basic**        | Alpine only, Python 3.12+       | python3.12-alpine, python3.13-alpine                 |
-| **Advanced**     | All stable Python versions      | Python 3.10-3.13 across all base images              |
-| **YOLO**         | All tags including experimental | All filtered tags including Python 3.8, 3.14, trixie |
+**Structure:**
+- `models`: Array of model configurations with:
+  - Model name and size (GB)
+  - Specialty and use case
+  - Download count (popularity)
+- `max_size_gb`: Maximum model size limit
+- `default_limit`: Default number of models to suggest
 
-**About UV:**
-- Fast Python package manager written in Rust
-- Drop-in replacement for pip with 10-100x faster dependency resolution
-- Images include uv pre-installed with various Python versions
-- Alpine variants are smallest (~40MB), Debian variants offer better compatibility
+**Usage in skills:**
+```markdown
+Reference: `skills/_shared/data/ollama-models.json`
+
+# Get popular models under size limit
+Filter models by `size_gb <= max_size_gb`
+```
+
+**Update procedure:**
+1. Check Ollama library for new popular models
+2. Update model list with current sizes
+3. Verify specialty descriptions are accurate
+4. Update download counts quarterly
 
 ### `allowable-domains.json`
 Firewall domain allowlist organized by category for different mode defaults.
@@ -162,73 +138,6 @@ Use `mode_defaults.<mode_name>.servers` array
 | **Basic**        | Essential only     | filesystem, memory                                |
 | **Advanced**     | Comprehensive      | All Advanced + postgres, docker, brave-search |
 | **YOLO**         | All available      | All servers                                       |
-
-### `secrets.json`
-Secret handling patterns catalog for DevContainer configurations.
-
-**Structure:**
-- `metadata`: Version and description
-- `categories`: Secret types organized by use case:
-  - git_auth (SSH keys, tokens)
-  - database_creds (connection strings, passwords)
-  - api_keys (third-party service keys)
-  - certificates (SSL/TLS certs)
-  - cloud_provider (AWS, Azure, GCP credentials)
-- Each secret includes:
-  - Description and mount type
-  - Mode minimum requirement
-  - Security level (critical/high/medium)
-  - VS Code input configuration
-  - Example usage patterns
-
-**Usage in skills:**
-```markdown
-Reference: `skills/_shared/data/secrets.json`
-
-# Get secret handling pattern
-Use categories.<category>.secrets.<secret_name>
-```
-
-**Update procedure:**
-1. Add new secret patterns as needed
-2. Ensure VS Code input examples are correct
-3. Document security level appropriately
-4. Update version number
-5. Test configurations in DevContainer
-
-**Important:** This file contains _patterns_ for handling secrets, not actual secret values.
-
-### `variables.json`
-Configuration variables catalog for DevContainer setup (non-sensitive).
-
-**Structure:**
-- `metadata`: Version and description
-- `categories`: Variable types:
-  - build (Dockerfile ARG for image construction)
-  - runtime (ENV for container runtime)
-  - development (dev tools configuration)
-  - language_specific (Python, Node, Go, etc.)
-- Each variable includes:
-  - Description and type (ARG/ENV)
-  - Default value
-  - Mode minimum requirement
-  - Security level
-  - Example values
-
-**Usage in skills:**
-```markdown
-Reference: `skills/_shared/data/variables.json`
-
-# Get variable configuration
-Use categories.<category>.variables.<var_name>
-```
-
-**Update procedure:**
-1. Add new variable patterns for new tools/languages
-2. Update default values when recommendations change
-3. Document security level (public for variables, never sensitive)
-4. Update version number
-5. For sensitive data, use secrets.json instead
 
 ### `vscode-extensions.json`
 VS Code extensions catalog organized by language and category.
@@ -327,5 +236,5 @@ For questions about data file structure or usage, see:
 
 ---
 
-**Last Updated:** 2025-12-24
+**Last Updated:** 2026-01-01
 **Version:** 4.6.0
