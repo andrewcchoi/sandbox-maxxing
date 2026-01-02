@@ -27,7 +27,13 @@ ARG ENABLE_FIREWALL=false
 # Stage 1: Get Python + uv from official Astral image
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
 
-# Stage 2: Main build
+# Stage 2: Get Go from official image (used when go partial is selected)
+FROM golang:1.25-bookworm AS go-source
+
+# Stage 3: Get Rust from official image (used when rust partial is selected)
+FROM rust:bookworm AS rust-source
+
+# Stage 4: Main build
 FROM node:20-bookworm-slim
 
 # Re-declare ARGs after FROM (Docker requirement)

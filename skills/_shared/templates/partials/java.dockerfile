@@ -13,9 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     maven \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Gradle
+# Install Gradle with retry logic
 ARG GRADLE_VERSION=8.5
-RUN wget "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" && \
+RUN for i in 1 2 3 4 5; do \
+      wget --tries=3 --timeout=30 --waitretry=5 \
+           "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" && break || sleep 10; \
+    done && \
     unzip "gradle-${GRADLE_VERSION}-bin.zip" && \
     mv "gradle-${GRADLE_VERSION}" /opt/gradle && \
     rm "gradle-${GRADLE_VERSION}-bin.zip"
