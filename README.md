@@ -1,5 +1,10 @@
 # Sandboxxer Plugin
 
+![Version](https://img.shields.io/badge/version-4.6.0-blue)
+![Claude Code](https://img.shields.io/badge/claude--code-plugin-purple)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
+
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
 > **Plugin Name:** sandboxxer (used in commands: /sandboxxer:quickstart, /sandboxxer:yolo-vibe-maxxing)
 
@@ -14,6 +19,46 @@ Interactive assistant for creating VS Code DevContainer configurations with Dock
 - **🔒 Security Auditor** - Review and harden sandbox configurations against best practices
 - **🛡️ Smart Firewall Management** - Optional domain allowlist with 30-100+ curated domains
 - **🎯 Intelligent Detection** - Auto-detects project type and suggests appropriate setup
+
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Setup Options](#setup-options)
+- [Slash Commands](#slash-commands)
+- [Auto-Detection](#auto-detection)
+- [Project Templates](#project-templates)
+- [Security Features](#security-features)
+- [Troubleshooting Features](#troubleshooting-features)
+- [Cloud Deployment](#cloud-deployment)
+- [Files Generated](#files-generated)
+- [Configuration Placeholders](#configuration-placeholders)
+- [Skills Reference](#skills-reference)
+- [Reference Documentation](#reference-documentation)
+- [LangSmith Tracing Integration](#langsmith-tracing-integration)
+- [Naming Convention](#naming-convention)
+- [Development](#development)
+- [Examples](#examples)
+- [Example Applications](#example-applications)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
+- [Repository Maintenance](#repository-maintenance)
+- [Changelog](#changelog)
+
+## Prerequisites
+
+Before using this plugin, ensure you have:
+
+- **Docker Desktop** (v4.0+) or Docker Engine with Compose v2
+- **VS Code** with Dev Containers extension (`ms-vscode-remote.remote-containers`)
+- **Claude Code CLI** installed ([installation guide](https://claude.ai/code))
+- **Git** for version control
+
+**Platform-specific:**
+- **Windows:** WSL 2 required; clone repos to WSL filesystem (`~/projects/`)
+- **macOS/Linux:** Native Docker support
 
 ## Quick Start
 
@@ -84,7 +129,7 @@ See [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) for comprehensive guide.
 **Best for**: Projects needing specific languages or network restrictions
 
 **Key Features**:
-- Choose from 9 project types (Python/Node, Go, Ruby, Rust, Java, C++ Clang/GCC, PHP, PostgreSQL)
+- Choose from 8 project types (Python/Node, Go, Ruby, Rust, C++ Clang, C++ GCC, PHP, PostgreSQL)
 - Optional firewall with domain allowlist
 - Customizable security settings
 - 2-3 questions for configuration
@@ -98,7 +143,7 @@ Claude: What type of project are you setting up?
         • Go (adds Go toolchain)
         • Ruby (adds Ruby, bundler)
         • Rust (adds Cargo, rustfmt)
-        • Java (adds JDK, Maven, Gradle)
+        • PHP (adds PHP, Composer)
 
 You: Python/Node
 
@@ -324,13 +369,13 @@ Interactive quickstart wizard with project type and firewall customization.
 - User wants to configure firewalls for development
 
 **Workflow**:
-1. Project type selection (9 languages)
+1. Project type selection (8 languages)
 2. Network restrictions question
 3. Domain allowlist configuration (if enabled)
 4. Template generation
 5. Verification steps
 
-### sandboxxer-troubleshoot
+### /sandboxxer:troubleshoot
 Diagnoses and resolves common sandbox issues.
 
 **Triggers**:
@@ -346,7 +391,7 @@ Diagnoses and resolves common sandbox issues.
 3. Apply systematic fixes
 4. Verify the fix
 
-### sandboxxer-audit
+### /sandboxxer:audit
 Performs comprehensive security audits.
 
 **Triggers**:
@@ -363,13 +408,100 @@ Performs comprehensive security audits.
 5. Container permissions audit
 6. Generate security report
 
+### /sandboxxer:yolo-vibe-maxxing
+Non-interactive instant DevContainer setup with sensible defaults.
+
+**Triggers**:
+- User wants fastest path to sandbox
+- User mentions "yolo", "quick setup", "no questions"
+- User needs rapid prototyping environment
+
+**Workflow**:
+1. Apply default configuration (Python 3.12 + Node 20)
+2. Set container isolation (no firewall)
+3. Add PostgreSQL 16 + Redis 7 services
+4. Generate all configuration files
+5. Display next steps
+
+### /sandboxxer:deploy-to-azure
+Deploy DevContainer configurations to Azure Container Apps.
+
+**Triggers**:
+- User wants cloud-based development
+- User mentions "Azure", "cloud deployment", "remote container"
+- User needs team/shared environments
+
+**Workflow**:
+1. Verify Azure CLI and subscription
+2. Configure deployment options
+3. Generate Azure Developer CLI manifest
+4. Generate Bicep infrastructure templates
+5. Execute deployment
+6. Provide connection instructions
+
 ## Reference Documentation
 
-The plugin includes comprehensive reference documentation:
-- `docs/features/AZURE-DEPLOYMENT.md` - Azure deployment guide with reference links
-- `docs/features/CUSTOMIZATION.md` - Customization guide
-- `docs/features/SECURITY-MODEL.md` - Security model and best practices
-- `docs/features/TROUBLESHOOTING.md` - Detailed troubleshooting guide
+The plugin includes comprehensive documentation in the `docs/` directory:
+
+### Feature Documentation (`docs/features/`)
+- [AZURE-DEPLOYMENT.md](docs/features/AZURE-DEPLOYMENT.md) - Azure Container Apps deployment guide
+- [CUSTOMIZATION.md](docs/features/CUSTOMIZATION.md) - Template and configuration customization
+- [EXTENSIONS.md](docs/features/EXTENSIONS.md) - VS Code extensions configuration
+- [MCP.md](docs/features/MCP.md) - Model Context Protocol server integration
+- [NPM_PLATFORM_FIX.md](docs/features/NPM_PLATFORM_FIX.md) - npm platform compatibility fixes
+- [OLLAMA_INTEGRATION.md](docs/features/OLLAMA_INTEGRATION.md) - Local AI with Ollama setup
+- [SECRETS.md](docs/features/SECRETS.md) - Secrets management and security
+- [SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) - Security architecture and best practices
+- [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) - Interactive vs non-interactive setup guide
+- [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md) - Common issues and solutions
+- [VARIABLES.md](docs/features/VARIABLES.md) - Template variables reference
+
+### Additional Documentation
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Plugin architecture overview
+- [docs/CODESPACES.md](docs/CODESPACES.md) - GitHub Codespaces integration
+- [docs/TESTING.md](docs/TESTING.md) - Testing guide for examples
+- [docs/windows/README.md](docs/windows/README.md) - Windows-specific setup guide
+
+## LangSmith Tracing Integration
+
+The plugin includes hooks for sending Claude Code conversation traces to LangSmith for monitoring, debugging, and analytics.
+
+### Configuration
+
+Set these environment variables to enable tracing:
+
+```bash
+# Required
+export TRACE_TO_LANGSMITH=true
+export CC_LANGSMITH_API_KEY="your-langsmith-api-key"
+export CC_LANGSMITH_PROJECT="your-project-name"
+
+# Optional
+export CC_LANGSMITH_ENVIRONMENT="production"  # Default: auto-detected
+export CC_LANGSMITH_DEBUG=true                # Enable debug logging
+export CLAUDE_CODE_TEAM="team-name"           # Team identifier for traces
+```
+
+### How It Works
+
+1. **Stop Hook**: After each Claude Code response, `hooks/stop_hook.sh` processes the conversation
+2. **Trace Extraction**: Extracts turns, tool calls, and responses from the session
+3. **LangSmith API**: Sends structured traces to your LangSmith project
+4. **State Management**: Tracks trace IDs for conversation continuity
+
+### Requirements
+
+- `jq` - JSON processing
+- `curl` - HTTP requests
+- LangSmith account with API key
+
+### Files
+
+- `hooks/stop_hook.sh` - Linux/macOS trace hook
+- `hooks/stop_hook.ps1` - Windows PowerShell trace hook
+- `hooks/hooks.json` - Hook configuration
+
+See [LangSmith documentation](https://docs.langchain.com/langsmith) for detailed setup instructions.
 
 ## Naming Convention
 
@@ -444,23 +576,19 @@ sandbox-maxxing/
 │   │       │   └── infra/
 │   │       ├── partials/        # Language-specific Dockerfile sections
 │   │       │   ├── azure-cli.dockerfile
-│   │       │   ├── go.dockerfile
-│   │       │   ├── rust.dockerfile
-│   │       │   ├── java.dockerfile
-│   │       │   ├── ruby.dockerfile
-│   │       │   ├── php.dockerfile
 │   │       │   ├── cpp-clang.dockerfile
 │   │       │   ├── cpp-gcc.dockerfile
-│   │       │   └── postgres.dockerfile
+│   │       │   ├── go.dockerfile
+│   │       │   ├── php.dockerfile
+│   │       │   ├── postgres.dockerfile
+│   │       │   ├── ruby.dockerfile
+│   │       │   └── rust.dockerfile
 │   │       └── data/            # Configuration data
 │   │           ├── allowable-domains.json
 │   │           ├── azure-regions.json
 │   │           ├── mcp-servers.json
 │   │           ├── official-images.json
-│   │           ├── sandbox-templates.json
-│   │           ├── secrets.json
-│   │           ├── uv-images.json
-│   │           ├── variables.json
+│   │           ├── ollama-models.json
 │   │           └── vscode-extensions.json
 │   ├── sandboxxer-troubleshoot/ # Troubleshooting assistant
 │   │   └── SKILL.md
