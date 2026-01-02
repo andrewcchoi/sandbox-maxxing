@@ -7,10 +7,14 @@
 
 USER root
 
-# Install Go 1.24 (architecture-aware, using wget for HTTP/1.1)
-ARG GO_VERSION=1.24.10
+# Install latest stable Go (architecture-aware, dynamically discovered from go.dev API)
 RUN ARCH=$(dpkg --print-architecture) && \
-    wget "https://go.dev/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz" && \
+    GO_VERSION=$(curl -fsSL --http1.1 'https://go.dev/dl/?mode=json' | \
+        grep -o '"version": *"go[0-9.]*"' | head -1 | \
+        sed 's/.*"go\([0-9.]*\)".*/\1/') && \
+    echo "Installing Go ${GO_VERSION} for ${ARCH}" && \
+    curl -fsSL --http1.1 -o "go${GO_VERSION}.linux-${ARCH}.tar.gz" \
+        "https://go.dev/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz" && \
     tar -C /usr/local -xzf "go${GO_VERSION}.linux-${ARCH}.tar.gz" && \
     rm "go${GO_VERSION}.linux-${ARCH}.tar.gz"
 
