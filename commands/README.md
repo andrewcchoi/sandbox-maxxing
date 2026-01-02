@@ -324,24 +324,9 @@ Test commands with:
 
 ## Plugin Integration
 
-### Claude Code Plugin System
-
-Commands are defined in `.claude-plugin/plugin.json`:
-
-```json
-{
-  "commands": {
-    "setup": {
-      "file": "commands/quickstart.md",
-      "description": "Set up a new Claude Code Docker sandbox"
-    },
-    "troubleshoot": {
-      "file": "commands/troubleshoot.md",
-      "description": "Diagnose and fix sandbox issues"
-    }
-  }
-}
-```
+Commands are auto-discovered from the `commands/` directory. No explicit registration
+in `plugin.json` is required. Simply place command files in `commands/` with proper
+YAML frontmatter.
 
 ### Auto-Discovery
 
