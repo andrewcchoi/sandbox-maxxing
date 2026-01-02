@@ -1,5 +1,5 @@
 ---
-name: sandboxxer-security
+name: sandboxxer-audit
 description: Use when user wants to audit sandbox security, review firewall configuration, check for security best practices, or harden their Claude Code Docker sandbox environment
 ---
 
@@ -16,28 +16,6 @@ Performs comprehensive security audits of Claude Code Docker sandbox configurati
 - [Advanced Container Configuration](https://code.visualstudio.com/remote/advancedcontainers/overview) - Advanced topics
 - [GitHub Codespaces](https://docs.github.com/en/codespaces/quickstart) - Codespaces integration
 - [devcontainer.json Reference](https://containers.dev/implementors/json_reference/) - Full property reference
-
-## Usage
-
-This skill is invoked via the `/sandboxxer:audit` command.
-
-**Command:**
-```
-/sandboxxer:audit
-```
-
-The skill will:
-
-![Security Audit Flow](../../docs/diagrams/svg/security-audit-flow.svg)
-
-*12-step security audit workflow with findings categorization and actionable recommendations.*
-
-1. Scan existing DevContainer configuration files
-2. Audit firewall configuration and domain allowlists
-3. Check for security best practices violations
-4. Review exposed ports and network configuration
-5. Provide prioritized security recommendations
-6. Suggest concrete remediation steps
 
 ## When to Use This Skill
 
@@ -66,6 +44,19 @@ Do NOT use this skill when:
 - "Check my sandbox for security issues"
 - "What security best practices should I follow?"
 - "Is my sandbox configuration secure?"
+
+**The skill will:**
+
+![Security Audit Flow](../../docs/diagrams/svg/security-audit-flow.svg)
+
+*12-step security audit workflow with findings categorization and actionable recommendations.*
+
+1. Scan existing DevContainer configuration files
+2. Audit firewall configuration and domain allowlists
+3. Check for security best practices violations
+4. Review exposed ports and network configuration
+5. Provide prioritized security recommendations
+6. Suggest concrete remediation steps
 
 ## Examples
 

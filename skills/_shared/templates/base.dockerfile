@@ -33,7 +33,22 @@ FROM golang:1.25-bookworm AS go-source
 # Stage 3: Get Rust from official image (used when rust partial is selected)
 FROM rust:bookworm AS rust-source
 
-# Stage 4: Main build
+# Stage 4: Get Clang from community-maintained image (used when cpp-clang partial is selected)
+FROM silkeh/clang:17-bookworm AS clang-source
+
+# Stage 5: Get PHP from official image (used when php partial is selected)
+FROM php:8.3-cli-bookworm AS php-source
+
+# Stage 6: Get Composer from official image (used when php partial is selected)
+FROM composer:latest AS composer-source
+
+# Stage 7: Get GCC from official image (used when cpp-gcc partial is selected)
+FROM gcc:13-bookworm AS gcc-source
+
+# Stage 8: Get Azure CLI from official Microsoft image (used when azure-cli partial is selected)
+FROM mcr.microsoft.com/azure-cli:latest AS azure-cli-source
+
+# Stage 9: Main build
 FROM node:20-bookworm-slim
 
 # Re-declare ARGs after FROM (Docker requirement)
@@ -63,7 +78,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Firewall packages (conditionally installed based on ENABLE_FIREWALL)
 RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
     apt-get update && apt-get install -y --no-install-recommends \
-      iptables ipset iproute2 dnsutils \
+      iptables ipset iproute2 dnsutils aggregate \
     && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "Firewall packages installed"; \
   else \

@@ -119,25 +119,6 @@ echo ""
 echo "[4/8] Syncing plugins directory..."
 echo "Skip..."
 
-# if [ -d "$HOST_CLAUDE/plugins" ] && [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
-#     cp -r "$HOST_CLAUDE/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
-#     # Fix line endings for any shell scripts in plugins - portable sed
-#     find "$CLAUDE_DIR/plugins" -name "*.sh" -type f 2>/dev/null | while read -r script; do
-#         sed 's/\r$//' "$script" > "$script.tmp" && mv "$script.tmp" "$script" 2>/dev/null || true
-#     done
-#     find "$CLAUDE_DIR/plugins" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
-#     PLUGIN_COUNT=$(ls -1 "$CLAUDE_DIR/plugins" 2>/dev/null | wc -l)
-#     echo "  ✓ $PLUGIN_COUNT plugin(s) synced from host"
-# else
-#     # Copy default plugins if available
-#     if [ -d "$DEFAULTS_DIR/plugins" ] && [ "$(ls -A "$DEFAULTS_DIR/plugins" 2>/dev/null)" ]; then
-#         cp -r "$DEFAULTS_DIR/plugins/"* "$CLAUDE_DIR/plugins/" 2>/dev/null || true
-#         echo "  ✓ Created default plugins"
-#     else
-#         echo "  ℹ No plugins found"
-#     fi
-# fi
-
 # ============================================================================
 # 6. MCP Configuration
 # ============================================================================

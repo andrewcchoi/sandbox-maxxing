@@ -2,46 +2,37 @@
 # PHP Language Partial
 # ============================================================================
 # Appended to base.dockerfile when user selects PHP project type.
-# Adds PHP 8.3, Composer, and common PHP extensions.
+# Uses official PHP Docker image via multi-stage build for proxy-friendliness.
+# Includes PHP 8.3, Composer, and common PHP extensions.
 # ============================================================================
 
 USER root
 
-# Install PHP and common extensions
-# Note: Debian Bookworm includes PHP 8.2 by default. For PHP 8.3, use Sury repository.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    lsb-release \
-    ca-certificates \
-    apt-transport-https \
-    software-properties-common \
-    gnupg2 \
-    && wget -qO - https://packages.sury.org/php/apt.gpg | apt-key add - && \
-    echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
+# Copy PHP from official image (proxy-friendly - no external downloads)
+COPY --from=php-source /usr/local/bin/php /usr/local/bin/php
+COPY --from=php-source /usr/local/etc/php /usr/local/etc/php
+COPY --from=php-source /usr/local/include/php /usr/local/include/php
+COPY --from=php-source /usr/local/lib/php /usr/local/lib/php
+COPY --from=php-source /usr/local/php /usr/local/php
 
-# Install PHP 8.3 and extensions
+# Install PHP dependencies and extensions available via APT
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    php8.3-cli \
-    php8.3-common \
-    php8.3-mbstring \
-    php8.3-xml \
-    php8.3-zip \
-    php8.3-curl \
-    php8.3-gd \
-    php8.3-intl \
-    php8.3-pgsql \
-    php8.3-mysql \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    libcurl4-openssl-dev \
+    libpng-dev \
+    libicu-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Composer with retry logic (use --http1.1 to avoid HTTP/2 stream errors)
-RUN curl --retry 5 --retry-delay 5 --retry-max-time 300 \
-         --connect-timeout 30 --http1.1 \
-         -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install Composer from official Composer image (proxy-friendly)
+COPY --from=composer-source /usr/bin/composer /usr/local/bin/composer
 
 # PHP configuration
 RUN mkdir -p /usr/local/etc/php/conf.d && \
-    echo "memory_limit = 512M" >> /etc/php/8.3/cli/conf.d/99-custom.ini && \
-    echo "upload_max_filesize = 64M" >> /etc/php/8.3/cli/conf.d/99-custom.ini && \
-    echo "post_max_size = 64M" >> /etc/php/8.3/cli/conf.d/99-custom.ini
+    echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/99-custom.ini && \
+    echo "upload_max_filesize = 64M" >> /usr/local/etc/php/conf.d/99-custom.ini && \
+    echo "post_max_size = 64M" >> /usr/local/etc/php/conf.d/99-custom.ini
 
 # PHP environment
 ENV PATH=/usr/local/bin:$PATH

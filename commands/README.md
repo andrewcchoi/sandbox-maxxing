@@ -139,6 +139,31 @@ See also: [Security Model](../docs/features/SECURITY-MODEL.md)
 
 ---
 
+#### `/sandboxxer:deploy-to-azure`
+**File:** `commands/deploy-to-azure.md`
+**Description:** Deploy your DevContainer environment to Azure Container Apps for cloud-based development
+
+**Usage:**
+```bash
+/sandboxxer:deploy-to-azure
+```
+
+**What it does:**
+1. Validates Azure prerequisites
+2. Builds container image from DevContainer
+3. Pushes to Azure Container Registry
+4. Deploys to Azure Container Apps
+5. Provides connection instructions
+
+**Use when:**
+- You want to run your sandbox in the cloud
+- You need to share your development environment
+- You want persistent cloud-based development
+
+**Skill:** None (direct implementation)
+
+---
+
 ## Command Structure
 
 ### File Format
@@ -190,6 +215,7 @@ Result: DevContainer configuration created
 | `/sandboxxer:yolo-vibe-maxxing` | 0 | < 1 min | Container isolation | Quick prototyping, Python/Node |
 | `/sandboxxer:troubleshoot` | Diagnostic | Varies | N/A | Problem solving |
 | `/sandboxxer:audit` | Audit | 5-10 min | N/A | Security review |
+| `/sandboxxer:deploy-to-azure` | Azure config | 5-15 min | Azure security | Cloud deployment |
 
 ## Usage Examples
 
@@ -298,24 +324,9 @@ Test commands with:
 
 ## Plugin Integration
 
-### Claude Code Plugin System
-
-Commands are defined in `.claude-plugin/plugin.json`:
-
-```json
-{
-  "commands": {
-    "setup": {
-      "file": "commands/quickstart.md",
-      "description": "Set up a new Claude Code Docker sandbox"
-    },
-    "troubleshoot": {
-      "file": "commands/troubleshoot.md",
-      "description": "Diagnose and fix sandbox issues"
-    }
-  }
-}
-```
+Commands are auto-discovered from the `commands/` directory. No explicit registration
+in `plugin.json` is required. Simply place command files in `commands/` with proper
+YAML frontmatter.
 
 ### Auto-Discovery
 

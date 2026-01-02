@@ -1,7 +1,7 @@
 ---
 name: devcontainer-validator
-description: Validates that devcontainer setup commands created files in correct locations
-whenToUse: Run after /sandboxxer:quickstart or /sandboxxer:yolo-vibe-maxxing completes to verify correct files exist and wrong files do NOT exist
+description: Validates that devcontainer setup created files in correct locations
+whenToUse: Manually invoked to verify DevContainer files exist in correct locations and wrong files do NOT exist. Use this agent when you need to validate a DevContainer setup.
 model: haiku
 color: orange
 tools: ["Bash", "Glob", "Read"]
@@ -11,13 +11,14 @@ tools: ["Bash", "Glob", "Read"]
 
 ## Purpose
 
-This agent automatically validates that DevContainer setup commands created files in the correct locations. It catches common mistakes where Claude creates `.claude/config.json` or `.claude-code/settings.json` instead of `.devcontainer/` files.
+This agent validates that DevContainer setup created files in the correct locations. It catches common mistakes where files are created in wrong directories (e.g., `.claude/config.json` or `.claude-code/settings.json` instead of `.devcontainer/` files).
 
 ## When to Run
 
-**Automatically trigger after:**
-- `/sandboxxer:quickstart` completes
-- `/sandboxxer:yolo-vibe-maxxing` completes
+**Manually invoke this agent:**
+- After generating DevContainer files to verify correct setup
+- When troubleshooting DevContainer configuration issues
+- To validate that all required files exist in the expected locations
 
 ## Validation Steps
 
@@ -33,7 +34,7 @@ if [ -d ".devcontainer" ]; then
   echo "✓ .devcontainer/ directory exists"
 else
   echo "❌ ERROR: .devcontainer/ directory NOT found!"
-  echo "   The skill should have created this directory."
+  echo "   The command should have created this directory."
 fi
 
 # Check for required files
@@ -66,7 +67,7 @@ fi
 
 ### 2. Check for WRONG Files (Critical)
 
-These files should NEVER be created by DevContainer skills:
+These files should NEVER be created by DevContainer setup:
 
 ```bash
 echo ""
@@ -109,8 +110,8 @@ else
   echo ""
   echo "⚠️  $ERRORS CRITICAL ERROR(S) DETECTED!"
   echo ""
-  echo "The skill created Claude Code configuration files instead of DevContainer files."
-  echo "This indicates the skill is not working correctly."
+  echo "Files were created in wrong locations instead of .devcontainer/ directory."
+  echo "This indicates the setup process is not working correctly."
 fi
 ```
 
@@ -129,12 +130,12 @@ REMEDIATION STEPS:
    - ls -la .devcontainer/
    - Should contain: devcontainer.json, init-firewall.sh, setup-claude-credentials.sh
 
-3. If .devcontainer/ is missing, the skill FAILED to create the correct files.
-   - Re-run the skill with the updated instructions
-   - The skill should now have TASK IDENTITY and PRE-WRITE VALIDATION sections
+3. If .devcontainer/ is missing, the setup FAILED to create the correct files.
+   - Re-run the DevContainer generation process
+   - Ensure templates are copied correctly from skills/_shared/templates/
 
 4. Report the issue:
-   - The skill may need further fixes if it continues creating wrong files
+   - The setup process may need fixes if it continues creating wrong files
 ```
 
 ## Validation Output Format
@@ -158,11 +159,11 @@ Status: FAILED - Wrong files detected
 Action Required: Delete wrong files, verify DevContainer setup
 ```
 
-## Integration Notes
+## Usage Notes
 
-- This agent should run automatically after any DevContainer setup skill completes
-- It provides immediate feedback if the skill created wrong files
-- Users can manually invoke this agent to check their setup
+- This agent is designed for manual invocation to validate DevContainer setup
+- It provides immediate feedback if files were created in wrong locations
+- Use this agent after generating DevContainer files to verify correctness
 - The agent uses haiku model for fast execution
 - Orange color indicates validation/checking task
 

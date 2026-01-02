@@ -1,7 +1,7 @@
 ---
 name: devcontainer-generator
-description: Generates DevContainer files by copying templates and customizing placeholders. PROACTIVELY use for all devcontainer setup file generation.
-whenToUse: Automatically invoked by /sandboxxer:quickstart and /sandboxxer:yolo-vibe-maxxing commands during implementation phase. This agent copies templates and replaces placeholders using bash commands only.
+description: Generates DevContainer files by copying templates and customizing placeholders. Use this agent for manual devcontainer setup file generation.
+whenToUse: Manually invoked when you need to generate DevContainer files from templates. This agent copies templates and replaces placeholders using bash commands only. NOT automatically triggered.
 model: haiku
 color: blue
 tools: ["Bash", "Read", "Glob"]
@@ -53,7 +53,7 @@ fi
 # List available templates
 echo "=== AVAILABLE TEMPLATES ==="
 ls -lh skills/_shared/templates/
-ls -lh skills/_shared/templates/init-firewall/
+ls -lh skills/_shared/templates/partials/
 ```
 
 ### Step 2: Read Templates (Mandatory)
@@ -66,8 +66,8 @@ Use Read tool on:
 2. skills/_shared/templates/devcontainer.json
 3. skills/_shared/templates/docker-compose.yml
 4. skills/_shared/templates/setup-claude-credentials.sh
-5. Appropriate firewall script from skills/_shared/templates/init-firewall/
-6. Any partial dockerfiles needed (partial-*.dockerfile)
+5. skills/_shared/templates/init-firewall.sh (single file, supports both firewall modes)
+6. Any partial dockerfiles needed from skills/_shared/templates/partials/ (e.g., postgres.dockerfile, go.dockerfile)
 ```
 
 ### Step 3: Create Directory Structure
@@ -95,10 +95,8 @@ echo "✓ Copied devcontainer.json"
 cp skills/_shared/templates/setup-claude-credentials.sh .devcontainer/setup-claude-credentials.sh
 echo "✓ Copied setup-claude-credentials.sh"
 
-# Copy firewall script (firewall-option-specific)
-# For container isolation: use disabled.sh
-# For domain allowlist: use dns-allowlist.sh
-cp skills/_shared/templates/init-firewall/disabled.sh .devcontainer/init-firewall.sh
+# Copy firewall script (single file that supports both modes)
+cp skills/_shared/templates/init-firewall.sh .devcontainer/init-firewall.sh
 echo "✓ Copied init-firewall.sh"
 ```
 
@@ -125,18 +123,27 @@ head -n $MARKER_LINE .devcontainer/Dockerfile.tmp > .devcontainer/Dockerfile
 
 # Append language partials (if any)
 # Example: If PostgreSQL is needed
-if [ -f "skills/_shared/templates/partial-postgresql.dockerfile" ]; then
+if [ -f "skills/_shared/templates/partials/postgres.dockerfile" ]; then
     echo "" >> .devcontainer/Dockerfile
-    cat skills/_shared/templates/partial-postgresql.dockerfile >> .devcontainer/Dockerfile
+    cat skills/_shared/templates/partials/postgres.dockerfile >> .devcontainer/Dockerfile
     echo "✓ Added PostgreSQL partial"
 fi
 
-# Example: If Python is detected
-if [ -f "skills/_shared/templates/partial-python.dockerfile" ]; then
+# Example: If Go is detected
+if [ -f "skills/_shared/templates/partials/go.dockerfile" ]; then
     echo "" >> .devcontainer/Dockerfile
-    cat skills/_shared/templates/partial-python.dockerfile >> .devcontainer/Dockerfile
-    echo "✓ Added Python partial"
+    cat skills/_shared/templates/partials/go.dockerfile >> .devcontainer/Dockerfile
+    echo "✓ Added Go partial"
 fi
+
+# Example: If Rust is detected
+if [ -f "skills/_shared/templates/partials/rust.dockerfile" ]; then
+    echo "" >> .devcontainer/Dockerfile
+    cat skills/_shared/templates/partials/rust.dockerfile >> .devcontainer/Dockerfile
+    echo "✓ Added Rust partial"
+fi
+
+# Note: Python is included in base.dockerfile, no partial needed
 
 # Append the rest of the base dockerfile (after marker)
 tail -n +$((MARKER_LINE + 1)) .devcontainer/Dockerfile.tmp >> .devcontainer/Dockerfile
@@ -262,8 +269,8 @@ Files Created:
 
 Dockerfile Composition:
   ✓ Base: base.dockerfile
-  ✓ Partials: partial-postgresql.dockerfile
-  ✓ Firewall: disabled.sh (container isolation only)
+  ✓ Partials: partials/postgres.dockerfile, partials/go.dockerfile
+  ✓ Firewall: init-firewall.sh (container isolation mode)
 
 Placeholders:
   ✓ {{PROJECT_NAME}} → demo-app-shared
@@ -275,7 +282,7 @@ Services Enabled:
 
 Next Steps:
   1. Review the generated files
-  2. Run validation: /devcontainer-validator
+  2. Manually validate the files or use the devcontainer-validator agent
   3. Test the DevContainer: docker compose up
 ```
 
@@ -288,20 +295,21 @@ If you encounter errors:
 3. **Marker not found**: Check base.dockerfile has `# === LANGUAGE PARTIALS ===` marker
 4. **Sed errors**: Verify placeholder syntax is correct
 
-## Integration with Commands
+## Manual Invocation
 
-This agent is invoked by the /sandboxxer:quickstart and /sandboxxer:yolo-vibe-maxxing commands during implementation:
+This agent is designed for manual invocation when you need to generate DevContainer files:
 
 ```markdown
-## IMPLEMENTATION (After Planning Approval)
+To use this agent manually:
 
-Delegate to the devcontainer-generator agent:
+Invoke the agent with:
+- Project name (for placeholder replacement)
+- Firewall mode (container isolation or domain allowlist)
+- Detected languages (Go, Rust, PHP, etc.)
+- Required services (PostgreSQL, Redis, etc.)
 
-Use Task tool with:
-- subagent_type: "devcontainer-generator"
-- prompt: "Generate DevContainer files with container isolation only. Project: <name>. Languages: <list>. Services: <list>."
-
-Wait for agent completion, then verify output.
+Example:
+"Generate DevContainer files with container isolation. Project: my-app. Languages: Go, PostgreSQL. Services: PostgreSQL."
 ```
 
 ## Why This Agent Exists

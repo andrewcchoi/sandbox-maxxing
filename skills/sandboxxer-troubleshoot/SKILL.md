@@ -9,23 +9,6 @@ description: Use when user encounters problems with Claude Code Docker sandbox -
 
 Diagnoses and resolves common issues with Claude Code Docker sandbox environments using systematic troubleshooting workflows.
 
-## Usage
-
-This skill is invoked via the `/sandboxxer:troubleshoot` command.
-
-**Command:**
-```
-/sandboxxer:troubleshoot
-```
-
-The skill will:
-1. Ask user to describe the issue
-2. Categorize the problem (container, network, service, firewall, etc.)
-3. Gather diagnostic information systematically
-4. Apply appropriate troubleshooting workflow
-5. Provide step-by-step resolution guidance
-6. Verify the fix and suggest preventive measures
-
 ## When to Use This Skill
 
 Use this skill when:

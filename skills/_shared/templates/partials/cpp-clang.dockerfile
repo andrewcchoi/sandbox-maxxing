@@ -2,25 +2,25 @@
 # C++ (Clang) Language Partial
 # ============================================================================
 # Appended to base.dockerfile when user selects C++ (Clang) project type.
+# Uses official/community Docker images where possible for proxy-friendliness.
 # Adds Clang 17 toolchain, CMake, Ninja, and vcpkg package manager.
 # ============================================================================
 
 USER root
 
-# Add LLVM apt repository for latest Clang toolchain
-RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/llvm.gpg] http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-17 main" \
-    > /etc/apt/sources.list.d/llvm.list
+# Copy Clang from community-maintained silkeh/clang image (proxy-friendly)
+# This avoids downloading from apt.llvm.org during build
+COPY --from=clang-source /usr/bin/clang* /usr/bin/
+COPY --from=clang-source /usr/bin/lldb* /usr/bin/
+COPY --from=clang-source /usr/bin/lld* /usr/bin/
+COPY --from=clang-source /usr/lib/llvm-17 /usr/lib/llvm-17
+COPY --from=clang-source /usr/lib/x86_64-linux-gnu/libLLVM-17.so* /usr/lib/x86_64-linux-gnu/ 2>/dev/null || true
 
-# Install Clang 17 toolchain and build tools
+# Install build tools via APT (proxy-friendly)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    clang-17 \
-    clang-format-17 \
-    clang-tidy-17 \
-    lldb-17 \
-    lld-17 \
     cmake \
     ninja-build \
+    git \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create version-agnostic symlinks
@@ -35,6 +35,8 @@ ENV CXX=clang++
 ENV CC=clang
 
 # Install vcpkg package manager
+# NOTE: This requires GitHub access during build (no proxy-friendly alternative exists)
+# If behind strict proxy, consider pre-caching vcpkg or skipping this step
 RUN git clone https://github.com/microsoft/vcpkg.git /opt/vcpkg && \
     /opt/vcpkg/bootstrap-vcpkg.sh && \
     ln -s /opt/vcpkg/vcpkg /usr/local/bin/vcpkg && \

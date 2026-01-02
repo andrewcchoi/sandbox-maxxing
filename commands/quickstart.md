@@ -18,6 +18,17 @@ Create a customized VS Code DevContainer configuration with:
 Run these checks before proceeding. Use `--skip-validation` to bypass.
 
 ```bash
+# Parse command-line arguments
+USE_FEATURES_FLAG=false
+for arg in "$@"; do
+  case $arg in
+    --use-features)
+      USE_FEATURES_FLAG=true
+      shift
+      ;;
+  esac
+done
+
 echo "Running pre-flight checks..."
 VALIDATION_FAILED=false
 
@@ -261,7 +272,14 @@ SELECTED_FEATURES=()
 SELECTED_CATEGORIES=()
 
 # Installation mode: "partials" (custom dockerfiles) or "features" (official Dev Container Features)
-INSTALL_MODE="partials"
+# Default to partials (proxy-friendly), but allow --use-features flag for power users
+if [ "$USE_FEATURES_FLAG" = "true" ]; then
+  INSTALL_MODE="features"
+  echo "Using Dev Container Features (advanced mode)"
+else
+  INSTALL_MODE="partials"
+  echo "Using custom partial dockerfiles (default, proxy-friendly)"
+fi
 
 # Workspace mode: "bind" (default) or "volume" (better I/O on Windows/macOS)
 WORKSPACE_MODE="bind"
@@ -270,38 +288,7 @@ WORKSPACE_MODE="bind"
 USE_PREBUILT_IMAGE="false"
 ```
 
-## Step 1.5: Choose Installation Mode
-
-Use AskUserQuestion:
-
-```
-How should additional languages be installed?
-
-Options:
-1. Dev Container Features (Recommended)
-   → Uses official ghcr.io/devcontainers/features/*
-   → Faster builds, maintained by community
-   → Requires internet during build
-
-2. Custom Dockerfiles (Partials)
-   → Uses bundled partial dockerfiles
-   → Works offline/air-gapped
-   → Full control over versions
-```
-
-Store as `INSTALL_MODE_CHOICE`.
-
-```bash
-if [ "$INSTALL_MODE_CHOICE" = "Dev Container Features (Recommended)" ]; then
-  INSTALL_MODE="features"
-  echo "Using Dev Container Features"
-else
-  INSTALL_MODE="partials"
-  echo "Using custom partial dockerfiles"
-fi
-```
-
-## Step 1.6: Choose Pre-built Image Option
+## Step 1.5: Choose Pre-built Image Option
 
 Use AskUserQuestion:
 
@@ -496,7 +483,7 @@ Use AskUserQuestion:
 What ADDITIONAL tools do you want to add to your stack?
 
 Options:
-1. Backend language (Go, Rust, Java, Ruby, PHP)
+1. Backend language (Go, Rust, Ruby, PHP)
    → Add a compiled backend language alongside Python
 
 2. Database tools (PostgreSQL client + extensions)
@@ -530,8 +517,7 @@ Which backend language?
 Options:
 1. Go (Go 1.22 + linters)
 2. Rust (Rust toolchain + Cargo)
-3. Java (OpenJDK 21, Maven, Gradle)
-4. More languages...
+3. More languages...
 ```
 
 Store as `BACKEND_CHOICE`.
@@ -551,11 +537,6 @@ case "$BACKEND_CHOICE" in
     SELECTED_PARTIALS+=("rust")
     SELECTED_FEATURES+=("ghcr.io/devcontainers/features/rust:1")
     echo "Selected: Rust toolchain"
-    ;;
-  "Java")
-    SELECTED_PARTIALS+=("java")
-    SELECTED_FEATURES+=("ghcr.io/devcontainers/features/java:1")
-    echo "Selected: Java toolchain"
     ;;
   "More languages...")
     # Continue to Step 3b
@@ -815,9 +796,6 @@ else
         "rust")
           echo "  ✓ Rust toolchain";
           ;;
-        "java")
-          echo "  ✓ Java toolchain";
-          ;;
         "cpp-clang")
           echo "  ✓ C++ (Clang 17)";
           ;;
@@ -847,7 +825,6 @@ for partial in "${SELECTED_PARTIALS[@]}"; do
     "go") echo "  - Go 1.22" ;;
     "ruby") echo "  - Ruby 3.3" ;;
     "rust") echo "  - Rust" ;;
-    "java") echo "  - Java (OpenJDK 21)" ;;
     "cpp-clang") echo "  - C++ (Clang 17)" ;;
     "cpp-gcc") echo "  - C++ (GCC)" ;;
     "php") echo "  - PHP 8.3" ;;
@@ -919,11 +896,6 @@ if [ "$NEEDS_FIREWALL" = "Yes" ]; then
       "ruby")
         echo "Adding Ruby domains for selected language...";
         FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.ruby.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/');
-        FIREWALL_DOMAINS+="\n";
-        ;;
-      "java")
-        echo "Adding Maven/Java domains for selected language...";
-        FIREWALL_DOMAINS+=$(jq -r '.categories.package_managers.sub_categories.maven.domains[]' "$DOMAINS_JSON" | sed 's/^/  "/;s/$/"/');
         FIREWALL_DOMAINS+="\n";
         ;;
       "php")
@@ -1129,9 +1101,6 @@ for partial in "${SELECTED_PARTIALS[@]}"; do
     "rust")
       EXTENSIONS_TO_ADD+=',\n        "rust-lang.rust-analyzer"';
       ;;
-    "java")
-      EXTENSIONS_TO_ADD+=',\n        "redhat.java",\n        "vscjava.vscode-java-pack"';
-      ;;
     "ruby")
       EXTENSIONS_TO_ADD+=',\n        "shopify.ruby-lsp"';
       ;;
@@ -1262,7 +1231,6 @@ if [ ${#SELECTED_PARTIALS[@]} -gt 0 ]; then
       "go") echo "  + Go 1.22" ;;
       "ruby") echo "  + Ruby 3.3" ;;
       "rust") echo "  + Rust" ;;
-      "java") echo "  + Java (OpenJDK 21)" ;;
       "cpp-clang") echo "  + C++ (Clang 17)" ;;
       "cpp-gcc") echo "  + C++ (GCC)" ;;
       "php") echo "  + PHP 8.3" ;;
