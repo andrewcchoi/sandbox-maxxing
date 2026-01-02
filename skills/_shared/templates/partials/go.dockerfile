@@ -7,10 +7,11 @@
 
 USER root
 
-# Install Go 1.24 (architecture-aware, using wget for HTTP/1.1)
-ARG GO_VERSION=1.24.10
+# Install Go 1.25 (architecture-aware, using curl with HTTP/1.1 for reliable downloads)
+ARG GO_VERSION=1.25.5
 RUN ARCH=$(dpkg --print-architecture) && \
-    wget "https://go.dev/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz" && \
+    curl -fsSL --http1.1 -o "go${GO_VERSION}.linux-${ARCH}.tar.gz" \
+        "https://go.dev/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz" && \
     tar -C /usr/local -xzf "go${GO_VERSION}.linux-${ARCH}.tar.gz" && \
     rm "go${GO_VERSION}.linux-${ARCH}.tar.gz"
 
