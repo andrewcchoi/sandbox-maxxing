@@ -2,24 +2,14 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": {
-          "toolName": "Bash",
-          "arguments": {
-            "command": "docker.*prune|docker.*rm.*-f.*\\$|docker.*rmi.*-f"
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd docker-safety-hook.sh",
+            "timeout": 5000
           }
-        },
-        "type": "command",
-        "command": "echo 'BLOCK: Destructive Docker commands require explicit user approval' && exit 1"
-      },
-      {
-        "matcher": {
-          "toolName": "Bash",
-          "arguments": {
-            "command": "docker.*--privileged"
-          }
-        },
-        "type": "prompt",
-        "prompt": "A privileged container was requested. This bypasses security isolation.\n\nCommand: {{arguments.command}}\n\nIs this necessary for the DevContainer setup? Respond ALLOW or BLOCK."
+        ]
       }
     ]
   }
