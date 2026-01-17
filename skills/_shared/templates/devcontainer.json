@@ -67,7 +67,7 @@
 
   "initializeCommand": ["docker", "volume", "create", "{{PROJECT_NAME}}-workspace-volume"],
   "onCreateCommand": "rm -rf /workspace/.venv 2>/dev/null || true; if [ -d '/tmp/host-source' ] && [ -z \"$(ls -A /workspace 2>/dev/null)\" ]; then cp -r /tmp/host-source/. /workspace/; fi",
-  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh && .devcontainer/setup-frontend.sh",
+  "postCreateCommand": "sudo chmod +x .devcontainer/*.sh 2>/dev/null || true; .devcontainer/setup-claude-credentials.sh && .devcontainer/setup-frontend.sh",
   "updateContentCommand": "echo '🧹 Cleaning stale .venv after rebuild...' && rm -rf /workspace/.venv 2>/dev/null || true",
   "postStartCommand": "sudo /usr/local/bin/init-firewall.sh && echo 'DevContainer ready!'",
   "postAttachCommand": "",
@@ -105,7 +105,7 @@
   },
 
   "remoteEnv": {
-    "PATH": "/usr/local/bin:${containerEnv:PATH}",
+    "PATH": "/home/node/.local/bin:/usr/local/bin:${containerEnv:PATH}",
     "FIREWALL_MODE": "permissive",
     // Inherit from host (if set):
     "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
