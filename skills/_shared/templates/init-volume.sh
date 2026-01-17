@@ -13,7 +13,23 @@
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-PROJECT_NAME="$(basename "$PROJECT_DIR")"
+
+# Sanitize project name for Docker compatibility
+sanitize_project_name() {
+  local name="$1"
+  local sanitized
+  sanitized=$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+  sanitized=$(echo "$sanitized" | sed 's/^-*//;s/-*$//;s/--*/-/g')
+  [ -z "$sanitized" ] && sanitized="sandbox-app"
+  echo "$sanitized"
+}
+
+RAW_PROJECT_NAME="$(basename "$PROJECT_DIR")"
+PROJECT_NAME="$(sanitize_project_name "$RAW_PROJECT_NAME")"
+if [ "$PROJECT_NAME" != "$RAW_PROJECT_NAME" ]; then
+  echo "Note: Project name sanitized: '$RAW_PROJECT_NAME' -> '$PROJECT_NAME'"
+fi
+
 VOLUME_NAME="${PROJECT_NAME}-workspace-volume"
 
 echo "Initializing volume: $VOLUME_NAME"
