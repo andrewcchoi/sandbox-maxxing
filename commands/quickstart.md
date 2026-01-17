@@ -767,7 +767,22 @@ fi
 ## Step 10: Build Dockerfile
 
 ```bash
-PROJECT_NAME="$(basename $(pwd))"
+# Sanitize project name for Docker compatibility
+sanitize_project_name() {
+  local name="$1"
+  local sanitized
+  sanitized=$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+  sanitized=$(echo "$sanitized" | sed 's/^-*//;s/-*$//;s/--*/-/g')
+  [ -z "$sanitized" ] && sanitized="sandbox-app"
+  echo "$sanitized"
+}
+
+RAW_PROJECT_NAME="$(basename $(pwd))"
+PROJECT_NAME="$(sanitize_project_name "$RAW_PROJECT_NAME")"
+if [ "$PROJECT_NAME" != "$RAW_PROJECT_NAME" ]; then
+  echo "Note: Project name sanitized: '$RAW_PROJECT_NAME' -> '$PROJECT_NAME'"
+fi
+
 TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 PARTIALS="$TEMPLATES/partials"
 
@@ -1048,8 +1063,8 @@ REDIS_PORT=$REDIS_PORT
 # ----------------------------------------------------------------------------
 # Database Configuration
 # ----------------------------------------------------------------------------
-POSTGRES_DB=devdb
-POSTGRES_USER=devuser
+POSTGRES_DB=sandbox_dev
+POSTGRES_USER=sandbox_user
 POSTGRES_PASSWORD=devpassword
 
 # Database URLs (for application use)
