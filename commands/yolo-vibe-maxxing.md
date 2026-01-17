@@ -49,7 +49,20 @@ fi
 ### Step 2: Copy Templates and Process Placeholders
 
 ```bash
-PROJECT_NAME="$(basename $(pwd))"
+# Sanitize project name for Docker compatibility (yolo mode: auto-fix, no prompts)
+sanitize_project_name() {
+  local name="$1"
+  local sanitized
+  sanitized=$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+  sanitized=$(echo "$sanitized" | sed 's/^-*//;s/-*$//;s/--*/-/g')
+  [ -z "$sanitized" ] && sanitized="sandbox-app"
+  echo "$sanitized"
+}
+
+RAW_PROJECT_NAME="$(basename $(pwd))"
+PROJECT_NAME="$(sanitize_project_name "$RAW_PROJECT_NAME")"
+[ "$PROJECT_NAME" != "$RAW_PROJECT_NAME" ] && echo "Auto-sanitized: $RAW_PROJECT_NAME -> $PROJECT_NAME"
+
 TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 DATA="$PLUGIN_ROOT/skills/_shared/templates/data"
 
