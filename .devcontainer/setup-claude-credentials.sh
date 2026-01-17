@@ -33,6 +33,23 @@ echo "Setting up Claude Code environment..."
 echo "================================================================"
 
 # ============================================================================
+# 0. Cross-Platform Git Configuration
+# ============================================================================
+echo ""
+echo "[0/9] Configuring git for cross-platform development..."
+
+# Prevent file mode (755/644) differences between Linux/Windows
+git config --global core.filemode false
+
+# Use LF in the repo, convert to native on checkout (input = LF in repo)
+git config --global core.autocrlf input
+
+# Ensure .gitattributes EOL rules are applied
+git config --global core.eol lf
+
+echo "  ✓ Git configured for cross-platform compatibility"
+
+# ============================================================================
 # 1. Create Directory Structure
 # ============================================================================
 mkdir -p "$CLAUDE_DIR"
@@ -45,7 +62,7 @@ mkdir -p "$CLAUDE_DIR/mcp"
 # 2. Core Configuration Files
 # ============================================================================
 echo ""
-echo "[1/8] Copying core configuration files..."
+echo "[1/9] Copying core configuration files..."
 
 for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json" ".mcp.json"; do
     if [ -f "$HOST_CLAUDE/$config_file" ]; then
@@ -59,7 +76,7 @@ done
 # 3. Hooks Directory
 # ============================================================================
 echo ""
-echo "[2/8] Syncing hooks directory..."
+echo "[2/9] Syncing hooks directory..."
 
 if [ -d "$HOST_CLAUDE/hooks" ] && [ "$(ls -A "$HOST_CLAUDE/hooks" 2>/dev/null)" ]; then
     cp -r "$HOST_CLAUDE/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
@@ -89,7 +106,7 @@ fi
 # 4. State Directory
 # ============================================================================
 echo ""
-echo "[3/8] Syncing state directory..."
+echo "[3/9] Syncing state directory..."
 
 if [ -d "$HOST_CLAUDE/state" ] && [ "$(ls -A "$HOST_CLAUDE/state" 2>/dev/null)" ]; then
     cp -r "$HOST_CLAUDE/state/"* "$CLAUDE_DIR/state/" 2>/dev/null || true
@@ -112,7 +129,7 @@ fi
 # 5. Plugins Directory
 # ============================================================================
 echo ""
-echo "[4/8] Syncing plugins directory..."
+echo "[4/9] Syncing plugins directory..."
 echo "Skip..."
 
 # if [ -d "$HOST_CLAUDE/plugins" ] && [ "$(ls -A "$HOST_CLAUDE/plugins" 2>/dev/null)" ]; then
@@ -136,7 +153,7 @@ echo "Skip..."
 # 6. MCP Configuration
 # ============================================================================
 echo ""
-echo "[5/8] Syncing MCP configuration..."
+echo "[5/9] Syncing MCP configuration..."
 
 # Copy .mcp.json if exists (already handled above, but check for mcp/ dir)
 if [ -d "$HOST_CLAUDE/mcp" ]; then
@@ -155,7 +172,7 @@ fi
 # 7. Environment Variables (Optional)
 # ============================================================================
 echo ""
-echo "[6/8] Loading environment variables..."
+echo "[6/9] Loading environment variables..."
 
 if [ -f "$HOST_ENV/.env.claude" ]; then
     # Source environment variables
@@ -177,7 +194,7 @@ fi
 # 8. GitHub CLI Authentication (Optional)
 # ============================================================================
 echo ""
-echo "[7/8] Setting up GitHub CLI authentication..."
+echo "[7/9] Setting up GitHub CLI authentication..."
 
 if [ -d "$HOST_GH" ]; then
     mkdir -p "$GH_CONFIG_DIR"
