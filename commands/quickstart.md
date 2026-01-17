@@ -744,24 +744,54 @@ Store as `CUSTOM_DOMAINS`.
 # Disable history expansion (fixes ! in Windows paths)
 set +H 2>/dev/null || true
 
-# Handle Windows paths - convert backslashes to forward slashes
+echo "Searching for plugin templates..."
+
+# Method 1: CLAUDE_PLUGIN_ROOT (set by Claude Code)
 PLUGIN_ROOT=""
 if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
   PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT//\\//}";
-  echo "Using CLAUDE_PLUGIN_ROOT: $PLUGIN_ROOT";
+  echo "  Using CLAUDE_PLUGIN_ROOT: $PLUGIN_ROOT";
+
+# Method 2: Current directory is plugin root
 elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
   PLUGIN_ROOT=".";
-  echo "Using current directory as plugin root";
+  echo "  Using current directory as plugin root";
+
+# Method 3: Search installed plugins
 elif [ -d "$HOME/.claude/plugins" ]; then
+  echo "  Searching ~/.claude/plugins...";
+  # Account for .claude-plugin/ subdirectory structure
   PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
-    -exec grep -l '"name": "sandboxxer"' {} \; 2>/dev/null | head -1);
+    -exec grep -l '"name".*:.*"sandboxxer"' {} \; 2>/dev/null | head -1);
   if [ -n "$PLUGIN_JSON" ]; then
-    PLUGIN_ROOT=$(dirname "$(dirname "$PLUGIN_JSON")");
-    echo "Found installed plugin: $PLUGIN_ROOT";
+    PLUGIN_DIR=$(dirname "$PLUGIN_JSON");
+    # Handle both root plugin.json and .claude-plugin/plugin.json
+    if [ "$(basename "$PLUGIN_DIR")" = ".claude-plugin" ]; then
+      PLUGIN_ROOT=$(dirname "$PLUGIN_DIR");
+    else
+      PLUGIN_ROOT="$PLUGIN_DIR";
+    fi;
+    echo "  Found plugin: $PLUGIN_ROOT";
   fi;
 fi
 
-[ -z "$PLUGIN_ROOT" ] && { echo "ERROR: Cannot locate plugin templates"; exit 1; }
+# Validate templates exist
+if [ -z "$PLUGIN_ROOT" ]; then
+  echo "ERROR: Cannot locate plugin templates";
+  echo "";
+  echo "Please ensure one of the following:";
+  echo "  1. Run from within the sandbox-maxxing plugin directory";
+  echo "  2. Install the plugin to ~/.claude/plugins/";
+  echo "  3. Set CLAUDE_PLUGIN_ROOT environment variable";
+  exit 1;
+fi
+
+if [ ! -f "$PLUGIN_ROOT/skills/_shared/templates/base.dockerfile" ]; then
+  echo "ERROR: Template not found at $PLUGIN_ROOT/skills/_shared/templates/base.dockerfile";
+  exit 1;
+fi
+
+echo "  Templates found at: $PLUGIN_ROOT/skills/_shared/templates/";
 ```
 
 ## Step 10: Build Dockerfile
@@ -791,6 +821,11 @@ mkdir -p .devcontainer data
 
 # Copy base dockerfile (includes Python 3.12 + Node 20)
 cp "$TEMPLATES/base.dockerfile" .devcontainer/Dockerfile
+if [ ! -s .devcontainer/Dockerfile ]; then
+  echo "ERROR: Failed to copy base.dockerfile"
+  exit 1
+fi
+echo "  Copied base.dockerfile ($(wc -l < .devcontainer/Dockerfile) lines)"
 echo "Base image: Python 3.12 + Node 20"
 
 # Handle tool installation based on mode
@@ -1253,6 +1288,8 @@ echo "Project: $PROJECT_NAME"
 echo ""
 echo "Your Stack:"
 echo "  Base: Python 3.12 + Node 20"
+echo "  + Claude CLI (claude command)"
+echo "  + uv (Python package manager)"
 if [ ${#SELECTED_PARTIALS[@]} -gt 0 ]; then
   for partial in "${SELECTED_PARTIALS[@]}"; do
     case "$partial" in
