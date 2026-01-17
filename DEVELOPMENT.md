@@ -286,6 +286,33 @@ git commit -m "chore: regenerate devcontainer with latest plugin version"
 
 ## Troubleshooting
 
+### Cross-Platform Git Line Endings (Windows ↔ Linux)
+
+When developing in devcontainers (Linux) and checking out on Windows, you may see phantom changes in git due to line ending (CRLF vs LF) or file mode (755 vs 644) differences.
+
+**Symptoms:**
+- Files appear modified in `git status` but `git diff` shows no content changes
+- Warnings about "LF will be replaced by CRLF"
+- File mode changes (755 → 644)
+
+**Prevention (automatic):**
+The devcontainer's `setup-claude-credentials.sh` automatically configures git:
+- `core.filemode=false` - Ignores file permission differences
+- `core.autocrlf=input` - Uses LF in repo, native line endings locally
+- `core.eol=lf` - Default to LF for new files
+
+**Manual Fix (if needed):**
+```bash
+# In the devcontainer or on Windows:
+git config core.filemode false
+git restore .
+
+# To normalize all files:
+git add --renormalize .
+```
+
+**The `.gitattributes` file** enforces LF for shell scripts, Docker files, and code files.
+
 ### Devcontainer Won't Build
 
 ```bash
