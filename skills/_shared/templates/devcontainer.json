@@ -67,7 +67,7 @@
 
   "initializeCommand": ["docker", "volume", "create", "{{PROJECT_NAME}}-workspace-volume"],
   "onCreateCommand": "rm -rf /workspace/.venv 2>/dev/null || true; if [ -d '/tmp/host-source' ] && [ -z \"$(ls -A /workspace 2>/dev/null)\" ]; then cp -r /tmp/host-source/. /workspace/; fi",
-  "postCreateCommand": "sudo chmod +x .devcontainer/*.sh 2>/dev/null || true; .devcontainer/setup-claude-credentials.sh && .devcontainer/setup-frontend.sh",
+  "postCreateCommand": "chmod +x .devcontainer/*.sh 2>/dev/null || true; .devcontainer/setup-claude-credentials.sh && .devcontainer/setup-frontend.sh",
   "updateContentCommand": "echo '🧹 Cleaning stale .venv after rebuild...' && rm -rf /workspace/.venv 2>/dev/null || true",
   "postStartCommand": "sudo /usr/local/bin/init-firewall.sh && echo 'DevContainer ready!'",
   "postAttachCommand": "",
