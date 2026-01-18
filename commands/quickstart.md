@@ -1090,7 +1090,7 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
 done
 
 # Start with existing .env if available, otherwise create fresh
-if [ "$FRESH_ENV" = "false" ] && [ -f ".devcontainer.backup/.env" ]; then
+if [ "$FRESH_ENV" != "true" ] && [ -f ".devcontainer.backup/.env" ]; then
   cp .devcontainer.backup/.env .env
   echo "Preserved existing .env file"
 
