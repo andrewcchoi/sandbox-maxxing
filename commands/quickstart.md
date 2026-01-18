@@ -239,6 +239,13 @@ if [ -f ".devcontainer/devcontainer.json" ]; then
   echo "Backed up existing configuration to .devcontainer.backup/"
 fi
 
+# Standalone .env backup (even without existing devcontainer config)
+if [ "$EXISTING_CONFIG_FOUND" = "false" ] && [ -f ".env" ]; then
+  mkdir -p .devcontainer.backup
+  cp .env .devcontainer.backup/
+  echo "Backed up existing .env to .devcontainer.backup/"
+fi
+
 # Extract custom services from docker-compose.yml
 if [ -f "docker-compose.yml" ]; then
   EXISTING_CUSTOM_SERVICES=$(docker compose config --services 2>/dev/null | \
@@ -1168,23 +1175,16 @@ preserve_env_from_backup() {
 
   # Deduplicate backup (last value wins for duplicate keys)
   local temp_deduped=$(mktemp)
-  tac "$backup_env" 2>/dev/null | awk -F= '!seen[$1]++ && $1 && $2' | tac > "$temp_deduped"
+  tac "$backup_env" 2>/dev/null | awk -F= '!seen[$1]++ && $1' | tac > "$temp_deduped"
 
-  while IFS='=' read -r key value; do
+  while IFS='=' read -r key value || [ -n "$key" ]; do
     [ -z "$key" ] && continue
     [[ "$key" =~ ^[[:space:]]*# ]] && continue
-    [ -z "$value" ] && continue
 
-    # Check if new .env has empty value for this key
-    local escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
-    local existing_value=$(grep "^${escaped_key}=" "$target_env" 2>/dev/null | cut -d= -f2-)
-
-    # Only preserve if new value is empty
-    if [ -z "$existing_value" ]; then
-      merge_env_value "$key" "$value" "$target_env"
-      preserved_count=$((preserved_count + 1))
-      echo "  Preserved: $key"
-    fi
+    # Always overlay backup values (user data wins over template defaults)
+    merge_env_value "$key" "$value" "$target_env"
+    preserved_count=$((preserved_count + 1))
+    echo "  Preserved: $key"
   done < "$temp_deduped"
 
   rm -f "$temp_deduped"
@@ -1326,13 +1326,13 @@ if [ "$CONFIG_MERGE_CHOICE" = "Merge existing settings into new configuration (R
     mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
     echo "Merged existing Dev Container Features"
   fi
+fi
 
-  # Preserve .env values using robust awk-based merge
-  if [ "$FRESH_ENV" = "false" ] && [ -f ".devcontainer.backup/.env" ]; then
-    preserve_env_from_backup ".devcontainer.backup/.env" ".env"
-  elif [ "$FRESH_ENV" = "true" ]; then
-    echo "Skipping .env preservation (--fresh-env flag set)"
-  fi
+# Unconditional .env preservation (respects --fresh-env flag)
+if [ "$FRESH_ENV" = "false" ] && [ -f ".devcontainer.backup/.env" ]; then
+  preserve_env_from_backup ".devcontainer.backup/.env" ".env"
+elif [ "$FRESH_ENV" = "true" ]; then
+  echo "Skipping .env preservation (--fresh-env flag set)"
 fi
 
 # Set permissions
