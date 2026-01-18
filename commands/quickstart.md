@@ -1098,6 +1098,8 @@ done
 # Start with existing .env if available, otherwise create fresh
 if [ ! -f ".devcontainer.backup/.fresh-env-requested" ] && [ -f ".devcontainer.backup/.env" ]; then
   cp .devcontainer.backup/.env .env
+  # Ensure trailing newline (prevents variable concatenation on append)
+  [ -n "$(tail -c 1 .env 2>/dev/null)" ] && echo "" >> .env
   echo "Preserved existing .env file"
 
   # Add missing template defaults (only keys that don't exist)
@@ -1111,6 +1113,8 @@ if [ ! -f ".devcontainer.backup/.fresh-env-requested" ] && [ -f ".devcontainer.b
 
     # Only add if key doesn't exist
     if ! grep -q "^${escaped_key}=" "$target_file" 2>/dev/null; then
+      # Ensure trailing newline before appending
+      [ -f "$target_file" ] && [ -n "$(tail -c 1 "$target_file" 2>/dev/null)" ] && echo "" >> "$target_file"
       printf '%s=%s\n' "$key" "$value" >> "$target_file"
       echo "  Added missing: $key"
     fi
