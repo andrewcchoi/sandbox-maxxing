@@ -93,6 +93,12 @@ FRONTEND_PORT=$(find_available_port $FRONTEND_PORT)
 POSTGRES_PORT=$(find_available_port $POSTGRES_PORT)
 REDIS_PORT=$(find_available_port $REDIS_PORT)
 
+# Backup existing .env if present
+if [ -f ".env" ]; then
+  cp .env .env.backup
+  echo "Backed up existing .env"
+fi
+
 # Create directories
 mkdir -p .devcontainer
 
@@ -117,6 +123,55 @@ cat > .env << 'EOF'
 # YOLO Mode Configuration
 ENABLE_FIREWALL=false
 EOF
+
+# Robust merge using awk (handles |, &, \, etc.)
+merge_env_value() {
+  local key="$1"
+  local value="$2"
+  local target_file="$3"
+
+  local escaped_key
+  escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
+
+  if grep -q "^${escaped_key}=" "$target_file" 2>/dev/null; then
+    awk -v key="$key" -v val="$value" '
+      BEGIN { FS="="; OFS="=" }
+      $1 == key { $0 = key "=" val; found=1 }
+      { print }
+    ' "$target_file" > "${target_file}.tmp"
+
+    if [ -s "${target_file}.tmp" ]; then
+      mv "${target_file}.tmp" "$target_file"
+    else
+      rm -f "${target_file}.tmp"
+      return 1
+    fi
+  else
+    printf '%s=%s\n' "$key" "$value" >> "$target_file"
+  fi
+}
+
+# Preserve values from backup
+if [ -f ".env.backup" ]; then
+  echo "Preserving .env values..."
+  preserved_count=0
+  while IFS='=' read -r key value; do
+    [ -z "$key" ] && continue
+    [[ "$key" =~ ^[[:space:]]*# ]] && continue
+    [ -z "$value" ] && continue
+
+    escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
+    existing_value=$(grep "^${escaped_key}=" .env 2>/dev/null | cut -d= -f2-)
+
+    if [ -z "$existing_value" ]; then
+      merge_env_value "$key" "$value" .env
+      preserved_count=$((preserved_count + 1))
+      echo "  Preserved: $key"
+    fi
+  done < .env.backup
+  echo "  Preserved $preserved_count values"
+  rm -f .env.backup
+fi
 
 # Replace placeholders (portable sed without -i)
 for f in .devcontainer/devcontainer.json docker-compose.yml; do
