@@ -21,6 +21,7 @@ Run these checks before proceeding. Use `--skip-validation` to bypass.
 # Parse command-line arguments
 USE_FEATURES_FLAG=false
 SKIP_VALIDATION=false
+FRESH_ENV=false
 for arg in "$@"; do
   case $arg in
     --use-features)
@@ -29,6 +30,10 @@ for arg in "$@"; do
       ;;
     --skip-validation)
       SKIP_VALIDATION=true
+      shift
+      ;;
+    --fresh-env)
+      FRESH_ENV=true
       shift
       ;;
   esac
@@ -1124,6 +1129,68 @@ ENABLE_FIREWALL=false
 EOF
 echo "Generated .env file with port configuration"
 
+# Robust merge using awk (handles |, &, \, etc.)
+merge_env_value() {
+  local key="$1"
+  local value="$2"
+  local target_file="$3"
+
+  local escaped_key
+  escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
+
+  if grep -q "^${escaped_key}=" "$target_file" 2>/dev/null; then
+    # Update existing key using awk (safe for special chars)
+    awk -v key="$key" -v val="$value" '
+      BEGIN { FS="="; OFS="=" }
+      $1 == key { $0 = key "=" val; found=1 }
+      { print }
+    ' "$target_file" > "${target_file}.tmp"
+
+    if [ -s "${target_file}.tmp" ]; then
+      mv "${target_file}.tmp" "$target_file"
+    else
+      rm -f "${target_file}.tmp"
+      return 1
+    fi
+  else
+    printf '%s=%s\n' "$key" "$value" >> "$target_file"
+  fi
+}
+
+preserve_env_from_backup() {
+  local backup_env="$1"
+  local target_env="$2"
+  local preserved_count=0
+
+  [ ! -f "$backup_env" ] && return 0
+
+  echo "Preserving .env values from backup..."
+
+  # Deduplicate backup (last value wins for duplicate keys)
+  local temp_deduped=$(mktemp)
+  tac "$backup_env" 2>/dev/null | awk -F= '!seen[$1]++ && $1 && $2' | tac > "$temp_deduped"
+
+  while IFS='=' read -r key value; do
+    [ -z "$key" ] && continue
+    [[ "$key" =~ ^[[:space:]]*# ]] && continue
+    [ -z "$value" ] && continue
+
+    # Check if new .env has empty value for this key
+    local escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
+    local existing_value=$(grep "^${escaped_key}=" "$target_env" 2>/dev/null | cut -d= -f2-)
+
+    # Only preserve if new value is empty
+    if [ -z "$existing_value" ]; then
+      merge_env_value "$key" "$value" "$target_env"
+      preserved_count=$((preserved_count + 1))
+      echo "  Preserved: $key"
+    fi
+  done < "$temp_deduped"
+
+  rm -f "$temp_deduped"
+  echo "  Preserved $preserved_count values from backup"
+}
+
 # Configure volume initialization for volume mode
 if [ "$WORKSPACE_MODE" = "volume" ]; then
   # Use Docker array command (bypasses host shell, works on Windows/Mac/Linux)
@@ -1260,17 +1327,11 @@ if [ "$CONFIG_MERGE_CHOICE" = "Merge existing settings into new configuration (R
     echo "Merged existing Dev Container Features"
   fi
 
-  # Preserve .env values (API keys, custom vars)
-  if [ -f ".devcontainer.backup/.env" ]; then
-    while IFS='=' read -r key value; do
-      # Skip empty lines and comments
-      [[ -z "$key" || "$key" =~ ^# ]] && continue
-      # Only preserve non-empty values that aren't in new .env
-      if [ -n "$value" ] && ! grep -q "^${key}=" .env 2>/dev/null; then
-        echo "${key}=${value}" >> .env
-      fi
-    done < .devcontainer.backup/.env
-    echo "Preserved existing .env values"
+  # Preserve .env values using robust awk-based merge
+  if [ "$FRESH_ENV" = "false" ] && [ -f ".devcontainer.backup/.env" ]; then
+    preserve_env_from_backup ".devcontainer.backup/.env" ".env"
+  elif [ "$FRESH_ENV" = "true" ]; then
+    echo "Skipping .env preservation (--fresh-env flag set)"
   fi
 fi
 
