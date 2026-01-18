@@ -155,19 +155,14 @@ merge_env_value() {
 if [ -f ".env.backup" ]; then
   echo "Preserving .env values..."
   preserved_count=0
-  while IFS='=' read -r key value; do
+  while IFS='=' read -r key value || [ -n "$key" ]; do
     [ -z "$key" ] && continue
     [[ "$key" =~ ^[[:space:]]*# ]] && continue
-    [ -z "$value" ] && continue
 
-    escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
-    existing_value=$(grep "^${escaped_key}=" .env 2>/dev/null | cut -d= -f2-)
-
-    if [ -z "$existing_value" ]; then
-      merge_env_value "$key" "$value" .env
-      preserved_count=$((preserved_count + 1))
-      echo "  Preserved: $key"
-    fi
+    # Always overlay backup values (user data wins over template defaults)
+    merge_env_value "$key" "$value" .env
+    preserved_count=$((preserved_count + 1))
+    echo "  Preserved: $key"
   done < .env.backup
   echo "  Preserved $preserved_count values"
   rm -f .env.backup
