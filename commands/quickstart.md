@@ -39,6 +39,12 @@ for arg in "$@"; do
   esac
 done
 
+# Create marker file if --fresh-env is requested (persists across bash blocks)
+if [ "$FRESH_ENV" = "true" ]; then
+  mkdir -p .devcontainer.backup
+  touch .devcontainer.backup/.fresh-env-requested
+fi
+
 # Initialize port variables with defaults
 APP_PORT=8000
 FRONTEND_PORT=3000
@@ -1090,7 +1096,7 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
 done
 
 # Start with existing .env if available, otherwise create fresh
-if [ "$FRESH_ENV" != "true" ] && [ -f ".devcontainer.backup/.env" ]; then
+if [ ! -f ".devcontainer.backup/.fresh-env-requested" ] && [ -f ".devcontainer.backup/.env" ]; then
   cp .devcontainer.backup/.env .env
   echo "Preserved existing .env file"
 
@@ -1175,6 +1181,9 @@ ENABLE_FIREWALL=false
 EOF
   echo "Generated fresh .env file"
 fi
+
+# Clean up marker file
+rm -f .devcontainer.backup/.fresh-env-requested
 
 # Configure volume initialization for volume mode
 if [ "$WORKSPACE_MODE" = "volume" ]; then
