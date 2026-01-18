@@ -610,7 +610,7 @@ docker inspect <container-name> | grep -A 20 Health
 Edit `docker-compose.yml`:
 ```yaml
 healthcheck:
-  test: ["CMD-SHELL", "pg_isready -U sandbox_user"]
+  test: ["CMD-SHELL", "pg_isready -U sandbox_user -d sandbox_dev"]
   interval: 10s
   timeout: 5s
   retries: 5
@@ -621,8 +621,8 @@ healthcheck:
 
 Ensure command matches service configuration:
 ```yaml
-# PostgreSQL - match username
-test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+# PostgreSQL - match username and database
+test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
 
 # Redis - use correct auth
 test: ["CMD", "redis-cli", "--pass", "${REDIS_PASSWORD}", "ping"]

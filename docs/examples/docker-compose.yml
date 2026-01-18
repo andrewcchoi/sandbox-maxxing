@@ -37,7 +37,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sandbox_user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sandbox_user} -d ${POSTGRES_DB:-sandbox_dev}"]
       interval: 10s
       timeout: 5s
       retries: 5
