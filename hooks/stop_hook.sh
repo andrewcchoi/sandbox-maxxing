@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+export LC_ALL=C
 ###
 # Claude Code Stop Hook - LangSmith Tracing Integration
 # Sends Claude Code traces to LangSmith after each response.

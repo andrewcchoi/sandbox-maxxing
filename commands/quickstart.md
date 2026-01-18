@@ -197,6 +197,13 @@ fi
 ## Step 0.8: Detect Existing Configuration
 
 ```bash
+# Always backup .env if it exists (before any other checks)
+if [ -f ".env" ]; then
+  mkdir -p .devcontainer.backup
+  cp .env .devcontainer.backup/
+  echo "Backed up existing .env to .devcontainer.backup/"
+fi
+
 EXISTING_CONFIG_FOUND=false
 EXISTING_EXTENSIONS=""
 EXISTING_CONTAINER_ENV=""
@@ -235,15 +242,7 @@ if [ -f ".devcontainer/devcontainer.json" ]; then
   mkdir -p .devcontainer.backup
   cp -r .devcontainer/* .devcontainer.backup/ 2>/dev/null || true
   [ -f "docker-compose.yml" ] && cp docker-compose.yml .devcontainer.backup/
-  [ -f ".env" ] && cp .env .devcontainer.backup/
   echo "Backed up existing configuration to .devcontainer.backup/"
-fi
-
-# Standalone .env backup (even without existing devcontainer config)
-if [ "$EXISTING_CONFIG_FOUND" = "false" ] && [ -f ".env" ]; then
-  mkdir -p .devcontainer.backup
-  cp .env .devcontainer.backup/
-  echo "Backed up existing .env to .devcontainer.backup/"
 fi
 
 # Extract custom services from docker-compose.yml
@@ -1090,8 +1089,48 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
     "$f" > "$f.tmp" && mv "$f.tmp" "$f";
 done
 
-# Generate .env file with configured ports
-cat > .env << EOF
+# Start with existing .env if available, otherwise create fresh
+if [ "$FRESH_ENV" = "false" ] && [ -f ".devcontainer.backup/.env" ]; then
+  cp .devcontainer.backup/.env .env
+  echo "Preserved existing .env file"
+
+  # Add missing template defaults (only keys that don't exist)
+  add_missing_env_defaults() {
+    local key="$1"
+    local value="$2"
+    local target_file="$3"
+
+    local escaped_key
+    escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
+
+    # Only add if key doesn't exist
+    if ! grep -q "^${escaped_key}=" "$target_file" 2>/dev/null; then
+      printf '%s=%s\n' "$key" "$value" >> "$target_file"
+      echo "  Added missing: $key"
+    fi
+  }
+
+  # Add template defaults for any missing keys
+  echo "Adding missing template defaults..."
+  add_missing_env_defaults "APP_PORT" "$APP_PORT" ".env"
+  add_missing_env_defaults "FRONTEND_PORT" "$FRONTEND_PORT" ".env"
+  add_missing_env_defaults "POSTGRES_PORT" "$POSTGRES_PORT" ".env"
+  add_missing_env_defaults "REDIS_PORT" "$REDIS_PORT" ".env"
+  add_missing_env_defaults "POSTGRES_DB" "sandbox_dev" ".env"
+  add_missing_env_defaults "POSTGRES_USER" "sandbox_user" ".env"
+  add_missing_env_defaults "POSTGRES_PASSWORD" "devpassword" ".env"
+  add_missing_env_defaults "DATABASE_URL" "postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}" ".env"
+  add_missing_env_defaults "REDIS_URL" "redis://redis:6379" ".env"
+  add_missing_env_defaults "ANTHROPIC_API_KEY" "" ".env"
+  add_missing_env_defaults "OPENAI_API_KEY" "" ".env"
+  add_missing_env_defaults "GITHUB_TOKEN" "" ".env"
+  add_missing_env_defaults "INSTALL_SHELL_EXTRAS" "true" ".env"
+  add_missing_env_defaults "INSTALL_DEV_TOOLS" "true" ".env"
+  add_missing_env_defaults "INSTALL_CA_CERT" "false" ".env"
+  add_missing_env_defaults "ENABLE_FIREWALL" "false" ".env"
+else
+  # No existing .env or --fresh-env flag set - generate fresh template
+  cat > .env << EOF
 # ============================================================================
 # Environment Variables
 # ============================================================================
@@ -1134,62 +1173,8 @@ INSTALL_DEV_TOOLS=true
 INSTALL_CA_CERT=false
 ENABLE_FIREWALL=false
 EOF
-echo "Generated .env file with port configuration"
-
-# Robust merge using awk (handles |, &, \, etc.)
-merge_env_value() {
-  local key="$1"
-  local value="$2"
-  local target_file="$3"
-
-  local escaped_key
-  escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
-
-  if grep -q "^${escaped_key}=" "$target_file" 2>/dev/null; then
-    # Update existing key using awk (safe for special chars)
-    awk -v key="$key" -v val="$value" '
-      BEGIN { FS="="; OFS="=" }
-      $1 == key { $0 = key "=" val; found=1 }
-      { print }
-    ' "$target_file" > "${target_file}.tmp"
-
-    if [ -s "${target_file}.tmp" ]; then
-      mv "${target_file}.tmp" "$target_file"
-    else
-      rm -f "${target_file}.tmp"
-      return 1
-    fi
-  else
-    printf '%s=%s\n' "$key" "$value" >> "$target_file"
-  fi
-}
-
-preserve_env_from_backup() {
-  local backup_env="$1"
-  local target_env="$2"
-  local preserved_count=0
-
-  [ ! -f "$backup_env" ] && return 0
-
-  echo "Preserving .env values from backup..."
-
-  # Deduplicate backup (last value wins for duplicate keys)
-  local temp_deduped=$(mktemp)
-  tac "$backup_env" 2>/dev/null | awk -F= '!seen[$1]++ && $1' | tac > "$temp_deduped"
-
-  while IFS='=' read -r key value || [ -n "$key" ]; do
-    [ -z "$key" ] && continue
-    [[ "$key" =~ ^[[:space:]]*# ]] && continue
-
-    # Always overlay backup values (user data wins over template defaults)
-    merge_env_value "$key" "$value" "$target_env"
-    preserved_count=$((preserved_count + 1))
-    echo "  Preserved: $key"
-  done < "$temp_deduped"
-
-  rm -f "$temp_deduped"
-  echo "  Preserved $preserved_count values from backup"
-}
+  echo "Generated fresh .env file"
+fi
 
 # Configure volume initialization for volume mode
 if [ "$WORKSPACE_MODE" = "volume" ]; then
@@ -1326,13 +1311,6 @@ if [ "$CONFIG_MERGE_CHOICE" = "Merge existing settings into new configuration (R
     mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
     echo "Merged existing Dev Container Features"
   fi
-fi
-
-# Unconditional .env preservation (respects --fresh-env flag)
-if [ "$FRESH_ENV" = "false" ] && [ -f ".devcontainer.backup/.env" ]; then
-  preserve_env_from_backup ".devcontainer.backup/.env" ".env"
-elif [ "$FRESH_ENV" = "true" ]; then
-  echo "Skipping .env preservation (--fresh-env flag set)"
 fi
 
 # Set permissions
