@@ -147,6 +147,8 @@ merge_env_value() {
       return 1
     fi
   else
+    # Ensure trailing newline before appending
+    [ -f "$target_file" ] && [ -n "$(tail -c 1 "$target_file" 2>/dev/null)" ] && echo "" >> "$target_file"
     printf '%s=%s\n' "$key" "$value" >> "$target_file"
   fi
 }
