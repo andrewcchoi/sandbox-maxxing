@@ -206,8 +206,8 @@ fi
 # Always backup .env if it exists (before any other checks)
 if [ -f ".env" ]; then
   mkdir -p .devcontainer.backup
-  cp .env .devcontainer.backup/
-  echo "Backed up existing .env to .devcontainer.backup/"
+  cp .env .devcontainer.backup/.env.user-backup
+  echo "Backed up existing .env to .devcontainer.backup/.env.user-backup"
 fi
 
 EXISTING_CONFIG_FOUND=false
@@ -1096,8 +1096,8 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
 done
 
 # Start with existing .env if available, otherwise create fresh
-if [ ! -f ".devcontainer.backup/.fresh-env-requested" ] && [ -f ".devcontainer.backup/.env" ]; then
-  cp .devcontainer.backup/.env .env
+if [ ! -f ".devcontainer.backup/.fresh-env-requested" ] && [ -f ".devcontainer.backup/.env.user-backup" ]; then
+  cp .devcontainer.backup/.env.user-backup .env
   # Ensure trailing newline (prevents variable concatenation on append)
   [ -n "$(tail -c 1 .env 2>/dev/null)" ] && echo "" >> .env
   echo "Preserved existing .env file"
