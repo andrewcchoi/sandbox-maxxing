@@ -352,7 +352,3 @@ docs/diagrams/
 - [Skills README](../../skills/README.md) - Skill documentation
 - [Commands README](../../commands/README.md) - Command reference
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

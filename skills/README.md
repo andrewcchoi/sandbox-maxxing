@@ -351,7 +351,3 @@ When reporting skill-related issues, include:
 - Relevant logs (Docker, VS Code, Claude)
 - Steps to reproduce
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

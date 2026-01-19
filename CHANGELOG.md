@@ -526,7 +526,3 @@ Update your usage:
 - Network isolation and security
 - Health checks for all services
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

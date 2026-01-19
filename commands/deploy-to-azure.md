@@ -590,7 +590,3 @@ azd down
 ```
 
 ---
-
-**Last Updated:** 2026-01-01
-**Version:** 4.6.0
-

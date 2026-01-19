@@ -560,7 +560,3 @@ If you have security questions or discover vulnerabilities:
 2. **Security vulnerabilities**: Follow responsible disclosure (see SECURITY.md in repository root, if available)
 3. **Configuration help**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or `/sandboxxer:troubleshoot` command
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

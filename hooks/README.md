@@ -82,7 +82,3 @@ See [README-WINDOWS.md](README-WINDOWS.md) for:
 - [LangSmith Documentation](https://docs.langchain.com/langsmith)
 - [README-WINDOWS.md](README-WINDOWS.md) - Windows setup
 
----
-
-**Last Updated:** 2026-01-02
-**Version:** 4.6.0

@@ -148,7 +148,3 @@ DATA="$TEMPLATES/data"
 - [Data Directory README](data/README.md) - Detailed documentation of reference catalogs
 - [SETUP-OPTIONS.md](../../../docs/features/SETUP-OPTIONS.md) - Command comparison and setup workflows
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

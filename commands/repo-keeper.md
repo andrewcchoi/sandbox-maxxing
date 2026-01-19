@@ -123,7 +123,3 @@ Display:
 - Use `--full` before releases
 
 ---
-
-**Last Updated:** 2026-01-01
-**Version:** 4.6.0
-

@@ -469,7 +469,3 @@ Assistant: I'll audit your firewall configuration.
 
 The skill reviews firewall mode, allowed domains, and provides guidance on adding necessary domains while maintaining security.
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

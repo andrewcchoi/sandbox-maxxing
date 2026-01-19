@@ -252,7 +252,3 @@ Requires:
 - [Ollama API Reference](https://github.com/ollama/ollama/blob/main/docs/api.md)
 
 ---
-
-**Last Updated:** 2026-01-01
-**Version:** 4.6.0
-

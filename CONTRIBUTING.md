@@ -221,24 +221,16 @@ Before submitting changes, please review the [`.internal/repo-keeper/ORGANIZATIO
 
 **Key guidelines:**
 
-1. **Version Footers**: Add version footers to all new .md files
-   ```markdown
-   ---
+1. **Inventory**: Update [`.internal/repo-keeper/INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) when adding/removing files
 
-   **Last Updated:** YYYY-MM-DD
-   **Version:** X.Y.Z
-   ```
+2. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
 
-2. **Inventory**: Update [`.internal/repo-keeper/INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) when adding/removing files
-
-3. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
-
-4. **Naming Conventions**:
+3. **Naming Conventions**:
    - Commands: `/sandboxxer:{action}`
    - Skills: `sandboxxer-{action}/SKILL.md`
    - Templates: `{component}.{ext}`
 
-5. **Validation**: Run these scripts before committing:
+4. **Validation**: Run these scripts before committing:
    ```bash
    # Check version consistency
    .internal/repo-keeper/scripts/check-version-sync.sh
@@ -252,7 +244,3 @@ Before submitting changes, please review the [`.internal/repo-keeper/ORGANIZATIO
 
 See the full [Organization Checklist](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) for complete guidelines.
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

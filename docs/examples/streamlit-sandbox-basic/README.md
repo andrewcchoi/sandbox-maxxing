@@ -163,7 +163,3 @@ For more help, see [../../features/TROUBLESHOOTING.md](../../features/TROUBLESHO
 
 This example was generated using the **sandboxxer** plugin for Claude Code. It demonstrates what a Minimal Configuration setup looks like - minimal configuration, sensible defaults, and fast time-to-productivity.
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0
