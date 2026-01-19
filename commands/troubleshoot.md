@@ -1,5 +1,7 @@
 ---
 description: Diagnose and fix common VS Code DevContainer issues
+argument-hint: ""
+allowed-tools: []
 ---
 
 Use and follow the sandboxxer-troubleshoot skill exactly as written.

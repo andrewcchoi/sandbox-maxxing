@@ -49,9 +49,14 @@ $env:TRACE_TO_LANGSMITH = "true"
 $env:CC_LANGSMITH_API_KEY = "lsv2_pt_your_key_here"
 $env:CC_LANGSMITH_PROJECT = "your-project-name"
 $env:CC_LANGSMITH_DEBUG = "true"
+# Optional variables:
+$env:CC_LANGSMITH_ENVIRONMENT = "development"
+$env:CLAUDE_CODE_TEAM = "my-team"
 ```
 
 To make these permanent, add them to your PowerShell profile or set as system environment variables.
+
+For detailed documentation on all available hook environment variables, see the [Hook Environment Variables](../docs/features/VARIABLES.md#hook-environment-variables) section in the Variables Configuration Guide.
 
 ### 4. Verify Git Bash is Installed
 

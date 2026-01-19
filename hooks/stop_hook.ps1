@@ -46,4 +46,5 @@ $unixHookScript = $hookScript -replace '\\', '/' -replace '^([A-Za-z]):', '/$1'
 # Execute the bash script with Git Bash
 # Use 'source' to run in same process and preserve environment variables
 # Pipe stdin through to the bash script (stop_hook.sh reads from stdin)
-$input | & $bashExe -c "source '$unixHookScript'"
+# PowerShell's $input automatic variable must be enumerated and piped correctly
+$input | ForEach-Object { $_ } | & $bashExe -c "source '$unixHookScript'"

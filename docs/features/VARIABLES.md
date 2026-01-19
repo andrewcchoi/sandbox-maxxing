@@ -535,6 +535,60 @@ RUN --mount=type=secret,id=npm_token \
     npm install
 ```
 
+## Hook Environment Variables
+
+Claude Code hooks can be configured using environment variables. These variables control hook behavior and integrations.
+
+### LangSmith Tracing Hook Variables
+
+The LangSmith tracing hook (`hooks/stop_hook.sh`) sends conversation traces to LangSmith for observability.
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `TRACE_TO_LANGSMITH` | Yes | Enable/disable LangSmith tracing | `true` or `false` |
+| `CC_LANGSMITH_API_KEY` | Yes | LangSmith API key (falls back to `LANGSMITH_API_KEY`) | `lsv2_pt_xxxxx` |
+| `CC_LANGSMITH_PROJECT` | Yes | LangSmith project name for organizing traces | `my-project` |
+| `CC_LANGSMITH_ENVIRONMENT` | No | Custom environment label (auto-detected if not set) | `production`, `staging`, `dev` |
+| `CLAUDE_CODE_TEAM` | No | Team identifier prefix for trace names (default: `acdc`) | `my-team` |
+| `CC_LANGSMITH_DEBUG` | No | Enable debug logging to `~/.claude/state/hook.log` | `true` or `false` |
+
+**Environment Detection:**
+
+If `CC_LANGSMITH_ENVIRONMENT` is not set, the hook auto-detects the environment:
+- OS detection: `linux`, `macos`, `windows`, `unknown`
+- Container detection: `-container` suffix if running in Docker
+- Example: `linux-container`, `macos-native`
+
+**Trace Naming:**
+
+Traces are named: `{CLAUDE_CODE_TEAM}-{CC_LANGSMITH_ENVIRONMENT}`
+- Default: `acdc-linux-native`
+- Custom: `my-team-production`
+
+**Security Note:**
+
+`CC_LANGSMITH_API_KEY` contains sensitive credentials. Follow these best practices:
+- Use VS Code input variables for development
+- Use Docker secrets or environment files for production
+- Never commit API keys to version control
+- Add `.env` files containing keys to `.gitignore`
+
+**Example Configuration:**
+
+```bash
+# .env file (add to .gitignore)
+TRACE_TO_LANGSMITH=true
+CC_LANGSMITH_API_KEY=lsv2_pt_your_key_here
+CC_LANGSMITH_PROJECT=claude-code-traces
+CC_LANGSMITH_ENVIRONMENT=development
+CLAUDE_CODE_TEAM=acdc
+CC_LANGSMITH_DEBUG=false
+```
+
+**Related Documentation:**
+- [Hooks README](../../hooks/README.md) - Hook configuration and troubleshooting
+- [LangSmith Documentation](https://docs.langchain.com/langsmith) - LangSmith platform details
+
 ## Related Documentation
 
 - [Secrets Management](./SECRETS.md) - Comprehensive secret handling guide
