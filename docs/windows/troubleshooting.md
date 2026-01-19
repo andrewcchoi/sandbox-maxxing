@@ -152,10 +152,10 @@ Paths work on Linux but not Windows.
 In bash scripts, use `$HOME` (works on both):
 ```bash
 # ✅ Cross-platform
-"$HOME/.claude/hooks/stop_hook.sh"
+"$HOME/.claude/hooks/stop-hook.sh"
 
 # ❌ Windows-only
-"%USERPROFILE%\.claude\hooks\stop_hook.sh"
+"%USERPROFILE%\.claude\hooks\stop-hook.sh"
 ```
 
 ---

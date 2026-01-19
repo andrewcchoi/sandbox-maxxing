@@ -4,7 +4,7 @@ This directory contains Claude Code hooks for the sandboxxer plugin. Hooks exten
 
 ## Available Hooks
 
-### 1. LangSmith Tracing Hook (`stop_hook.sh`)
+### 1. LangSmith Tracing Hook (`stop-hook.sh`)
 
 Sends Claude Code conversation traces to LangSmith for observability and debugging.
 
@@ -36,7 +36,7 @@ Blocks or prompts for confirmation on potentially destructive Docker commands.
 ### 3. Windows Support
 
 For Windows native Claude Code (not WSL):
-- `stop_hook.ps1` - PowerShell wrapper for the bash hook
+- `stop-hook.ps1` - PowerShell wrapper for the bash hook
 - `run-hook.cmd` - Command prompt wrapper
 
 See [README-WINDOWS.md](README-WINDOWS.md) for detailed Windows setup instructions.

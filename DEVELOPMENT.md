@@ -87,8 +87,8 @@ sandbox/
 │
 ├── hooks/                      # Event hooks
 │   ├── hooks.json
-│   ├── stop_hook.sh
-│   ├── stop_hook.ps1
+│   ├── stop-hook.sh
+│   ├── stop-hook.ps1
 │   └── run-hook.cmd
 │
 ├── skills/                     # Plugin skills (main work here)

@@ -164,6 +164,31 @@ See also: [Security Model](../docs/features/SECURITY-MODEL.md)
 
 ---
 
+#### `/sandboxxer:repo-keeper`
+**File:** `commands/repo-keeper.md`
+**Description:** Run repository validation and generate remediation plans
+
+**Usage:**
+```bash
+/sandboxxer:repo-keeper
+```
+
+**What it does:**
+1. Validates repository structure
+2. Checks links and references
+3. Verifies version consistency
+4. Generates comprehensive remediation plans for issues found
+
+**Use when:**
+- You want to validate repository integrity
+- You need to identify and fix structural issues
+- You want to ensure documentation links are valid
+- You need to maintain repository quality
+
+**Skill:** None (direct implementation)
+
+---
+
 ## Command Structure
 
 ### File Format
@@ -216,6 +241,7 @@ Result: DevContainer configuration created
 | `/sandboxxer:troubleshoot` | Diagnostic | Varies | N/A | Problem solving |
 | `/sandboxxer:audit` | Audit | 5-10 min | N/A | Security review |
 | `/sandboxxer:deploy-to-azure` | Azure config | 5-15 min | Azure security | Cloud deployment |
+| `/sandboxxer:repo-keeper` | Validation | 2-5 min | N/A | Repository validation |
 
 ## Usage Examples
 

@@ -351,11 +351,6 @@ sudo /usr/local/bin/init-firewall.sh
 - Container isolation only (no firewall)
 - Perfect for quick start
 
-- Platform-specific templates
-- Container isolation
-- Message queue (RabbitMQ)
-- Learning and experimentation
-
 **demo-app-sandbox-advanced/**: Full-stack with domain allowlist configuration
 - Customizable versions and settings
 - Strict firewall with domain allowlist

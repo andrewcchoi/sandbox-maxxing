@@ -98,7 +98,7 @@ DRY_RUN=true ./run-continuous.sh
 
 ### For More Details
 
-See the comprehensive documentation: [`tests/skill-validation/README.md`](../.internal/tests/skill-validation/README.md)
+See the comprehensive documentation: [`.internal/tests/skill-validation/README.md`](../.internal/tests/skill-validation/README.md)
 
 Topics covered:
 - Architecture and components

@@ -541,7 +541,7 @@ Claude Code hooks can be configured using environment variables. These variables
 
 ### LangSmith Tracing Hook Variables
 
-The LangSmith tracing hook (`hooks/stop_hook.sh`) sends conversation traces to LangSmith for observability.
+The LangSmith tracing hook (`hooks/stop-hook.sh`) sends conversation traces to LangSmith for observability.
 
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
