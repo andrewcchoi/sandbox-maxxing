@@ -121,7 +121,3 @@ This error comes from Claude Code trying to use `/bin/bash` before the hook runs
 This chain avoids the `/bin/bash` error completely.
 
 
----
-
-**Last Updated:** 2025-12-21
-**Version:** 4.6.0

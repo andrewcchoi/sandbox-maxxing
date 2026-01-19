@@ -602,7 +602,3 @@ CC_LANGSMITH_DEBUG=false
 - `skills/_shared/templates/data/variables.json` - Complete variable catalog
 - `skills/_shared/templates/.env.template` - Environment file templates per mode
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

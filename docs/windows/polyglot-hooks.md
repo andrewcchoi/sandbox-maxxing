@@ -296,7 +296,3 @@ All three should work if the wrapper is correctly implemented!
 - **Polyglot programming**: https://en.wikipedia.org/wiki/Polyglot_(computing)
 
 ---
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0
-**Adapted from**: superpowers plugin by Jesse Vincent (obra)

@@ -838,7 +838,3 @@ For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
----
-
-**Last Updated:** 2025-01-02
-**Version:** 4.6.0

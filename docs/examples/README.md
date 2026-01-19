@@ -384,7 +384,3 @@ sudo /usr/local/bin/init-firewall.sh
 
 This project was created with [Claude](https://claude.ai) using the [Superpowers](https://github.com/obra/superpowers) plugin.
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

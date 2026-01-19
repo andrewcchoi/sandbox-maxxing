@@ -361,7 +361,3 @@ See [Contributing Guide](../CONTRIBUTING.md) for:
 - Documentation updates
 - Testing guidelines
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

@@ -204,7 +204,3 @@ echo "=========================================="
 
 **Note:** If the user provided a project name argument, replace `"$(basename $(pwd))"` with that argument in the PROJECT_NAME assignment.
 
----
-
-**Last Updated:** 2025-12-24
-**Version:** 4.6.0

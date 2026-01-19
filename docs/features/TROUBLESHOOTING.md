@@ -1357,7 +1357,3 @@ If you're still stuck:
    - GitHub Discussions: Community support
    - Include: Container logs, error messages, devcontainer.json, docker-compose.yml
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

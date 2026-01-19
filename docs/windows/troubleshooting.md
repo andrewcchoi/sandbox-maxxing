@@ -366,7 +366,3 @@ If you're still stuck after trying these solutions:
    - Output of `echo %CLAUDE_PLUGIN_ROOT%`
 
 ---
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0
-**Platform**: Windows 10/11
