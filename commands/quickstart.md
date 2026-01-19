@@ -918,9 +918,9 @@ echo ""
 
 ```bash
 if [ "$NEEDS_FIREWALL" = "Yes" ]; then
-  # Update .env to enable firewall
-  sed -i 's/ENABLE_FIREWALL=false/ENABLE_FIREWALL=true/' .env || \
-    sed 's/ENABLE_FIREWALL=false/ENABLE_FIREWALL=true/' .env > .env.tmp && mv .env.tmp .env
+  # Create marker file for firewall setting (will be applied in Step 12)
+  mkdir -p .devcontainer.backup
+  touch .devcontainer.backup/.firewall-enabled
 
   # Generate firewall script from selected categories
   cp "$TEMPLATES/init-firewall.sh" .devcontainer/init-firewall.sh;
@@ -1186,8 +1186,20 @@ EOF
   echo "Generated fresh .env file"
 fi
 
-# Clean up marker file
+# Apply firewall setting if enabled (marker persists across bash blocks)
+if [ -f ".devcontainer.backup/.firewall-enabled" ]; then
+  if grep -q "^ENABLE_FIREWALL=" .env 2>/dev/null; then
+    sed 's/^ENABLE_FIREWALL=.*/ENABLE_FIREWALL=true/' .env > .env.tmp && mv .env.tmp .env
+  else
+    [ -n "$(tail -c 1 .env 2>/dev/null)" ] && echo "" >> .env
+    echo "ENABLE_FIREWALL=true" >> .env
+  fi
+  echo "Enabled firewall in .env"
+fi
+
+# Clean up marker files
 rm -f .devcontainer.backup/.fresh-env-requested
+rm -f .devcontainer.backup/.firewall-enabled
 
 # Configure volume initialization for volume mode
 if [ "$WORKSPACE_MODE" = "volume" ]; then
