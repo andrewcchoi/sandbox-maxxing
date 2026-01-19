@@ -1,5 +1,7 @@
 ---
 description: Audit DevContainer configuration for security best practices
+argument-hint: ""
+allowed-tools: []
 ---
 
 Use and follow the sandboxxer-audit skill exactly as written.

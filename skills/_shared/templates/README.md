@@ -20,6 +20,12 @@ The plugin uses two types of files:
 - `variables.json` → Simple environment variable templates
 - `mcp.json` → MCP server configuration template
 
+**Note on File Formats:**
+- `devcontainer.json` uses **JSONC** (JSON with Comments) format, which allows:
+  - Comments using `//` and `/* */` syntax
+  - Trailing commas in arrays and objects
+  - This is a VS Code standard for configuration files
+
 **Characteristics:**
 - Small, focused files
 - Ready for direct use by user

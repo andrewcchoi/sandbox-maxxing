@@ -15,10 +15,13 @@ Sends Claude Code conversation traces to LangSmith for observability and debuggi
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `TRACE_TO_LANGSMITH` | Yes | Set to `true` to enable tracing |
-| `CC_LANGSMITH_API_KEY` | Yes | Your LangSmith API key |
+| `CC_LANGSMITH_API_KEY` | Yes | Your LangSmith API key (falls back to `LANGSMITH_API_KEY`) |
 | `CC_LANGSMITH_PROJECT` | Yes | LangSmith project name |
+| `CC_LANGSMITH_ENVIRONMENT` | No | Custom environment label (auto-detected if not set) |
+| `CLAUDE_CODE_TEAM` | No | Team identifier prefix for trace names (default: `acdc`) |
 | `CC_LANGSMITH_DEBUG` | No | Set to `true` for debug logging |
-| `CC_LANGSMITH_ENVIRONMENT` | No | Custom environment label |
+
+For detailed information about these variables, including environment detection, trace naming, security best practices, and configuration examples, see the [Hook Environment Variables](../docs/features/VARIABLES.md#hook-environment-variables) section in the Variables Configuration Guide.
 
 ### 2. Docker Safety Hook (`hooks.json`)
 

@@ -1,5 +1,7 @@
 ---
 description: Run repo-keeper validation with checker→validator→planner agent pipeline
+argument-hint: "[--quick|--full] [--check=NAME] [--skip-validation] [--no-plan]"
+allowed-tools: []
 ---
 
 # Repo-Keeper Validation
