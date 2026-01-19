@@ -151,6 +151,51 @@ get_uuid() {
     fi
 }
 
+# Safe jq argjson that handles large payloads
+# Usage: result=$(jq_safe_argjson "existing_json" "varname" "json_value" "jq_expression")
+jq_safe_argjson() {
+    local existing="$1"
+    local varname="$2"
+    local value="$3"
+    local expr="$4"
+
+    local MAX_ARG_SIZE=131072  # 128KB safe limit
+
+    if [ ${#value} -gt $MAX_ARG_SIZE ]; then
+        local tmp_file
+        tmp_file=$(mktemp)
+        echo "$value" > "$tmp_file"
+        local result
+        result=$(echo "$existing" | jq --slurpfile "$varname" "$tmp_file" "(\$${varname}[0]) as \$${varname} | $expr")
+        rm -f "$tmp_file"
+        echo "$result"
+    else
+        echo "$existing" | jq --argjson "$varname" "$value" "$expr"
+    fi
+}
+
+# Safe jq -n with argjson for large payloads
+# Usage: result=$(jq_safe_argjson_new "varname" "json_value" "jq_expression")
+jq_safe_argjson_new() {
+    local varname="$1"
+    local value="$2"
+    local expr="$3"
+
+    local MAX_ARG_SIZE=131072
+
+    if [ ${#value} -gt $MAX_ARG_SIZE ]; then
+        local tmp_file
+        tmp_file=$(mktemp)
+        echo "$value" > "$tmp_file"
+        local result
+        result=$(jq -n --slurpfile "$varname" "$tmp_file" "(\$${varname}[0]) as \$${varname} | $expr")
+        rm -f "$tmp_file"
+        echo "$result"
+    else
+        jq -n --argjson "$varname" "$value" "$expr"
+    fi
+}
+
 # API call helper
 api_call() {
     local method="$1"
@@ -890,14 +935,14 @@ main() {
         if [ "$role" = "user" ]; then
             if is_tool_result "$line"; then
                 # Add to tool results
-                current_tool_results=$(echo "$current_tool_results" | jq --argjson msg "$line" '. += [$msg]')
+                current_tool_results=$(jq_safe_argjson "$current_tool_results" "msg" "$line" '. += [$msg]')
             else
                 # New turn - finalize any pending assistant message
                 if [ -n "$current_msg_id" ] && [ "$(echo "$current_assistant_parts" | jq 'length')" -gt 0 ]; then
                     # Merge parts and add to assistants array
                     local merged
                     merged=$(merge_assistant_parts "$current_assistant_parts")
-                    current_assistants=$(echo "$current_assistants" | jq --argjson msg "$merged" '. += [$msg]')
+                    current_assistants=$(jq_safe_argjson "$current_assistants" "msg" "$merged" '. += [$msg]')
                     current_assistant_parts="[]"
                     current_msg_id=""
                 fi
