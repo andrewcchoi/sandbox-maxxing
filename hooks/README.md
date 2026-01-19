@@ -4,7 +4,7 @@ This directory contains Claude Code hooks for the sandboxxer plugin. Hooks exten
 
 ## Available Hooks
 
-### 1. LangSmith Tracing Hook (`stop_hook.sh`)
+### 1. LangSmith Tracing Hook (`stop-hook.sh`)
 
 Sends Claude Code conversation traces to LangSmith for observability and debugging.
 
@@ -15,10 +15,13 @@ Sends Claude Code conversation traces to LangSmith for observability and debuggi
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `TRACE_TO_LANGSMITH` | Yes | Set to `true` to enable tracing |
-| `CC_LANGSMITH_API_KEY` | Yes | Your LangSmith API key |
+| `CC_LANGSMITH_API_KEY` | Yes | Your LangSmith API key (falls back to `LANGSMITH_API_KEY`) |
 | `CC_LANGSMITH_PROJECT` | Yes | LangSmith project name |
+| `CC_LANGSMITH_ENVIRONMENT` | No | Custom environment label (auto-detected if not set) |
+| `CLAUDE_CODE_TEAM` | No | Team identifier prefix for trace names (default: `acdc`) |
 | `CC_LANGSMITH_DEBUG` | No | Set to `true` for debug logging |
-| `CC_LANGSMITH_ENVIRONMENT` | No | Custom environment label |
+
+For detailed information about these variables, including environment detection, trace naming, security best practices, and configuration examples, see the [Hook Environment Variables](../docs/features/VARIABLES.md#hook-environment-variables) section in the Variables Configuration Guide.
 
 ### 2. Docker Safety Hook (`hooks.json`)
 
@@ -33,7 +36,7 @@ Blocks or prompts for confirmation on potentially destructive Docker commands.
 ### 3. Windows Support
 
 For Windows native Claude Code (not WSL):
-- `stop_hook.ps1` - PowerShell wrapper for the bash hook
+- `stop-hook.ps1` - PowerShell wrapper for the bash hook
 - `run-hook.cmd` - Command prompt wrapper
 
 See [README-WINDOWS.md](README-WINDOWS.md) for detailed Windows setup instructions.
@@ -79,7 +82,3 @@ See [README-WINDOWS.md](README-WINDOWS.md) for:
 - [LangSmith Documentation](https://docs.langchain.com/langsmith)
 - [README-WINDOWS.md](README-WINDOWS.md) - Windows setup
 
----
-
-**Last Updated:** 2026-01-02
-**Version:** 4.6.0

@@ -20,8 +20,8 @@
     "CC_LANGSMITH_PROJECT": "pr-project-name-00",
     "CC_LANGSMITH_DEBUG": "true",
     "CC_LANGSMITH_ENVIRONMENT": "custom-trace-label",
-    "LANGSMITH_TRACE_CMD_WIN": "powershell -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\stop_hook.ps1\"",
-    "LANGSMITH_TRACE_CMD_WSL": "bash ~/.claude/hooks/stop_hook.sh"
+    "LANGSMITH_TRACE_CMD_WIN": "powershell -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\stop-hook.ps1\"",
+    "LANGSMITH_TRACE_CMD_WSL": "bash ~/.claude/hooks/stop-hook.sh"
   },
   "hooks": {
     "Stop": [
@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/hooks/stop_hook.sh"
+            "command": "bash ~/.claude/hooks/stop-hook.sh"
           }
         ]
       }

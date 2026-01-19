@@ -1,5 +1,7 @@
 ---
 description: Run repo-keeper validation with checker→validator→planner agent pipeline
+argument-hint: "[--quick|--full] [--check=NAME] [--skip-validation] [--no-plan]"
+allowed-tools: []
 ---
 
 # Repo-Keeper Validation
@@ -121,7 +123,3 @@ Display:
 - Use `--full` before releases
 
 ---
-
-**Last Updated:** 2026-01-01
-**Version:** 4.6.0
-

@@ -339,7 +339,3 @@ Example:
 - Composition is explicit (base + partials)
 - Placeholders are replaced with sed, not manual editing
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

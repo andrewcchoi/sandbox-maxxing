@@ -67,7 +67,3 @@ Sensitive credentials use VS Code input variables:
 - [Docker Hub MCP](https://docs.docker.com/ai/mcp-catalog-and-toolkit/hub-mcp/)
 - [VS Code MCP Servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

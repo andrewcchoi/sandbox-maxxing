@@ -239,7 +239,3 @@ See the [docker-compose templates](../../skills/_shared/templates/) directory fo
 - [Security Model](SECURITY-MODEL.md) - Firewall architecture and domain management
 - [Troubleshooting](TROUBLESHOOTING.md) - Common issues and solutions
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

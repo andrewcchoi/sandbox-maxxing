@@ -185,7 +185,3 @@ Each sandbox example adds its own DevContainer configuration while reusing this 
 - [Demo App Advanced](../demo-app-sandbox-advanced/README.md)
 - [Demo App YOLO](../demo-app-sandbox-yolo/README.md)
 
----
-
-**Last Updated:** 2026-01-02
-**Version:** 4.6.0

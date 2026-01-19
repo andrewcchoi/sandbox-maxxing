@@ -57,7 +57,3 @@ Once both tests pass:
   - Custom Configuration: `examples/demo-app-sandbox-yolo/`
 - 📖 Read the development guide: `docs/DEVELOPMENT.md`
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

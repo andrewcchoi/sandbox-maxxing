@@ -98,7 +98,7 @@ DRY_RUN=true ./run-continuous.sh
 
 ### For More Details
 
-See the comprehensive documentation: [`tests/skill-validation/README.md`](../.internal/tests/skill-validation/README.md)
+See the comprehensive documentation: [`.internal/tests/skill-validation/README.md`](../.internal/tests/skill-validation/README.md)
 
 Topics covered:
 - Architecture and components
@@ -280,7 +280,3 @@ For skill-specific issues:
 - Compare with working skills for patterns
 
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

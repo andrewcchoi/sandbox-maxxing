@@ -653,7 +653,3 @@ After deploying to Azure:
 - **GitHub Issues:** Report issues with this plugin at the repository
 
 ---
-
-**Last Updated:** 2026-01-01
-**Version:** 4.6.0
-

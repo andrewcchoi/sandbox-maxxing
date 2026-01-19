@@ -222,7 +222,3 @@ For security-related questions that are not vulnerabilities:
 2. Use [GitHub Discussions](https://github.com/andrewcchoi/sandbox-maxxing/discussions) for public questions
 3. Open a regular GitHub issue for feature requests
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

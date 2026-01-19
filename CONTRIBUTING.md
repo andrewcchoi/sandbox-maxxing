@@ -190,30 +190,47 @@ Run all tests before submitting:
 - Follow existing patterns
 - Keep skills focused and modular
 
+### Shell Script Conventions
+
+All shell scripts in this repository must follow these conventions:
+
+1. **Shebang Line**: Use `#!/usr/bin/env bash` instead of `#!/bin/bash`
+   - This is more portable across different systems (Linux, macOS, Windows Git Bash/WSL)
+   - The `env` command finds `bash` in the user's PATH, which may be in different locations on different systems
+   - Example:
+     ```bash
+     #!/usr/bin/env bash
+     # Your script here
+     ```
+
+2. **Why Portability Matters**:
+   - On macOS, bash may be in `/usr/local/bin/bash` (Homebrew) or `/bin/bash` (system)
+   - On Linux systems, bash is typically in `/bin/bash`
+   - On Windows Git Bash/WSL, paths vary
+   - Using `/usr/bin/env bash` ensures the script works across all platforms
+
+3. **When Creating New Scripts**:
+   - Always start with `#!/usr/bin/env bash`
+   - Apply this to template files in `skills/_shared/templates/`
+   - Apply this to hook scripts in `hooks/`
+   - Apply this to any utility or test scripts
+
 ## Repository Organization
 
 Before submitting changes, please review the [`.internal/repo-keeper/ORGANIZATION_CHECKLIST.md`](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) to ensure your contribution maintains repository consistency.
 
 **Key guidelines:**
 
-1. **Version Footers**: Add version footers to all new .md files
-   ```markdown
-   ---
+1. **Inventory**: Update [`.internal/repo-keeper/INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) when adding/removing files
 
-   **Last Updated:** YYYY-MM-DD
-   **Version:** X.Y.Z
-   ```
+2. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
 
-2. **Inventory**: Update [`.internal/repo-keeper/INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) when adding/removing files
-
-3. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
-
-4. **Naming Conventions**:
+3. **Naming Conventions**:
    - Commands: `/sandboxxer:{action}`
    - Skills: `sandboxxer-{action}/SKILL.md`
    - Templates: `{component}.{ext}`
 
-5. **Validation**: Run these scripts before committing:
+4. **Validation**: Run these scripts before committing:
    ```bash
    # Check version consistency
    .internal/repo-keeper/scripts/check-version-sync.sh
@@ -227,7 +244,3 @@ Before submitting changes, please review the [`.internal/repo-keeper/ORGANIZATIO
 
 See the full [Organization Checklist](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) for complete guidelines.
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0
