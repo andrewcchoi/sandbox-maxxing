@@ -1,12 +1,11 @@
 graph TB
     subgraph Plugin["sandboxxer Plugin"]
-        subgraph Commands["Commands (6)"]
+        subgraph Commands["Commands (5)"]
             C1["/quickstart<br/>Interactive setup"]
             C2["/yolo-vibe-maxxing<br/>Quick setup"]
             C3["/troubleshoot<br/>Diagnostics"]
             C4["/audit<br/>Security review"]
             C5["/deploy-to-azure<br/>Azure deployment"]
-            C6["/repo-keeper<br/>Repository maintenance"]
         end
 
         subgraph Skills["Skills (2)"]
@@ -14,10 +13,9 @@ graph TB
             S2["sandboxxer-audit<br/>Security audits"]
         end
 
-        subgraph Agents["Agents (3)"]
+        subgraph Agents["Agents (2)"]
             A1["devcontainer-generator<br/>Config generation"]
             A2["devcontainer-validator<br/>Config validation"]
-            A3["repo-keeper<br/>Repository maintenance"]
         end
 
         subgraph Hooks["Hooks (1)"]
@@ -39,7 +37,6 @@ graph TB
 
     C1 -.->|"may invoke"| A1
     C1 -.->|"may invoke"| A2
-    C6 -.->|"may invoke"| A3
 
     style Commands fill:#90EE90,stroke:#333,stroke-width:2px
     style Skills fill:#87CEEB,stroke:#333,stroke-width:2px
