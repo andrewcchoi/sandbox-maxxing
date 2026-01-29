@@ -45,7 +45,7 @@ mkdir -p "$CLAUDE_DIR/mcp"
 # 2. Core Configuration Files
 # ============================================================================
 echo ""
-echo "[1/8] Copying core configuration files..."
+echo "[1/10] Copying core configuration files..."
 
 for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json" ".mcp.json"; do
     if [ -f "$HOST_CLAUDE/$config_file" ]; then
@@ -59,7 +59,7 @@ done
 # 3. Hooks Directory
 # ============================================================================
 echo ""
-echo "[2/8] Syncing hooks directory..."
+echo "[2/10] Syncing hooks directory..."
 
 if [ -d "$HOST_CLAUDE/hooks" ] && [ "$(ls -A "$HOST_CLAUDE/hooks" 2>/dev/null)" ]; then
     cp -r "$HOST_CLAUDE/hooks/"* "$CLAUDE_DIR/hooks/" 2>/dev/null || true
@@ -93,7 +93,7 @@ fi
 # 4. State Directory
 # ============================================================================
 echo ""
-echo "[3/8] Syncing state directory..."
+echo "[3/10] Syncing state directory..."
 
 if [ -d "$HOST_CLAUDE/state" ] && [ "$(ls -A "$HOST_CLAUDE/state" 2>/dev/null)" ]; then
     cp -r "$HOST_CLAUDE/state/"* "$CLAUDE_DIR/state/" 2>/dev/null || true
@@ -116,14 +116,14 @@ fi
 # 5. Plugins Directory
 # ============================================================================
 echo ""
-echo "[4/8] Syncing plugins directory..."
+echo "[4/10] Syncing plugins directory..."
 echo "Skip..."
 
 # ============================================================================
 # 6. MCP Configuration
 # ============================================================================
 echo ""
-echo "[5/8] Syncing MCP configuration..."
+echo "[5/10] Syncing MCP configuration..."
 
 # Copy .mcp.json if exists (already handled above, but check for mcp/ dir)
 if [ -d "$HOST_CLAUDE/mcp" ]; then
@@ -142,7 +142,7 @@ fi
 # 7. Environment Variables (Optional)
 # ============================================================================
 echo ""
-echo "[6/8] Loading environment variables..."
+echo "[6/10] Loading environment variables..."
 
 if [ -f "$HOST_ENV/.env.claude" ]; then
     # Source environment variables
@@ -164,7 +164,7 @@ fi
 # 8. GitHub CLI Authentication (Optional)
 # ============================================================================
 echo ""
-echo "[7/8] Setting up GitHub CLI authentication..."
+echo "[7/10] Setting up GitHub CLI authentication..."
 
 if [ -d "$HOST_GH" ]; then
     mkdir -p "$GH_CONFIG_DIR"
@@ -191,7 +191,7 @@ fi
 # 9. Copy Hooks for Linux Container (Optional)
 # ============================================================================
 echo ""
-echo "[8/9] Setting up hooks..."
+echo "[8/10] Setting up hooks..."
 
 HOOKS_SRC="/workspace/.devcontainer/defaults/hooks"
 HOOKS_DST="$CLAUDE_DIR/hooks"
@@ -216,10 +216,25 @@ else
 fi
 
 # ============================================================================
-# 10. Fix Permissions
+# 10. Mark Native Installation Complete
 # ============================================================================
 echo ""
-echo "[9/9] Setting permissions..."
+echo "[9/10] Marking native installation as complete..."
+
+# Run claude install to suppress migration notice
+# This is needed because copying host config makes Claude think it's a migration
+if command -v claude &> /dev/null; then
+    claude install 2>/dev/null || true
+    echo "  ✓ Native installation marked complete"
+else
+    echo "  ⚠ Claude CLI not found in PATH"
+fi
+
+# ============================================================================
+# 11. Fix Permissions
+# ============================================================================
+echo ""
+echo "[10/10] Setting permissions..."
 
 chown -R "$(id -u):$(id -g)" "$CLAUDE_DIR" 2>/dev/null || true
 chown -R "$(id -u):$(id -g)" "$GH_CONFIG_DIR" 2>/dev/null || true
