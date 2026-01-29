@@ -22,6 +22,7 @@
 
         // Docker & DevContainers
         "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
 
         // Git Integration
         "eamodio.gitlens"

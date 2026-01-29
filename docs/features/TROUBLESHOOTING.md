@@ -51,7 +51,7 @@ Claude Code is installed in the container filesystem, which is recreated on rebu
 Reinstall Claude Code after each container rebuild:
 
 ```bash
-curl -fsSL https://claude.ai/install.sh | sh
+curl -fsSL https://claude.ai/install.sh | bash
 ```
 
 **Automation Option:**
@@ -59,7 +59,7 @@ Add to `.devcontainer/postCreateCommand` or `postStartCommand`:
 
 ```json
 {
-  "postCreateCommand": "curl -fsSL https://claude.ai/install.sh | sh"
+  "postCreateCommand": "curl -fsSL https://claude.ai/install.sh | bash"
 }
 ```
 
@@ -755,8 +755,7 @@ npm install --dry-run
 **Verify the fix:**
 ```bash
 # Should succeed without errors
-npm view claude-code version
-npm install -g @anthropic-ai/claude-code
+curl -fsSL https://claude.ai/install.sh | bash
 ```
 
 ---

@@ -34,6 +34,7 @@
         // Core tools
         "anthropic.claude-code",
         "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
         "redhat.vscode-yaml",
         "eamodio.gitlens",
         // Python (base stack includes Python 3.12)

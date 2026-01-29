@@ -6,7 +6,7 @@
   "remoteUser": "node",
   "customizations": {
     "vscode": {
-      "extensions": ["ms-python.python", "dbaeumer.vscode-eslint"]
+      "extensions": ["ms-python.python", "dbaeumer.vscode-eslint", "ms-vscode-remote.remote-containers"]
     }
   },
   "postStartCommand": "sudo FIREWALL_MODE=\"$FIREWALL_MODE\" /usr/local/bin/init-firewall.sh",
