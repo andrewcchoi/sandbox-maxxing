@@ -157,7 +157,7 @@ RUN uv init --name workspace-env && \
       requests
 
 # Install Claude Code
-RUN curl -fsSL https://claude.ai/install.sh | sh
+RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN npm install -g \
   typescript \
   ts-node \

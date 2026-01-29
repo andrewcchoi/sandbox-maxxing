@@ -233,7 +233,7 @@ RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
   fi
 
 # Install Claude Code (always required)
-RUN curl -fsSL https://claude.ai/install.sh | sh
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # Core Node tools (always installed - package managers)
 RUN npm install -g yarn pnpm
