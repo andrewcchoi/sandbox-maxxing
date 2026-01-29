@@ -157,8 +157,7 @@ RUN uv init --name workspace-env && \
       requests
 
 # Install Claude Code
-ARG CLAUDE_CODE_VERSION=latest
-RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
+RUN curl -fsSL https://claude.ai/install.sh | sh
 RUN npm install -g \
   typescript \
   ts-node \
