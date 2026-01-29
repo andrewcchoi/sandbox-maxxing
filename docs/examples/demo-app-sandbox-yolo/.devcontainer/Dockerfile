@@ -38,6 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ipset \
     # SSL certificates
     ca-certificates \
+    openssh-client \
     gnupg \
     # Process and system tools
     procps \
