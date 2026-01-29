@@ -57,7 +57,7 @@ ENV UV_COMPILE_BYTECODE=1 \
     PIP_NO_CACHE_DIR=1
 
 # Install Claude Code CLI
-RUN npm install -g @anthropic-ai/claude-code
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # Install Mermaid CLI (Diagram Generation)
 RUN npm install -g @mermaid-js/mermaid-cli

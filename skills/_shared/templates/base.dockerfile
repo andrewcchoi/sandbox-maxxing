@@ -233,8 +233,7 @@ RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
   fi
 
 # Install Claude Code (always required)
-ARG CLAUDE_CODE_VERSION=latest
-RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # Core Node tools (always installed - package managers)
 RUN npm install -g yarn pnpm
