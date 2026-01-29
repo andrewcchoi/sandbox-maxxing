@@ -8,6 +8,20 @@
 *.ps1 text eol=crlf
 
 # ============================================================================
+# Windows Batch/CMD Files - MUST be CRLF
+# ============================================================================
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# ============================================================================
+# Shell RC/Config Files Without Extensions - MUST be LF
+# ============================================================================
+.bashrc text eol=lf
+.bash_profile text eol=lf
+.profile text eol=lf
+.zshrc text eol=lf
+
+# ============================================================================
 # Docker Files - MUST be LF
 # ============================================================================
 Dockerfile text eol=lf
@@ -23,11 +37,20 @@ devcontainer.json text eol=lf
 # ============================================================================
 *.py text eol=lf
 *.js text eol=lf
+*.jsx text eol=lf
 *.ts text eol=lf
+*.tsx text eol=lf
 *.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
 *.sql text eol=lf
+
+# ============================================================================
+# Web/Frontend Files - LF preferred
+# ============================================================================
+*.html text eol=lf
+*.css text eol=lf
+*.svg text eol=lf
 
 # ============================================================================
 # Config Files - LF preferred
@@ -36,11 +59,38 @@ devcontainer.json text eol=lf
 *.env.* text eol=lf
 .gitignore text eol=lf
 .gitattributes text eol=lf
+.editorconfig text eol=lf
+
+# ============================================================================
+# Python Config Files - LF preferred
+# ============================================================================
+*.ini text eol=lf
+*.toml text eol=lf
+*.txt text eol=lf
+
+# ============================================================================
+# Infrastructure/Cloud Files - LF preferred
+# ============================================================================
+*.bicep text eol=lf
+
+# ============================================================================
+# Diagram/Template Files - LF preferred
+# ============================================================================
+*.mmd text eol=lf
+*.template text eol=lf
+*.example text eol=lf
 
 # ============================================================================
 # Documentation - LF preferred
 # ============================================================================
 *.md text eol=lf
+
+# ============================================================================
+# Additional Files - LF preferred
+# ============================================================================
+.gitkeep text eol=lf
+LICENSE text eol=lf
+Makefile text eol=lf
 
 # ============================================================================
 # Binary Files - Do not modify
