@@ -66,6 +66,7 @@ ENV TZ="$TZ"
 RUN apt-get update && apt-get install -y --no-install-recommends \
   # Core utilities
   git vim nano less procps sudo unzip wget curl ca-certificates gnupg gnupg2 \
+  openssh-client \
   # JSON processing and manual pages
   jq man-db uuid-runtime \
   # Shell and CLI enhancements
