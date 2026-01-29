@@ -772,7 +772,3 @@ secrets:
 - `skills/_shared/templates/data/secrets.json` - Complete secrets catalog
 - `skills/_shared/templates/.env.template` - Environment templates with secret placeholders
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

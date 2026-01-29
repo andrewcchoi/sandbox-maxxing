@@ -87,8 +87,8 @@ sandbox/
 │
 ├── hooks/                      # Event hooks
 │   ├── hooks.json
-│   ├── stop_hook.sh
-│   ├── stop_hook.ps1
+│   ├── stop-hook.sh
+│   ├── stop-hook.ps1
 │   └── run-hook.cmd
 │
 ├── skills/                     # Plugin skills (main work here)
@@ -409,7 +409,3 @@ The devcontainer sets minimal environment variables:
 - **Claude Code**: https://claude.ai/code
 - **Plugin Development**: Use `/sandboxxer:troubleshoot` for debugging
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

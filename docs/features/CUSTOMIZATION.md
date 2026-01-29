@@ -596,7 +596,3 @@ And update firewall for AI provider APIs.
 - Check [troubleshooting](TROUBLESHOOTING.md) for common issues
 - Browse [examples/](../examples/) for complete configuration examples
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

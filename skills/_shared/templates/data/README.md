@@ -234,7 +234,3 @@ For questions about data file structure or usage, see:
 - Plugin documentation: `../docs/ARCHITECTURE.md`
 - Mode guide: `../docs/SETUP-OPTIONS.md`
 
----
-
-**Last Updated:** 2026-01-01
-**Version:** 4.6.0

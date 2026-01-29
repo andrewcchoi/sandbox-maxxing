@@ -58,7 +58,6 @@ Interactive assistant for creating VS Code DevContainer configurations with Dock
 - [Contributing](#contributing)
 - [License](#license)
 - [Support](#support)
-- [Repository Maintenance](#repository-maintenance)
 - [Changelog](#changelog)
 
 ## Prerequisites
@@ -211,6 +210,7 @@ Claude: Creating DevContainer with defaults...
 | `/sandboxxer:quickstart`        | Interactive quickstart - choose project type and firewall options |
 | `/sandboxxer:yolo-vibe-maxxing` | YOLO vibe-maxxing - no questions, sensible defaults (Python+Node) |
 | `/sandboxxer:deploy-to-azure`   | Deploy DevContainer to Azure Container Apps for cloud development |
+| `/sandboxxer:repo-keeper`       | Run repository validation and generate remediation plans          |
 | `/sandboxxer:troubleshoot`      | Diagnose and fix sandbox issues                                   |
 | `/sandboxxer:audit`             | Security audit and recommendations                                |
 
@@ -525,8 +525,8 @@ sandbox-maxxing/
 │   └── audit.md                 # /sandboxxer:audit
 ├── hooks/                       # Event hooks
 │   ├── hooks.json               # Hook configuration
-│   ├── stop_hook.sh             # Linux stop hook
-│   ├── stop_hook.ps1            # Windows stop hook
+│   ├── stop-hook.sh             # Linux stop hook
+│   ├── stop-hook.ps1            # Windows stop hook
 │   └── run-hook.cmd             # Windows wrapper
 ├── skills/                      # Skills and shared resources
 │   ├── _shared/                 # Shared templates and data
@@ -824,21 +824,7 @@ MIT License - See LICENSE file for details
 - **Documentation**: See `docs/features/` directory
 - **Claude Code Docs**: https://claude.ai/code
 
-## Repository Maintenance
-
-For contributors and maintainers, see [`.internal/repo-keeper/`](.internal/repo-keeper/):
-
-- **Organization Checklist**: [`ORGANIZATION_CHECKLIST.md`](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) - 18-category maintenance checklist
-- **Inventory**: [`INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) - Entity inventory for auditing
-- **Automation Scripts**: [`scripts/`](.internal/repo-keeper/scripts/) - Version sync, link checking, inventory validation
-- **GitHub Workflows**: [`workflows/`](.internal/repo-keeper/workflows/) - CI/CD templates for automated validation
-- **Issue/PR Templates**: [`templates/`](.internal/repo-keeper/templates/) - Standardized templates for contributors
-
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
----
-
-**Last Updated:** 2026-01-02
-**Version:** 4.6.0

@@ -2,7 +2,7 @@ flowchart TD
     Start([User runs /quickstart]) --> Q1{Project Type?}
 
     Q1 -->|Python/Node| Base[Base Dockerfile<br/>Python 3.12 + Node 20]
-    Q1 -->|Go| GoPartial[Base + Go 1.25]
+    Q1 -->|Go| GoPartial[Base + Go 1.22]
     Q1 -->|Ruby| RubyPartial[Base + Ruby 3.3]
     Q1 -->|Rust| RustPartial[Base + Rust]
     Q1 -->|C++ Clang| ClangPartial[Base + Clang 17]

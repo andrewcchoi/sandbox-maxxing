@@ -4,7 +4,7 @@
 Claude Code on Windows native cannot execute bash hooks directly because it uses `/bin/bash` internally, which doesn't exist on Windows.
 
 ## Solution
-Use the PowerShell wrapper (`stop_hook.ps1`) that calls Git Bash to execute the actual bash hook script.
+Use the PowerShell wrapper (`stop-hook.ps1`) that calls Git Bash to execute the actual bash hook script.
 
 ## Setup Instructions
 
@@ -14,8 +14,8 @@ Copy both hook scripts to your Windows home directory:
 
 ```powershell
 # In PowerShell on Windows
-Copy-Item stop_hook.sh "$env:USERPROFILE\.claude\hooks\"
-Copy-Item stop_hook.ps1 "$env:USERPROFILE\.claude\hooks\"
+Copy-Item stop-hook.sh "$env:USERPROFILE\.claude\hooks\"
+Copy-Item stop-hook.ps1 "$env:USERPROFILE\.claude\hooks\"
 ```
 
 ### 2. Update Claude Code Settings
@@ -30,7 +30,7 @@ Edit `~/.claude/settings.local.json` (or `%USERPROFILE%\.claude\settings.local.j
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\stop_hook.ps1\""
+            "command": "powershell -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\stop-hook.ps1\""
           }
         ]
       }
@@ -49,9 +49,14 @@ $env:TRACE_TO_LANGSMITH = "true"
 $env:CC_LANGSMITH_API_KEY = "lsv2_pt_your_key_here"
 $env:CC_LANGSMITH_PROJECT = "your-project-name"
 $env:CC_LANGSMITH_DEBUG = "true"
+# Optional variables:
+$env:CC_LANGSMITH_ENVIRONMENT = "development"
+$env:CLAUDE_CODE_TEAM = "my-team"
 ```
 
 To make these permanent, add them to your PowerShell profile or set as system environment variables.
+
+For detailed documentation on all available hook environment variables, see the [Hook Environment Variables](../docs/features/VARIABLES.md#hook-environment-variables) section in the Variables Configuration Guide.
 
 ### 4. Verify Git Bash is Installed
 
@@ -77,12 +82,12 @@ If you switch between Windows native and WSL/DevContainer:
 
 **Windows native:**
 ```json
-"command": "powershell -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\stop_hook.ps1\""
+"command": "powershell -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\stop-hook.ps1\""
 ```
 
 **Linux/macOS/WSL/DevContainer:**
 ```json
-"command": "bash ~/.claude/hooks/stop_hook.sh"
+"command": "bash ~/.claude/hooks/stop-hook.sh"
 ```
 
 ## Troubleshooting
@@ -108,15 +113,11 @@ This error comes from Claude Code trying to use `/bin/bash` before the hook runs
 ## How It Works
 
 1. Claude Code executes `powershell.exe` (which exists on Windows)
-2. PowerShell runs `stop_hook.ps1`
-3. `stop_hook.ps1` finds Git Bash
-4. Git Bash executes `stop_hook.sh`
+2. PowerShell runs `stop-hook.ps1`
+3. `stop-hook.ps1` finds Git Bash
+4. Git Bash executes `stop-hook.sh`
 5. The bash script sends traces to LangSmith
 
 This chain avoids the `/bin/bash` error completely.
 
 
----
-
-**Last Updated:** 2025-12-21
-**Version:** 4.6.0

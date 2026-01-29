@@ -1482,7 +1482,3 @@ wsl --unregister docker-desktop-data
 
 Replace `YOUR-PROJECT` with your project name. This approach bypasses the host shell entirely and works on Windows, macOS, and Linux.
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

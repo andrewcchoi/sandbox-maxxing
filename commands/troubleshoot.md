@@ -1,5 +1,7 @@
 ---
 description: Diagnose and fix common VS Code DevContainer issues
+argument-hint: ""
+allowed-tools: []
 ---
 
 Use and follow the sandboxxer-troubleshoot skill exactly as written.
@@ -12,7 +14,3 @@ Focus on identifying and resolving:
 - Permission errors
 - VS Code DevContainer issues
 
----
-
-**Last Updated:** 2025-12-24
-**Version:** 4.6.0

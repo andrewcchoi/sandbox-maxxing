@@ -248,7 +248,7 @@ Skills can invoke each other for related tasks:
 
 ### Version 3.0.0 (2025-12-19)
 
-- Plugin renamed: `sandboxxer` → `devcontainer-setup`
+- Plugin renamed: `devcontainer-setup` → `sandboxxer`
 - Copy-first workflow for templates
 - Fixed template path discovery issues
 
@@ -282,7 +282,3 @@ Skills can invoke each other for related tasks:
 - [Minimal Configuration](examples/demo-app-sandbox-basic/) - Minimal configuration result
 - [Domain Allowlist](examples/demo-app-sandbox-advanced/) - Domain allowlist result
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

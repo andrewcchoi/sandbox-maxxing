@@ -1,9 +1,6 @@
 # Infrastructure
 .internal/
 
-# Repo-keeper agents (not ready for tracking)
-agents/repo-keeper/
-
 # Test directories
 test-*
 !test-config.yml

@@ -179,7 +179,3 @@ For the best experience with Claude Code, VS Code Desktop is recommended.
 - [Prebuilds](https://docs.github.com/en/codespaces/prebuilding-your-codespaces)
 - [Machine Types](https://docs.github.com/en/codespaces/customizing-your-codespace/changing-the-machine-type-for-your-codespace)
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0
