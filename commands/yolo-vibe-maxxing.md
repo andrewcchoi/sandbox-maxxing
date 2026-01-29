@@ -49,7 +49,20 @@ fi
 ### Step 2: Copy Templates and Process Placeholders
 
 ```bash
-PROJECT_NAME="$(basename $(pwd))"
+# Sanitize project name for Docker compatibility (yolo mode: auto-fix, no prompts)
+sanitize_project_name() {
+  local name="$1"
+  local sanitized
+  sanitized=$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+  sanitized=$(echo "$sanitized" | sed 's/^-*//;s/-*$//;s/--*/-/g')
+  [ -z "$sanitized" ] && sanitized="sandbox-app"
+  echo "$sanitized"
+}
+
+RAW_PROJECT_NAME="$(basename $(pwd))"
+PROJECT_NAME="$(sanitize_project_name "$RAW_PROJECT_NAME")"
+[ "$PROJECT_NAME" != "$RAW_PROJECT_NAME" ] && echo "Auto-sanitized: $RAW_PROJECT_NAME -> $PROJECT_NAME"
+
 TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 DATA="$PLUGIN_ROOT/skills/_shared/templates/data"
 
@@ -80,6 +93,12 @@ FRONTEND_PORT=$(find_available_port $FRONTEND_PORT)
 POSTGRES_PORT=$(find_available_port $POSTGRES_PORT)
 REDIS_PORT=$(find_available_port $REDIS_PORT)
 
+# Backup existing .env if present
+if [ -f ".env" ]; then
+  cp .env .env.backup
+  echo "Backed up existing .env"
+fi
+
 # Create directories
 mkdir -p .devcontainer
 
@@ -104,6 +123,52 @@ cat > .env << 'EOF'
 # YOLO Mode Configuration
 ENABLE_FIREWALL=false
 EOF
+
+# Robust merge using awk (handles |, &, \, etc.)
+merge_env_value() {
+  local key="$1"
+  local value="$2"
+  local target_file="$3"
+
+  local escaped_key
+  escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
+
+  if grep -q "^${escaped_key}=" "$target_file" 2>/dev/null; then
+    awk -v key="$key" -v val="$value" '
+      BEGIN { FS="="; OFS="=" }
+      $1 == key { $0 = key "=" val; found=1 }
+      { print }
+    ' "$target_file" > "${target_file}.tmp"
+
+    if [ -s "${target_file}.tmp" ]; then
+      mv "${target_file}.tmp" "$target_file"
+    else
+      rm -f "${target_file}.tmp"
+      return 1
+    fi
+  else
+    # Ensure trailing newline before appending
+    [ -f "$target_file" ] && [ -n "$(tail -c 1 "$target_file" 2>/dev/null)" ] && echo "" >> "$target_file"
+    printf '%s=%s\n' "$key" "$value" >> "$target_file"
+  fi
+}
+
+# Preserve values from backup
+if [ -f ".env.backup" ]; then
+  echo "Preserving .env values..."
+  preserved_count=0
+  while IFS='=' read -r key value || [ -n "$key" ]; do
+    [ -z "$key" ] && continue
+    [[ "$key" =~ ^[[:space:]]*# ]] && continue
+
+    # Always overlay backup values (user data wins over template defaults)
+    merge_env_value "$key" "$value" .env
+    preserved_count=$((preserved_count + 1))
+    echo "  Preserved: $key"
+  done < .env.backup
+  echo "  Preserved $preserved_count values"
+  rm -f .env.backup
+fi
 
 # Replace placeholders (portable sed without -i)
 for f in .devcontainer/devcontainer.json docker-compose.yml; do
@@ -139,7 +204,3 @@ echo "=========================================="
 
 **Note:** If the user provided a project name argument, replace `"$(basename $(pwd))"` with that argument in the PROJECT_NAME assignment.
 
----
-
-**Last Updated:** 2025-12-24
-**Version:** 4.6.0

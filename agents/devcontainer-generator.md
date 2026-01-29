@@ -160,7 +160,22 @@ Use `sed` commands to replace placeholders with actual values:
 
 ```bash
 # Get project name (e.g., "demo-app" or detected from directory)
-PROJECT_NAME="$1"  # Passed as argument
+
+# Sanitize project name for Docker compatibility
+sanitize_project_name() {
+  local name="$1"
+  local sanitized
+  sanitized=$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+  sanitized=$(echo "$sanitized" | sed 's/^-*//;s/-*$//;s/--*/-/g')
+  [ -z "$sanitized" ] && sanitized="sandbox-app"
+  echo "$sanitized"
+}
+
+RAW_PROJECT_NAME="$1"  # Passed as argument
+PROJECT_NAME="$(sanitize_project_name "$RAW_PROJECT_NAME")"
+if [ "$PROJECT_NAME" != "$RAW_PROJECT_NAME" ]; then
+  echo "Note: Project name sanitized: '$RAW_PROJECT_NAME' -> '$PROJECT_NAME'"
+fi
 
 # Replace {{PROJECT_NAME}} in all files
 sed -i "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" .devcontainer/devcontainer.json
@@ -324,7 +339,3 @@ Example:
 - Composition is explicit (base + partials)
 - Placeholders are replaced with sed, not manual editing
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

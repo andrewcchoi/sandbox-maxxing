@@ -99,7 +99,3 @@ Future support planned for:
 - Runs once during container creation, not on every start
 
 ---
-
-**Last Updated:** 2026-01-01
-**Version:** 4.6.0
-

@@ -152,10 +152,10 @@ Paths work on Linux but not Windows.
 In bash scripts, use `$HOME` (works on both):
 ```bash
 # ✅ Cross-platform
-"$HOME/.claude/hooks/stop_hook.sh"
+"$HOME/.claude/hooks/stop-hook.sh"
 
 # ❌ Windows-only
-"%USERPROFILE%\.claude\hooks\stop_hook.sh"
+"%USERPROFILE%\.claude\hooks\stop-hook.sh"
 ```
 
 ---
@@ -366,7 +366,3 @@ If you're still stuck after trying these solutions:
    - Output of `echo %CLAUDE_PLUGIN_ROOT%`
 
 ---
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0
-**Platform**: Windows 10/11

@@ -98,7 +98,3 @@ Extensions are configured in `.devcontainer/devcontainer.json`:
 }
 ```
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

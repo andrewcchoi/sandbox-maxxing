@@ -340,7 +340,7 @@ Update your usage:
   - New `skills/_shared/` directory structure
   - `skills/_shared/planning-phase.md` - Common planning workflow
   - `skills/_shared/templates/` - Single source of truth for all templates (~45 → ~18 files)
-  - `skills/_shared/data/` - Consolidated data files (moved from root `data/`)
+  - `skills/_shared/templates/data/` - Consolidated data files (moved from root `data/`)
   - `skills/_shared/templates/init-firewall/` - Three firewall variants (disabled/permissive/strict)
 
 ### Changed
@@ -358,10 +358,10 @@ Update your usage:
   - Updated command reference guides
 
 - **Repository Cleanup**: Removed duplicate root directories
-  - Deleted `data/` directory (exact duplicate of `skills/_shared/data/`)
+  - Deleted `data/` directory (exact duplicate of `skills/_shared/templates/data/`)
   - Deleted `templates/` directory (outdated master template system)
   - Deleted `.internal/scripts/sync-templates.sh` (no longer needed)
-  - Updated `skills/_shared/data/README.md` paths to reference new location
+  - Updated `skills/_shared/templates/data/README.md` paths to reference new location
   - Rewrote `docs/ARCHITECTURE.md` for v4.0.0 shared resources architecture
 
 ### Benefits
@@ -501,7 +501,6 @@ Update your usage:
 - `templates/compose/` with mode-specific docker-compose templates
 - `templates/firewall/` with mode-specific firewall scripts
 - `templates/dockerfiles/` with 11 platform-specific Dockerfiles
-- `docs/MODES.md` - 26 KB mode comparison guide
 - New skills: devcontainer-setup-basic, devcontainer-setup-intermediate, devcontainer-setup-yolo
 - Four examples covering all modes
 
@@ -527,7 +526,3 @@ Update your usage:
 - Network isolation and security
 - Health checks for all services
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

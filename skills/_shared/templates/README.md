@@ -20,6 +20,12 @@ The plugin uses two types of files:
 - `variables.json` → Simple environment variable templates
 - `mcp.json` → MCP server configuration template
 
+**Note on File Formats:**
+- `devcontainer.json` uses **JSONC** (JSON with Comments) format, which allows:
+  - Comments using `//` and `/* */` syntax
+  - Trailing commas in arrays and objects
+  - This is a VS Code standard for configuration files
+
 **Characteristics:**
 - Small, focused files
 - Ready for direct use by user
@@ -142,7 +148,3 @@ DATA="$TEMPLATES/data"
 - [Data Directory README](data/README.md) - Detailed documentation of reference catalogs
 - [SETUP-OPTIONS.md](../../../docs/features/SETUP-OPTIONS.md) - Command comparison and setup workflows
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

@@ -94,7 +94,3 @@ When adding Windows-specific documentation:
 **Platform**: Windows 10/11, Windows Server 2019+
 **Requirements**: Git for Windows, PowerShell 5.1+
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

@@ -21,6 +21,7 @@ Run these checks before proceeding. Use `--skip-validation` to bypass.
 # Parse command-line arguments
 USE_FEATURES_FLAG=false
 SKIP_VALIDATION=false
+FRESH_ENV=false
 for arg in "$@"; do
   case $arg in
     --use-features)
@@ -31,8 +32,18 @@ for arg in "$@"; do
       SKIP_VALIDATION=true
       shift
       ;;
+    --fresh-env)
+      FRESH_ENV=true
+      shift
+      ;;
   esac
 done
+
+# Create marker file if --fresh-env is requested (persists across bash blocks)
+if [ "$FRESH_ENV" = "true" ]; then
+  mkdir -p .devcontainer.backup
+  touch .devcontainer.backup/.fresh-env-requested
+fi
 
 # Initialize port variables with defaults
 APP_PORT=8000
@@ -192,6 +203,13 @@ fi
 ## Step 0.8: Detect Existing Configuration
 
 ```bash
+# Always backup .env if it exists (before any other checks)
+if [ -f ".env" ]; then
+  mkdir -p .devcontainer.backup
+  cp .env .devcontainer.backup/.env.user-backup
+  echo "Backed up existing .env to .devcontainer.backup/.env.user-backup"
+fi
+
 EXISTING_CONFIG_FOUND=false
 EXISTING_EXTENSIONS=""
 EXISTING_CONTAINER_ENV=""
@@ -230,7 +248,6 @@ if [ -f ".devcontainer/devcontainer.json" ]; then
   mkdir -p .devcontainer.backup
   cp -r .devcontainer/* .devcontainer.backup/ 2>/dev/null || true
   [ -f "docker-compose.yml" ] && cp docker-compose.yml .devcontainer.backup/
-  [ -f ".env" ] && cp .env .devcontainer.backup/
   echo "Backed up existing configuration to .devcontainer.backup/"
 fi
 
@@ -744,30 +761,75 @@ Store as `CUSTOM_DOMAINS`.
 # Disable history expansion (fixes ! in Windows paths)
 set +H 2>/dev/null || true
 
-# Handle Windows paths - convert backslashes to forward slashes
+echo "Searching for plugin templates..."
+
+# Method 1: CLAUDE_PLUGIN_ROOT (set by Claude Code)
 PLUGIN_ROOT=""
 if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
   PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT//\\//}";
-  echo "Using CLAUDE_PLUGIN_ROOT: $PLUGIN_ROOT";
+  echo "  Using CLAUDE_PLUGIN_ROOT: $PLUGIN_ROOT";
+
+# Method 2: Current directory is plugin root
 elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
   PLUGIN_ROOT=".";
-  echo "Using current directory as plugin root";
+  echo "  Using current directory as plugin root";
+
+# Method 3: Search installed plugins
 elif [ -d "$HOME/.claude/plugins" ]; then
+  echo "  Searching ~/.claude/plugins...";
+  # Account for .claude-plugin/ subdirectory structure
   PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
-    -exec grep -l '"name": "sandboxxer"' {} \; 2>/dev/null | head -1);
+    -exec grep -l '"name".*:.*"sandboxxer"' {} \; 2>/dev/null | head -1);
   if [ -n "$PLUGIN_JSON" ]; then
-    PLUGIN_ROOT=$(dirname "$(dirname "$PLUGIN_JSON")");
-    echo "Found installed plugin: $PLUGIN_ROOT";
+    PLUGIN_DIR=$(dirname "$PLUGIN_JSON");
+    # Handle both root plugin.json and .claude-plugin/plugin.json
+    if [ "$(basename "$PLUGIN_DIR")" = ".claude-plugin" ]; then
+      PLUGIN_ROOT=$(dirname "$PLUGIN_DIR");
+    else
+      PLUGIN_ROOT="$PLUGIN_DIR";
+    fi;
+    echo "  Found plugin: $PLUGIN_ROOT";
   fi;
 fi
 
-[ -z "$PLUGIN_ROOT" ] && { echo "ERROR: Cannot locate plugin templates"; exit 1; }
+# Validate templates exist
+if [ -z "$PLUGIN_ROOT" ]; then
+  echo "ERROR: Cannot locate plugin templates";
+  echo "";
+  echo "Please ensure one of the following:";
+  echo "  1. Run from within the sandbox-maxxing plugin directory";
+  echo "  2. Install the plugin to ~/.claude/plugins/";
+  echo "  3. Set CLAUDE_PLUGIN_ROOT environment variable";
+  exit 1;
+fi
+
+if [ ! -f "$PLUGIN_ROOT/skills/_shared/templates/base.dockerfile" ]; then
+  echo "ERROR: Template not found at $PLUGIN_ROOT/skills/_shared/templates/base.dockerfile";
+  exit 1;
+fi
+
+echo "  Templates found at: $PLUGIN_ROOT/skills/_shared/templates/";
 ```
 
 ## Step 10: Build Dockerfile
 
 ```bash
-PROJECT_NAME="$(basename $(pwd))"
+# Sanitize project name for Docker compatibility
+sanitize_project_name() {
+  local name="$1"
+  local sanitized
+  sanitized=$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+  sanitized=$(echo "$sanitized" | sed 's/^-*//;s/-*$//;s/--*/-/g')
+  [ -z "$sanitized" ] && sanitized="sandbox-app"
+  echo "$sanitized"
+}
+
+RAW_PROJECT_NAME="$(basename $(pwd))"
+PROJECT_NAME="$(sanitize_project_name "$RAW_PROJECT_NAME")"
+if [ "$PROJECT_NAME" != "$RAW_PROJECT_NAME" ]; then
+  echo "Note: Project name sanitized: '$RAW_PROJECT_NAME' -> '$PROJECT_NAME'"
+fi
+
 TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 PARTIALS="$TEMPLATES/partials"
 
@@ -776,6 +838,11 @@ mkdir -p .devcontainer data
 
 # Copy base dockerfile (includes Python 3.12 + Node 20)
 cp "$TEMPLATES/base.dockerfile" .devcontainer/Dockerfile
+if [ ! -s .devcontainer/Dockerfile ]; then
+  echo "ERROR: Failed to copy base.dockerfile"
+  exit 1
+fi
+echo "  Copied base.dockerfile ($(wc -l < .devcontainer/Dockerfile) lines)"
 echo "Base image: Python 3.12 + Node 20"
 
 # Handle tool installation based on mode
@@ -851,9 +918,9 @@ echo ""
 
 ```bash
 if [ "$NEEDS_FIREWALL" = "Yes" ]; then
-  # Update .env to enable firewall
-  sed -i 's/ENABLE_FIREWALL=false/ENABLE_FIREWALL=true/' .env || \
-    sed 's/ENABLE_FIREWALL=false/ENABLE_FIREWALL=true/' .env > .env.tmp && mv .env.tmp .env
+  # Create marker file for firewall setting (will be applied in Step 12)
+  mkdir -p .devcontainer.backup
+  touch .devcontainer.backup/.firewall-enabled
 
   # Generate firewall script from selected categories
   cp "$TEMPLATES/init-firewall.sh" .devcontainer/init-firewall.sh;
@@ -1028,8 +1095,52 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
     "$f" > "$f.tmp" && mv "$f.tmp" "$f";
 done
 
-# Generate .env file with configured ports
-cat > .env << EOF
+# Start with existing .env if available, otherwise create fresh
+if [ ! -f ".devcontainer.backup/.fresh-env-requested" ] && [ -f ".devcontainer.backup/.env.user-backup" ]; then
+  cp .devcontainer.backup/.env.user-backup .env
+  # Ensure trailing newline (prevents variable concatenation on append)
+  [ -n "$(tail -c 1 .env 2>/dev/null)" ] && echo "" >> .env
+  echo "Preserved existing .env file"
+
+  # Add missing template defaults (only keys that don't exist)
+  add_missing_env_defaults() {
+    local key="$1"
+    local value="$2"
+    local target_file="$3"
+
+    local escaped_key
+    escaped_key=$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|\\]/\\&/g')
+
+    # Only add if key doesn't exist
+    if ! grep -q "^${escaped_key}=" "$target_file" 2>/dev/null; then
+      # Ensure trailing newline before appending
+      [ -f "$target_file" ] && [ -n "$(tail -c 1 "$target_file" 2>/dev/null)" ] && echo "" >> "$target_file"
+      printf '%s=%s\n' "$key" "$value" >> "$target_file"
+      echo "  Added missing: $key"
+    fi
+  }
+
+  # Add template defaults for any missing keys
+  echo "Adding missing template defaults..."
+  add_missing_env_defaults "APP_PORT" "$APP_PORT" ".env"
+  add_missing_env_defaults "FRONTEND_PORT" "$FRONTEND_PORT" ".env"
+  add_missing_env_defaults "POSTGRES_PORT" "$POSTGRES_PORT" ".env"
+  add_missing_env_defaults "REDIS_PORT" "$REDIS_PORT" ".env"
+  add_missing_env_defaults "POSTGRES_DB" "sandbox_dev" ".env"
+  add_missing_env_defaults "POSTGRES_USER" "sandbox_user" ".env"
+  add_missing_env_defaults "POSTGRES_PASSWORD" "devpassword" ".env"
+  add_missing_env_defaults "DATABASE_URL" "postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}" ".env"
+  add_missing_env_defaults "REDIS_URL" "redis://redis:6379" ".env"
+  add_missing_env_defaults "ANTHROPIC_API_KEY" "" ".env"
+  add_missing_env_defaults "OPENAI_API_KEY" "" ".env"
+  add_missing_env_defaults "GITHUB_TOKEN" "" ".env"
+  add_missing_env_defaults "INSTALL_SHELL_EXTRAS" "true" ".env"
+  add_missing_env_defaults "INSTALL_DEV_TOOLS" "true" ".env"
+  add_missing_env_defaults "INSTALL_CA_CERT" "false" ".env"
+  add_missing_env_defaults "ENABLE_FIREWALL" "false" ".env"
+else
+  # No existing .env or --fresh-env flag set - generate fresh template
+  cat > .env << EOF
 # ============================================================================
 # Environment Variables
 # ============================================================================
@@ -1048,8 +1159,8 @@ REDIS_PORT=$REDIS_PORT
 # ----------------------------------------------------------------------------
 # Database Configuration
 # ----------------------------------------------------------------------------
-POSTGRES_DB=devdb
-POSTGRES_USER=devuser
+POSTGRES_DB=sandbox_dev
+POSTGRES_USER=sandbox_user
 POSTGRES_PASSWORD=devpassword
 
 # Database URLs (for application use)
@@ -1072,7 +1183,23 @@ INSTALL_DEV_TOOLS=true
 INSTALL_CA_CERT=false
 ENABLE_FIREWALL=false
 EOF
-echo "Generated .env file with port configuration"
+  echo "Generated fresh .env file"
+fi
+
+# Apply firewall setting if enabled (marker persists across bash blocks)
+if [ -f ".devcontainer.backup/.firewall-enabled" ]; then
+  if grep -q "^ENABLE_FIREWALL=" .env 2>/dev/null; then
+    sed 's/^ENABLE_FIREWALL=.*/ENABLE_FIREWALL=true/' .env > .env.tmp && mv .env.tmp .env
+  else
+    [ -n "$(tail -c 1 .env 2>/dev/null)" ] && echo "" >> .env
+    echo "ENABLE_FIREWALL=true" >> .env
+  fi
+  echo "Enabled firewall in .env"
+fi
+
+# Clean up marker files
+rm -f .devcontainer.backup/.fresh-env-requested
+rm -f .devcontainer.backup/.firewall-enabled
 
 # Configure volume initialization for volume mode
 if [ "$WORKSPACE_MODE" = "volume" ]; then
@@ -1209,19 +1336,6 @@ if [ "$CONFIG_MERGE_CHOICE" = "Merge existing settings into new configuration (R
     mv .devcontainer/devcontainer.json.tmp .devcontainer/devcontainer.json
     echo "Merged existing Dev Container Features"
   fi
-
-  # Preserve .env values (API keys, custom vars)
-  if [ -f ".devcontainer.backup/.env" ]; then
-    while IFS='=' read -r key value; do
-      # Skip empty lines and comments
-      [[ -z "$key" || "$key" =~ ^# ]] && continue
-      # Only preserve non-empty values that aren't in new .env
-      if [ -n "$value" ] && ! grep -q "^${key}=" .env 2>/dev/null; then
-        echo "${key}=${value}" >> .env
-      fi
-    done < .devcontainer.backup/.env
-    echo "Preserved existing .env values"
-  fi
 fi
 
 # Set permissions
@@ -1238,6 +1352,8 @@ echo "Project: $PROJECT_NAME"
 echo ""
 echo "Your Stack:"
 echo "  Base: Python 3.12 + Node 20"
+echo "  + Claude CLI (claude command)"
+echo "  + uv (Python package manager)"
 if [ ${#SELECTED_PARTIALS[@]} -gt 0 ]; then
   for partial in "${SELECTED_PARTIALS[@]}"; do
     case "$partial" in
@@ -1366,7 +1482,3 @@ wsl --unregister docker-desktop-data
 
 Replace `YOUR-PROJECT` with your project name. This approach bypasses the host shell entirely and works on Windows, macOS, and Linux.
 
----
-
-**Last Updated:** 2025-12-25
-**Version:** 4.6.0

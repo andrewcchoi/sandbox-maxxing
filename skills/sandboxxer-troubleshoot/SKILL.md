@@ -260,7 +260,10 @@ Assistant: This sounds like a firewall configuration issue. Let me troubleshoot.
 
 The skill checks firewall mode, reviews allowed domains list, tests connectivity to specific domain, and provides guidance on adding OpenAI domains to allowlist.
 
+## Footer
+
 ---
 
-**Last Updated:** 2025-12-24
+**Last Updated:** 2026-01-19
 **Version:** 4.6.0
+
