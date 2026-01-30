@@ -66,15 +66,16 @@
   // 5. postStartCommand - runs each time the container starts
   // 6. postAttachCommand - runs each time VS Code attaches to the container
 
-  "initializeCommand": ["docker", "volume", "create", "{{PROJECT_NAME}}-workspace-volume"],
-  "onCreateCommand": "rm -rf /workspace/.venv 2>/dev/null || true; if [ -d '/tmp/host-source' ] && [ -z \"$(ls -A /workspace 2>/dev/null)\" ]; then cp -r /tmp/host-source/. /workspace/; fi",
+  // Empty for portless mode (uses bind mount instead of named volume)
+  "initializeCommand": "",
+  "onCreateCommand": "rm -rf /workspace/.venv 2>/dev/null || true",
   "postCreateCommand": "chmod +x .devcontainer/*.sh 2>/dev/null || true; .devcontainer/setup-claude-credentials.sh && .devcontainer/setup-frontend.sh",
   "updateContentCommand": "echo '🧹 Cleaning stale .venv after rebuild...' && rm -rf /workspace/.venv 2>/dev/null || true",
   "postStartCommand": "sudo /usr/local/bin/init-firewall.sh && echo 'DevContainer ready!'",
   "postAttachCommand": "",
   "waitFor": "postCreateCommand",
 
-  "forwardPorts": [{{APP_PORT}}, {{FRONTEND_PORT}}, {{POSTGRES_PORT}}, {{REDIS_PORT}}],
+  "forwardPorts": [],
 
   // GitHub Codespaces configuration
   // See: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces
@@ -82,12 +83,6 @@
     "cpus": 4,
     "memory": "8gb",
     "storage": "32gb"
-  },
-  "portsAttributes": {
-    "{{APP_PORT}}": { "label": "App", "onAutoForward": "notify" },
-    "{{FRONTEND_PORT}}": { "label": "Frontend", "onAutoForward": "notify" },
-    "{{POSTGRES_PORT}}": { "label": "PostgreSQL", "onAutoForward": "silent" },
-    "{{REDIS_PORT}}": { "label": "Redis", "onAutoForward": "silent" }
   },
   // Codespaces secrets: Configure in repo Settings > Secrets > Codespaces
   // ANTHROPIC_API_KEY, OPENAI_API_KEY, etc. will be available as env vars
