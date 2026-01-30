@@ -6,6 +6,11 @@
 #
 # Issue #88: Docker Compose profiles for containerized app services
 # Issue #30: Includes Claude credentials mounting for persistence
+#
+# NOTE: Port conflicts when using --profile app
+# The 'app' service ports (8000, 3000) will conflict with backend/frontend
+# services when running profiles. Stop the app service or use different ports
+# if you need to run containerized backend/frontend simultaneously.
 # ============================================================================
 
 services:
@@ -13,6 +18,8 @@ services:
   # DevContainer Service (always active)
   # ===========================================================================
   app:
+    container_name: {{PROJECT_NAME}}-app
+    restart: unless-stopped
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
@@ -20,27 +27,41 @@ services:
         - INSTALL_SHELL_EXTRAS=${INSTALL_SHELL_EXTRAS:-true}
         - INSTALL_DEV_TOOLS=${INSTALL_DEV_TOOLS:-true}
         - INSTALL_CA_CERT=${INSTALL_CA_CERT:-false}
+        - ENABLE_FIREWALL=${ENABLE_FIREWALL:-false}
     ports:
       - "${APP_PORT:-8000}:8000"
       - "${FRONTEND_PORT:-3000}:3000"
+    # NET_ADMIN/NET_RAW: Required for network diagnostics (ping, traceroute, etc.)
+    # These capabilities allow the container to perform ICMP operations and raw socket access
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - .:/workspace:cached
       - /workspace/.venv                           # Issue #108: Anonymous volume - isolates .venv from bind mount
+      # NOTE: Host bind mounts require these paths to exist on the host system
+      # Create them manually if needed: mkdir -p ~/.claude ~/.config/claude-env ~/.config/gh
       - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
       - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
       - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)
-      - commandhistory:/commandhistory             # Issue #86: Persist bash history
+      - command-history:/commandhistory             # Issue #86: Persist bash history
       - claude-data:/home/node/.claude             # Issue #86: Persist Claude data
+      - ssh-keys:/home/node/.ssh                   # Shared SSH keys across devcontainers
     working_dir: /workspace
     command: sleep infinity
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "sleep"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - dev-network
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   # ===========================================================================
   # Infrastructure Services (always active)
@@ -56,12 +77,13 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sandbox_user} -d ${POSTGRES_DB:-sandbox_dev}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     networks:
       - dev-network
 
@@ -73,12 +95,13 @@ services:
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
-      - redis_data:/data
+      - redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     networks:
       - dev-network
 
@@ -95,9 +118,9 @@ services:
     ports:
       - "${OLLAMA_PORT:-11434}:11434"
     volumes:
-      - ollama_models:/root/.ollama
+      - ollama-models:/root/.ollama
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:11434/api/tags || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -120,6 +143,8 @@ services:
     restart: unless-stopped
     environment:
       # Database connection
+      # Note: DATABASE_URL is the primary connection string. Individual POSTGRES_* vars
+      # are provided for compatibility with frameworks that use component-based config.
       DATABASE_URL: postgresql://${POSTGRES_USER:-sandbox_user}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-sandbox_dev}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
@@ -131,10 +156,10 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       # Application settings
-      BACKEND_PORT: ${BACKEND_PORT:-8080}
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
       ENVIRONMENT: development
     ports:
-      - "${BACKEND_PORT:-8080}:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -158,6 +183,8 @@ services:
     restart: unless-stopped
     environment:
       # Backend API connection
+      # Note: Multiple framework variables provided for maximum compatibility.
+      # VITE_* for Vite/Vue, NEXT_PUBLIC_* for Next.js, REACT_APP_* for Create React App.
       VITE_API_URL: http://localhost:${BACKEND_PORT:-8000}
       NEXT_PUBLIC_API_URL: http://localhost:${BACKEND_PORT:-8000}
       REACT_APP_API_URL: http://localhost:${BACKEND_PORT:-8000}
@@ -167,7 +194,14 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - dev-network
 
@@ -177,14 +211,19 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  # Database and cache persistence
+  postgres-data:
     driver: local
-  redis_data:
+  redis-data:
     driver: local
-  commandhistory:
+  # Development tooling persistence
+  command-history:                         # Bash history across container rebuilds
     driver: local
-  claude-data:
+  claude-data:                             # Claude Code state and configuration
     driver: local
-  ollama_models:
+  ollama-models:                           # AI model storage for Ollama service
+    driver: local
+  ssh-keys:                                # Shared SSH keys across all projects
+    name: sandboxxer-shared-ssh-keys
     driver: local
 
