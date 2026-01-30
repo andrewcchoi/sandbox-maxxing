@@ -1,6 +1,6 @@
 # Generated using sandboxxer plugin
-# Development container for plugin development with services
-# Includes PostgreSQL, Redis, RabbitMQ for testing examples
+# Development container for plugin development
+# Lightweight Node.js + Python environment with CLI tools
 
 # Stage 1: Get Python + uv from official Astral image
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
@@ -8,7 +8,7 @@ FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
 # Stage 2: Main build
 FROM node:20-bookworm-slim
 
-# Timezeone configuration
+# Timezone configuration
 ARG TZ=America/Los_Angeles
 ENV TZ="$TZ"
 
@@ -27,6 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential \
   # Network security tools (firewall)
   iptables ipset iproute2 dnsutils \
+  # Timezone data
+  tzdata \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy Python 3.12 binaries
@@ -39,15 +41,6 @@ RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
 # Copy uv and uvx binaries
 COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/
 COPY --from=python-uv-source /usr/local/bin/uvx /usr/local/bin/
-
-# Database clients
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  postgresql-client \
-  default-mysql-client \
-  sqlite3 \
-  redis-tools \
-  pgcli \
-  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Puppeteer dependencies for mermaid-cli (updated for Puppeteer v24)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -102,9 +95,9 @@ RUN jq -r '[.categories | to_entries[] | .value | ((.domains // []), (.wildcard_
 # Issue #110: Debian fzf package doesn't include shell integration scripts
 # Must run as root to write to /usr/share/doc/fzf/examples/
 RUN mkdir -p /usr/share/doc/fzf/examples && \
-    wget -q -O /usr/share/doc/fzf/examples/key-bindings.zsh \
+    wget -O /usr/share/doc/fzf/examples/key-bindings.zsh \
       https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.zsh && \
-    wget -q -O /usr/share/doc/fzf/examples/completion.zsh \
+    wget -O /usr/share/doc/fzf/examples/completion.zsh \
       https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.zsh
 
 USER node
@@ -127,8 +120,15 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 
 # Pre-download gitstatusd for powerlevel10k (avoid runtime download failure)
 ARG GITSTATUSD_VERSION=v1.5.4
-RUN mkdir -p ~/.cache/gitstatus && \
-    wget -qO- "https://github.com/romkatv/gitstatus/releases/download/${GITSTATUSD_VERSION}/gitstatusd-linux-x86_64.tar.gz" | \
+RUN ARCH=$(uname -m) && \
+    case "$ARCH" in \
+      x86_64) GITSTATUS_ARCH="x86_64" ;; \
+      aarch64) GITSTATUS_ARCH="aarch64" ;; \
+      armv7l) GITSTATUS_ARCH="armv7l" ;; \
+      *) echo "Unsupported architecture: $ARCH" && exit 1 ;; \
+    esac && \
+    mkdir -p ~/.cache/gitstatus && \
+    wget -O- "https://github.com/romkatv/gitstatus/releases/download/${GITSTATUSD_VERSION}/gitstatusd-linux-${GITSTATUS_ARCH}.tar.gz" | \
     tar -xz -C ~/.cache/gitstatus
 
 # Editor configuration
@@ -140,12 +140,9 @@ ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV PATH="/workspace/.venv/bin:$PATH"
 
-# PostgreSQL environment (connects to container service by default)
-ENV PGHOST=postgres \
-    PGUSER=sandboxxer_user \
-    PGDATABASE=sandboxxer_dev
-
 # Initialize uv project and install Python packages to .venv
+# Note: uv init creates a new pyproject.toml. If your workspace has an existing
+# pyproject.toml, it will be overwritten. Consider using 'uv sync' instead.
 RUN uv init --name workspace-env && \
     uv add --no-cache \
       deepagents \
@@ -158,6 +155,9 @@ RUN uv init --name workspace-env && \
       requests
 
 # Install Claude Code
+# Security note: Piping curl to bash executes remote code directly.
+# This is the official installation method from claude.ai. Review the script
+# at https://claude.ai/install.sh before use in production environments.
 RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN npm install -g \
   typescript \
@@ -174,42 +174,6 @@ RUN npm install -g \
 ENV PATH="/home/node/.local/bin:$PATH"
 RUN uv tool install ruff && \
     uv tool install poetry
-
-# The langgraph.json file has the assistant ID as the key:
-#   "graphs": {
-#     "research": "./agent.py:agent"
-#   },
-
-# export ANTHROPIC_API_KEY=your_anthropic_api_key_here  # Required for Claude model
-# export GOOGLE_API_KEY=your_google_api_key_here        # Required for Gemini model ([get one here](https://ai.google.dev/gemini-api/docs))
-# export TAVILY_API_KEY=your_tavily_api_key_here        # Required for web search ([get one here](https://www.tavily.com/)) with a generous free tier
-# export LANGSMITH_API_KEY=your_langsmith_api_key_here  # [LangSmith API key](https://smith.langchain.com/settings) (free to sign up)
-# export NEXT_PUBLIC_LANGSMITH_API_KEY="lsv2_xxxx"
-
-# $ git clone https://github.com/langchain-ai/deepagents-quickstarts.git
-# $ cd deepagents-quickstarts/deep_research
-# $ uv build
-# $ langgraph dev
-
-# deep-agents-ui configuration 
-# env.local settings
-# NEXT_PUBLIC_DEPLOYMENT_URL="http://127.0.0.1:2024"
-# NEXT_PUBLIC_AGENT_ID="research"
-
-# $ git clone https://github.com/langchain-ai/deep-agents-ui.git
-# $ cd deep-agents-ui
-# $ yarn install
-# $ yarn dev
-
-# ╦  ┌─┐┌┐┌┌─┐╔═╗┬─┐┌─┐┌─┐┬ ┬
-# ║  ├─┤││││ ┬║ ╦├┬┘├─┤├─┘├─┤
-# ╩═╝┴ ┴┘└┘└─┘╚═╝┴└─┴ ┴┴  ┴ ┴
-
-# - 🚀 API: http://127.0.0.1:2024
-# - 🎨 Studio UI: https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
-# - 📚 API Docs: http://127.0.0.1:2024/docs
-# - ⚙️ Deepagents UI: http://localhost:3000
-# ...
 
 # Firewall initialization script
 COPY .devcontainer/init-firewall.sh /usr/local/bin/
