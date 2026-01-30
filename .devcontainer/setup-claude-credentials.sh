@@ -204,10 +204,66 @@ else
 fi
 
 # ============================================================================
-# 8. Mark Native Installation Complete
+# 8. SSH Key Setup for DevContainer
 # ============================================================================
 echo ""
-echo "[7/8] Marking native installation as complete..."
+echo "[7/9] Setting up SSH keys for devcontainer..."
+
+SSH_DIR="$HOME/.ssh"
+SSH_KEY_PATH="$SSH_DIR/id_ed25519"
+SSH_PUB_KEY_PATH="${SSH_KEY_PATH}.pub"
+WORKSPACE_SSH_PUB="/workspace/.devcontainer/devcontainer-ssh.pub"
+
+# Ensure .ssh directory exists with correct permissions
+# Use sudo to create and take ownership of the directory (needed for named Docker volumes)
+sudo /bin/mkdir -p /home/node/.ssh
+sudo /bin/chown -R node:node /home/node/.ssh
+chmod 700 "$SSH_DIR"
+
+# Generate SSH key if it doesn't exist (idempotent)
+if [ ! -f "$SSH_KEY_PATH" ]; then
+    echo "  Generating new ED25519 SSH key for devcontainer..."
+    ssh-keygen -t ed25519 -f "$SSH_KEY_PATH" -N "" -C "devcontainer-$(hostname)-$(date +%Y%m%d)"
+    echo "  ✓ SSH key pair generated"
+else
+    echo "  ✓ SSH key already exists (persisted from previous session)"
+fi
+
+# Set correct permissions
+chmod 600 "$SSH_KEY_PATH"
+chmod 644 "$SSH_PUB_KEY_PATH"
+
+# Copy public key to .devcontainer folder for easy access
+if [ -f "$SSH_PUB_KEY_PATH" ]; then
+    cp "$SSH_PUB_KEY_PATH" "$WORKSPACE_SSH_PUB"
+    echo "  ✓ Public key copied to .devcontainer/devcontainer-ssh.pub"
+fi
+
+# Configure SSH to use the key for GitHub
+SSH_CONFIG="$SSH_DIR/config"
+if [ ! -f "$SSH_CONFIG" ] || ! grep -q "Host github.com" "$SSH_CONFIG" 2>/dev/null; then
+    cat >> "$SSH_CONFIG" << 'SSHCONFIG'
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+SSHCONFIG
+    chmod 600 "$SSH_CONFIG"
+    echo "  ✓ SSH config created for GitHub"
+fi
+
+# Add GitHub to known_hosts if not present
+if [ ! -f "$SSH_DIR/known_hosts" ] || ! grep -q "github.com" "$SSH_DIR/known_hosts" 2>/dev/null; then
+    ssh-keyscan -t ed25519 github.com >> "$SSH_DIR/known_hosts" 2>/dev/null
+    echo "  ✓ GitHub added to known_hosts"
+fi
+
+# ============================================================================
+# 9. Mark Native Installation Complete
+# ============================================================================
+echo ""
+echo "[8/9] Marking native installation as complete..."
 
 # Run claude install to suppress migration notice
 # This is needed because copying host config makes Claude think it's a migration
@@ -219,13 +275,14 @@ else
 fi
 
 # ============================================================================
-# 9. Fix Permissions
+# 10. Fix Permissions
 # ============================================================================
 echo ""
-echo "[8/8] Setting permissions..."
+echo "[9/9] Setting permissions..."
 
 chown -R "$(id -u):$(id -g)" "$CLAUDE_DIR" 2>/dev/null || true
 chown -R "$(id -u):$(id -g)" "$GH_CONFIG_DIR" 2>/dev/null || true
+chown -R "$(id -u):$(id -g)" "$SSH_DIR" 2>/dev/null || true
 echo "  ✓ Permissions set"
 
 # ============================================================================
@@ -247,3 +304,15 @@ else
 fi
 echo "================================================================"
 echo ""
+if [ -f "$WORKSPACE_SSH_PUB" ]; then
+    echo "🔑 SSH Key Setup Required"
+    echo "================================================================"
+    echo "Add this public key to GitHub to enable git operations:"
+    echo ""
+    cat "$WORKSPACE_SSH_PUB"
+    echo ""
+    echo "Add key at: https://github.com/settings/ssh/new"
+    echo "Then test with: ssh -T git@github.com"
+    echo "================================================================"
+    echo ""
+fi
