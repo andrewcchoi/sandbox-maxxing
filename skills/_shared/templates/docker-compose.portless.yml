@@ -3,10 +3,18 @@
 # ============================================================================
 # Development environment without host port mappings for parallel containers
 # Services accessible only within container via Docker network
+# Issue #30: Includes Claude credentials mounting for persistence
+#
+# NOTE: No host ports exposed - services accessible only via Docker network.
 # ============================================================================
 
 services:
+  # NOTE: App service does not include environment variables for database/redis connection.
+  # Configure these in your application code using the service hostnames (postgres:5432, redis:6379)
+  # or add an environment: block here with your specific connection configuration.
   app:
+    container_name: {{PROJECT_NAME}}-app
+    restart: unless-stopped
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
@@ -15,25 +23,39 @@ services:
         - INSTALL_DEV_TOOLS=${INSTALL_DEV_TOOLS:-true}
         - INSTALL_CA_CERT=${INSTALL_CA_CERT:-false}
         - ENABLE_FIREWALL=${ENABLE_FIREWALL:-false}
+    # NET_ADMIN/NET_RAW: Required for network diagnostics (ping, traceroute, etc.)
+    # These capabilities allow the container to perform ICMP operations and raw socket access
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - .:/workspace:cached
       - /workspace/.venv                           # Issue #108: Anonymous volume - isolates .venv from bind mount
+      # NOTE: Host bind mounts require these paths to exist on the host system
+      # Create them manually if needed: mkdir -p ~/.claude ~/.config/claude-env ~/.config/gh
       - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
       - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
       - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)
-      - commandhistory:/commandhistory             # Issue #86: Persist bash history
+      - command-history:/commandhistory             # Issue #86: Persist bash history
       - claude-data:/home/node/.claude             # Issue #86: Persist Claude data
+      - ssh-keys:/home/node/.ssh                   # Shared SSH keys across devcontainers
     working_dir: /workspace
     command: sleep infinity
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "sleep"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - dev-network
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
+  # NOTE: No host port mapping - accessible only within Docker network on port 5432
   postgres:
     image: postgres:16-bookworm
     container_name: {{PROJECT_NAME}}-postgres
@@ -43,27 +65,30 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-sandbox_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sandbox_user} -d ${POSTGRES_DB:-sandbox_dev}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     networks:
       - dev-network
 
+  # NOTE: No host port mapping - accessible only within Docker network on port 6379
   redis:
     image: redis:7-bookworm
     container_name: {{PROJECT_NAME}}-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
-      - redis_data:/data
+      - redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     networks:
       - dev-network
 
@@ -73,11 +98,16 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  # Database and cache persistence
+  postgres-data:
     driver: local
-  redis_data:
+  redis-data:
     driver: local
-  commandhistory:
+  # Development tooling persistence
+  command-history:                         # Bash history across container rebuilds
     driver: local
-  claude-data:
+  claude-data:                             # Claude Code state and configuration
+    driver: local
+  ssh-keys:                                # Shared SSH keys across all projects
+    name: sandboxxer-shared-ssh-keys
     driver: local
