@@ -1,6 +1,9 @@
 # Infrastructure
 .internal/
 
+# DevContainer SSH public key (unique per developer)
+.devcontainer/devcontainer-ssh.pub
+
 # Test directories
 test-*
 !test-config.yml

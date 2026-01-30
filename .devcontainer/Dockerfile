@@ -181,6 +181,11 @@ USER root
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
   echo "node ALL=(root) NOPASSWD: SETENV: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
   chmod 0440 /etc/sudoers.d/node-firewall
+
+# Allow node user to set up SSH directory with proper permissions
+RUN echo "node ALL=(root) NOPASSWD: /bin/mkdir -p /home/node/.ssh, /bin/chmod 700 /home/node/.ssh, /bin/chown -R node\\:node /home/node/.ssh" > /etc/sudoers.d/node-ssh && \
+  chmod 0440 /etc/sudoers.d/node-ssh
+
 USER node
 
 # Set the default command
