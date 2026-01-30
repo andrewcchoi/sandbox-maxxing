@@ -18,6 +18,27 @@
 
 set -euo pipefail
 
+# Cleanup trap for temp files
+cleanup() {
+    rm -f /tmp/*.tmp.$$ 2>/dev/null || true
+    if [ -n "${CLAUDE_DIR:-}" ]; then
+        rm -f "$CLAUDE_DIR/hooks/"*.tmp.$$ 2>/dev/null || true
+    fi
+    if [ -n "${GITIGNORE_PATH:-}" ]; then
+        rm -f "$GITIGNORE_PATH.lock" 2>/dev/null || true
+    fi
+}
+trap cleanup EXIT INT TERM
+
+# Configurable workspace directory - allows customization for different environments
+WORKSPACE_DIR="${WORKSPACE_DIR:-/workspace}"
+
+# Validate WORKSPACE_DIR exists
+if [ ! -d "$WORKSPACE_DIR" ]; then
+    echo "Error: WORKSPACE_DIR ($WORKSPACE_DIR) does not exist" >&2
+    exit 1
+fi
+
 CLAUDE_DIR="$HOME/.claude"
 HOST_CLAUDE="/tmp/host-claude"
 HOST_ENV="/tmp/host-env"
@@ -26,10 +47,10 @@ GH_CONFIG_DIR="$HOME/.config/gh"
 
 # Configurable defaults directory - points to template defaults by default
 # Override via: DEFAULTS_DIR=/custom/path ./setup-claude-credentials.sh
-DEFAULTS_DIR="${DEFAULTS_DIR:-/workspace/skills/_shared/templates/defaults}"
+DEFAULTS_DIR="${DEFAULTS_DIR:-$WORKSPACE_DIR/skills/_shared/templates/defaults}"
 
 # Validate DEFAULTS_DIR if explicitly set by user
-if [ -n "${DEFAULTS_DIR:-}" ] && [ "$DEFAULTS_DIR" != "/workspace/skills/_shared/templates/defaults" ]; then
+if [ -n "${DEFAULTS_DIR:-}" ] && [ "$DEFAULTS_DIR" != "$WORKSPACE_DIR/skills/_shared/templates/defaults" ]; then
     if [ ! -d "$DEFAULTS_DIR" ]; then
         echo "Error: Custom DEFAULTS_DIR does not exist: $DEFAULTS_DIR" >&2
         exit 1
@@ -58,7 +79,7 @@ fix_line_endings() {
             # Convert CRLF to LF
             if sed 's/\r$//' "$hook" > "$tmpfile" 2>/dev/null; then
                 # Preserve original permissions
-                chmod --reference="$hook" "$tmpfile" 2>/dev/null || chmod 755 "$tmpfile"
+                if [ -x "$hook" ]; then chmod 755 "$tmpfile"; else chmod 644 "$tmpfile"; fi
 
                 # Atomic move
                 mv -f "$tmpfile" "$hook"
@@ -124,10 +145,10 @@ echo "Setting up Claude Code environment..."
 echo "================================================================"
 
 # ============================================================================
-# 0. Cross-Platform Git Configuration
+# 1. Cross-Platform Git Configuration
 # ============================================================================
 echo ""
-echo "[1/10] Configuring git for cross-platform development..."
+echo "[1/12] Configuring git for cross-platform development..."
 
 # Prevent file mode (755/644) differences between Linux/Windows
 git config --global core.filemode false
@@ -141,10 +162,10 @@ git config --global core.eol lf
 echo "  ✓ Git configured for cross-platform compatibility"
 
 # ============================================================================
-# 1. Create Directory Structure
+# 2. Create Directory Structure
 # ============================================================================
 echo ""
-echo "[2/10] Creating directory structure..."
+echo "[2/12] Creating directory structure..."
 
 mkdir -p "$CLAUDE_DIR"
 mkdir -p "$CLAUDE_DIR/hooks"
@@ -155,10 +176,10 @@ mkdir -p "$CLAUDE_DIR/mcp"
 echo "  ✓ Directories created"
 
 # ============================================================================
-# 2. Core Configuration Files
+# 3. Core Configuration Files
 # ============================================================================
 echo ""
-echo "[3/10] Copying core configuration files..."
+echo "[3/12] Copying core configuration files..."
 
 for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json" ".mcp.json"; do
     if [ -f "$HOST_CLAUDE/$config_file" ]; then
@@ -169,10 +190,10 @@ for config_file in ".credentials.json" "settings.json" "settings.local.json" "pr
 done
 
 # ============================================================================
-# 3. Hooks Directory
+# 4. Hooks Directory
 # ============================================================================
 echo ""
-echo "[4/10] Syncing hooks directory..."
+echo "[4/12] Syncing hooks directory..."
 
 # Try to copy from host first
 if copy_hooks "$HOST_CLAUDE/hooks" "$CLAUDE_DIR/hooks"; then
@@ -184,14 +205,14 @@ elif copy_hooks "$DEFAULTS_DIR/hooks" "$CLAUDE_DIR/hooks"; then
     fix_line_endings "$CLAUDE_DIR/hooks"
     echo "  ✓ Created default hooks (LangSmith tracing)"
 else
-    echo "  ⚠ No hooks found and no defaults available"
+    echo "  ℹ No hooks found and no defaults available"
 fi
 
 # ============================================================================
-# 4. State Directory
+# 5. State Directory
 # ============================================================================
 echo ""
-echo "[5/10] Syncing state directory..."
+echo "[5/12] Syncing state directory..."
 
 # Try to copy from host first
 if copy_directory "$HOST_CLAUDE/state" "$CLAUDE_DIR/state"; then
@@ -208,12 +229,12 @@ else
 fi
 
 # ============================================================================
-# 5. MCP Configuration
+# 6. MCP Configuration
 # ============================================================================
 echo ""
-echo "[6/10] Syncing MCP configuration..."
+echo "[6/12] Syncing MCP configuration..."
 
-# Note: .mcp.json is already copied in section 2 core configuration files
+# Note: .mcp.json is already copied in section 3 core configuration files
 if copy_directory "$HOST_CLAUDE/mcp" "$CLAUDE_DIR/mcp"; then
     MCP_COUNT=$(count_files "$CLAUDE_DIR/mcp")
     echo "  ✓ $MCP_COUNT MCP server(s) synced"
@@ -222,21 +243,23 @@ else
 fi
 
 # ============================================================================
-# 6. Environment Variables (Optional)
+# 7. Environment Variables (Optional)
 # ============================================================================
 echo ""
-echo "[7/10] Loading environment variables..."
+echo "[7/12] Loading environment variables..."
 
 # SECURITY NOTE: Sourcing environment files can execute arbitrary shell code.
 # Only mount trusted directories to /tmp/host-env in your docker-compose.yml.
 # The files should contain only KEY=value pairs, not executable commands.
 
 if [ -f "$HOST_ENV/.env.claude" ]; then
-    # Basic validation: check file doesn't contain shell commands or command substitution
-    # Pattern detects: commands, backticks, $(), pipes, semicolons, background jobs
-    if grep -qE '^\s*(rm|curl|wget|bash|sh|eval|exec|sudo)\s|`|\$\(|[|;&]' "$HOST_ENV/.env.claude" 2>/dev/null; then
-        echo "  ⚠ Warning: .env.claude contains potential shell commands - skipping for safety" >&2
-        echo "  ℹ Environment files should only contain KEY=value pairs" >&2
+    # Strict allowlist validation: only allow KEY=value format with no shell metacharacters
+    # Allowed: KEY=value, KEY="quoted value", KEY='quoted value', comments (#), empty lines
+    # Rejected: All shell metacharacters ($, `, ;, |, &, <, >, (, ), {, }, \, !, ~, *, ?, [, ], etc.)
+    # Note: \n in regex matches literal backslash+n; actual newlines handled by grep line-by-line processing
+    if grep -vE '^\s*(#.*)?$|^\s*[A-Za-z_][A-Za-z0-9_]*=('"'"'[^'"'"']*'"'"'|"[^"$`\n]*"|[^$`\\;|&<>(){}\"[[:space:]]!~*?\[\]#]*)?\s*$' "$HOST_ENV/.env.claude" | grep -q .; then
+        echo "  ⚠ Warning: .env.claude contains invalid entries or shell metacharacters - skipping for safety" >&2
+        echo "  ℹ Environment files should only contain KEY=value pairs (with optional quotes)" >&2
     else
         # Source environment variables
         set -a
@@ -245,11 +268,13 @@ if [ -f "$HOST_ENV/.env.claude" ]; then
         echo "  ✓ Environment variables loaded from .env.claude"
     fi
 elif [ -f "$HOST_ENV/claude.env" ]; then
-    # Basic validation: check file doesn't contain shell commands or command substitution
-    # Pattern detects: commands, backticks, $(), pipes, semicolons, background jobs
-    if grep -qE '^\s*(rm|curl|wget|bash|sh|eval|exec|sudo)\s|`|\$\(|[|;&]' "$HOST_ENV/claude.env" 2>/dev/null; then
-        echo "  ⚠ Warning: claude.env contains potential shell commands - skipping for safety" >&2
-        echo "  ℹ Environment files should only contain KEY=value pairs" >&2
+    # Strict allowlist validation: only allow KEY=value format with no shell metacharacters
+    # Allowed: KEY=value, KEY="quoted value", KEY='quoted value', comments (#), empty lines
+    # Rejected: All shell metacharacters ($, `, ;, |, &, <, >, (, ), {, }, \, !, ~, *, ?, [, ], etc.)
+    # Note: \n in regex matches literal backslash+n; actual newlines handled by grep line-by-line processing
+    if grep -vE '^\s*(#.*)?$|^\s*[A-Za-z_][A-Za-z0-9_]*=('"'"'[^'"'"']*'"'"'|"[^"$`\n]*"|[^$`\\;|&<>(){}\"[[:space:]]!~*?\[\]#]*)?\s*$' "$HOST_ENV/claude.env" | grep -q .; then
+        echo "  ⚠ Warning: claude.env contains invalid entries or shell metacharacters - skipping for safety" >&2
+        echo "  ℹ Environment files should only contain KEY=value pairs (with optional quotes)" >&2
     else
         # Source environment variables
         set -a
@@ -262,10 +287,10 @@ else
 fi
 
 # ============================================================================
-# 7. GitHub CLI Authentication (Optional)
+# 8. GitHub CLI Authentication (Optional)
 # ============================================================================
 echo ""
-echo "[8/10] Setting up GitHub CLI authentication..."
+echo "[8/12] Setting up GitHub CLI authentication..."
 
 # Note: GitHub CLI config files (hosts.yml, config.yml) are YAML data files
 # that are parsed by the gh CLI tool, not sourced as shell scripts.
@@ -293,29 +318,189 @@ else
 fi
 
 # ============================================================================
-# 8. Mark Native Installation Complete
+# 9. Mark Native Installation Complete
 # ============================================================================
 echo ""
-echo "[9/10] Marking native installation as complete..."
+echo "[9/12] Marking native installation as complete..."
 
 # Run claude install to suppress migration notice
 # This is needed because copying host config makes Claude think it's a migration
-if command -v claude &> /dev/null; then
+if command -v claude >/dev/null 2>&1; then
     claude install 2>/dev/null || true
     echo "  ✓ Native installation marked complete"
 else
-    echo "  ⚠ Claude CLI not found in PATH"
+    echo "  ⚠ Claude CLI not found in PATH" >&2
 fi
 
 # ============================================================================
-# 9. Fix Permissions
+# 10. SSH Key Generation and Configuration
 # ============================================================================
 echo ""
-echo "[10/10] Setting permissions..."
+echo "[10/12] Setting up SSH keys for Git operations..."
 
-chown -R "$(id -u):$(id -g)" "$CLAUDE_DIR" 2>/dev/null || true
-chown -R "$(id -u):$(id -g)" "$GH_CONFIG_DIR" 2>/dev/null || true
-echo "  ✓ Permissions set"
+SSH_DIR="$HOME/.ssh"
+SSH_KEY="$SSH_DIR/id_ed25519"
+SSH_PUB="$SSH_KEY.pub"
+DEVCONTAINER_SSH_PUB="$WORKSPACE_DIR/.devcontainer/devcontainer-ssh.pub"
+
+# Create .ssh directory with proper permissions
+mkdir -p "$SSH_DIR"
+chmod 700 "$SSH_DIR"
+
+# Generate SSH key if it doesn't exist (idempotent)
+if [ ! -f "$SSH_KEY" ]; then
+    if ssh-keygen -t ed25519 -f "$SSH_KEY" -N "" -C "devcontainer@sandboxxer" >/dev/null 2>&1; then
+        # Validate immediately after generation
+        if ! ssh-keygen -l -f "$SSH_KEY" >/dev/null 2>&1; then
+            echo "  ⚠ Error: Generated SSH key is invalid. This should not happen." >&2
+            rm -f "$SSH_KEY" "$SSH_PUB" 2>/dev/null || true
+            exit 1
+        fi
+        echo "  ✓ Generated new ED25519 SSH key"
+    else
+        echo "  ⚠ Error: Failed to generate SSH key. Check that ssh-keygen is installed and $SSH_DIR is writable." >&2
+        echo "  ℹ You may need to manually generate the key with: ssh-keygen -t ed25519 -f $SSH_KEY" >&2
+        # Exit on failure to prevent later operations from assuming key exists
+        exit 1
+    fi
+else
+    # Validate existing SSH key format
+    if ! ssh-keygen -l -f "$SSH_KEY" >/dev/null 2>&1; then
+        echo "  ⚠ Error: SSH key exists but is invalid or corrupted. Please delete $SSH_KEY and run again." >&2
+        exit 1
+    fi
+    echo "  ✓ Using existing SSH key"
+fi
+
+# Set correct permissions
+chmod 600 "$SSH_KEY" 2>/dev/null || true
+chmod 644 "$SSH_PUB" 2>/dev/null || true
+
+# Copy public key to .devcontainer for user reference
+if [ -f "$SSH_PUB" ]; then
+    if ! mkdir -p "$WORKSPACE_DIR/.devcontainer" 2>/dev/null; then
+        echo "  ⚠ Warning: Could not create .devcontainer directory" >&2
+    else
+        cp "$SSH_PUB" "$DEVCONTAINER_SSH_PUB"
+        chmod 644 "$DEVCONTAINER_SSH_PUB" 2>/dev/null || true
+        echo "  ✓ Public key copied to .devcontainer/devcontainer-ssh.pub"
+    fi
+fi
+
+# Configure SSH for GitHub
+if [ -f "$SSH_DIR/config" ] && grep -q "^Host github\.com" "$SSH_DIR/config" 2>/dev/null; then
+    echo "  ✓ SSH config already contains GitHub entry (preserving existing configuration)"
+else
+    # Append GitHub config or create new file
+    if [ -f "$SSH_DIR/config" ]; then
+        echo "" >> "$SSH_DIR/config"  # Add blank line before new entry
+        echo "  ℹ Appending GitHub config to existing SSH config"
+    fi
+    cat >> "$SSH_DIR/config" <<'EOF'
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+    StrictHostKeyChecking accept-new
+EOF
+    chmod 600 "$SSH_DIR/config"
+    echo "  ✓ SSH config created for GitHub"
+fi
+
+# Add GitHub to known_hosts (idempotent - skips if already present)
+if [ ! -f "$SSH_DIR/known_hosts" ] || ! grep -qE "^github\.com[[:space:]]" "$SSH_DIR/known_hosts" 2>/dev/null; then
+    if ssh-keyscan -t ed25519 github.com >> "$SSH_DIR/known_hosts" 2>/dev/null; then
+        echo "  ✓ GitHub added to known_hosts"
+    else
+        echo "  ⚠ Warning: Failed to fetch GitHub host key. SSH connections to GitHub may require manual verification." >&2
+        echo "  ℹ You can manually add it later with: ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts" >&2
+    fi
+else
+    echo "  ✓ GitHub already in known_hosts"
+fi
+
+# Display public key for user to add to GitHub
+echo ""
+echo "  ──────────────────────────────────────────────────────────────"
+echo "  Your SSH public key (add this to GitHub):"
+echo "  ──────────────────────────────────────────────────────────────"
+if [ -f "$SSH_PUB" ]; then
+    cat "$SSH_PUB"
+else
+    echo "  ⚠ Error: Public key not found" >&2
+fi
+echo "  ──────────────────────────────────────────────────────────────"
+echo "  Add this key at: https://github.com/settings/keys"
+echo "  ──────────────────────────────────────────────────────────────"
+echo ""
+
+# ============================================================================
+# 11. .gitignore Management
+# ============================================================================
+echo ""
+echo "[11/12] Configuring .gitignore for SSH keys..."
+
+GITIGNORE_PATH="$WORKSPACE_DIR/.gitignore"
+SSH_EXCLUSION=".devcontainer/devcontainer-ssh.pub"
+GITIGNORE_LOCKFILE="$GITIGNORE_PATH.lock"
+
+# Use flock for atomic .gitignore modification (prevents race conditions)
+(
+    # Acquire exclusive lock (wait up to 5 seconds)
+    if command -v flock >/dev/null 2>&1; then
+        flock -w 5 200 || {
+            echo "  ⚠ Warning: Could not acquire lock on .gitignore - skipping modification" >&2
+            exit 0
+        }
+    fi
+
+    if [ -f "$GITIGNORE_PATH" ]; then
+        # Check if exclusion already exists
+        if grep -qF "$SSH_EXCLUSION" "$GITIGNORE_PATH"; then
+            echo "  ✓ .gitignore already excludes SSH key"
+        else
+            # Append exclusion with newline safety
+            [ -s "$GITIGNORE_PATH" ] && [ "$(tail -c 1 "$GITIGNORE_PATH" 2>/dev/null)" != "" ] && echo >> "$GITIGNORE_PATH"
+            echo "$SSH_EXCLUSION" >> "$GITIGNORE_PATH"
+            echo "  ✓ Added SSH key exclusion to existing .gitignore"
+        fi
+    else
+        # Create minimal .gitignore
+        # Note: Using unquoted EOF to allow $SSH_EXCLUSION variable expansion
+        cat > "$GITIGNORE_PATH" <<EOF
+# DevContainer SSH keys (auto-generated, shared across projects)
+$SSH_EXCLUSION
+EOF
+        echo "  ✓ Created .gitignore with SSH key exclusion"
+    fi
+) 200>"$GITIGNORE_LOCKFILE"
+
+# Clean up lock file
+rm -f "$GITIGNORE_LOCKFILE" 2>/dev/null || true
+
+# ============================================================================
+# 12. Fix Permissions
+# ============================================================================
+echo ""
+echo "[12/12] Setting permissions..."
+
+# Only attempt chown if directories exist
+if [ -d "$CLAUDE_DIR" ]; then
+    if chown -R "$(id -u):$(id -g)" "$CLAUDE_DIR" 2>/dev/null; then
+        echo "  ✓ Claude directory permissions set"
+    else
+        echo "  ⚠ Warning: Could not set permissions on $CLAUDE_DIR" >&2
+    fi
+fi
+
+if [ -d "$GH_CONFIG_DIR" ]; then
+    if chown -R "$(id -u):$(id -g)" "$GH_CONFIG_DIR" 2>/dev/null; then
+        echo "  ✓ GitHub CLI directory permissions set"
+    else
+        echo "  ⚠ Warning: Could not set permissions on $GH_CONFIG_DIR" >&2
+    fi
+fi
 
 # ============================================================================
 # Summary
