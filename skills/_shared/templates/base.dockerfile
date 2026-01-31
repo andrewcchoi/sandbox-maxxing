@@ -89,13 +89,18 @@ RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
 # Corporate CA certificate support (for SSL inspection)
 # To use: place your CA cert as 'corporate-ca.crt' in .devcontainer/ and set INSTALL_CA_CERT=true
 COPY corporate-ca.crt* /tmp/
-RUN if [ "$INSTALL_CA_CERT" = "true" ] && [ -f /tmp/corporate-ca.crt ]; then \
+RUN if [ "$INSTALL_CA_CERT" = "true" ]; then \
+    if [ ! -f /tmp/corporate-ca.crt ]; then \
+      echo "ERROR: INSTALL_CA_CERT=true but corporate-ca.crt file not found!"; \
+      echo "Please place corporate-ca.crt in .devcontainer/ directory"; \
+      exit 1; \
+    fi && \
     cp /tmp/corporate-ca.crt /usr/local/share/ca-certificates/corporate-ca.crt && \
     chmod 644 /usr/local/share/ca-certificates/corporate-ca.crt && \
     update-ca-certificates && \
     echo "Corporate CA certificate installed successfully"; \
   else \
-    echo "No corporate CA certificate to install"; \
+    echo "Corporate CA certificate installation skipped (INSTALL_CA_CERT=false)"; \
   fi && rm -f /tmp/corporate-ca.crt
 
 # Copy Python 3.12 binaries
@@ -221,8 +226,8 @@ ENV PATH="/workspace/.venv/bin:$PATH"
 
 # PostgreSQL environment (connects to container service by default)
 ENV PGHOST=postgres \
-    PGUSER=sandboxxer_user \
-    PGDATABASE=sandboxxer_dev
+    PGUSER=sandbox_user \
+    PGDATABASE=sandbox_dev
 
 # Initialize uv project with core packages
 RUN uv init --name workspace-env && \

@@ -29,13 +29,13 @@ Each command loads and executes the corresponding skill with user-friendly promp
 ```
 
 **What it does:**
-1. Asks about project type (9 language options)
+1. Asks about project type (8 language options)
 2. Asks about network restrictions (optional domain allowlist)
 3. Generates DevContainer configuration
 4. Creates docker-compose.yml with services
 
 **Features:**
-- Choose from 9 project types (Python/Node, Go, Ruby, Rust, Java, C++ Clang/GCC, PHP, PostgreSQL)
+- Choose from 8 project types (Python/Node, Go, Ruby, Rust, C++ Clang/GCC, PHP, PostgreSQL)
 - Optional firewall with domain allowlist
 - 2-3 questions for configuration
 - Ready in 2-3 minutes

@@ -1,6 +1,7 @@
 {
   "extensions": [
     "anthropic.claude-code",
+    "ms-vscode-remote.remote-containers",
     "ms-azuretools.vscode-docker",
     "redhat.vscode-yaml",
     "eamodio.gitlens",
@@ -14,7 +15,7 @@
     "rust": ["rust-lang.rust-analyzer"],
     "java": ["redhat.java"],
     "cpp": ["ms-vscode.cpptools"],
-    "ruby": ["Shopify.ruby-lsp"],
+    "ruby": ["shopify.ruby-lsp"],
     "php": ["bmewburn.vscode-intelephense-client"]
   }
 }

@@ -4,18 +4,18 @@ This directory contains specialized skills for setting up, securing, and trouble
 
 ## Overview
 
-Skills are invoked through slash commands in Claude Code. When you use a command like `/sandboxxer:quickstart`, Claude loads the corresponding skill and follows its structured workflow to ensure consistent, high-quality results.
+Skills are invoked through slash commands in Claude Code. Setup commands like `/sandboxxer:quickstart` and `/sandboxxer:yolo-vibe-maxxing` are implemented as commands (not skills) that generate sandbox configurations. Other operations use skills that follow structured workflows to ensure consistent, high-quality results.
 
 ## Available Skills
 
-### Setup Skills
+### Setup Commands
 
 #### Interactive Quickstart
 **Command:** `/sandboxxer:quickstart`
 **When to use:** You want to create a customized sandbox with guided setup.
 
 **Features:**
-- Interactive project type selection (9 language options)
+- Interactive project type selection (8 language options)
 - Optional firewall with domain allowlist
 - Customizable configuration (2-3 questions)
 - Language-specific toolchains (Go, Ruby, Rust, Java, C++, PHP, PostgreSQL)
@@ -160,7 +160,7 @@ skills/
 │   │       ├── allowable-domains.json
 │   │       ├── azure-regions.json
 │   │       ├── official-images.json
-│   │       ├── uv-images.json
+│   │       ├── ollama-models.json
 │   │       ├── mcp-servers.json
 │   │       ├── secrets.json
 │   │       ├── variables.json

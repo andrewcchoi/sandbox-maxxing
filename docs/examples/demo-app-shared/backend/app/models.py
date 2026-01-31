@@ -2,11 +2,16 @@
 Database models for the blogging platform demo.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
+
+
+def utc_now():
+    """Get current UTC timestamp. Replaces deprecated datetime.utcnow()."""
+    return datetime.now(timezone.utc)
 
 
 class Post(Base):
@@ -19,8 +24,8 @@ class Post(Base):
     content = Column(Text, nullable=False)
     author = Column(String(100), nullable=False)
     view_count = Column(Integer, default=0, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now, nullable=False)
 
     def to_dict(self):
         """Convert model to dictionary."""

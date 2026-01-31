@@ -3,6 +3,7 @@
 
 services:
   app:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
@@ -22,7 +23,8 @@ services:
       - demo-basic-network
 
   postgres:
-    image: postgres:15-alpine
+    restart: unless-stopped
+    image: postgres:16-bookworm
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-sandbox_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
@@ -38,6 +40,7 @@ services:
       - demo-basic-network
 
   redis:
+    restart: unless-stopped
     image: redis:7-alpine
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]

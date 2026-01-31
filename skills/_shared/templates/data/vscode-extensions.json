@@ -85,7 +85,7 @@
       "mode_minimum": "basic",
       "platform": ["ruby"],
       "extensions": [
-        {"id": "Shopify.ruby-lsp", "name": "Ruby LSP"},
+        {"id": "shopify.ruby-lsp", "name": "Ruby LSP"},
         {"id": "rebornix.ruby", "name": "Ruby", "mode_minimum": "advanced"}
       ]
     },

@@ -98,14 +98,11 @@ DRY_RUN=true ./run-continuous.sh
 
 ### For More Details
 
-See the comprehensive documentation: [`.internal/tests/skill-validation/README.md`](../.internal/tests/skill-validation/README.md)
-
-Topics covered:
-- Architecture and components
-- How accuracy is calculated
-- Extending the framework
-- Troubleshooting guide
-- Contributing guidelines
+Skill validation tests verify:
+- Configuration accuracy
+- File generation
+- Template structure compliance
+- Key path validation
 
 ## Running Tests in CI/CD
 

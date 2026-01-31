@@ -47,6 +47,7 @@ The plugin uses two types of files:
 - Large, comprehensive catalogs
 - Include metadata, descriptions, and categorizations
 - Used by skills to present options to users
+- **NOT copied to user's `.devcontainer/` directory** - these are reference catalogs only
 
 ## Language Partials
 
@@ -71,15 +72,14 @@ cp base.dockerfile .devcontainer/Dockerfile
 cat partials/go.dockerfile >> .devcontainer/Dockerfile
 ```
 
-## Firewall Scripts
+## Firewall Script
 
-**Location:** `skills/_shared/templates/init-firewall/`
+**Location:** `skills/_shared/templates/init-firewall.sh`
 
-Three firewall options available:
+The firewall script can be configured for different modes:
 
-- `disabled.sh` - No firewall (container isolation only)
-- `permissive.sh` - Allow all traffic (alternative to disabled)
-- `strict.sh` - Strict allowlist-based firewall (domain allowlist)
+- **Permissive mode** (default) - Allows all traffic while providing extensibility points
+- **Strict mode** - Can be customized for allowlist-based firewall with domain restrictions
 
 ## Template Placeholders
 
@@ -126,8 +126,9 @@ These serve **different purposes**:
 | Template File | Data File |
 |---------------|-----------|
 | Simple array/object | Comprehensive catalog |
-| Copied to user's devcontainer | Read by skills for interactive prompts |
+| **Copied to user's devcontainer** | **NOT copied - reference only** |
 | Ready for immediate use | Source of truth for all options |
+| Read by skills for interactive prompts | Provides metadata for user selection |
 
 **Example:**
 - `extensions.json` has 6 essential extension IDs → copied to `.devcontainer/devcontainer.json`

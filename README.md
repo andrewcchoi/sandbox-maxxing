@@ -1,6 +1,6 @@
 # Sandboxxer Plugin
 
-![Version](https://img.shields.io/badge/version-4.10.0-blue)
+![Version](https://img.shields.io/badge/version-4.10.1-blue)
 ![Claude Code](https://img.shields.io/badge/claude--code-plugin-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
@@ -525,8 +525,9 @@ sandbox-maxxing/
 │   └── audit.md                 # /sandboxxer:audit
 ├── hooks/                       # Event hooks
 │   ├── hooks.json               # Hook configuration
-│   ├── stop-hook.sh             # Linux stop hook
-│   ├── stop-hook.ps1            # Windows stop hook
+│   ├── docker-safety-hook.sh    # Docker safety checks
+│   ├── session-end-hook.sh      # Session cleanup
+│   ├── sync-knowledge.sh        # Knowledge sync
 │   └── run-hook.cmd             # Windows wrapper
 ├── skills/                      # Skills and shared resources
 │   ├── _shared/                 # Shared templates and data

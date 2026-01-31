@@ -14,7 +14,7 @@
 #     - ~/.config/claude-env:/tmp/host-env:ro              # Environment secrets (optional)
 #     - ~/.config/gh:/tmp/host-gh:ro                       # GitHub CLI config (optional)
 #     - shared-claude-data:/home/node/.claude              # Shared Claude config
-#     - claude-state:/home/node/.claude/state              # Per-project runtime state
+#     - ssh-keys:/home/node/.ssh                           # SSH keys for git operations (optional)
 #
 # Architecture:
 # - shared-claude-data: Shared across all devcontainers (credentials, settings, plugins, hooks)
@@ -167,7 +167,7 @@ echo "================================================================"
 # 1. Cross-Platform Git Configuration
 # ============================================================================
 echo ""
-echo "[1/12] Configuring git for cross-platform development..."
+echo "[1/13] Configuring git for cross-platform development..."
 
 # Prevent file mode (755/644) differences between Linux/Windows
 git config --global core.filemode false
@@ -184,7 +184,7 @@ echo "  ✓ Git configured for cross-platform compatibility"
 # 2. Create Directory Structure
 # ============================================================================
 echo ""
-echo "[2/12] Creating directory structure..."
+echo "[2/13] Creating directory structure..."
 
 mkdir -p "$CLAUDE_DIR"
 mkdir -p "$CLAUDE_DIR/hooks"
@@ -198,7 +198,7 @@ echo "  ✓ Directories created"
 # 3. Core Configuration Files
 # ============================================================================
 echo ""
-echo "[3/12] Copying core configuration files..."
+echo "[3/13] Copying core configuration files..."
 
 for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json" ".mcp.json"; do
     if [ -f "$HOST_CLAUDE/$config_file" ]; then
@@ -212,7 +212,7 @@ done
 # 4. Hooks Directory
 # ============================================================================
 echo ""
-echo "[4/12] Syncing hooks directory..."
+echo "[4/13] Syncing hooks directory..."
 
 # Try to copy from host
 if copy_hooks "$HOST_CLAUDE/hooks" "$CLAUDE_DIR/hooks"; then
@@ -227,7 +227,7 @@ fi
 # 5. State Directory
 # ============================================================================
 echo ""
-echo "[5/12] Syncing state directory..."
+echo "[5/13] Syncing state directory..."
 
 # Try to copy from host
 if copy_directory "$HOST_CLAUDE/state" "$CLAUDE_DIR/state"; then
@@ -244,7 +244,7 @@ fi
 # 6. MCP Configuration
 # ============================================================================
 echo ""
-echo "[6/12] Syncing MCP configuration..."
+echo "[6/13] Syncing MCP configuration..."
 
 # Note: .mcp.json is already copied in section 3 core configuration files
 if copy_directory "$HOST_CLAUDE/mcp" "$CLAUDE_DIR/mcp"; then
@@ -258,7 +258,7 @@ fi
 # 7. Environment Variables (Optional)
 # ============================================================================
 echo ""
-echo "[7/12] Loading environment variables..."
+echo "[7/13] Loading environment variables..."
 
 # SECURITY NOTE: Sourcing environment files can execute arbitrary shell code.
 # Only mount trusted directories to /tmp/host-env in your docker-compose.yml.
@@ -294,7 +294,7 @@ fi
 # 8. GitHub CLI Authentication (Optional)
 # ============================================================================
 echo ""
-echo "[8/12] Setting up GitHub CLI authentication..."
+echo "[8/13] Setting up GitHub CLI authentication..."
 
 # Note: GitHub CLI config files (hosts.yml, config.yml) are YAML data files
 # that are parsed by the gh CLI tool, not sourced as shell scripts.
@@ -325,7 +325,7 @@ fi
 # 9. Mark Native Installation Complete
 # ============================================================================
 echo ""
-echo "[9/12] Marking native installation as complete..."
+echo "[9/13] Marking native installation as complete..."
 
 # Run claude install to suppress migration notice
 # This is needed because copying host config makes Claude think it's a migration
@@ -340,7 +340,7 @@ fi
 # 10. SSH Key Generation and Configuration
 # ============================================================================
 echo ""
-echo "[10/12] Setting up SSH keys for Git operations..."
+echo "[10/13] Setting up SSH keys for Git operations..."
 
 SSH_DIR="$HOME/.ssh"
 SSH_KEY="$SSH_DIR/id_ed25519"
@@ -441,10 +441,66 @@ echo "  ────────────────────────
 echo ""
 
 # ============================================================================
-# 11. .gitignore Management
+# 11. Install Knowledge Sync Script (Host-Side)
 # ============================================================================
 echo ""
-echo "[11/12] Configuring .gitignore for SSH keys..."
+echo "[11/13] Installing knowledge sync script to host..."
+
+# Copy sync script to host ~/.claude/scripts/ if not exists
+if [ -d "$HOST_CLAUDE" ]; then
+    # Check if script already exists on host
+    if [ -f "$HOST_CLAUDE/scripts/sync-knowledge.sh" ]; then
+        echo "  ✓ sync-knowledge.sh already installed on host"
+    else
+        # Copy from template if it exists
+        if [ -f "$WORKSPACE_DIR/.devcontainer/sync-knowledge.sh" ]; then
+            if [ -w "$HOST_CLAUDE" ]; then
+                mkdir -p "$HOST_CLAUDE/scripts" 2>/dev/null || true
+                cp "$WORKSPACE_DIR/.devcontainer/sync-knowledge.sh" "$HOST_CLAUDE/scripts/" 2>/dev/null && \
+                    chmod +x "$HOST_CLAUDE/scripts/sync-knowledge.sh" 2>/dev/null && \
+                    echo "  ✓ Installed sync-knowledge.sh to host ~/.claude/scripts/" || \
+                    echo "  ℹ Could not install sync script (host volume may be read-only)"
+            else
+                echo "  ℹ Host .claude directory is read-only - install sync script manually"
+            fi
+        else
+            echo "  ℹ sync-knowledge.sh template not found in .devcontainer/"
+        fi
+    fi
+else
+    echo "  ℹ Host .claude mount not available - sync script installation skipped"
+fi
+
+echo ""
+echo "  ──────────────────────────────────────────────────────────────"
+echo "  To enable automatic knowledge sync on host Claude startup:"
+echo "  ──────────────────────────────────────────────────────────────"
+echo "  1. Copy sync script to host:"
+echo "     cp .devcontainer/sync-knowledge.sh ~/.claude/scripts/"
+echo "     chmod +x ~/.claude/scripts/sync-knowledge.sh"
+echo ""
+echo "  2. Add SessionStart hook to ~/.claude/settings.local.json:"
+echo '     "hooks": {'
+echo '       "SessionStart": ['
+echo '         {'
+echo '           "hooks": ['
+echo '             {'
+echo '               "type": "command",'
+echo '               "command": "bash ~/.claude/scripts/sync-knowledge.sh",'
+echo '               "timeout": 15000'
+echo '             }'
+echo '           ]'
+echo '         }'
+echo '       ]'
+echo '     }'
+echo "  ──────────────────────────────────────────────────────────────"
+echo ""
+
+# ============================================================================
+# 12. .gitignore Management
+# ============================================================================
+echo ""
+echo "[12/13] Configuring .gitignore for SSH keys..."
 
 GITIGNORE_PATH="$WORKSPACE_DIR/.gitignore"
 SSH_EXCLUSION=".devcontainer/devcontainer-ssh.pub"
@@ -485,10 +541,10 @@ EOF
 rm -f "$GITIGNORE_LOCKFILE" 2>/dev/null || true
 
 # ============================================================================
-# 12. Fix Permissions
+# 13. Fix Permissions
 # ============================================================================
 echo ""
-echo "[12/12] Setting permissions..."
+echo "[13/13] Setting permissions..."
 
 # Only attempt chown if directories exist
 if [ -d "$CLAUDE_DIR" ]; then

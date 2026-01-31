@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ============================================================================
 # CLAUDE CODE SANDBOX - Domain Allowlist Firewall Configuration
 # ============================================================================
@@ -95,6 +95,8 @@ ALLOWED_DOMAINS=(
 
   # ===CATEGORY:package_managers_go===
   # Go modules and toolchain downloads
+  # NOTE: These domains are included by default in init-firewall.sh even though
+  # they are not present in allowable-domains.json for advanced mode
   "proxy.golang.org"
   "sum.golang.org"
   "index.golang.org"
@@ -220,7 +222,7 @@ while read -r cidr; do
     fi
     echo "  Adding GitHub range $cidr"
     ipset add -exist allowed-domains "$cidr"
-done < <(echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | aggregate -q)
+done < <(echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | sort -u)
 
 # ----------------------------------------------------------------------------
 # RESOLVE AND ADD ALLOWED DOMAINS

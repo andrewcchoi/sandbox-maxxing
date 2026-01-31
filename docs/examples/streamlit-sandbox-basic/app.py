@@ -10,8 +10,10 @@ import os
 from urllib.parse import quote
 
 # Configuration - Build DATABASE_URL from individual env vars (allows override of each component)
+# SECURITY WARNING: Default credentials are for DEVELOPMENT ONLY
+# In production, ALWAYS set POSTGRES_PASSWORD via environment variable
 POSTGRES_USER = os.getenv("POSTGRES_USER", "sandbox_user")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "devpassword")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "devpassword")  # DEV ONLY - Override in production!
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "postgres")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "sandbox_dev")

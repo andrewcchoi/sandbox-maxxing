@@ -119,7 +119,7 @@ services:
   # PostgreSQL Database (Production-Ready Configuration)
   # ==========================================================================
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-bookworm
     container_name: demo-postgres-yolo
     hostname: postgres
 
