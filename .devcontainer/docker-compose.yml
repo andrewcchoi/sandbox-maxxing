@@ -1,5 +1,9 @@
+# ============================================================================
+# Docker Compose Configuration - Plugin Development
+# ============================================================================
 # Minimal portless devcontainer for plugin development
 # Preserves firewall safety infrastructure (NET_ADMIN capability)
+# ============================================================================
 
 services:
   app:
@@ -19,12 +23,19 @@ services:
       - ~/.config/claude-env:/tmp/host-env:ro
       # Optional: GitHub CLI credentials
       - ~/.config/gh:/tmp/host-gh:ro
-      - commandhistory:/commandhistory
-      - claude-data:/home/node/.claude
-      - ssh-keys:/home/node/.ssh
+      - command-history:/commandhistory                 # Issue #86: Persist bash history (project-scoped)
+      - shared-claude-data:/home/node/.claude           # Shared Claude config across all devcontainers
+      - ssh-keys:/home/node/.ssh                        # Shared SSH keys across all projects
     environment:
       - FIREWALL_MODE=permissive
     command: sleep infinity
+    healthcheck:
+      # Check if PID 1 (sleep infinity) is running by testing /proc/1
+      test: ["CMD-SHELL", "test -d /proc/1 && ps -p 1 -o comm= | grep -q sleep"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     cap_add:
       # Required for firewall initialization
       - NET_ADMIN
@@ -33,7 +44,8 @@ services:
       - sandboxxer-dev
 
   # postgres:
-  #   image: pgvector/pgvector:pg16
+  #   # Standard PostgreSQL (for pgvector support, use: pgvector/pgvector:pg16)
+  #   image: postgres:16-bookworm
   #   container_name: sandboxxer-plugin-postgres
   #   restart: unless-stopped
   #   environment:
@@ -45,7 +57,6 @@ services:
   #     - "${POSTGRES_PORT:-5432}:5432"
   #   volumes:
   #     - postgres_data:/var/lib/postgresql/data
-  #     - ./init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql:ro
   #   healthcheck:
   #     test:
   #       [
@@ -57,25 +68,26 @@ services:
   #     retries: 5
   #     start_period: 30s
   #   networks:
-  #     - sandboxxer-dev-network
+  #     - sandboxxer-dev
 
   # redis:
   #   image: redis:7-alpine
   #   container_name: sandboxxer-plugin-redis
   #   restart: unless-stopped
-  #   command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-devpassword}
+  #   # No password for development simplicity
+  #   command: redis-server --appendonly yes
   #   ports:
   #     - "${REDIS_PORT:-6379}:6379"
   #   volumes:
   #     - redis_data:/data
   #   healthcheck:
-  #     test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+  #     test: ["CMD", "redis-cli", "ping"]
   #     interval: 10s
   #     timeout: 5s
   #     retries: 5
   #     start_period: 10s
   #   networks:
-  #     - sandboxxer-dev-network
+  #     - sandboxxer-dev
 
   # rabbitmq:
   #   image: rabbitmq:3.13-management
@@ -97,16 +109,18 @@ services:
   #     retries: 5
   #     start_period: 30s
   #   networks:
-  #     - sandboxxer-dev-network
+  #     - sandboxxer-dev
 
 networks:
   sandboxxer-dev:
     driver: bridge
 
 volumes:
-  commandhistory:
+  command-history:                         # Bash history (project-scoped)
     driver: local
-  claude-data:
+  shared-claude-data:                      # Shared Claude config across all devcontainers
+    name: sandboxxer-shared-claude-data
     driver: local
-  ssh-keys:
+  ssh-keys:                                # Shared SSH keys across all projects
+    name: sandboxxer-shared-ssh-keys
     driver: local
