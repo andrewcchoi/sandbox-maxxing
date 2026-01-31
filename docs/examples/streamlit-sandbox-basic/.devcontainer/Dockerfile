@@ -40,10 +40,11 @@ RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
 COPY --from=uv-source /usr/local/bin/uv /usr/local/bin/
 COPY --from=uv-source /usr/local/bin/uvx /usr/local/bin/
 
-# Create non-root user with sudo access
+# Create non-root user with restricted sudo access
+# SECURITY: Only allow specific commands needed for firewall management
 RUN groupadd -g 1000 node && \
     useradd -m -u 1000 -g 1000 -s /bin/bash node && \
-    echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    echo "node ALL=(ALL) NOPASSWD: /usr/sbin/iptables, /usr/sbin/ip6tables, /usr/sbin/ipset, /usr/sbin/iptables-restore, /usr/sbin/iptables-save" >> /etc/sudoers
 
 # Install Python development tools via uv
 RUN uv pip install --system poetry black pytest ruff ipython

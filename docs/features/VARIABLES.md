@@ -539,51 +539,21 @@ RUN --mount=type=secret,id=npm_token \
 
 Claude Code hooks can be configured using environment variables. These variables control hook behavior and integrations.
 
-### LangSmith Tracing Hook Variables
+### Hook Configuration
 
-The LangSmith tracing hook (`hooks/stop-hook.sh`) sends conversation traces to LangSmith for observability.
+The Sandboxxer plugin includes several hooks for automating workflow tasks:
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `TRACE_TO_LANGSMITH` | Yes | Enable/disable LangSmith tracing | `true` or `false` |
-| `CC_LANGSMITH_API_KEY` | Yes | LangSmith API key (falls back to `LANGSMITH_API_KEY`) | `lsv2_pt_xxxxx` |
-| `CC_LANGSMITH_PROJECT` | Yes | LangSmith project name for organizing traces | `my-project` |
-| `CC_LANGSMITH_ENVIRONMENT` | No | Custom environment label (auto-detected if not set) | `production`, `staging`, `dev` |
-| `CLAUDE_CODE_TEAM` | No | Team identifier prefix for trace names (default: `acdc`) | `my-team` |
-| `CC_LANGSMITH_DEBUG` | No | Enable debug logging to `~/.claude/state/hook.log` | `true` or `false` |
+**Available Hooks:**
+- **docker-safety-hook.sh** - Prevents destructive Docker commands
+- **session-end-hook.sh** - Cleanup tasks when sessions end
+- **sync-knowledge.sh** - Syncs knowledge files between Docker volumes and host
 
-**Environment Detection:**
+These hooks are configured in `hooks/hooks.json` and execute automatically at appropriate lifecycle events.
 
-If `CC_LANGSMITH_ENVIRONMENT` is not set, the hook auto-detects the environment:
-- OS detection: `linux`, `macos`, `windows`, `unknown`
-- Container detection: `-container` suffix if running in Docker
-- Example: `linux-container`, `macos-native`
-
-**Trace Naming:**
-
-Traces are named: `{CLAUDE_CODE_TEAM}-{CC_LANGSMITH_ENVIRONMENT}`
-- Default: `acdc-linux-native`
-- Custom: `my-team-production`
-
-**Security Note:**
-
-`CC_LANGSMITH_API_KEY` contains sensitive credentials. Follow these best practices:
-- Use VS Code input variables for development
-- Use Docker secrets or environment files for production
-- Never commit API keys to version control
-- Add `.env` files containing keys to `.gitignore`
-
-**Example Configuration:**
-
-```bash
-# .env file (add to .gitignore)
-TRACE_TO_LANGSMITH=true
-CC_LANGSMITH_API_KEY=lsv2_pt_your_key_here
-CC_LANGSMITH_PROJECT=claude-code-traces
-CC_LANGSMITH_ENVIRONMENT=development
-CLAUDE_CODE_TEAM=acdc
-CC_LANGSMITH_DEBUG=false
-```
+**Hook Behavior:**
+- Docker safety hook blocks dangerous commands (e.g., `docker prune`, `docker rm -f`)
+- Knowledge sync hooks ensure persistent state across container recreations
+- Session end hook provides cleanup and final sync operations
 
 **Related Documentation:**
 - [Hooks README](../../hooks/README.md) - Hook configuration and troubleshooting

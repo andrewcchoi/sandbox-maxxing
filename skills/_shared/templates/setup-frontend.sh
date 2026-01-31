@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ============================================================================
 # Frontend Setup Script - npm Platform Detection
 # ============================================================================
@@ -7,7 +7,7 @@
 # Windows host and WSL2/Docker Linux container
 # ============================================================================
 
-set -e
+set -euo pipefail
 
 echo "[Frontend Setup] Checking for platform-specific node_modules..."
 

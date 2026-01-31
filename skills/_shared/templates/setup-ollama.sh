@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ============================================================================
 # Ollama Setup Script - Model Deployment
 # ============================================================================
@@ -6,7 +6,7 @@
 # Issue #107: Automates Ollama model deployment on container startup
 # ============================================================================
 
-set -e
+set -euo pipefail
 
 OLLAMA_ENDPOINT="${OLLAMA_ENDPOINT:-http://ollama:11434}"
 MODELS="${OLLAMA_MODELS:-}"

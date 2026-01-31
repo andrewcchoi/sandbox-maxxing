@@ -6,7 +6,7 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 
 **Version 4.3.0+ Changes:**
 - **Command-based workflow** - Direct bash execution with template copying (not skill-based)
-- **Interactive project selection** - 9 language options with modular dockerfile partials
+- **Interactive project selection** - 8 language options with modular dockerfile partials
 - **Shared resources architecture** - Templates and data consolidated to `skills/_shared/`
 - **Simplified firewall** - Single init-firewall.sh script (v4.3.2)
 
@@ -78,7 +78,7 @@ skills/
 │   │       ├── allowable-domains.json # Domain categories
 │   │       ├── azure-regions.json     # Azure region catalog
 │   │       ├── official-images.json   # Official Docker images
-│   │       ├── uv-images.json         # Python UV images
+│   │       ├── ollama-models.json     # Ollama model catalog
 │   │       ├── mcp-servers.json       # MCP server catalog
 │   │       ├── secrets.json           # Secret handling patterns
 │   │       ├── variables.json         # Variable catalog
@@ -105,7 +105,7 @@ All data files are in `skills/_shared/templates/data/`. See `skills/_shared/temp
 **Key files:**
 - `official-images.json` - Official Docker images (Python, Node, databases)
 - `allowable-domains.json` - Firewall domain whitelist by category
-- `uv-images.json` - Python UV images (fast package manager)
+- `ollama-models.json` - Ollama model catalog
 - `mcp-servers.json` - MCP server configurations
 - `vscode-extensions.json` - VS Code extension catalog
 

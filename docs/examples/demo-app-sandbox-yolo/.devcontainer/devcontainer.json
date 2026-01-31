@@ -11,8 +11,8 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
-        "ms-python.isort",
-        "ms-python.flake8",
+        // NOTE: ms-python.isort and ms-python.flake8 are deprecated
+        // Ruff provides isort and flake8 functionality
         "charliermarsh.ruff",
 
         // JavaScript/TypeScript Development

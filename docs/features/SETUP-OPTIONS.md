@@ -197,7 +197,7 @@ cat partials/go.dockerfile >> .devcontainer/Dockerfile  # example
 ```bash
 # Copy templates as-is
 cp base.dockerfile .devcontainer/Dockerfile
-cp init-firewall/disabled.sh .devcontainer/init-firewall.sh
+cp init-firewall.sh .devcontainer/init-firewall.sh
 # No modifications
 ```
 

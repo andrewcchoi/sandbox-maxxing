@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ============================================================================
 # Volume Initialization Script
 # ============================================================================
@@ -10,7 +10,7 @@
 # Issue #79: Repository container option for Windows/macOS performance
 # ============================================================================
 
-set -e
+set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 

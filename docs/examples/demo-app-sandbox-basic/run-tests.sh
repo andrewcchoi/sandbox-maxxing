@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Test Runner for Demo Blog Application
 # Runs both backend (pytest) and frontend (Jest) tests
 
-set -e  # Exit on error
+set -euo pipefail  # Exit on error, undefined vars, and pipeline failures
 
 # Colors for output
 RED='\033[0;31m'

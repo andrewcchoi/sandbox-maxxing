@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.10.1] - 2026-01-30
+
+### Fixed
+- Version consistency across plugin.json, marketplace.json, and README.md
+- Updated version badge to reflect current release
+
 ## [4.10.0] - 2026-01-30
 
 ### Changed
@@ -245,7 +251,7 @@ Update your usage:
 
 ### Benefits
 - Users can build realistic multi-stack projects (frontend + backend + database)
-- All 9 language options discoverable through categories
+- All 8 language options discoverable through categories
 - Stays within AskUserQuestion 4-option limit
 - No ENV conflicts when composing multiple partials
 
