@@ -129,10 +129,11 @@ RUN npm install -g \
 # ============================================================================
 FROM nodejs-tools AS user-setup
 
-# Create non-root user with comprehensive sudo access
+# Create non-root user with restricted sudo access for firewall management
+# SECURITY: Only allow specific commands needed for firewall management
 RUN groupadd --gid 1000 node \
     && useradd --uid 1000 --gid node --shell /bin/bash --create-home node \
-    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/iptables, /usr/sbin/ipset, /usr/sbin/ip6tables" >> /etc/sudoers \
+    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/iptables, /usr/sbin/ip6tables, /usr/sbin/ipset, /usr/sbin/iptables-restore, /usr/sbin/iptables-save" >> /etc/sudoers \
     && mkdir -p /home/node/.local/bin \
     && chown -R node:node /home/node
 

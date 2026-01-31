@@ -31,7 +31,7 @@ This directory contains Mermaid diagrams visualizing the sandboxxer plugin archi
 
 **Workflow:**
 1. User runs `/quickstart`
-2. Project type selection (9 language options)
+2. Project type selection (8 language options)
 3. Network restrictions decision
 4. Optional firewall configuration with domain categories
 5. DevContainer file generation

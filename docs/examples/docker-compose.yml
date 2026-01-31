@@ -26,7 +26,7 @@
 
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-bookworm
     container_name: sandbox-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-sandbox_dev}

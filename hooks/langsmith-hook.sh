@@ -1,27 +1,37 @@
 #!/usr/bin/env bash
 export LC_ALL=C
 ###
-# Claude Code Stop Hook - LangSmith Tracing Integration
+# Claude Code LangSmith Hook - LangSmith Tracing Integration
 # Sends Claude Code traces to LangSmith after each response.
-# stop_hook.sh processes Claude Code’s generated conversation 
-# transcripts and sends traces to LangSmith. Create the 
-# file ~/.claude/hooks/stop_hook.sh with the following script:
+# langsmith-hook.sh processes Claude Code's generated conversation
+# transcripts and sends traces to LangSmith. Create the
+# file ~/.claude/hooks/langsmith-hook.sh with the following script:
 # Make it executable:
-# chmod +x ~/.claude/hooks/stop_hook.sh
+# chmod +x ~/.claude/hooks/langsmith-hook.sh
 # https://docs.langchain.com/langsmith/trace-claude-code
 ###
 
-set -e
+set -euo pipefail
+
+# Set restrictive umask to ensure all created files are user-only (600/700)
+umask 077
 
 # Config (needed early for logging)
 LOG_FILE="$HOME/.claude/state/hook.log"
-DEBUG="$(echo "$CC_LANGSMITH_DEBUG" | tr '[:upper:]' '[:lower:]')"
+DEBUG="$(echo "${CC_LANGSMITH_DEBUG:-}" | tr '[:upper:]' '[:lower:]')"
 
-# Logging functions
+# Logging functions (with file locking to prevent race conditions)
 log() {
     local level="$1"
     shift
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [$level] $*" >> "$LOG_FILE"
+    # Use flock for atomic log writes to prevent corruption from concurrent hook executions
+    (
+        flock -x 200
+        echo "$(date '+%Y-%m-%d %H:%M:%S') [$level] $*" >> "$LOG_FILE"
+    ) 200>>"$LOG_FILE.lock" 2>/dev/null || {
+        # Fallback if flock fails (shouldn't happen, but be safe)
+        echo "$(date '+%Y-%m-%d %H:%M:%S') [$level] $*" >> "$LOG_FILE"
+    }
 }
 
 debug() {
@@ -31,24 +41,24 @@ debug() {
 }
 
 # Immediate debug logging
-debug "Hook started, TRACE_TO_LANGSMITH=$TRACE_TO_LANGSMITH"
+debug "Hook started, TRACE_TO_LANGSMITH=${TRACE_TO_LANGSMITH:-}"
 
 # Exit early if tracing disabled
-if [ "$(echo "$TRACE_TO_LANGSMITH" | tr '[:upper:]' '[:lower:]')" != "true" ]; then
+if [ "$(echo "${TRACE_TO_LANGSMITH:-}" | tr '[:upper:]' '[:lower:]')" != "true" ]; then
     debug "Tracing disabled, exiting early"
     exit 0
 fi
 
 # Required commands (uuidgen has fallbacks, so not required)
 for cmd in jq curl; do
-    if ! command -v "$cmd" &> /dev/null; then
+    if ! command -v "$cmd" >/dev/null 2>&1; then
         echo "Error: $cmd is required but not installed" >&2
         exit 0
     fi
 done
 
 # Config (continued)
-API_KEY="${CC_LANGSMITH_API_KEY:-$LANGSMITH_API_KEY}"
+API_KEY="${CC_LANGSMITH_API_KEY:-${LANGSMITH_API_KEY:-}}"
 NAME_BASE="${CLAUDE_CODE_TEAM:-acdc}"
 API_BASE="https://api.smith.langchain.com"
 STATE_FILE="$HOME/.claude/state/langsmith_state.json"
@@ -72,14 +82,15 @@ detect_environment() {
         env_type="container"
     fi
 
-    # Export for use in trace data
+    # Export for use in trace data (sanitized to prevent injection attacks)
+    # While unlikely, sanitize external command outputs for defense in depth
     ENV_OS="$os_name"
-    ENV_OS_DETAIL="$(uname -a 2>/dev/null || echo 'unknown')"
+    ENV_OS_DETAIL="$(uname -a 2>/dev/null | tr -cd '[:print:]' | head -c 200 || echo 'unknown')"
     ENV_IS_CONTAINER="$is_container"
     ENV_TYPE="$env_type"
-    ENV_HOSTNAME="$(hostname 2>/dev/null || echo 'unknown')"
-    ENV_USERNAME="$(whoami 2>/dev/null || echo 'unknown')"
-    ENV_GIT_BRANCH="$(git branch --show-current 2>/dev/null || echo '')"
+    ENV_HOSTNAME="$(hostname 2>/dev/null | tr -cd '[:alnum:].-' | head -c 64 || echo 'unknown')"
+    ENV_USERNAME="$(whoami 2>/dev/null | tr -cd '[:alnum:]_-' | head -c 32 || echo 'unknown')"
+    ENV_GIT_BRANCH="$(git branch --show-current 2>/dev/null | tr -cd '[:alnum:]_/-' | head -c 100 || echo '')"
 
     # Allow override via environment variable
     ENV_LABEL="${CC_LANGSMITH_ENVIRONMENT:-$os_name-$env_type}"
@@ -90,10 +101,11 @@ detect_environment
 
 # Build project name with environment label
 TRACE_NAME="${NAME_BASE}-${ENV_LABEL}"
-PROJECT="${CC_LANGSMITH_PROJECT}"
+PROJECT="${CC_LANGSMITH_PROJECT:-}"
 
 # Global variables
 CURRENT_TURN_ID=""  # Track current turn run for cleanup on exit
+TEMP_FILES=()       # Track temporary files/directories for cleanup on exit
 
 # Ensure state directory exists
 mkdir -p "$(dirname "$STATE_FILE")"
@@ -106,7 +118,7 @@ fi
 
 # Get microseconds portably (macOS doesn't support date +%N)
 get_microseconds() {
-    if command -v gdate &> /dev/null; then
+    if command -v gdate >/dev/null 2>&1; then
         # Use GNU date if available (brew install coreutils)
         gdate +%6N
     elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -136,18 +148,23 @@ get_file_size() {
 
 # Generate UUID portably (Windows doesn't have uuidgen)
 get_uuid() {
-    if command -v uuidgen &> /dev/null; then
+    if command -v uuidgen >/dev/null 2>&1; then
         uuidgen | tr '[:upper:]' '[:lower:]'
-    elif command -v powershell.exe &> /dev/null; then
+    elif command -v powershell.exe >/dev/null 2>&1; then
         powershell.exe -Command "[guid]::NewGuid().ToString().ToLower()" | tr -d '\r'
-    elif command -v python3 &> /dev/null; then
+    elif command -v python3 >/dev/null 2>&1; then
         python3 -c "import uuid; print(str(uuid.uuid4()))"
-    elif command -v python &> /dev/null; then
+    elif command -v python >/dev/null 2>&1; then
         python -c "import uuid; print(str(uuid.uuid4()))"
     else
-        # Last resort: pseudo-random from /dev/urandom
-        cat /dev/urandom | tr -dc 'a-f0-9' | fold -w 32 | head -n 1 | \
-            sed 's/\(.\{8\}\)\(.\{4\}\)\(.\{4\}\)\(.\{4\}\)\(.\{12\}\)/\1-\2-\3-\4-\5/'
+        # Last resort: pseudo-random from /dev/urandom with proper UUID v4 format
+        # Generate 32 hex chars, then format as valid UUID v4
+        local hex_string
+        hex_string=$(tr -dc 'a-f0-9' < /dev/urandom | head -c 32)
+
+        # Format as UUID v4: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+        # where y is one of 8,9,a,b (bits 6-7 set to 10)
+        echo "${hex_string:0:8}-${hex_string:8:4}-4${hex_string:13:3}-a${hex_string:17:3}-${hex_string:20:12}"
     fi
 }
 
@@ -164,6 +181,7 @@ jq_safe_argjson() {
     if [ ${#value} -gt $MAX_ARG_SIZE ]; then
         local tmp_file
         tmp_file=$(mktemp)
+        TEMP_FILES+=("$tmp_file")  # Track for cleanup on exit
         echo "$value" > "$tmp_file"
         local result
         result=$(echo "$existing" | jq --slurpfile "$varname" "$tmp_file" "(\$${varname}[0]) as \$${varname} | $expr")
@@ -186,6 +204,7 @@ jq_safe_argjson_new() {
     if [ ${#value} -gt $MAX_ARG_SIZE ]; then
         local tmp_file
         tmp_file=$(mktemp)
+        TEMP_FILES+=("$tmp_file")  # Track for cleanup on exit
         echo "$value" > "$tmp_file"
         local result
         result=$(jq -n --slurpfile "$varname" "$tmp_file" "(\$${varname}[0]) as \$${varname} | $expr")
@@ -196,22 +215,38 @@ jq_safe_argjson_new() {
     fi
 }
 
-# API call helper
+# API call helper (using curl config file to hide API key from process table)
 api_call() {
     local method="$1"
     local endpoint="$2"
     local data="$3"
 
+    # Create temporary curl config file to hide API key from process listings
+    local curl_config
+    curl_config=$(mktemp)
+    TEMP_FILES+=("$curl_config")  # Track for cleanup on exit
+    echo "header = \"x-api-key: $API_KEY\"" > "$curl_config"
+    chmod 600 "$curl_config"
+
     local response
     local http_code
-    response=$(curl -s --max-time 60 -w "\n%{http_code}" -X "$method" \
-        -H "x-api-key: $API_KEY" \
+    response=$(curl -s --connect-timeout 10 --max-time 60 -w "\n%{http_code}" -X "$method" \
+        -K "$curl_config" \
         -H "Content-Type: application/json" \
         -d "$data" \
         "$API_BASE$endpoint" 2>&1)
 
+    # Clean up config file immediately (also cleaned up by trap on exit)
+    rm -f "$curl_config"
+
     http_code=$(echo "$response" | tail -n1)
     response=$(echo "$response" | sed '$d')
+
+    # Validate http_code is numeric before comparison
+    if ! [[ "$http_code" =~ ^[0-9]+$ ]]; then
+        log "ERROR" "Invalid HTTP code: $http_code"
+        return 1
+    fi
 
     if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
         log "ERROR" "API call failed: $method $endpoint"
@@ -223,8 +258,17 @@ api_call() {
     echo "$response"
 }
 
-# Cleanup function to complete pending turn run on exit
+# Cleanup function to complete pending turn run and remove temp files on exit
 cleanup_pending_turn() {
+    # Clean up temporary files and directories
+    if [ ${#TEMP_FILES[@]} -gt 0 ]; then
+        debug "Cleanup: removing ${#TEMP_FILES[@]} temporary files/directories"
+        for temp_file in "${TEMP_FILES[@]}"; do
+            rm -rf "$temp_file" 2>/dev/null || true
+        done
+    fi
+
+    # Complete pending turn run if needed
     if [ -n "$CURRENT_TURN_ID" ]; then
         debug "Cleanup: completing pending turn run $CURRENT_TURN_ID"
         local now
@@ -257,10 +301,10 @@ load_state() {
     cat "$STATE_FILE"
 }
 
-# Save state
+# Save state (atomic write via temp file)
 save_state() {
     local state="$1"
-    echo "$state" > "$STATE_FILE"
+    echo "$state" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
 }
 
 # Get message content
@@ -459,11 +503,19 @@ send_multipart_batch() {
     # Create temp directory for this batch
     local temp_dir
     temp_dir=$(mktemp -d)
+    TEMP_FILES+=("$temp_dir")  # Track for cleanup on exit
+
+    # Create temporary curl config file to hide API key from process listings
+    local curl_config
+    curl_config=$(mktemp)
+    TEMP_FILES+=("$curl_config")  # Track for cleanup on exit
+    echo "header = \"x-api-key: $API_KEY\"" > "$curl_config"
+    chmod 600 "$curl_config"
 
     # Build multipart curl command
     local curl_args=()
-    curl_args+=("-s" "--max-time" "60" "-w" "\n%{http_code}" "-X" "POST")
-    curl_args+=("-H" "x-api-key: $API_KEY")
+    curl_args+=("-s" "--connect-timeout" "10" "--max-time" "60" "-w" "\n%{http_code}" "-X" "POST")
+    curl_args+=("-K" "$curl_config")
 
     # Serialize each run and collect curl -F arguments
     while IFS= read -r run; do
@@ -480,11 +532,20 @@ send_multipart_batch() {
     local http_code
 
     response=$(curl "${curl_args[@]}" 2>&1)
+
+    # Clean up curl config file
+    rm -f "$curl_config"
     http_code=$(echo "$response" | tail -n1)
     response=$(echo "$response" | sed '$d')
 
     # Cleanup temp directory
     rm -rf "$temp_dir"
+
+    # Validate http_code is numeric before comparison
+    if ! [[ "$http_code" =~ ^[0-9]+$ ]]; then
+        log "ERROR" "Batch $operation failed: Invalid HTTP code: $http_code"
+        return 1
+    fi
 
     if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
         log "ERROR" "Batch $operation failed: HTTP $http_code"
@@ -870,9 +931,9 @@ main() {
     local hook_input
     hook_input=$(cat)
 
-    # Check stop_hook_active flag
-    if echo "$hook_input" | jq -e '.stop_hook_active == true' > /dev/null 2>&1; then
-        debug "stop_hook_active=true, skipping"
+    # Check langsmith_hook_active flag
+    if echo "$hook_input" | jq -e '.langsmith_hook_active == true' > /dev/null 2>&1; then
+        debug "langsmith_hook_active=true, skipping"
         exit 0
     fi
 
@@ -882,6 +943,13 @@ main() {
 
     local transcript_path
     transcript_path=$(echo "$hook_input" | jq -r '.transcript_path // ""' | sed "s|^~|$HOME|")
+
+    # Validate transcript path is within expected directory (defense in depth)
+    # In practice, this is controlled by Claude Code, but validate anyway
+    if [ -n "$transcript_path" ] && [[ ! "$transcript_path" =~ ^$HOME/.claude/projects/ ]]; then
+        log "WARN" "Invalid transcript path (outside .claude/projects/): $transcript_path"
+        exit 0
+    fi
 
     if [ -z "$session_id" ] || [ ! -f "$transcript_path" ]; then
         log "WARN" "Invalid input: session=$session_id, transcript=$transcript_path"

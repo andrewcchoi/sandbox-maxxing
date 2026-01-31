@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Start the React frontend development server
+set -euo pipefail
 
 cd "$(dirname "$0")"
 

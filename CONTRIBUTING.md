@@ -217,30 +217,12 @@ All shell scripts in this repository must follow these conventions:
 
 ## Repository Organization
 
-Before submitting changes, please review the [`.internal/repo-keeper/ORGANIZATION_CHECKLIST.md`](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) to ensure your contribution maintains repository consistency.
+When contributing, please maintain repository consistency:
 
-**Key guidelines:**
+1. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
 
-1. **Inventory**: Update [`.internal/repo-keeper/INVENTORY.json`](.internal/repo-keeper/INVENTORY.json) when adding/removing files
-
-2. **Cross-References**: Use relative paths for internal links (not absolute `/workspace/` paths)
-
-3. **Naming Conventions**:
+2. **Naming Conventions**:
    - Commands: `/sandboxxer:{action}`
    - Skills: `sandboxxer-{action}/SKILL.md`
    - Templates: `{component}.{ext}`
-
-4. **Validation**: Run these scripts before committing:
-   ```bash
-   # Check version consistency
-   .internal/repo-keeper/scripts/check-version-sync.sh
-
-   # Check for broken links
-   .internal/repo-keeper/scripts/check-links.sh
-
-   # Validate inventory
-   .internal/repo-keeper/scripts/validate-inventory.sh
-   ```
-
-See the full [Organization Checklist](.internal/repo-keeper/ORGANIZATION_CHECKLIST.md) for complete guidelines.
 

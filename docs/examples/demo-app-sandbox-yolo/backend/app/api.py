@@ -2,9 +2,11 @@
 FastAPI routes for the blogging platform.
 """
 
+import os
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -12,12 +14,26 @@ from app.database import get_db, init_db
 from app.models import Post
 from app import cache
 
-app = FastAPI(title="Blogging Platform API", version="1.0.0")
 
-# CORS middleware
+# Lifespan context manager (replaces deprecated @app.on_event)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application lifecycle - startup and shutdown tasks."""
+    # Startup: Initialize database
+    init_db()
+    yield
+    # Shutdown: Cleanup tasks (if needed)
+
+
+app = FastAPI(title="Blogging Platform API", version="1.0.0", lifespan=lifespan)
+
+# CORS middleware - configure allowed origins via environment variable
+# SECURITY: Never use allow_origins=["*"] with allow_credentials=True in production
+ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For demo; restrict in production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,15 +42,15 @@ app.add_middleware(
 
 # Pydantic models for request/response
 class PostCreate(BaseModel):
-    title: str
-    content: str
-    author: str
+    title: str = Field(..., min_length=1, max_length=255, description="Post title")
+    content: str = Field(..., min_length=1, max_length=50000, description="Post content")
+    author: str = Field(..., min_length=1, max_length=100, description="Post author name")
 
 
 class PostUpdate(BaseModel):
-    title: str | None = None
-    content: str | None = None
-    author: str | None = None
+    title: str | None = Field(None, min_length=1, max_length=255, description="Post title")
+    content: str | None = Field(None, min_length=1, max_length=50000, description="Post content")
+    author: str | None = Field(None, min_length=1, max_length=100, description="Post author name")
 
 
 class PostResponse(BaseModel):
@@ -48,12 +64,6 @@ class PostResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
-
-@app.on_event("startup")
-def startup_event():
-    """Initialize database on startup."""
-    init_db()
 
 
 @app.get("/")
@@ -78,8 +88,12 @@ def create_post(post: PostCreate, db: Session = Depends(get_db)):
         author=post.author,
     )
     db.add(db_post)
-    db.commit()
-    db.refresh(db_post)
+    try:
+        db.commit()
+        db.refresh(db_post)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     # Cache the post
     cache.cache_post(db_post.id, db_post.to_dict())
@@ -106,7 +120,12 @@ def read_post(post_id: int, db: Session = Depends(get_db)):
     # Increment view count
     views = cache.increment_view_count(post_id)
     post.view_count = views
-    db.commit()
+    try:
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        # Non-critical error - continue without persisting view count to DB
+        pass
 
     # Cache the post
     post_dict = post.to_dict()
@@ -130,8 +149,12 @@ def update_post(post_id: int, post_update: PostUpdate, db: Session = Depends(get
     if post_update.author is not None:
         post.author = post_update.author
 
-    db.commit()
-    db.refresh(post)
+    try:
+        db.commit()
+        db.refresh(post)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     # Invalidate cache
     cache.invalidate_post_cache(post_id)
@@ -147,7 +170,11 @@ def delete_post(post_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Post not found")
 
     db.delete(post)
-    db.commit()
+    try:
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     # Invalidate cache
     cache.invalidate_post_cache(post_id)

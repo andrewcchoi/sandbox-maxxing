@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide explains how to develop the Sandbox Plugin using the minimal devcontainer setup.
+This guide explains how to develop the Sandboxxer Plugin using the minimal devcontainer setup.
 
 ## Overview
 
@@ -87,8 +87,9 @@ sandbox/
 │
 ├── hooks/                      # Event hooks
 │   ├── hooks.json
-│   ├── stop-hook.sh
-│   ├── stop-hook.ps1
+│   ├── docker-safety-hook.sh
+│   ├── session-end-hook.sh
+│   ├── sync-knowledge.sh
 │   └── run-hook.cmd
 │
 ├── skills/                     # Plugin skills (main work here)
