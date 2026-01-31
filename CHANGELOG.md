@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.10.0] - 2026-01-30
+
+### Changed
+- **Docker Compose Templates**: Enhanced template quality and maintainability
+  - Improved consistency across all docker-compose template variants
+  - Better volume configuration and naming conventions
+  - Enhanced documentation and comments in template files
+
+- **Setup Script Improvements**: Enhanced `setup-claude-credentials.sh`
+  - Improved error handling and user feedback
+  - Better cross-platform compatibility
+  - More robust credential setup process
+
+- **DevContainer Configuration**: Streamlined devcontainer setup
+  - Optimized docker-compose profile configurations
+  - Better integration between portless and prebuilt variants
+  - Enhanced volume mounting patterns
+
+### Technical Details
+- All docker-compose templates synchronized for consistency
+- Setup script hardened with additional validation steps
+- SSH key persistence and auto-generation improvements
+
 ### Added
 - **Issue #88**: Docker Compose profiles for containerized app services
   - New template: `docker-compose-profiles.yml` with optional backend/frontend services

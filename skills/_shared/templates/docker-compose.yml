@@ -11,13 +11,12 @@ services:
   # ===========================================================================
   # DevContainer Service (always active)
   # ===========================================================================
-  # NOTE: App service does not include environment variables for database/redis connection.
-  # Configure these in your application code using the service hostnames (postgres:5432, redis:6379)
-  # or add an environment: block here with your specific connection configuration.
   app:
     container_name: {{PROJECT_NAME}}-app
     restart: unless-stopped
     build:
+      # Build context: current directory (.) contains Dockerfile at .devcontainer/Dockerfile
+      # This allows the Dockerfile to access files in the project root if needed
       context: .
       dockerfile: .devcontainer/Dockerfile
       args:
@@ -25,6 +24,18 @@ services:
         - INSTALL_DEV_TOOLS=${INSTALL_DEV_TOOLS:-true}
         - INSTALL_CA_CERT=${INSTALL_CA_CERT:-false}
         - ENABLE_FIREWALL=${ENABLE_FIREWALL:-false}
+    environment:
+      # Database connection strings (ready to use in application code)
+      DATABASE_URL: postgresql://${POSTGRES_USER:-sandbox_user}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-sandbox_dev}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-sandbox_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-sandbox_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      # Redis connection string (ready to use in application code)
+      REDIS_URL: redis://redis:6379/0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - "${APP_PORT:-8000}:8000"
       - "${FRONTEND_PORT:-3000}:3000"
@@ -41,13 +52,14 @@ services:
       - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
       - ~/.config/claude-env:/tmp/host-env:ro      # Environment secrets (optional)
       - ~/.config/gh:/tmp/host-gh:ro               # GitHub CLI config (optional)
-      - command-history:/commandhistory             # Issue #86: Persist bash history
-      - claude-data:/home/node/.claude             # Issue #86: Persist Claude data
-      - ssh-keys:/home/node/.ssh                   # Shared SSH keys across devcontainers
+      - command-history:/commandhistory             # Issue #86: Bash history (project-scoped)
+      - shared-claude-data:/home/node/.claude      # Shared Claude config across all devcontainers
+      - ssh-keys:/home/node/.ssh                   # Shared SSH keys across all devcontainers
     working_dir: /workspace
     command: sleep infinity
     healthcheck:
-      test: ["CMD", "pgrep", "-f", "sleep"]
+      # Check if PID 1 (sleep infinity) is running by testing /proc/1
+      test: ["CMD-SHELL", "test -d /proc/1 && ps -p 1 -o comm= | grep -q sleep"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -114,10 +126,11 @@ volumes:
   redis-data:
     driver: local
   # Development tooling persistence
-  command-history:                         # Bash history across container rebuilds
+  command-history:                         # Bash history (project-scoped, not shared)
     driver: local
-  claude-data:                             # Claude Code state and configuration
+  shared-claude-data:                      # Shared Claude config across all devcontainers
+    name: sandboxxer-shared-claude-data
     driver: local
-  ssh-keys:                                # Shared SSH keys across all projects
+  ssh-keys:                                # Shared SSH keys across all devcontainers
     name: sandboxxer-shared-ssh-keys
     driver: local

@@ -1,9 +1,10 @@
 {
   "name": "sandboxxer",
-  "version": "4.9.0",
-  "description": "Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Build multi-stack environments by selecting multiple languages (Go, Rust, Ruby, PHP, C++, PostgreSQL tools) with optional network firewall.",
+  "version": "4.10.0",
+  "description": "Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Base stack includes Python 3.12 + Node 20, with optional languages (Go, Rust, Ruby, PHP, C++) and network firewall.",
   "author": {
-    "name": "shadow developer"
+    "name": "shadow developer",
+    "email": "github-sandbox@shadowenvironment.com"
   },
   "homepage": "https://github.com/andrewcchoi/sandbox-maxxing",
   "repository": "https://github.com/andrewcchoi/sandbox-maxxing",
@@ -15,6 +16,11 @@
     "security",
     "setup",
     "firewall",
-    "claude-code"
+    "claude-code",
+    "vscode",
+    "python",
+    "nodejs",
+    "container",
+    "isolation"
   ]
 }
