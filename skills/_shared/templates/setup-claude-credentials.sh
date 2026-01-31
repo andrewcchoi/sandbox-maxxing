@@ -10,9 +10,15 @@
 #
 # Required docker-compose.yml configuration:
 #   volumes:
-#     - ~/.claude:/tmp/host-claude:ro                  # Claude config
-#     - ~/.config/claude-env:/tmp/host-env:ro          # Environment secrets (optional)
-#     - ~/.config/gh:/tmp/host-gh:ro                   # GitHub CLI config (optional)
+#     - ~/.claude:/tmp/host-claude:ro                      # Claude config
+#     - ~/.config/claude-env:/tmp/host-env:ro              # Environment secrets (optional)
+#     - ~/.config/gh:/tmp/host-gh:ro                       # GitHub CLI config (optional)
+#     - shared-claude-data:/home/node/.claude              # Shared Claude config
+#     - ssh-keys:/home/node/.ssh                           # SSH keys for git operations (optional)
+#
+# Architecture:
+# - shared-claude-data: Shared across all devcontainers (credentials, settings, plugins, hooks)
+# - claude-state: Per-project volume for runtime state (hook.log, langsmith_state.json)
 #
 # ============================================================================
 
@@ -44,22 +50,6 @@ HOST_CLAUDE="/tmp/host-claude"
 HOST_ENV="/tmp/host-env"
 HOST_GH="/tmp/host-gh"
 GH_CONFIG_DIR="$HOME/.config/gh"
-
-# Configurable defaults directory - points to template defaults by default
-# Override via: DEFAULTS_DIR=/custom/path ./setup-claude-credentials.sh
-DEFAULTS_DIR="${DEFAULTS_DIR:-$WORKSPACE_DIR/skills/_shared/templates/defaults}"
-
-# Validate DEFAULTS_DIR if explicitly set by user
-if [ -n "${DEFAULTS_DIR:-}" ] && [ "$DEFAULTS_DIR" != "$WORKSPACE_DIR/skills/_shared/templates/defaults" ]; then
-    if [ ! -d "$DEFAULTS_DIR" ]; then
-        echo "Error: Custom DEFAULTS_DIR does not exist: $DEFAULTS_DIR" >&2
-        exit 1
-    fi
-    if [ ! -r "$DEFAULTS_DIR" ]; then
-        echo "Error: Custom DEFAULTS_DIR is not readable: $DEFAULTS_DIR" >&2
-        exit 1
-    fi
-fi
 
 # ============================================================================
 # Helper Functions
@@ -118,6 +108,35 @@ copy_hooks() {
 count_files() {
     local dir="$1"
     find "$dir" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' '
+}
+
+# Validate environment file contains only safe KEY=value pairs
+# Returns: 0 if valid, 1 if contains dangerous content
+validate_env_file_safety() {
+    local file="$1"
+
+    # Strict allowlist validation regex breakdown:
+    # ^\s*(#.*)?$                           - Allow empty lines and comment lines
+    # ^\s*[A-Za-z_][A-Za-z0-9_]*=           - KEY must start with letter/underscore, followed by alphanumerics/underscores
+    # (                                     - Value can be one of:
+    #   '[^']*'                             -   Single-quoted string (no interpolation)
+    #   |"[^"$`\n]*"                        -   Double-quoted string (no $, `, newlines)
+    #   |[^$`\\;|&<>(){}\"[[:space:]]!~*?\[\]#]*  -   Unquoted value (no shell metacharacters)
+    # )?\s*$                                - Optional value, optional trailing whitespace
+    #
+    # Rejected patterns: All shell metacharacters that could enable code execution
+    # - $ (variable expansion)
+    # - ` (command substitution)
+    # - ; | & (command chaining)
+    # - < > (redirection)
+    # - ( ) { } (subshells/grouping)
+    # - \ (escaping - could bypass filters)
+    # - ! ~ * ? [ ] (globbing/expansion)
+
+    if grep -vE '^\s*(#.*)?$|^\s*[A-Za-z_][A-Za-z0-9_]*=('"'"'[^'"'"']*'"'"'|"[^"$`\n]*"|[^$`\\;|&<>(){}\"[[:space:]]!~*?\[\]#]*)?\s*$' "$file" | grep -q .; then
+        return 1  # Invalid content found
+    fi
+    return 0  # Valid
 }
 
 # Safely copy directory contents
@@ -195,17 +214,13 @@ done
 echo ""
 echo "[4/12] Syncing hooks directory..."
 
-# Try to copy from host first
+# Try to copy from host
 if copy_hooks "$HOST_CLAUDE/hooks" "$CLAUDE_DIR/hooks"; then
     fix_line_endings "$CLAUDE_DIR/hooks"
     HOOKS_COUNT=$(count_files "$CLAUDE_DIR/hooks")
     echo "  ✓ $HOOKS_COUNT hook(s) synced from host"
-# Fallback to defaults
-elif copy_hooks "$DEFAULTS_DIR/hooks" "$CLAUDE_DIR/hooks"; then
-    fix_line_endings "$CLAUDE_DIR/hooks"
-    echo "  ✓ Created default hooks (LangSmith tracing)"
 else
-    echo "  ℹ No hooks found and no defaults available"
+    echo "  ℹ No hooks found on host"
 fi
 
 # ============================================================================
@@ -214,15 +229,12 @@ fi
 echo ""
 echo "[5/12] Syncing state directory..."
 
-# Try to copy from host first
+# Try to copy from host
 if copy_directory "$HOST_CLAUDE/state" "$CLAUDE_DIR/state"; then
     STATE_COUNT=$(count_files "$CLAUDE_DIR/state")
     echo "  ✓ $STATE_COUNT state file(s) synced from host"
-# Fallback to defaults
-elif copy_directory "$DEFAULTS_DIR/state" "$CLAUDE_DIR/state"; then
-    echo "  ✓ Created default state files (hook.log, langsmith_state.json)"
 else
-    # Final fallback: create minimal state files
+    # Create minimal state files
     touch "$CLAUDE_DIR/state/hook.log"
     echo "{}" > "$CLAUDE_DIR/state/langsmith_state.json"
     echo "  ✓ Created minimal state files"
@@ -253,11 +265,7 @@ echo "[7/12] Loading environment variables..."
 # The files should contain only KEY=value pairs, not executable commands.
 
 if [ -f "$HOST_ENV/.env.claude" ]; then
-    # Strict allowlist validation: only allow KEY=value format with no shell metacharacters
-    # Allowed: KEY=value, KEY="quoted value", KEY='quoted value', comments (#), empty lines
-    # Rejected: All shell metacharacters ($, `, ;, |, &, <, >, (, ), {, }, \, !, ~, *, ?, [, ], etc.)
-    # Note: \n in regex matches literal backslash+n; actual newlines handled by grep line-by-line processing
-    if grep -vE '^\s*(#.*)?$|^\s*[A-Za-z_][A-Za-z0-9_]*=('"'"'[^'"'"']*'"'"'|"[^"$`\n]*"|[^$`\\;|&<>(){}\"[[:space:]]!~*?\[\]#]*)?\s*$' "$HOST_ENV/.env.claude" | grep -q .; then
+    if ! validate_env_file_safety "$HOST_ENV/.env.claude"; then
         echo "  ⚠ Warning: .env.claude contains invalid entries or shell metacharacters - skipping for safety" >&2
         echo "  ℹ Environment files should only contain KEY=value pairs (with optional quotes)" >&2
     else
@@ -268,11 +276,7 @@ if [ -f "$HOST_ENV/.env.claude" ]; then
         echo "  ✓ Environment variables loaded from .env.claude"
     fi
 elif [ -f "$HOST_ENV/claude.env" ]; then
-    # Strict allowlist validation: only allow KEY=value format with no shell metacharacters
-    # Allowed: KEY=value, KEY="quoted value", KEY='quoted value', comments (#), empty lines
-    # Rejected: All shell metacharacters ($, `, ;, |, &, <, >, (, ), {, }, \, !, ~, *, ?, [, ], etc.)
-    # Note: \n in regex matches literal backslash+n; actual newlines handled by grep line-by-line processing
-    if grep -vE '^\s*(#.*)?$|^\s*[A-Za-z_][A-Za-z0-9_]*=('"'"'[^'"'"']*'"'"'|"[^"$`\n]*"|[^$`\\;|&<>(){}\"[[:space:]]!~*?\[\]#]*)?\s*$' "$HOST_ENV/claude.env" | grep -q .; then
+    if ! validate_env_file_safety "$HOST_ENV/claude.env"; then
         echo "  ⚠ Warning: claude.env contains invalid entries or shell metacharacters - skipping for safety" >&2
         echo "  ℹ Environment files should only contain KEY=value pairs (with optional quotes)" >&2
     else
@@ -343,9 +347,10 @@ SSH_KEY="$SSH_DIR/id_ed25519"
 SSH_PUB="$SSH_KEY.pub"
 DEVCONTAINER_SSH_PUB="$WORKSPACE_DIR/.devcontainer/devcontainer-ssh.pub"
 
-# Create .ssh directory with proper permissions
-mkdir -p "$SSH_DIR"
-chmod 700 "$SSH_DIR"
+# Create .ssh directory with proper permissions (use sudo for root-owned volume)
+sudo mkdir -p "$SSH_DIR"
+sudo chmod 700 "$SSH_DIR"
+sudo chown -R "$(id -un):$(id -gn)" "$SSH_DIR"
 
 # Generate SSH key if it doesn't exist (idempotent)
 if [ ! -f "$SSH_KEY" ]; then
