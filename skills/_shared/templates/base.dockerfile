@@ -287,6 +287,9 @@ RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
   # Sudoers entry needed for both modes (postStartCommand compatibility)
   echo "node ALL=(root) NOPASSWD: SETENV: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
   chmod 0440 /etc/sudoers.d/node-firewall && \
+  # Allow node user to set up SSH directory with proper permissions
+  echo "node ALL=(root) NOPASSWD: /bin/mkdir -p /home/node/.ssh, /bin/chmod 700 /home/node/.ssh, /bin/chown -R node\\:node /home/node/.ssh" > /etc/sudoers.d/node-ssh && \
+  chmod 0440 /etc/sudoers.d/node-ssh && \
   rm -rf /tmp/firewall
 USER node
 
