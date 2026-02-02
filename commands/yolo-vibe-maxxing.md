@@ -48,10 +48,18 @@ elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
   PLUGIN_ROOT=".";
   echo "Using current directory as plugin root";
 elif [ -d "$HOME/.claude/plugins" ]; then
-  PLUGIN_JSON=$(find "$HOME/.claude/plugins" -maxdepth 3 -type f -name "plugin.json" \
-    -exec grep -l '"name": "sandboxxer"' {} \; 2>/dev/null | head -1);
+  echo "Searching ~/.claude/plugins...";
+  # Account for .claude-plugin/ subdirectory structure
+  PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
+    -exec grep -l '"name".*:.*"sandboxxer"' {} \; 2>/dev/null | head -1);
   if [ -n "$PLUGIN_JSON" ]; then
-    PLUGIN_ROOT=$(dirname "$(dirname "$PLUGIN_JSON")");
+    PLUGIN_DIR=$(dirname "$PLUGIN_JSON");
+    # Handle both root plugin.json and .claude-plugin/plugin.json
+    if [ "$(basename "$PLUGIN_DIR")" = ".claude-plugin" ]; then
+      PLUGIN_ROOT=$(dirname "$PLUGIN_DIR");
+    else
+      PLUGIN_ROOT="$PLUGIN_DIR";
+    fi;
     echo "Found installed plugin: $PLUGIN_ROOT";
   fi;
 fi
@@ -265,10 +273,18 @@ elif [ -f "skills/_shared/templates/base.dockerfile" ]; then
   PLUGIN_ROOT=".";
   echo "Using current directory as plugin root";
 elif [ -d "$HOME/.claude/plugins" ]; then
-  PLUGIN_JSON=$(find "$HOME/.claude/plugins" -maxdepth 3 -type f -name "plugin.json" \
-    -exec grep -l '"name": "sandboxxer"' {} \; 2>/dev/null | head -1);
+  echo "Searching ~/.claude/plugins...";
+  # Account for .claude-plugin/ subdirectory structure
+  PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
+    -exec grep -l '"name".*:.*"sandboxxer"' {} \; 2>/dev/null | head -1);
   if [ -n "$PLUGIN_JSON" ]; then
-    PLUGIN_ROOT=$(dirname "$(dirname "$PLUGIN_JSON")");
+    PLUGIN_DIR=$(dirname "$PLUGIN_JSON");
+    # Handle both root plugin.json and .claude-plugin/plugin.json
+    if [ "$(basename "$PLUGIN_DIR")" = ".claude-plugin" ]; then
+      PLUGIN_ROOT=$(dirname "$PLUGIN_DIR");
+    else
+      PLUGIN_ROOT="$PLUGIN_DIR";
+    fi;
     echo "Found installed plugin: $PLUGIN_ROOT";
   fi;
 fi
