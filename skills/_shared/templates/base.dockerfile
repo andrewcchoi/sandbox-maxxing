@@ -269,7 +269,7 @@ RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
 
 # Firewall initialization script - conditional setup
 # File is copied by setup commands (quickstart or yolo-vibe-maxxing)
-COPY .devcontainer/init-firewall.s[h] /tmp/firewall/
+COPY init-firewall.s[h] /tmp/firewall/
 
 USER root
 RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
