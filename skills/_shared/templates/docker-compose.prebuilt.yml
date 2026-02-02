@@ -37,7 +37,7 @@ services:
       - NET_RAW
     volumes:
       - .:/workspace:cached
-      - /workspace/.venv                           # Issue #108: Anonymous volume - isolates .venv from bind mount
+      - py312-uv-venv:/workspace/.venv             # Issue #108: Named volume - isolates .venv from bind mount
       # NOTE: Host bind mounts require these paths to exist on the host system
       # Create them manually if needed: mkdir -p ~/.claude ~/.config/claude-env ~/.config/gh
       - ~/.claude:/tmp/host-claude:ro              # Issue #30: Claude config
@@ -114,6 +114,8 @@ volumes:
   redis-data:
     driver: local
   # Development tooling persistence
+  py312-uv-venv:                           # Python 3.12 + uv virtual environment (project-scoped)
+    driver: local
   command-history:                         # Bash history (project-scoped, not shared)
     driver: local
   shared-claude-data:                      # Shared Claude config across all devcontainers
