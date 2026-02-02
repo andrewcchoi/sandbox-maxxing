@@ -15,8 +15,8 @@ services:
     working_dir: /workspace
     volumes:
       - ..:/workspace:cached
-      # Issue #108: Anonymous volume - isolates .venv from bind mount
-      - /workspace/.venv
+      # Issue #108: Named volume - isolates .venv from bind mount
+      - py312-uv-venv:/workspace/.venv
       # Host Claude config (read-only)
       - ~/.claude:/tmp/host-claude:ro
       # Optional: environment variables sync
@@ -116,6 +116,8 @@ networks:
     driver: bridge
 
 volumes:
+  py312-uv-venv:                           # Python 3.12 + uv virtual environment (project-scoped)
+    driver: local
   command-history:                         # Bash history (project-scoped)
     driver: local
   shared-claude-data:                      # Shared Claude config across all devcontainers

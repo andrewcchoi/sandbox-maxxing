@@ -9,7 +9,7 @@ services:
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
-      - /workspace/.venv  # Issue #108: Anonymous volume - isolates .venv from bind mount
+      - py312-uv-venv:/workspace/.venv  # Issue #108: Named volume - isolates .venv from bind mount
       - ~/.claude:/tmp/host-claude:ro  # Host Claude config (read-only)
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgresql://${POSTGRES_USER:-sandbox_user}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-sandbox_dev}}
@@ -55,6 +55,8 @@ services:
       - streamlit-sandbox-network
 
 volumes:
+  py312-uv-venv:                           # Python 3.12 + uv virtual environment (project-scoped)
+    driver: local
   postgres-data:
 
 networks:

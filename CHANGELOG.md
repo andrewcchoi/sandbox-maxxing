@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Convert anonymous `.venv` volume to named volume `py312-uv-venv` for easier identification (#108)
+
 ## [4.10.1] - 2026-01-30
 
 ### Fixed

@@ -24,8 +24,8 @@ services:
     volumes:
       # Workspace volume with optimal caching
       - .:/workspace:cached
-      # Issue #108: Anonymous volume - isolates .venv from bind mount
-      - /workspace/.venv
+      # Issue #108: Named volume - isolates .venv from bind mount
+      - py312-uv-venv:/workspace/.venv
       # Host Claude config (read-only)
       - ~/.claude:/tmp/host-claude:ro
       # Named volumes for better performance
@@ -272,6 +272,8 @@ services:
 # Volumes (Named volumes for better performance and persistence)
 # ==============================================================================
 volumes:
+  py312-uv-venv:                           # Python 3.12 + uv virtual environment (project-scoped)
+    driver: local
   postgres-data:
     driver: local
     driver_opts:
