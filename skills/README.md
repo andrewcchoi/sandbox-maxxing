@@ -4,7 +4,7 @@ This directory contains specialized skills for setting up, securing, and trouble
 
 ## Overview
 
-Skills are invoked through slash commands in Claude Code. Setup commands like `/sandboxxer:quickstart` and `/sandboxxer:yolo-vibe-maxxing` are implemented as commands (not skills) that generate sandbox configurations. Other operations use skills that follow structured workflows to ensure consistent, high-quality results.
+Skills are invoked through slash commands in Claude Code. Setup commands like `/sandboxxer:quickstart` and `/sandboxxer:yolo-docker-maxxing` are implemented as commands (not skills) that generate sandbox configurations. Other operations use skills that follow structured workflows to ensure consistent, high-quality results.
 
 ## Available Skills
 
@@ -36,8 +36,8 @@ Skills are invoked through slash commands in Claude Code. Setup commands like `/
 
 ---
 
-#### Non-Interactive YOLO Vibe Maxxing
-**Command:** `/sandboxxer:yolo-vibe-maxxing`
+#### Non-Interactive YOLO Docker Maxxing
+**Command:** `/sandboxxer:yolo-docker-maxxing`
 **When to use:** You want instant setup with no questions.
 
 **Features:**
@@ -53,7 +53,7 @@ Skills are invoked through slash commands in Claude Code. Setup commands like `/
 - Quick experimentation
 - Trusted code scenarios
 
-**Location:** `commands/yolo-vibe-maxxing.md`
+**Location:** `commands/yolo-docker-maxxing.md`
 
 ---
 
@@ -121,6 +121,38 @@ See also: [Security Model](../docs/features/SECURITY-MODEL.md)
 
 ---
 
+#### sandboxxer-linux-troubleshoot
+**Command:** `/sandboxxer:linux-troubleshoot`
+**When to use:** You're experiencing problems with native Linux/WSL2 Claude Code setup.
+
+**Handles:**
+- Bubblewrap sandbox failures
+- Claude CLI installation and PATH issues
+- WSL2-specific problems (networking, file permissions, systemd)
+- Git and GitHub CLI authentication
+- Claude API authentication failures
+- System package installation errors
+- Native Linux environment issues
+
+**Features:**
+- Linux/WSL2-specific diagnostic workflow
+- Bubblewrap sandbox troubleshooting
+- System package and dependency checks
+- Authentication debugging
+- Step-by-step fixes
+- Verification commands
+
+**Best for:**
+- Native Linux/WSL2 setup problems
+- Bubblewrap errors
+- Claude CLI issues
+- Authentication failures
+- System-level configuration problems
+
+**Location:** `skills/sandboxxer-linux-troubleshoot/SKILL.md`
+
+---
+
 ## Skill Directory Structure
 
 The skills directory uses a shared resources architecture for maintainability:
@@ -168,8 +200,10 @@ skills/
 │   │       └── README.md
 ├── sandboxxer-troubleshoot/
 │   └── SKILL.md                       # Troubleshooting workflow
-└── sandboxxer-audit/
-    └── SKILL.md                       # Security audit workflow
+├── sandboxxer-audit/
+│   └── SKILL.md                       # Security audit workflow
+└── sandboxxer-linux-troubleshoot/
+    └── SKILL.md                       # Linux/WSL2 troubleshooting workflow
 ```
 
 ### File Descriptions
@@ -200,7 +234,7 @@ Skills are typically invoked through slash commands defined in `/commands/`:
 /sandboxxer:quickstart
 
 # Quick setup with no questions
-/sandboxxer:yolo-vibe-maxxing
+/sandboxxer:yolo-docker-maxxing
 
 # Troubleshooting
 /sandboxxer:troubleshoot
@@ -327,7 +361,10 @@ See [Examples README](../docs/examples/README.md) for detailed walkthroughs.
 | Command | Skill Used | Purpose |
 |---------|-----------|---------|
 | `/sandboxxer:quickstart` | (command-based) | Create/update sandbox configuration |
-| `/sandboxxer:troubleshoot` | sandboxxer-troubleshoot | Diagnose and fix issues |
+| `/sandboxxer:yolo-docker-maxxing` | (command-based) | Quick Docker setup with defaults |
+| `/sandboxxer:yolo-linux-maxxing` | (command-based) | Native Linux/WSL2 setup |
+| `/sandboxxer:troubleshoot` | sandboxxer-troubleshoot | Diagnose and fix Docker issues |
+| `/sandboxxer:linux-troubleshoot` | sandboxxer-linux-troubleshoot | Diagnose and fix Linux/WSL2 issues |
 | `/sandboxxer:audit` | sandboxxer-audit | Security audit and hardening |
 
 See [Commands README](../commands/README.md) for full command documentation.

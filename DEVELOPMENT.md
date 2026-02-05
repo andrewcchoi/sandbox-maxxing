@@ -80,7 +80,7 @@ sandbox/
 │
 ├── commands/                   # Slash commands
 │   ├── quickstart.md
-│   ├── yolo-vibe-maxxing.md
+│   ├── yolo-docker-maxxing.md
 │   ├── deploy-to-azure.md
 │   ├── troubleshoot.md
 │   └── audit.md
@@ -128,7 +128,7 @@ Most development work doesn't require services:
 ```bash
 # Edit plugin commands
 code commands/quickstart.md
-code commands/yolo-vibe-maxxing.md
+code commands/yolo-docker-maxxing.md
 
 # Edit templates
 code skills/_shared/templates/base.dockerfile

@@ -402,7 +402,7 @@ TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 AZURE_TEMPLATES="$TEMPLATES/azure"
 
 # Detect current version (optional)
-VERSION="4.10.0"  # Could be read from plugin.json
+VERSION="4.11.0"  # Could be read from plugin.json
 
 # Create azure.yaml
 if [ -f "$AZURE_TEMPLATES/azure.yaml" ]; then

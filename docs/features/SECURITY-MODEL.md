@@ -22,7 +22,7 @@ The Claude Code Sandbox Plugin implements a defense-in-depth security model with
 - **Secret Management**: Multiple methods for handling sensitive credentials
 - **Flexible Security**: Adaptable security profiles from minimal to maximum protection
 
-The security model adapts to your needs through two setup commands (interactive quickstart and non-interactive YOLO vibe maxxing) with firewall options ranging from container isolation only to strict domain allowlists.
+The security model adapts to your needs through two setup commands (interactive quickstart and non-interactive YOLO docker maxxing) with firewall options ranging from container isolation only to strict domain allowlists.
 
 ## Multi-Layer Security
 
@@ -140,7 +140,7 @@ Docker containers use Linux kernel features to provide isolation:
 
 ### Container Isolation Only (No Firewall)
 
-**Available with:** Both interactive quickstart and non-interactive YOLO vibe maxxing
+**Available with:** Both interactive quickstart and non-interactive YOLO docker maxxing
 
 **Configuration:**
 - No iptables rules configured

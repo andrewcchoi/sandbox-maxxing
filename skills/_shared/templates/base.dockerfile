@@ -270,7 +270,7 @@ RUN if [ "$INSTALL_DEV_TOOLS" = "true" ]; then \
 # === AZURE TOOLING (inserted when deploy-to-azure selected) ===
 
 # Firewall initialization script - conditional setup
-# File is copied by setup commands (quickstart or yolo-vibe-maxxing)
+# File is copied by setup commands (quickstart or yolo-docker-maxxing)
 COPY init-firewall.s[h] /tmp/firewall/
 
 USER root

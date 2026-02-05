@@ -17,7 +17,7 @@ Before publishing plugin:
 
 ## Testing
 - [ ] Interactive quickstart tested
-- [ ] Non-interactive YOLO vibe maxxing tested
+- [ ] Non-interactive YOLO docker maxxing tested
 - [ ] Troubleshoot tested
 - [ ] Security audit tested
 - [ ] Cross-platform tested
