@@ -90,9 +90,9 @@ Claude: Creating DevContainer...
         ✓ Done in 32 seconds
 ```
 
-## YOLO Vibe Maxxing Mode
+## YOLO Docker Maxxing Mode
 
-**Command:** `/sandboxxer:yolo-vibe-maxxing`
+**Command:** `/sandboxxer:yolo-docker-maxxing`
 
 **Philosophy:** Zero questions, instant setup with sensible defaults.
 
@@ -117,9 +117,9 @@ No questions asked - creates a DevContainer with:
 ### Example: Instant Setup
 
 ```
-You: /sandboxxer:yolo-vibe-maxxing
+You: /sandboxxer:yolo-docker-maxxing
 
-Claude: Creating DevContainer (YOLO Vibe Maxxing mode)...
+Claude: Creating DevContainer (YOLO Docker Maxxing mode)...
         - Project: my-app
         - Language: Python 3.12 + Node 20
         - Firewall: Disabled
@@ -151,11 +151,11 @@ When you select a language in interactive mode, a partial is **appended** to the
 | Ruby     | Ruby 3.3, bundler, rake, rspec, rubocop               |
 | Rust     | Rust toolchain, Cargo, rustfmt, clippy, rust-analyzer |
 
-**YOLO Vibe Maxxing mode** uses only the base image - if you need additional language tools, use interactive setup.
+**YOLO Docker Maxxing mode** uses only the base image - if you need additional language tools, use interactive setup.
 
 ## Firewall Behavior
 
-### No Firewall (YOLO Vibe Maxxing Mode Default)
+### No Firewall (YOLO Docker Maxxing Mode Default)
 
 - Relies on Docker container isolation
 - All outbound network traffic allowed
@@ -193,7 +193,7 @@ cat partials/go.dockerfile >> .devcontainer/Dockerfile  # example
 # (or copy disabled.sh if firewall not wanted)
 ```
 
-**YOLO Vibe Maxxing Mode:**
+**YOLO Docker Maxxing Mode:**
 ```bash
 # Copy templates as-is
 cp base.dockerfile .devcontainer/Dockerfile

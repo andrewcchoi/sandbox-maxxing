@@ -128,7 +128,7 @@ examples/
 - Resource limits and security hardening
 - Full documentation
 
-**Setup time**: < 1 minute (via non-interactive YOLO vibe maxxing)
+**Setup time**: < 1 minute (via non-interactive YOLO docker maxxing)
 **Build time**: 5-7 minutes (with BuildKit)
 
 **Security**: Fully customizable security model. User has complete control and responsibility.

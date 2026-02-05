@@ -1,37 +1,38 @@
 # Sandboxxer Plugin
 
-![Version](https://img.shields.io/badge/version-4.10.2-blue)
+![Version](https://img.shields.io/badge/version-4.11.0-blue)
 ![Claude Code](https://img.shields.io/badge/claude--code-plugin-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
 
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
-> **Plugin Name:** sandboxxer (used in commands: /sandboxxer:quickstart, /sandboxxer:yolo-vibe-maxxing)
+> **Plugin Name:** sandboxxer (used in commands: /sandboxxer:quickstart, /sandboxxer:yolo-docker-maxxing)
 
 Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Choose between interactive setup with project type selection and firewall customization, or quick one-command setup with defaults.
-
-## Features
-
-- **🚀 Two-Path Setup System** - Interactive quickstart with project type selection, or non-interactive YOLO vibe maxxing for instant defaults (Python+Node, container isolation)
-- **☁️ Azure Cloud Deployment** - Deploy DevContainers to Azure Container Apps for cloud-based development environments
-- **📊 Data-Driven Templates** - Configurations generated from curated registries of official Docker images and allowable domains
-- **🔧 Troubleshooting Assistant** - Diagnose and fix common sandbox issues automatically
-- **🔒 Security Auditor** - Review and harden sandbox configurations against best practices
-- **🛡️ Smart Firewall Management** - Optional domain allowlist with 30-100+ curated domains
-- **🎯 Intelligent Detection** - Auto-detects project type and suggests appropriate setup
 
 ## Important: Experimental Status
 
 > **This plugin is experimental and provided as-is.** Most features have received minimal to no testing. Generated configurations may not work correctly on the first try and may require several iterations to get working.
 >
 > **Testing levels:**
-> - `/sandboxxer:yolo-vibe-maxxing` - **Moderate testing** (most reliable)
+> - `/sandboxxer:yolo-docker-maxxing` - **Moderate testing** (most reliable)
 > - `/sandboxxer:quickstart` - **Very minimal testing**
 > - Firewall features - **No testing** (highly experimental)
 > - Azure deployment - **No testing** (highly experimental)
 > - Agents and skills - **Not tested**
 >
 > If you encounter issues, expect to iterate on the generated configuration files.
+
+## Features
+
+- **🚀 Two-Path Setup System** - Interactive quickstart with project type selection, or non-interactive YOLO docker maxxing for instant defaults (Python+Node, container isolation)
+- **🐧 Native Linux Support** - Run Claude Code directly on Linux/WSL2 without Docker overhead
+- **☁️ Azure Cloud Deployment** - Deploy DevContainers to Azure Container Apps for cloud-based development environments
+- **📊 Data-Driven Templates** - Configurations generated from curated registries of official Docker images and allowable domains
+- **🔧 Troubleshooting Assistant** - Diagnose and fix common sandbox issues automatically
+- **🔒 Security Auditor** - Review and harden sandbox configurations against best practices
+- **🛡️ Smart Firewall Management** - Optional domain allowlist with 30-100+ curated domains
+- **🎯 Intelligent Detection** - Auto-detects project type and suggests appropriate setup
 
 ![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
 *Plugin component overview - see [docs/diagrams/](docs/diagrams/) for detailed diagrams*
@@ -64,6 +65,7 @@ Interactive assistant for creating VS Code DevContainer configurations with Dock
 
 Before using this plugin, ensure you have:
 
+- **Anthropic Account** with Claude Code access (Pro/Team subscription or API key)
 - **Docker Desktop** (v4.0+) or Docker Engine with Compose v2
 - **VS Code** with Dev Containers extension (`ms-vscode-remote.remote-containers`)
 - **Claude Code CLI** installed ([installation guide](https://claude.ai/code))
@@ -91,11 +93,17 @@ claude plugins list
 # Interactive quickstart - choose project type and firewall options
 /sandboxxer:quickstart
 
-# YOLO vibe-maxxing - no questions, instant DevContainer (Python+Node, no firewall)
-/sandboxxer:yolo-vibe-maxxing
+# YOLO docker-maxxing - no questions, instant DevContainer (Python+Node, no firewall)
+/sandboxxer:yolo-docker-maxxing
+
+# Native Linux setup (no Docker)
+/sandboxxer:yolo-linux-maxxing
 
 # Troubleshoot existing DevContainer
 /sandboxxer:troubleshoot
+
+# Linux-specific troubleshooting
+/sandboxxer:linux-troubleshoot
 
 # Security audit
 /sandboxxer:audit
@@ -104,7 +112,7 @@ claude plugins list
 /sandboxxer:deploy-to-azure
 ```
 
-**Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/sandboxxer:yolo-vibe-maxxing` (non-interactive YOLO vibe maxxing) for the fastest path with sensible defaults.
+**Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/sandboxxer:yolo-docker-maxxing` (non-interactive YOLO docker maxxing) for the fastest path with sensible defaults.
 
 ### Claude Code Installation
 
@@ -128,14 +136,16 @@ See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installati
 
 > **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues). For detailed Windows setup, see [Windows Guide](docs/windows/README.md).
 
+> **Security Note:** Generated configurations include default development passwords (e.g., `POSTGRES_PASSWORD: devpassword`). Change all passwords before deploying to production or when working with sensitive data.
+
 ## Setup Options
 
 The plugin offers two setup paths:
 
-> **Testing Status:** `/yolo-vibe-maxxing` has moderate testing and is the most reliable option. `/quickstart` has very minimal testing - generated configurations may need manual adjustments.
+> **Testing Status:** `/yolo-docker-maxxing` has moderate testing and is the most reliable option. `/quickstart` has very minimal testing - generated configurations may need manual adjustments.
 
 1. **Interactive Quickstart** (`/sandboxxer:quickstart`) - Guided configuration with project type and firewall customization
-2. **Non-Interactive YOLO Vibe Maxxing** (`/sandboxxer:yolo-vibe-maxxing`) - Instant defaults with no questions (Python+Node, container isolation)
+2. **Non-Interactive YOLO Docker Maxxing** (`/sandboxxer:yolo-docker-maxxing`) - Instant defaults with no questions (Python+Node, container isolation)
 
 See [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) for comprehensive guide.
 
@@ -178,7 +188,7 @@ Claude: Which domain categories should be allowed?
         Generating configs... Done!
 ```
 
-### Non-Interactive YOLO Vibe Maxxing
+### Non-Interactive YOLO Docker Maxxing
 
 **Best for**: Rapid prototyping, Python/Node projects, trusted code
 
@@ -192,7 +202,7 @@ Claude: Which domain categories should be allowed?
 
 **Example**:
 ```
-You: /sandboxxer:yolo-vibe-maxxing
+You: /sandboxxer:yolo-docker-maxxing
 
 Claude: Creating DevContainer with defaults...
         - Base: Python 3.12 + Node 20
@@ -205,14 +215,15 @@ Claude: Creating DevContainer with defaults...
 
 ## Slash Commands
 
-| Command                         | Description                                                       |
-| ------------------------------- | ----------------------------------------------------------------- |
-| `/sandboxxer:quickstart`        | Interactive quickstart - choose project type and firewall options |
-| `/sandboxxer:yolo-vibe-maxxing` | YOLO vibe-maxxing - no questions, sensible defaults (Python+Node) |
-| `/sandboxxer:deploy-to-azure`   | Deploy DevContainer to Azure Container Apps for cloud development |
-| `/sandboxxer:repo-keeper`       | Run repository validation and generate remediation plans          |
-| `/sandboxxer:troubleshoot`      | Diagnose and fix sandbox issues                                   |
-| `/sandboxxer:audit`             | Security audit and recommendations                                |
+| Command                           | Description                                                       |
+| --------------------------------- | ----------------------------------------------------------------- |
+| `/sandboxxer:quickstart`          | Interactive quickstart - choose project type and firewall options |
+| `/sandboxxer:yolo-docker-maxxing`   | YOLO docker-maxxing - no questions, sensible defaults (Python+Node) |
+| `/sandboxxer:yolo-linux-maxxing`  | Native Linux/WSL2 setup (no Docker required)                      |
+| `/sandboxxer:deploy-to-azure`     | Deploy DevContainer to Azure Container Apps for cloud development |
+| `/sandboxxer:troubleshoot`        | Diagnose and fix sandbox issues                                   |
+| `/sandboxxer:linux-troubleshoot`  | Diagnose and fix native Linux/WSL2 Claude Code setup issues       |
+| `/sandboxxer:audit`               | Security audit and recommendations                                |
 
 **v4.6.0:** Added Azure deployment support for cloud-based development environments.
 **v4.3.0:** Setup now offers interactive project-type selection or instant defaults with no questions.
@@ -341,6 +352,7 @@ Both setup commands create:
 - `.devcontainer/devcontainer.json` - VS Code DevContainer config
 - `.devcontainer/Dockerfile` - Container image with language tools
 - `.devcontainer/init-firewall.sh` - Firewall configuration (if enabled)
+- `.devcontainer/setup-claude-credentials.sh` - Credential persistence script
 - `docker-compose.yml` - Services configuration (PostgreSQL, Redis)
 
 Azure deployment additionally creates:
@@ -414,7 +426,7 @@ Performs comprehensive security audits.
 5. Container permissions audit
 6. Generate security report
 
-### /sandboxxer:yolo-vibe-maxxing
+### /sandboxxer:yolo-docker-maxxing
 Non-interactive instant DevContainer setup with sensible defaults.
 
 **Testing:** Moderate (most reliable)
@@ -449,6 +461,40 @@ Deploy DevContainer configurations to Azure Container Apps.
 5. Execute deployment
 6. Provide connection instructions
 
+### /sandboxxer:yolo-linux-maxxing
+Native Linux/WSL2 Claude Code setup without Docker.
+
+**Testing:** No testing
+
+**Triggers**:
+- User wants native Linux performance
+- User mentions "WSL2", "native Linux", "no Docker"
+- User needs lightweight setup without container overhead
+
+**Workflow**:
+1. Install Claude CLI and dependencies
+2. Configure Bubblewrap sandbox
+3. Set up GitHub CLI authentication
+4. Validate installation
+5. Provide usage guidance
+
+### /sandboxxer:linux-troubleshoot
+Diagnoses and resolves native Linux/WSL2 setup issues.
+
+**Testing:** Not tested
+
+**Triggers**:
+- Bubblewrap sandbox failures
+- Claude CLI PATH or installation issues
+- WSL2-specific problems
+- Git/GitHub CLI authentication failures
+
+**Workflow**:
+1. Identify Linux/WSL2-specific problem
+2. Run diagnostic commands
+3. Apply systematic fixes
+4. Verify resolution
+
 ## Reference Documentation
 
 The plugin includes comprehensive documentation in the `docs/` directory:
@@ -481,7 +527,7 @@ This plugin uses consistent naming across different contexts:
 | Plugin name       | sandboxxer        | Plugin installation and management                    |
 | Marketplace name  | sandbox-maxxing   | Marketplace listing name                              |
 | GitHub repository | sandbox-maxxing   | github.com/andrewcchoi/sandbox-maxxing                |
-| Slash commands    | /sandboxxer:*     | /sandboxxer:quickstart, /sandboxxer:yolo-vibe-maxxing |
+| Slash commands    | /sandboxxer:*     | /sandboxxer:quickstart, /sandboxxer:yolo-docker-maxxing |
 | Skills            | sandboxxer-*      | Internal skill naming                                 |
 | User-facing title | Sandboxxer Plugin | In documentation headers                              |
 
@@ -519,9 +565,11 @@ sandbox-maxxing/
 │   └── devcontainer-validator.md   # Post-setup validation subagent
 ├── commands/                    # Slash commands
 │   ├── quickstart.md            # /sandboxxer:quickstart (interactive setup)
-│   ├── yolo-vibe-maxxing.md     # /sandboxxer:yolo-vibe-maxxing (instant setup)
+│   ├── yolo-docker-maxxing.md   # /sandboxxer:yolo-docker-maxxing (instant setup)
+│   ├── yolo-linux-maxxing.md    # /sandboxxer:yolo-linux-maxxing (native Linux)
 │   ├── deploy-to-azure.md       # /sandboxxer:deploy-to-azure (Azure deployment)
 │   ├── troubleshoot.md          # /sandboxxer:troubleshoot
+│   ├── linux-troubleshoot.md    # /sandboxxer:linux-troubleshoot
 │   └── audit.md                 # /sandboxxer:audit
 ├── hooks/                       # Event hooks
 │   ├── hooks.json               # Hook configuration
@@ -562,8 +610,10 @@ sandbox-maxxing/
 │   │           └── vscode-extensions.json
 │   ├── sandboxxer-troubleshoot/ # Troubleshooting assistant
 │   │   └── SKILL.md
-│   └── sandboxxer-audit/     # Security auditor
-│       └── SKILL.md
+│   ├── sandboxxer-audit/        # Security auditor
+│   │   └── SKILL.md
+│   └── sandboxxer-linux-troubleshoot/
+│       └── SKILL.md             # Linux/WSL2 troubleshooting
 └── docs/                        # Documentation
     ├── examples/                # Working example applications
     │   ├── streamlit-sandbox-basic/

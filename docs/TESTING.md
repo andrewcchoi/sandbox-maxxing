@@ -1,279 +1,468 @@
 # Testing Documentation
 
-This document describes the testing infrastructure for the Claude Code sandbox setup project.
+This document describes the testing approach for the Claude Code sandbox setup project.
 
 ## Overview
 
-The project includes automated testing for sandbox setup skills to ensure they generate valid and accurate container configuration files.
+The project currently uses manual testing procedures for sandbox setup commands. Manual testing ensures that skills generate valid container configurations and work correctly across different scenarios.
 
 ## Test Coverage
 
+Manual testing covers:
 - ✅ Interactive quickstart setup
-- ✅ Non-interactive YOLO vibe maxxing setup
-- ✅ Troubleshooting diagnostics
+- ✅ Non-interactive YOLO docker maxxing setup
+- ✅ Native Linux/WSL2 setup
+- ✅ Troubleshooting diagnostics (Docker and Linux)
 - ✅ Security auditing
 - ✅ Template generation
 - ✅ Placeholder replacement
 - ✅ Docker services
 - ✅ Firewall configuration (container isolation and domain allowlist)
 
-## Skill Validation Testing
+## Manual Testing Procedures
 
-Automated testing for sandbox setup skills. The framework validates that skills generate correct DevContainer configurations by comparing outputs against master templates.
+### Testing Setup Commands
 
-### Quick Start
-
-```bash
-cd tests/skill-validation
-./run-continuous.sh
-```
-
-### What Gets Tested
-
-The framework validates sandbox setup commands:
-- `/sandboxxer:quickstart` - Interactive setup with project type selection
-- `/sandboxxer:yolo-vibe-maxxing` - Quick setup with full control and allowlists
-
-### Requirements
-
-**System Dependencies:**
-- bash
-- jq (JSON processing)
-- python3 with PyYAML (YAML processing)
-- bc (calculations)
-- git
-
-**Install on Ubuntu/Debian:**
-```bash
-sudo apt-get install -y jq python3 python3-yaml bc
-```
-
-**Success Criteria:**
-- Skills must generate valid container files
-- Accuracy threshold: ≥95%
-- All required files present (devcontainer.json, docker-compose.yml, etc.)
-- Valid JSON/YAML syntax
-- Max 5 iterations per skill before manual intervention required
-
-### Test Modes
-
-#### Interactive Mode
-Prompts for manual skill edits between failed iterations:
-```bash
-cd tests/skill-validation
-./test-harness.sh
-```
-
-#### Continuous Mode
-Runs all skills automatically without prompts:
-```bash
-cd tests/skill-validation
-./run-continuous.sh
-```
-
-#### Dry Run Mode
-Validates test setup without running skills:
-```bash
-cd tests/skill-validation
-DRY_RUN=true ./run-continuous.sh
-```
-
-### Understanding Test Results
-
-#### Reports Location
-- Individual: `tests/skill-validation/reports/{mode}-iteration-{N}.txt`
-- Summary: `tests/skill-validation/reports/summary-{timestamp}.md`
-
-#### Accuracy Scores
-- **95-100%**: Excellent match, skill passes
-- **90-94%**: Good match, may need minor fixes
-- **80-89%**: Moderate match, requires fixes
-- **<80%**: Poor match, significant issues
-
-#### Common Issues
-- **Syntax Errors**: Invalid JSON/YAML formatting
-- **Missing Keys**: Required configuration keys not present
-- **Missing Files**: Expected files not generated
-- **Structure Mismatch**: Key paths don't match template
-
-### For More Details
-
-Skill validation tests verify:
-- Configuration accuracy
-- File generation
-- Template structure compliance
-- Key path validation
-
-## Running Tests in CI/CD
-
-The skill validation tests can be integrated into continuous integration pipelines:
-
-```bash
-#!/bin/bash
-# CI test script example
-cd tests/skill-validation
-
-# Validate setup
-DRY_RUN=true ./run-continuous.sh || exit 1
-
-# Run tests
-./run-continuous.sh
-
-# Check results
-if grep -q "FAIL" reports/summary-*.md; then
-    echo "Some skills failed validation"
-    exit 1
-fi
-
-echo "All skills passed validation"
-exit 0
-```
-
-## Manual Testing
-
-To manually test a skill:
+#### Testing `/sandboxxer:quickstart`
 
 1. Create a test project:
 ```bash
-mkdir -p /tmp/test-sandbox
-cd /tmp/test-sandbox
+mkdir -p /tmp/test-quickstart
+cd /tmp/test-quickstart
+git init
 echo '{"name": "test"}' > package.json
 ```
 
-2. Run the command:
-```bash
-# Use the correct command (e.g., /sandboxxer:quickstart or /sandboxxer:yolo-vibe-maxxing)
+2. Run the command in Claude Code:
+```
+/sandboxxer:quickstart
 ```
 
-3. Verify generated files:
+3. Verify the setup:
+   - Answer project type questions (test with Python/Node, Go, Ruby, etc.)
+   - Answer firewall questions (test both with and without domain allowlist)
+   - Confirm all files are generated
+
+4. Validate generated files:
 ```bash
+# Check files exist
 ls -la .devcontainer/
+test -f .devcontainer/devcontainer.json
+test -f .devcontainer/docker-compose.yml
+test -f .devcontainer/Dockerfile
+
+# Validate JSON syntax
 cat .devcontainer/devcontainer.json | jq .
-docker-compose config  # Validates docker-compose.yml
+
+# Validate YAML syntax
+docker-compose -f .devcontainer/docker-compose.yml config
+
+# Check firewall script (if enabled)
+if [ -f .devcontainer/init-firewall.sh ]; then
+    bash -n .devcontainer/init-firewall.sh
+fi
 ```
+
+5. Test container startup:
+```bash
+# Start DevContainer in VS Code or via CLI
+docker-compose -f .devcontainer/docker-compose.yml up -d
+docker-compose -f .devcontainer/docker-compose.yml exec app bash -c "echo 'Container is running'"
+docker-compose -f .devcontainer/docker-compose.yml down
+```
+
+#### Testing `/sandboxxer:yolo-docker-maxxing`
+
+1. Create a test project:
+```bash
+mkdir -p /tmp/test-yolo-docker
+cd /tmp/test-yolo-docker
+git init
+echo '{"name": "test"}' > package.json
+```
+
+2. Run the command in Claude Code:
+```
+/sandboxxer:yolo-docker-maxxing
+```
+
+3. Verify zero-question setup:
+   - Command should complete without asking questions
+   - Defaults to Python 3.12 + Node 20
+   - No firewall enabled
+
+4. Validate files (same validation as quickstart above)
+
+5. Test container startup and verify services:
+```bash
+docker-compose -f .devcontainer/docker-compose.yml up -d
+docker-compose -f .devcontainer/docker-compose.yml exec app bash -c "python3 --version"
+docker-compose -f .devcontainer/docker-compose.yml exec app bash -c "node --version"
+docker-compose -f .devcontainer/docker-compose.yml down
+```
+
+#### Testing `/sandboxxer:yolo-linux-maxxing`
+
+1. Create a test project (on Linux or WSL2):
+```bash
+mkdir -p /tmp/test-yolo-linux
+cd /tmp/test-yolo-linux
+git init
+```
+
+2. Run the command in Claude Code:
+```
+/sandboxxer:yolo-linux-maxxing
+```
+
+3. Verify installation steps:
+   - Claude CLI installation
+   - Bubblewrap installation and configuration
+   - GitHub CLI setup
+   - Authentication checks
+
+4. Test Bubblewrap sandbox:
+```bash
+bwrap --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp -- echo "Bubblewrap is working!"
+```
+
+5. Verify Claude CLI works:
+```bash
+claude --version
+claude --help
+```
+
+### Testing Troubleshooting Commands
+
+#### Testing `/sandboxxer:troubleshoot`
+
+1. Set up a project with issues:
+```bash
+# Create broken configuration
+mkdir -p /tmp/test-troubleshoot/.devcontainer
+cd /tmp/test-troubleshoot
+echo '{"invalid": json}' > .devcontainer/devcontainer.json
+```
+
+2. Run troubleshooting:
+```
+/sandboxxer:troubleshoot
+```
+
+3. Verify diagnostics:
+   - Command identifies the problem category
+   - Runs appropriate diagnostic commands
+   - Suggests or applies fixes
+   - Verifies resolution
+
+4. Test different problem categories:
+   - Container startup failures
+   - Network connectivity issues
+   - Service connection problems
+   - Firewall blocking
+   - Permission errors
+
+#### Testing `/sandboxxer:linux-troubleshoot`
+
+1. Test on Linux/WSL2 with various issues:
+```bash
+# Example: Missing Bubblewrap
+which bwrap  # Should fail if not installed
+```
+
+2. Run troubleshooting:
+```
+/sandboxxer:linux-troubleshoot
+```
+
+3. Verify it handles:
+   - Bubblewrap installation/configuration
+   - Claude CLI issues
+   - WSL2-specific problems
+   - Authentication failures
+   - System package problems
+
+### Testing Security Audit
+
+#### Testing `/sandboxxer:audit`
+
+1. Set up a project with various configurations:
+```bash
+mkdir -p /tmp/test-audit
+cd /tmp/test-audit
+# Use quickstart or yolo-docker-maxxing to create config
+```
+
+2. Run audit:
+```
+/sandboxxer:audit
+```
+
+3. Verify audit checks:
+   - Reviews security configuration
+   - Audits firewall rules (if present)
+   - Checks credential management
+   - Validates best practices
+   - Provides actionable recommendations
+
+4. Test with different configurations:
+   - No firewall (container isolation only)
+   - Domain allowlist firewall
+   - With/without secrets
+   - Different service configurations
+
+## Test Checklist
+
+Use this checklist when testing changes to commands or skills:
+
+### Pre-Release Testing
+
+- [ ] `/sandboxxer:quickstart` with Python/Node project
+- [ ] `/sandboxxer:quickstart` with Go project
+- [ ] `/sandboxxer:quickstart` with Ruby project
+- [ ] `/sandboxxer:quickstart` with firewall enabled
+- [ ] `/sandboxxer:quickstart` with firewall disabled
+- [ ] `/sandboxxer:yolo-docker-maxxing` basic functionality
+- [ ] `/sandboxxer:yolo-linux-maxxing` on Linux/WSL2
+- [ ] `/sandboxxer:troubleshoot` with container issues
+- [ ] `/sandboxxer:troubleshoot` with network issues
+- [ ] `/sandboxxer:linux-troubleshoot` with Bubblewrap issues
+- [ ] `/sandboxxer:linux-troubleshoot` with authentication issues
+- [ ] `/sandboxxer:audit` with various configurations
+- [ ] All generated files have valid syntax (JSON/YAML/shell)
+- [ ] Containers start successfully
+- [ ] Services connect properly (PostgreSQL, Redis)
+- [ ] Firewall allows expected traffic (when enabled)
+- [ ] Documentation matches behavior
+
+### Regression Testing
+
+When modifying templates or skills, test:
+
+- [ ] Existing projects still work with new changes
+- [ ] No breaking changes to file structure
+- [ ] Backward compatibility maintained
+- [ ] Version numbers updated appropriately
+
+### Edge Case Testing
+
+- [ ] Empty project directory
+- [ ] Existing DevContainer configuration (update scenario)
+- [ ] Projects with unusual file structures
+- [ ] Multiple services enabled
+- [ ] Custom domain allowlists
+- [ ] WSL2-specific scenarios
+- [ ] Different Linux distributions
+
+## Testing Different Scenarios
+
+### Firewall Configurations
+
+Test both firewall modes:
+
+1. **No Firewall (Container Isolation):**
+   - Choose "No" when asked about network restrictions
+   - Verify no `init-firewall.sh` is created
+   - Confirm container has normal network access
+
+2. **Domain Allowlist Firewall:**
+   - Choose "Yes" for network restrictions
+   - Select domain categories to allow
+   - Verify `init-firewall.sh` is created with correct rules
+   - Test that allowed domains work, blocked domains don't
+
+### Service Configurations
+
+Test with different service combinations:
+
+1. **PostgreSQL + Redis (default):**
+   - Verify both services start
+   - Test connections from app container
+
+2. **Custom Services:**
+   - Add additional services to docker-compose.yml
+   - Verify all services start and connect
+
+### Project Types
+
+Test each language option:
+
+1. **Python/Node (base only)**
+2. **Go** - Verify Go toolchain installed
+3. **Ruby** - Verify Ruby and bundler installed
+4. **Rust** - Verify Rust toolchain installed
+5. **C++ (Clang)** - Verify Clang compiler
+6. **C++ (GCC)** - Verify GCC compiler
+7. **PHP** - Verify PHP 8.3 installed
+8. **PostgreSQL** - Verify psql client tools
+
+## Validation Commands Reference
+
+### File Validation
+
+```bash
+# JSON syntax
+jq empty file.json
+
+# YAML syntax
+python3 -c "import yaml; yaml.safe_load(open('file.yml'))"
+docker-compose -f file.yml config
+
+# Shell script syntax
+bash -n script.sh
+
+# Check file exists
+test -f path/to/file || echo "File missing"
+```
+
+### Container Validation
+
+```bash
+# Start containers
+docker-compose -f .devcontainer/docker-compose.yml up -d
+
+# Check container is running
+docker-compose -f .devcontainer/docker-compose.yml ps
+
+# Execute command in container
+docker-compose -f .devcontainer/docker-compose.yml exec app bash -c "command"
+
+# Check logs
+docker-compose -f .devcontainer/docker-compose.yml logs
+
+# Stop containers
+docker-compose -f .devcontainer/docker-compose.yml down
+```
+
+### Service Validation
+
+```bash
+# PostgreSQL
+docker-compose exec app bash -c "psql -h postgres -U postgres -c 'SELECT 1'"
+
+# Redis
+docker-compose exec app bash -c "redis-cli -h redis ping"
+```
+
+### Firewall Validation
+
+```bash
+# Check firewall script exists
+test -f .devcontainer/init-firewall.sh
+
+# Validate script syntax
+bash -n .devcontainer/init-firewall.sh
+
+# Check iptables rules (inside container)
+docker-compose exec app iptables -L -n
+```
+
+## Future: Automated Testing
+
+Automated testing infrastructure is planned for future implementation. The automated test framework would:
+
+- Validate container configurations automatically
+- Compare generated files against templates
+- Run syntax checks on all generated files
+- Test container startup and service connectivity
+- Generate accuracy scores and reports
+- Support CI/CD integration
+
+When automated testing is implemented, it will complement (not replace) manual testing procedures.
 
 ## Debugging Failed Tests
 
-### Step 1: Review the Report
-```bash
-cat tests/skill-validation/reports/{mode}-iteration-{N}.txt
-```
+### Common Issues
 
-Look for:
-- Accuracy percentage
-- Issues found section
-- List of generated files
+1. **Invalid JSON/YAML Syntax:**
+   - Use `jq` or `docker-compose config` to identify errors
+   - Check for missing commas, brackets, or quotes
+   - Verify indentation in YAML files
 
-### Step 2: Compare Generated vs Template
-```bash
-# View generated file
-cat tests/skill-validation/generated/{mode}/.devcontainer/devcontainer.json
+2. **Container Won't Start:**
+   - Check `docker-compose logs`
+   - Verify Dockerfile syntax
+   - Check for missing dependencies
+   - Verify service names and ports
 
-# View template
-cat skills/_shared/templates/devcontainer.json.master
-```
+3. **Services Not Connecting:**
+   - Verify service names match docker-compose.yml
+   - Check network configuration
+   - Verify ports are exposed correctly
+   - Check firewall rules (if enabled)
 
-### Step 3: Check Syntax
-```bash
-# JSON validation
-jq empty tests/skill-validation/generated/{mode}/.devcontainer/devcontainer.json
+4. **Firewall Blocking Traffic:**
+   - Review allowlist domains
+   - Check iptables rules: `docker-compose exec app iptables -L -n`
+   - Verify DNS resolution works
+   - Test with firewall disabled to isolate issue
 
-# YAML validation
-python3 -c "import yaml; yaml.safe_load(open('tests/skill-validation/generated/{mode}/docker-compose.yml'))"
-```
+### Debugging Process
 
-### Step 4: Fix the Skill
-Edit the skill file:
-```bash
-vim commands/{quickstart,yolo-vibe-maxxing}.md
-```
+1. **Identify the Problem:**
+   - What command was run?
+   - What was expected vs. actual behavior?
+   - What error messages appear?
 
-Focus on:
-- Template content in code blocks
-- Variable substitutions
-- Required keys/sections
+2. **Review Generated Files:**
+   - Check all files were created
+   - Validate syntax
+   - Compare with templates
 
-### Step 5: Re-run Test
-```bash
-cd tests/skill-validation
-./test-harness.sh  # Or run-continuous.sh
-```
+3. **Test Incrementally:**
+   - Test file syntax first
+   - Then container build
+   - Then container startup
+   - Then service connectivity
+   - Finally full application
 
-## Test Development
-
-### Adding New Test Cases
-
-1. Create test fixture in `tests/skill-validation/fixtures/`
-2. Add validation logic in `tests/skill-validation/compare-containers.sh`
-3. Update accuracy calculation in comparison functions
-4. Document changes in `tests/skill-validation/README.md`
-
-### Testing Framework Components
-
-The framework consists of:
-- `test-harness.sh` - Main orchestrator
-- `run-continuous.sh` - Automated runner
-- `compare-containers.sh` - Comparison engine
-- `lib/section-parser.sh` - Template parsing
-- `lib/diff-analyzer.sh` - File comparison
-- `lib/skill-fixer.sh` - Issue analysis
-- `lib/report-generator.sh` - Report creation
-
-Each component is independently testable:
-```bash
-# Test comparison engine
-bash tests/skill-validation/compare-containers.sh
-
-# Test with specific library component
-cd tests/skill-validation
-source lib/diff-analyzer.sh
-validate_syntax "test-file.json"
-```
+4. **Check Logs:**
+   - Docker build logs
+   - Container runtime logs
+   - VS Code DevContainer logs
+   - Claude Code session logs
 
 ## Best Practices
 
-### When Adding New Skills
-1. Create skill following template patterns
-2. Run validation tests immediately
-3. Iterate until reaching 95%+ accuracy
-4. Document any special considerations
+### When Adding New Commands
+
+1. Create command following established patterns
+2. Test manually with multiple scenarios
+3. Document command in README files
+4. Add to test checklist above
+5. Test with both new and existing projects
 
 ### When Modifying Templates
+
 1. Update master templates in `skills/_shared/templates/`
-2. Run full test suite: `./run-continuous.sh`
-3. Update skills that fail new validation
-4. Commit templates and skill updates together
+2. Run full test suite manually
+3. Test backward compatibility with existing projects
+4. Update documentation to reflect changes
+5. Test all affected commands
 
-### When Changing Tests
-1. Test in dry-run mode first
-2. Validate against known-good skills
-3. Check that passing skills still pass
-4. Update documentation if behavior changes
+### When Fixing Issues
 
-## Continuous Improvement
+1. Reproduce the issue manually
+2. Identify root cause
+3. Apply fix
+4. Verify fix with original scenario
+5. Test for regressions
+6. Document the fix in CHANGELOG.md
 
-The testing framework tracks:
-- Accuracy trends over time
-- Common failure patterns
-- Skill generation consistency
+## Related Documentation
 
-Use reports to identify:
-- Skills needing improvement
-- Template sections causing issues
-- Validation rules that are too strict/lenient
+- [Setup Options Guide](features/SETUP-OPTIONS.md) - Command comparison
+- [Troubleshooting Guide](features/TROUBLESHOOTING.md) - Common issues
+- [Security Model](features/SECURITY-MODEL.md) - Security architecture
+- [Commands README](../commands/README.md) - Command documentation
+- [Skills README](../skills/README.md) - Skill documentation
 
 ## Support
 
-For issues with testing:
-1. Check `tests/skill-validation/README.md` troubleshooting section
-2. Review recent test reports in `tests/skill-validation/reports/`
-3. Verify dependencies are installed
-4. Run in dry-run mode to validate setup
+For testing-related issues:
 
-For skill-specific issues:
-- Review skill file: `commands/{quickstart,yolo-vibe-maxxing}.md`
-- Check skill documentation in skill frontmatter
-- Test skill manually in isolation
-- Compare with working skills for patterns
-
-
+1. Review this testing documentation
+2. Check command-specific documentation
+3. Review troubleshooting guides
+4. Test in isolation to identify root cause
+5. Check recent changes that might have affected behavior
