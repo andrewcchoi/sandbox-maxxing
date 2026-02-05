@@ -31,12 +31,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   tzdata \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy Python 3.12 binaries
+# Copy Python 3.12 binaries and shared library
 COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/
 COPY --from=python-uv-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=python-uv-source /usr/local/lib/libpython3.12.so* /usr/local/lib/
 COPY --from=python-uv-source /usr/local/bin/pip* /usr/local/bin/
 RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
-    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3
+    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3 && \
+    ldconfig
 
 # Copy uv and uvx binaries
 COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/

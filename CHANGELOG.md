@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Issue #241**: Missing Python shared library causing `npm install` failures
+  - Added `libpython3.12.so*` copy from `python-uv-source` stage to both Dockerfiles
+  - Added `ldconfig` to update dynamic linker cache
+  - Fixes error: `python: error while loading shared libraries: libpython3.12.so.1.0`
+  - Resolves native Node module compilation failures (e.g., `node-pty` via `node-gyp`)
+  - Files updated: `.devcontainer/Dockerfile`, `skills/_shared/templates/base.dockerfile`
+
 ### Changed
 - Convert anonymous `.venv` volume to named volume `py312-uv-venv` for easier identification (#108)
 

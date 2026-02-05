@@ -103,12 +103,14 @@ RUN if [ "$INSTALL_CA_CERT" = "true" ]; then \
     echo "Corporate CA certificate installation skipped (INSTALL_CA_CERT=false)"; \
   fi && rm -f /tmp/corporate-ca.crt
 
-# Copy Python 3.12 binaries
+# Copy Python 3.12 binaries and shared library
 COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/
 COPY --from=python-uv-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=python-uv-source /usr/local/lib/libpython3.12.so* /usr/local/lib/
 COPY --from=python-uv-source /usr/local/bin/pip* /usr/local/bin/
 RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
-    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3
+    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3 && \
+    ldconfig
 
 # Copy uv and uvx binaries
 COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/
