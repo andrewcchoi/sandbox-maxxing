@@ -1,10 +1,10 @@
 ---
-description: YOLO vibe-maxxing DevContainer setup with no questions - Python+Node base, no firewall
+description: YOLO docker-maxxing DevContainer setup with no questions - Python+Node base, no firewall
 argument-hint: "[project-name] [--portless]"
 allowed-tools: [Bash]
 ---
 
-# YOLO Vibe-Maxxing DevContainer Setup
+# YOLO Docker-Maxxing DevContainer Setup
 
 **Quick setup with zero questions.** Creates a DevContainer with:
 - Python 3.12 + Node 20 (multi-language base image)
@@ -238,7 +238,7 @@ done
 chmod +x .devcontainer/*.sh || { echo "ERROR: Cannot set script permissions"; exit 1; }
 
 echo "=========================================="
-echo "DevContainer Created (Non-Interactive YOLO Vibe Maxxing)"
+echo "DevContainer Created (Non-Interactive YOLO Docker Maxxing)"
 echo "=========================================="
 echo "Project: $PROJECT_NAME"
 echo "Language: Python 3.12 + Node 20"
@@ -401,7 +401,7 @@ done
 chmod +x .devcontainer/*.sh || { echo "ERROR: Cannot set script permissions"; exit 1; }
 
 echo "=========================================="
-echo "DevContainer Created (Non-Interactive YOLO Vibe Maxxing)"
+echo "DevContainer Created (Non-Interactive YOLO Docker Maxxing)"
 echo "=========================================="
 echo "Project: $PROJECT_NAME"
 echo "Language: Python 3.12 + Node 20"

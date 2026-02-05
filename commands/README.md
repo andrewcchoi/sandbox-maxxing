@@ -47,14 +47,14 @@ Each command loads and executes the corresponding skill with user-friendly promp
 
 ---
 
-#### `/sandboxxer:yolo-vibe-maxxing`
-**File:** `commands/yolo-vibe-maxxing.md`
-**Description:** Non-interactive YOLO vibe maxxing setup with instant defaults
+#### `/sandboxxer:yolo-docker-maxxing`
+**File:** `commands/yolo-docker-maxxing.md`
+**Description:** Non-interactive YOLO docker maxxing setup with instant defaults
 
 **Usage:**
 ```bash
 # Quick setup with no questions
-/sandboxxer:yolo-vibe-maxxing
+/sandboxxer:yolo-docker-maxxing
 ```
 
 **What it does:**
@@ -164,28 +164,69 @@ See also: [Security Model](../docs/features/SECURITY-MODEL.md)
 
 ---
 
-#### `/sandboxxer:repo-keeper`
-**File:** `commands/repo-keeper.md`
-**Description:** Run repository validation and generate remediation plans
+#### `/sandboxxer:yolo-linux-maxxing`
+**File:** `commands/yolo-linux-maxxing.md`
+**Description:** Set up native Linux/WSL2 Claude Code environment with security sandboxing
 
 **Usage:**
 ```bash
-/sandboxxer:repo-keeper
+/sandboxxer:yolo-linux-maxxing
 ```
 
 **What it does:**
-1. Validates repository structure
-2. Checks links and references
-3. Verifies version consistency
-4. Generates comprehensive remediation plans for issues found
+1. Installs Claude CLI and required dependencies
+2. Configures Bubblewrap sandbox for process isolation
+3. Sets up GitHub CLI and authentication
+4. Validates installation and security
+5. Provides usage guidance and troubleshooting tips
 
-**Use when:**
-- You want to validate repository integrity
-- You need to identify and fix structural issues
-- You want to ensure documentation links are valid
-- You need to maintain repository quality
+**Features:**
+- Native Linux performance (no Docker overhead)
+- Bubblewrap process sandboxing
+- System package management integration
+- WSL2 compatibility
+- Full GitHub integration
 
-**Skill:** None (direct implementation)
+**When to use:**
+- Running Claude Code natively on Linux or WSL2
+- Need maximum performance without container overhead
+- Want to use native system tools and services
+- Working in resource-constrained environments
+
+**Security Note:** Native Linux setup uses Bubblewrap for process isolation but lacks the full network and filesystem isolation provided by Docker-based setups. Review [Security Model](../docs/features/SECURITY-MODEL.md) to understand trade-offs.
+
+---
+
+#### `/sandboxxer:linux-troubleshoot`
+**File:** `commands/linux-troubleshoot.md`
+**Skill:** sandboxxer-linux-troubleshoot
+**Description:** Diagnose and fix native Linux/WSL2 Claude Code setup issues
+
+**Usage:**
+```bash
+/sandboxxer:linux-troubleshoot
+```
+
+**What it does:**
+1. Identifies Linux/WSL2-specific problems
+2. Runs diagnostic commands
+3. Applies systematic fixes
+4. Verifies resolution
+
+**Handles:**
+- Bubblewrap sandbox failures
+- Claude CLI installation and PATH issues
+- WSL2-specific problems (networking, file permissions, systemd)
+- Git and GitHub CLI authentication
+- Claude API authentication failures
+- System package installation errors
+
+**When to use:**
+- Native Linux/WSL2 setup issues
+- Bubblewrap sandbox errors
+- Claude CLI not working correctly
+- Authentication problems
+- Any Linux-specific sandbox problem
 
 ---
 
@@ -212,7 +253,7 @@ Use and follow the [skill-name] skill exactly as written.
 ### Naming Convention
 
 Commands follow the pattern:
-- **Primary commands**: `quickstart`, `yolo-vibe-maxxing`, `troubleshoot`, `audit`
+- **Primary commands**: `quickstart`, `yolo-docker-maxxing`, `yolo-linux-maxxing`, `troubleshoot`, `linux-troubleshoot`, `audit`
 
 All commands use the `/sandboxxer:` namespace prefix when invoked.
 
@@ -237,11 +278,12 @@ Result: DevContainer configuration created
 | Command | Questions | Time | Security | Best For |
 |---------|-----------|------|----------|----------|
 | `/sandboxxer:quickstart` | 2-3 | 2-3 min | Optional domain allowlist | Most users, specific languages |
-| `/sandboxxer:yolo-vibe-maxxing` | 0 | < 1 min | Container isolation | Quick prototyping, Python/Node |
-| `/sandboxxer:troubleshoot` | Diagnostic | Varies | N/A | Problem solving |
+| `/sandboxxer:yolo-docker-maxxing` | 0 | < 1 min | Container isolation | Quick prototyping, Python/Node |
+| `/sandboxxer:yolo-linux-maxxing` | Setup prompts | 5-10 min | Bubblewrap sandbox | Native Linux/WSL2 performance |
+| `/sandboxxer:troubleshoot` | Diagnostic | Varies | N/A | Docker problem solving |
+| `/sandboxxer:linux-troubleshoot` | Diagnostic | Varies | N/A | Linux/WSL2 problem solving |
 | `/sandboxxer:audit` | Audit | 5-10 min | N/A | Security review |
 | `/sandboxxer:deploy-to-azure` | Azure config | 5-15 min | Azure security | Cloud deployment |
-| `/sandboxxer:repo-keeper` | Validation | 2-5 min | N/A | Repository validation |
 
 ## Usage Examples
 
@@ -264,9 +306,9 @@ Claude: [Asks about domain categories]
 Claude: [Generates DevContainer configuration]
 ```
 
-**Non-Interactive YOLO Vibe Maxxing:**
+**Non-Interactive YOLO Docker Maxxing:**
 ```
-User: /sandboxxer:yolo-vibe-maxxing
+User: /sandboxxer:yolo-docker-maxxing
 Claude: Creating DevContainer with defaults...
         - Base: Python 3.12 + Node 20
         - Firewall: Disabled (container isolation)
@@ -374,7 +416,7 @@ Claude Code automatically discovers commands in the `commands/` directory when:
 ### Reporting Issues
 
 When reporting command-related issues, include:
-- Command used (e.g., `/sandboxxer:quickstart` or `/sandboxxer:yolo-vibe-maxxing`)
+- Command used (e.g., `/sandboxxer:quickstart` or `/sandboxxer:yolo-docker-maxxing`)
 - Expected vs actual behavior
 - Error messages or logs
 - Project context (language, services, etc.)

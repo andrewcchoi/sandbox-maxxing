@@ -11,7 +11,7 @@ Create a customized VS Code DevContainer configuration with:
 - Optional network firewall with domain allowlist
 - All standard Claude Code sandbox features
 
-**Quick path:** Use `/sandboxxer:yolo-vibe-maxxing` for instant setup with no questions (Python+Node, no firewall).
+**Quick path:** Use `/sandboxxer:yolo-docker-maxxing` for instant setup with no questions (Python+Node, no firewall).
 
 ## Step 0: Pre-flight Validation
 
