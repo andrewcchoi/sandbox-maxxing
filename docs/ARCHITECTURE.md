@@ -34,7 +34,7 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 
 **Setup Commands:**
 - `/sandboxxer:quickstart` - Interactive DevContainer setup with mode selection
-- `/sandboxxer:yolo-vibe-maxxing` - Quick setup with no questions (Python+Node base, no firewall)
+- `/sandboxxer:yolo-docker-maxxing` - Quick setup with no questions (Python+Node base, no firewall)
 
 ### 3. Shared Resources Architecture (v4.0.0)
 
@@ -136,7 +136,7 @@ Skills reference these using: `skills/_shared/templates/data/<filename>`
 - Users wanting firewall protection
 - Customizable setups
 
-### Quick Setup (`/sandboxxer:yolo-vibe-maxxing`)
+### Quick Setup (`/sandboxxer:yolo-docker-maxxing`)
 
 **Philosophy:** Zero questions, instant setup
 
@@ -161,7 +161,7 @@ Skills reference these using: `skills/_shared/templates/data/<filename>`
 
 ### Command Comparison
 
-| Aspect            | /sandboxxer:quickstart | /sandboxxer:yolo-vibe-maxxing |
+| Aspect            | /sandboxxer:quickstart | /sandboxxer:yolo-docker-maxxing |
 | ----------------- | ---------------------- | ----------------------------- |
 | **Questions**     | 2-3+                   | 0                             |
 | **Languages**     | 9 options              | Python + Node only            |
@@ -178,7 +178,7 @@ Skills reference these using: `skills/_shared/templates/data/<filename>`
 ### Setup Flow (v4.3.0+)
 
 1. **User Invocation**
-   - User runs `/sandboxxer:quickstart` (interactive) or `/sandboxxer:yolo-vibe-maxxing` (non-interactive)
+   - User runs `/sandboxxer:quickstart` (interactive) or `/sandboxxer:yolo-docker-maxxing` (non-interactive)
    - Command executes directly (bash-based, not skill-based)
 
 2. **Interactive Questions** (setup command only)

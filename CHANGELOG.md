@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.11.0] - 2026-02-04
+
+### Breaking Changes
+- **Command Rename**: `yolo-vibe-maxxing` → `yolo-docker-maxxing`
+  - Updated command: `/sandboxxer:yolo-docker-maxxing`
+  - Renamed file: `commands/yolo-vibe-maxxing.md` → `commands/yolo-docker-maxxing.md`
+  - Rationale: With addition of `/sandboxxer:yolo-linux-maxxing` (bubblewrap for native Linux), the rename creates clearer distinction:
+    - `yolo-docker-maxxing`: Docker container isolation with network firewall
+    - `yolo-linux-maxxing`: Native Linux bubblewrap sandboxing (no network isolation)
+  - Tool-based naming (`docker` vs `linux`) is more intuitive than experience-based naming (`vibe` vs `linux`)
+
+### Changed
+- **All Documentation**: Updated `yolo-vibe-maxxing` → `yolo-docker-maxxing` across 22 files
+  - README.md, DEVELOPMENT.md, CHANGELOG.md (root documentation)
+  - commands/: quickstart.md, yolo-linux-maxxing.md, README.md
+  - docs/: ARCHITECTURE.md, TESTING.md, SETUP-OPTIONS.md, diagrams
+  - skills/: README.md, templates, base.dockerfile
+  - Updated plugin-architecture.svg diagram
+
+### Migration Guide
+```bash
+# Old command (no longer works)
+/sandboxxer:yolo-vibe-maxxing
+
+# New command (v4.11.0+)
+/sandboxxer:yolo-docker-maxxing
+```
+
 ### Fixed
 - **Issue #241**: Missing Python shared library causing `npm install` failures
   - Added `libpython3.12.so*` copy from `python-uv-source` stage to both Dockerfiles
@@ -81,7 +109,7 @@ All notable changes to this project will be documented in this file.
   - Plugin name: `sandboxxer`
   - Marketplace name: `sandbox-maxxing`
   - All slash commands updated: `/devcontainer:*` → `/sandboxxer:*`
-  - Command examples: `/sandboxxer:quickstart`, `/sandboxxer:yolo-vibe-maxxing`
+  - Command examples: `/sandboxxer:quickstart`, `/sandboxxer:yolo-docker-maxxing`
 
 ### Changed
 - **All Documentation**: Updated plugin name references across all files
@@ -103,7 +131,7 @@ claude plugins add sandboxxer
 
 # Commands are now:
 /sandboxxer:quickstart
-/sandboxxer:yolo-vibe-maxxing
+/sandboxxer:yolo-docker-maxxing
 /sandboxxer:troubleshoot
 /sandboxxer:audit
 ```
@@ -113,9 +141,9 @@ claude plugins add sandboxxer
 ### Breaking Changes
 - **Command Renames**: Updated command names for better clarity and style
   - `/devcontainer:setup` → `/devcontainer:quickstart`
-  - `/devcontainer:yolo` → `/devcontainer:yolo-vibe-maxxing`
+  - `/devcontainer:yolo` → `/devcontainer:yolo-docker-maxxing`
   - File renames: `commands/setup.md` → `commands/quickstart.md`
-  - File renames: `commands/yolo.md` → `commands/yolo-vibe-maxxing.md`
+  - File renames: `commands/yolo.md` → `commands/yolo-docker-maxxing.md`
 
 ### Changed
 - **All Documentation**: Updated 12+ files with new command names
@@ -134,13 +162,13 @@ Update your usage:
 
 # New commands (v4.5.0)
 /sandboxxer:quickstart
-/sandboxxer:yolo-vibe-maxxing
+/sandboxxer:yolo-docker-maxxing
 ```
 
 ### Technical Details
 - Commands renamed for clarity:
   - "setup" → "quickstart" (more descriptive of the quick interactive flow)
-  - "yolo" → "yolo-vibe-maxxing" (more stylistic, matches project vibe)
+  - "yolo" → "yolo-docker-maxxing" (more stylistic, matches project vibe)
 - All file references updated across codebase
 - Version bumped to 4.5.0 (breaking change in command names)
 
@@ -200,7 +228,7 @@ Update your usage:
   - Windows path conversion: `${CLAUDE_PLUGIN_ROOT//\\//}` converts backslashes to forward slashes
   - Reordered plugin discovery: check current directory before searching ~/.claude/plugins
   - Portable sed: use temp file approach instead of `sed -i`
-- **commands/yolo-vibe-maxxing.md**:
+- **commands/yolo-docker-maxxing.md**:
   - Applied same plugin discovery and sed fixes as setup.md
 - **hooks/verify-template-match.sh**:
   - Changed shebang to `#!/usr/bin/env bash`
