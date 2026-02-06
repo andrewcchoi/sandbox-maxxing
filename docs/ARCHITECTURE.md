@@ -21,6 +21,7 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 **Active Skills:**
 - `sandboxxer-troubleshoot` - Diagnostic assistant
 - `sandboxxer-audit` - Security auditor
+- `sandboxxer-linux-troubleshoot` - Diagnostic assistant for native Linux/WSL2 setups
 
 **Deprecated Skills:**
 - `devcontainer-setup-basic`, `devcontainer-setup-advanced`, `devcontainer-setup-yolo` (v4.6.0)
@@ -35,6 +36,8 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 **Setup Commands:**
 - `/sandboxxer:quickstart` - Interactive DevContainer setup with mode selection
 - `/sandboxxer:yolo-docker-maxxing` - Quick setup with no questions (Python+Node base, no firewall)
+- `/sandboxxer:yolo-linux-maxxing` - Native Linux/WSL2 setup with bubblewrap (no Docker)
+- `/sandboxxer:linux-troubleshoot` - Invokes Linux troubleshoot skill
 
 ### 3. Shared Resources Architecture (v4.0.0)
 

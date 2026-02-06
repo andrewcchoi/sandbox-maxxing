@@ -634,6 +634,3 @@ For detailed setup instructions, see:
 ## Footer
 
 ---
-
-**Last Updated:** 2026-02-04
-**Version:** 4.11.0

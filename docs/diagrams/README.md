@@ -11,8 +11,8 @@ This directory contains Mermaid diagrams visualizing the sandboxxer plugin archi
 **Purpose:** Shows the component hierarchy of the sandboxxer plugin.
 
 **Components visualized:**
-- **Commands (5)**: `/quickstart`, `/yolo-docker-maxxing`, `/troubleshoot`, `/audit`, `/deploy-to-azure`
-- **Skills (2)**: `sandboxxer-troubleshoot`, `sandboxxer-audit`
+- **Commands (7)**: `/quickstart`, `/yolo-docker-maxxing`, `/troubleshoot`, `/audit`, `/deploy-to-azure`, `/yolo-linux-maxxing`, `/linux-troubleshoot`
+- **Skills (3)**: `sandboxxer-troubleshoot`, `sandboxxer-audit`, `sandboxxer-linux-troubleshoot`
 - **Agents (2)**: `devcontainer-generator`, `devcontainer-validator`
 - **Hooks (1)**: PreToolUse for Docker safety
 - **Shared Resources**: Templates, data catalogs, language partials

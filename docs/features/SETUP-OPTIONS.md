@@ -128,6 +128,35 @@ Claude: Creating DevContainer (YOLO Docker Maxxing mode)...
         Next: Open in VS Code → 'Reopen in Container'
 ```
 
+## Native Linux/WSL2 Setup
+
+**Command:** `/sandboxxer:yolo-linux-maxxing`
+
+**Philosophy:** Native performance without Docker overhead, bubblewrap sandboxing.
+
+### What You Get
+- Bubblewrap sandboxing (process-level isolation)
+- Native performance (no container overhead)
+- Full Claude Code CLI
+- Direct system tool integration
+
+### When to Use
+- Running Claude Code natively on Linux or WSL2
+- Need maximum performance
+- Docker unavailable or undesired
+- Personal development machines
+
+### Security Comparison
+
+| Feature | Native Linux | Docker-based |
+|---------|-------------|--------------|
+| Process Sandboxing | Bubblewrap | Container |
+| Network Isolation | No | Optional firewall |
+| Filesystem Isolation | Partial | Full |
+| Setup Complexity | Simple | Moderate |
+
+For troubleshooting, use `/sandboxxer:linux-troubleshoot`.
+
 ## Language Support
 
 The interactive setup uses a base image (Python 3.12 + Node 20) with optional language partials:
