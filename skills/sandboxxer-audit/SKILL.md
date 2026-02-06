@@ -29,7 +29,8 @@ Use this skill when:
 
 Do NOT use this skill when:
 - Setting up new sandbox (security review is part of `/sandboxxer:quickstart`)
-- Troubleshooting connectivity issues (use `/sandboxxer:troubleshoot`)
+- Troubleshooting Docker connectivity issues (use `/sandboxxer:troubleshoot`)
+- Troubleshooting native Linux/WSL2 issues (use `/sandboxxer:linux-troubleshoot`)
 
 ## Usage
 

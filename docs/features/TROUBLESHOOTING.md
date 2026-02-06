@@ -34,6 +34,7 @@ Common problems and their immediate fixes:
 | VS Code extension not loading   | Rebuild container without cache                 | [VS Code DevContainer Problems](#vs-code-devcontainer-problems) |
 | Cannot create git worktrees     | Restructure: `projects/my-project/my-repo/`     | [Git Worktree Issues](#git-worktree-issues)                     |
 | Git dubious ownership error     | `git config --global --add safe.directory '*'`  | [Git Worktree Issues](#git-worktree-issues)                     |
+| Native Linux/WSL2 issues          | Use `/sandboxxer:linux-troubleshoot`            | [Linux/WSL2 Troubleshooting](#linuxwsl2-troubleshooting) |
 
 ![Troubleshooting Flow](../diagrams/svg/troubleshooting-flow.svg)
 
@@ -1445,13 +1446,33 @@ The repository's Python Dockerfile automatically falls back to pip if UV install
 
 ---
 
+## Linux/WSL2 Troubleshooting
+
+For native Linux/WSL2 setups (not Docker-based), use:
+```
+/sandboxxer:linux-troubleshoot
+```
+
+### Common Native Linux Issues
+
+| Problem | Quick Fix |
+|---------|-----------|
+| Claude CLI not found | `source ~/.bashrc` |
+| Bubblewrap permission denied | Enable user namespaces |
+| WSL2 networking issues | Reset `/etc/resolv.conf` |
+
+For Docker-based issues, use `/sandboxxer:troubleshoot` instead.
+
+---
+
 ## Getting Help
 
 If you're still stuck:
 
 1. **Use Interactive Troubleshooting:**
    ```
-   /sandboxxer:troubleshoot
+   /sandboxxer:troubleshoot        # For Docker-based sandboxes
+   /sandboxxer:linux-troubleshoot  # For native Linux/WSL2 setups
    ```
 
 2. **Check Logs:**

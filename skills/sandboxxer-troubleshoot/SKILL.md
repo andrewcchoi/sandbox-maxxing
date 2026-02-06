@@ -23,6 +23,7 @@ Use this skill when:
 Do NOT use this skill when:
 - Setting up a new sandbox (use `/sandboxxer:quickstart` instead)
 - Performing security audit (use `/sandboxxer:audit` instead)
+- Troubleshooting native Linux/WSL2 setups (use `/sandboxxer:linux-troubleshoot` instead)
 
 ## Usage
 
