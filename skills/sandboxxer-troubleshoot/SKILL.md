@@ -23,6 +23,7 @@ Use this skill when:
 Do NOT use this skill when:
 - Setting up a new sandbox (use `/sandboxxer:quickstart` instead)
 - Performing security audit (use `/sandboxxer:audit` instead)
+- Troubleshooting native Linux/WSL2 setups (use `/sandboxxer:linux-troubleshoot` instead)
 
 ## Usage
 
@@ -263,7 +264,4 @@ The skill checks firewall mode, reviews allowed domains list, tests connectivity
 ## Footer
 
 ---
-
-**Last Updated:** 2026-01-19
-**Version:** 4.6.0
 

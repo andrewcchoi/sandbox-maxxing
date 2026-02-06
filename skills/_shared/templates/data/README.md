@@ -25,14 +25,13 @@ Reference: `skills/_shared/templates/data/official-images.json`
 1. Check https://hub.docker.com for latest official image tags
 2. Update recommended_tags with current versions
 3. Update default_tag if recommendations change
-4. Update `metadata.last_updated` date
-5. Test pull commands are valid
+4. Test pull commands are valid
 
 ### `azure-regions.json`
 Azure regions catalog for cloud deployment location selection.
 
 **Structure:**
-- `metadata`: Last updated date, usage notes, documentation URL
+- `metadata`: Usage notes, documentation URL
 - `regions`:
   - `recommended`: Array of 6 primary regions with code, name, description
   - `all`: Complete list of 40+ Azure regions worldwide
@@ -49,7 +48,6 @@ Use `regions.recommended` array for common deployments
 1. Check Azure documentation for new regions
 2. Add new regions to `all` array
 3. Update `recommended` if primary regions change
-4. Update `metadata.last_updated` date
 
 ### `ollama-models.json`
 Ollama local LLM models catalog for sandbox AI integration.
@@ -101,8 +99,7 @@ Use `mode_defaults.<mode_name>` to get included categories
 1. Review domain lists for additions/removals
 2. Test domain accessibility from sandbox
 3. Update category lists as needed
-4. Update `metadata.last_updated` date
-5. Document any new categories in mode_defaults
+4. Document any new categories in mode_defaults
 
 ### `mcp-servers.json`
 MCP (Model Context Protocol) servers catalog for configuring Claude Code integrations in DevContainers.
@@ -129,7 +126,6 @@ Use `mode_defaults.<mode_name>.servers` array
 2. Add new server entries with appropriate mode_minimum
 3. Update mode_defaults if server should be included by default
 4. Test server configurations in DevContainer
-5. Update `metadata.last_updated` date
 
 **Mode-Specific Server Usage:**
 
@@ -171,7 +167,6 @@ Use categories.<language>.extensions array
 3. Add language-specific extensions as needed
 4. Update mode_minimum based on complexity
 5. Test extensions in DevContainer
-6. Update metadata.last_updated date
 
 ## Mode-Specific Domain Usage
 
@@ -186,7 +181,6 @@ Use categories.<language>.extensions array
 All data files use JSON format with JSON Schema metadata for validation.
 
 **Common metadata fields:**
-- `last_updated`: ISO date (YYYY-MM-DD) of last update
 - `description`: Purpose of the data file
 - `$schema`: JSON Schema version
 
@@ -224,9 +218,8 @@ When updating these files:
 
 These data files are tracked in git. When updating:
 1. Update the file(s)
-2. Update the `last_updated` date
-3. Commit with descriptive message: `data: update <file> - <reason>`
-4. Test affected skills to ensure compatibility
+2. Commit with descriptive message: `data: update <file> - <reason>`
+3. Test affected skills to ensure compatibility
 
 ## Questions?
 

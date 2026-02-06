@@ -2,6 +2,8 @@
 
 This guide explains how to adapt the Claude Code Docker sandbox template for your specific project.
 
+> **Note:** This guide covers Docker-based customization. For native Linux/WSL2 setups, see `/sandboxxer:yolo-linux-maxxing`.
+
 ## Table of Contents
 
 - [Quick Customization Checklist](#quick-customization-checklist)

@@ -2,7 +2,7 @@
   "name": "{{PROJECT_NAME}}",
   "dockerComposeFile": "../docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
   "remoteUser": "node",
   "updateRemoteUserUID": true,
   "shutdownAction": "stopCompose",
@@ -70,7 +70,7 @@
   "onCreateCommand": "rm -rf /workspace/.venv 2>/dev/null || true; if [ -d '/tmp/host-source' ] && [ -z \"$(ls -A /workspace 2>/dev/null)\" ]; then cp -r /tmp/host-source/. /workspace/; fi",
   "postCreateCommand": "chmod +x .devcontainer/*.sh 2>/dev/null || true; .devcontainer/setup-claude-credentials.sh && .devcontainer/setup-frontend.sh",
   "updateContentCommand": "echo '🧹 Cleaning stale .venv after rebuild...' && rm -rf /workspace/.venv 2>/dev/null || true",
-  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh && echo 'DevContainer ready!'",
+  "postStartCommand": "git config --global --add safe.directory '*' && sudo /usr/local/bin/init-firewall.sh && echo 'DevContainer ready!'",
   "postAttachCommand": "",
   "waitFor": "postCreateCommand",
 
