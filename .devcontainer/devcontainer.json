@@ -3,7 +3,7 @@
   "name": "sandboxxer-plugin",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
   "remoteUser": "node",
 
   "customizations": {
@@ -33,7 +33,7 @@
     }
   },
   "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
-  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
+  "postStartCommand": "git config --global --add safe.directory '*' && sudo /usr/local/bin/init-firewall.sh",
   "remoteEnv": {
     "PATH": "/usr/local/bin:${containerEnv:PATH}"
   }
