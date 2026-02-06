@@ -265,6 +265,3 @@ The skill checks firewall mode, reviews allowed domains list, tests connectivity
 
 ---
 
-**Last Updated:** 2026-01-19
-**Version:** 4.6.0
-

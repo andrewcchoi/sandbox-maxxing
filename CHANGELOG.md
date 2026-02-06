@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.11.1] - 2026-02-06
+
+### Fixed
+- Documentation: Updated DEVELOPMENT.md project structure to include all commands (yolo-linux-maxxing.md, linux-troubleshoot.md)
+
 ## [4.11.0] - 2026-02-04
 
 ### Breaking Changes

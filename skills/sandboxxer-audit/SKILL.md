@@ -474,6 +474,3 @@ The skill reviews firewall mode, allowed domains, and provides guidance on addin
 
 ---
 
-**Last Updated:** 2026-01-19
-**Version:** 4.6.0
-
