@@ -81,8 +81,10 @@ sandbox/
 ├── commands/                   # Slash commands
 │   ├── quickstart.md
 │   ├── yolo-docker-maxxing.md
+│   ├── yolo-linux-maxxing.md
 │   ├── deploy-to-azure.md
 │   ├── troubleshoot.md
+│   ├── linux-troubleshoot.md
 │   └── audit.md
 │
 ├── hooks/                      # Event hooks

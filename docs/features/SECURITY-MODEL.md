@@ -24,6 +24,17 @@ The Claude Code Sandbox Plugin implements a defense-in-depth security model with
 
 The security model adapts to your needs through two setup commands (interactive quickstart and non-interactive YOLO docker maxxing) with firewall options ranging from container isolation only to strict domain allowlists.
 
+### Native Linux Security (Bubblewrap)
+
+For native Linux/WSL2 setups (`/sandboxxer:yolo-linux-maxxing`):
+
+- **Bubblewrap Sandboxing**: Process-level isolation via Linux namespaces
+- **No Network Isolation**: No firewall or domain allowlist
+- **Direct Filesystem Access**: No copy-on-write isolation
+
+**Use native Linux when:** Personal trusted machines, maximum performance needed
+**Use Docker when:** Security-sensitive work, network isolation required
+
 ## Multi-Layer Security
 
 ![Security Layers](../diagrams/svg/security-layers.svg)

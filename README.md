@@ -1,6 +1,6 @@
 # Sandboxxer Plugin
 
-![Version](https://img.shields.io/badge/version-4.11.0-blue)
+![Version](https://img.shields.io/badge/version-4.11.1-blue)
 ![Claude Code](https://img.shields.io/badge/claude--code-plugin-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
@@ -345,6 +345,52 @@ Deploy your DevContainer to Azure Container Apps for cloud-based development:
 - CI/CD integration
 - Troubleshooting
 - Cost estimation
+
+## Git Worktrees Support
+
+The DevContainer template supports git worktrees for isolated development branches. To enable worktree support, structure your folders with a project-specific parent:
+
+### Recommended Folder Structure
+
+```
+projects/
+  └── my-project/           ← Project folder (mounted at /workspace)
+      └── my-repo/          ← Repository (open this in VS Code)
+          ├── .devcontainer/
+          └── src/
+```
+
+### Creating Worktrees
+
+Inside the container:
+```bash
+# Create worktree as sibling to your repo
+git worktree add ../my-repo-feature feature-branch
+git worktree add ../my-repo-hotfix hotfix/123
+
+# Switch to worktree
+cd ../my-repo-feature
+```
+
+### Why This Structure?
+
+The devcontainer mounts the parent folder (`..:/workspace`). With a project-specific parent:
+- Worktrees are created as siblings in the mounted workspace
+- Only your project folder is visible (not other projects)
+- Standard git worktree commands work as expected
+- Each worktree appears at `/workspace/<worktree-name>/`
+
+### Backwards Compatibility
+
+Existing flat structures continue to work without changes:
+```
+projects/
+  └── my-repo/              ← Still works! Opens at /workspace/my-repo
+      ├── .devcontainer/
+      └── src/
+```
+
+The template uses `${localWorkspaceFolderBasename}` to automatically resolve the correct working directory regardless of folder nesting depth.
 
 ## Files Generated
 
