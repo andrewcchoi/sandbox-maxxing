@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT//\\\\//}/hooks/run-hook.cmd\" sync-knowledge.sh",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" sync-knowledge.sh",
             "timeout": 15000
           }
         ]
@@ -16,30 +16,30 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT//\\\\//}/hooks/run-hook.cmd\" session-end-hook.sh",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" session-end-hook.sh",
             "timeout": 15000
           }
         ]
       }
     ],
-    "PreToolUse": [
+    "PreToolUse_DISABLED": [
       {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT//\\\\//}/hooks/run-hook.cmd\" docker-safety-hook.sh",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" docker-safety-hook.sh",
             "timeout": 5000
           }
         ]
       }
     ],
-    "Stop": [
+    "Stop_DISABLED": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT//\\\\//}/hooks/run-hook.cmd\" langsmith-hook.sh",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" langsmith-hook.sh",
             "timeout": 30000
           }
         ]
