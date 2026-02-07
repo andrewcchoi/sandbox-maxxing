@@ -1,6 +1,6 @@
 {
   "name": "sandbox-maxxing",
-  "version": "4.11.2",
+  "version": "4.11.3",
   "description": "Local development marketplace for creating VS Code DevContainer configurations with Docker Compose support",
   "owner": {
     "name": "shadow developer"
