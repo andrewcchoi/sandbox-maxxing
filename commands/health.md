@@ -200,7 +200,9 @@ fi
 # ============================================================================
 print_section "Disk Space"
 
-AVAILABLE_GB=$(df -BG . | awk 'NR==2 {print $4}' | sed 's/G//')
+# Cross-platform disk space check (df -BG is GNU-specific, use -k for compatibility)
+AVAILABLE_KB=$(df -k . | awk 'NR==2 {print $4}')
+AVAILABLE_GB=$((AVAILABLE_KB / 1024 / 1024))
 if [ "$AVAILABLE_GB" -ge 10 ]; then
   print_pass "Disk space sufficient (${AVAILABLE_GB}GB available)"
 elif [ "$AVAILABLE_GB" -ge 5 ]; then
@@ -250,9 +252,10 @@ if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
     print_pass "$RUNNING_CONTAINERS container(s) running"
 
     if [ "$VERBOSE" -eq 1 ]; then
-      docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null | while read line; do
+      # Use process substitution to avoid subshell variable scoping issues
+      while read line; do
         print_info "  $line"
-      done
+      done < <(docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null)
     fi
   fi
 fi
