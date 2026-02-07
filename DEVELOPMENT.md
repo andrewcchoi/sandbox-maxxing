@@ -265,10 +265,7 @@ This demonstrates the plugin's smart detection - it generates configurations app
 When plugin templates change, regenerate the devcontainer to stay current:
 
 ```bash
-# Use the regeneration script
-./.internal/scripts/regenerate-devcontainer.sh
-
-# Or manually:
+# Regenerate using the plugin:
 # 1. Backup current config
 mv .devcontainer .devcontainer.backup
 
