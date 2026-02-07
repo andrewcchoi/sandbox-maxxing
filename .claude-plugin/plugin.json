@@ -1,6 +1,6 @@
 {
   "name": "sandboxxer",
-  "version": "4.11.2",
+  "version": "4.11.3",
   "description": "Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Base stack includes Python 3.12 + Node 20, with optional languages (Go, Rust, Ruby, PHP, C++) and network firewall.",
   "author": {
     "name": "shadow developer",
