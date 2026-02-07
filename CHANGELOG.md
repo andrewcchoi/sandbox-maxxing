@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.11.2] - 2026-02-06
+
+### Changed
+- **Docker Safety Hook**: Destructive commands (prune, rm, rmi, kill, compose down) now prompt for permission instead of auto-blocking
+  - Provides better user experience while maintaining safety warnings
+  - Users can proceed after explicit confirmation
+
+### Fixed
+- **Hooks**: Removed Windows path normalization pattern (`${CLAUDE_PLUGIN_ROOT//\\\\//}`) that caused infinite loops on Linux/WSL
+- **Documentation**: Fixed version badge mismatch (README showed 4.11.1)
+- **Documentation**: Fixed broken reference to non-existent `tests/README.md` in CONTRIBUTING.md
+- **Documentation**: Removed reference to non-existent `.internal/scripts/regenerate-devcontainer.sh`
+- **Documentation**: Replaced placeholder security contact with GitHub private vulnerability reporting link
+- **Documentation**: Fixed incomplete sentence in skills/README.md
+
+### Added
+- **Documentation**: Troubleshooting guide for path normalization infinite loop issue in hooks/README.md
+- **Documentation**: Added docs/features/README.md directory index
+- **Documentation**: Added agents/README.md directory index with agent concepts explanation
+
 ## [4.11.1] - 2026-02-06
 
 ### Fixed

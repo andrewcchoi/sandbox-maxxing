@@ -167,7 +167,7 @@ When making changes, always test them using the plugin's own devcontainer to ens
 
 ## Testing
 
-See `tests/README.md` for manual test procedures.
+See [`docs/TESTING.md`](docs/TESTING.md) for manual test procedures.
 
 Run all tests before submitting:
 - Interactive quickstart setup test
