@@ -34,8 +34,8 @@ if echo "$COMMAND" | grep -qiE 'docker.*(\bprune\b|\brm\b|\brmi\b|\bkill\b|compo
 {
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
-    "permissionDecision": "deny",
-    "permissionDecisionReason": "BLOCKED: Destructive Docker command detected (prune/rm/rmi/kill/compose down). These commands can cause data loss."
+    "permissionDecision": "ask",
+    "permissionDecisionReason": "Destructive Docker command detected (prune/rm/rmi/kill/compose down). These commands can cause data loss. Allow?"
   }
 }
 EOF

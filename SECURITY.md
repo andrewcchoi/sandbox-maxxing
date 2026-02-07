@@ -32,11 +32,9 @@ Instead, please report security issues through one of these channels:
    - Potential impact
    - Suggested fix (if you have one)
 
-#### Alternative: Email
+#### Alternative: GitHub Private Vulnerability Reporting
 
-If you cannot use GitHub Security Advisories, email the maintainer directly:
-- Email: [Provide your security contact email or use GitHub private vulnerability reporting]
-- Subject: "[SECURITY] Description of Issue"
+If you cannot use GitHub Security Advisories, use [GitHub's private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability) feature which is enabled for this repository.
 
 ### What to Include
 
