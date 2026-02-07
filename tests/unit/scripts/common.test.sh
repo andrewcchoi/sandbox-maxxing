@@ -6,8 +6,21 @@
 load '../../helpers/test_helper'
 
 setup() {
-  # Source common functions
+  # Standard test setup (from test_helper.bash)
+  export TEST_TEMP_DIR="$(mktemp -d)"
+  export ORIGINAL_DIR="$(pwd)"
+  export PLUGIN_ROOT="${ORIGINAL_DIR}"
+
+  # Source common functions for this test file
   source "${PLUGIN_ROOT}/scripts/common.sh"
+}
+
+teardown() {
+  # Clean up temporary directory
+  [ -n "${TEST_TEMP_DIR:-}" ] && rm -rf "${TEST_TEMP_DIR}"
+
+  # Return to original directory
+  [ -n "${ORIGINAL_DIR:-}" ] && cd "${ORIGINAL_DIR}"
 }
 
 # ============================================================================
