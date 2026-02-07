@@ -75,8 +75,13 @@ merge_env_value() {
     fi
   else
     # Append new key
-    # Ensure trailing newline before appending
-    [ -f "$target_file" ] && [ -n "$(tail -c 1 "$target_file" 2>/dev/null)" ] && echo "" >> "$target_file"
+    # Ensure trailing newline before appending (handles CRLF and edge cases)
+    if [ -f "$target_file" ] && [ -s "$target_file" ]; then
+      # Check if file ends with newline (works for both LF and CRLF)
+      if [ "$(tail -c 1 "$target_file" | wc -l)" -eq 0 ]; then
+        echo "" >> "$target_file"
+      fi
+    fi
     printf '%s=%s\n' "$key" "$value" >> "$target_file"
   fi
 }
