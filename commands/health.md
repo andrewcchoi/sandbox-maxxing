@@ -1,6 +1,6 @@
 ---
-description: Comprehensive health check for sandbox-maxxing environment
-argument-hint: "[--verbose]"
+description: Comprehensive health check for sandbox-maxxing environment (proxy-safe by default)
+argument-hint: "[--verbose] [--include-network]"
 allowed-tools: [Bash]
 ---
 
@@ -46,13 +46,14 @@ else
   NC=''
 fi
 
-# Check verbose flag
+# Check flags
 VERBOSE=0
+INCLUDE_NETWORK=0
 for arg in "$@"; do
-  if [ "$arg" = "--verbose" ] || [ "$arg" = "-v" ]; then
-    VERBOSE=1
-    break
-  fi
+  case "$arg" in
+    --verbose|-v) VERBOSE=1 ;;
+    --include-network) INCLUDE_NETWORK=1 ;;
+  esac
 done
 
 # Counters
@@ -357,6 +358,41 @@ else
 fi
 
 # ============================================================================
+# Check 11: Network Connectivity (opt-in, may fail behind proxy)
+# ============================================================================
+print_section "Network Connectivity"
+
+if [ "$INCLUDE_NETWORK" -eq 1 ]; then
+  # Detect proxy
+  PROXY="${http_proxy:-${HTTP_PROXY:-}}"
+  if [ -n "$PROXY" ]; then
+    print_info "Proxy detected: $PROXY"
+  fi
+
+  check_connectivity() {
+    local host=$1
+    local name=$2
+
+    if curl -s --connect-timeout 5 --max-time 10 "https://$host" >/dev/null 2>&1; then
+      print_pass "$name ($host) reachable"
+    elif curl -s --connect-timeout 5 --max-time 10 "http://$host" >/dev/null 2>&1; then
+      print_warn "$name ($host) reachable via HTTP only"
+    else
+      print_fail "$name ($host) unreachable"
+      print_info "  May be blocked by proxy or firewall"
+    fi
+  }
+
+  check_connectivity "api.anthropic.com" "Anthropic API"
+  check_connectivity "ghcr.io" "GitHub Container Registry"
+  check_connectivity "registry.npmjs.org" "npm Registry"
+  check_connectivity "pypi.org" "PyPI"
+else
+  print_info "Skipped (use --include-network to enable)"
+  print_info "Note: Network checks may fail behind corporate proxies"
+fi
+
+# ============================================================================
 # Summary
 # ============================================================================
 echo ""
@@ -396,7 +432,7 @@ fi
 
 ## Usage Examples
 
-### Basic Health Check
+### Basic Health Check (proxy-safe)
 ```
 /sandboxxer:health
 ```
@@ -406,26 +442,43 @@ fi
 /sandboxxer:health --verbose
 ```
 
+### Include Network Connectivity Tests
+```
+/sandboxxer:health --include-network
+```
+
+> ⚠️ **Proxy Warning**: Network checks may fail behind corporate proxies.
+> Use `--include-network` only when you have direct internet access.
+
+### Combined Flags
+```
+/sandboxxer:health --verbose --include-network
+```
+
 ### In CI/CD Pipeline
 ```bash
 # Run health check and fail pipeline if issues found
 /sandboxxer:health || exit 1
+
+# Include network tests in CI (assumes no proxy)
+/sandboxxer:health --include-network || exit 1
 ```
 
 ## What Gets Checked
 
-| Category | Checks | Impact |
-|----------|--------|--------|
-| **Docker** | Daemon running, version ≥20.10 | Critical |
-| **Docker Compose** | v2 plugin available | Critical |
-| **Tools** | jq (required), git, gh (optional) | Critical/Optional |
-| **VS Code** | Installed, DevContainers extension | Optional |
-| **Disk Space** | ≥10GB recommended, ≥5GB minimum | Critical |
-| **Ports** | 8000, 3000, 5432, 6379 availability | Info |
-| **Containers** | Running container status | Info |
-| **Config** | devcontainer.json, docker-compose.yml validity | Critical |
-| **Services** | PostgreSQL, Redis health (if running) | Info |
-| **Plugin** | docker-safety-hook.sh presence/permissions | Optional |
+| Category | Checks | Impact | Proxy Safe |
+|----------|--------|--------|:----------:|
+| **Docker** | Daemon running, version ≥20.10 | Critical | ✅ |
+| **Docker Compose** | v2 plugin available | Critical | ✅ |
+| **Tools** | jq (required), git, gh (optional) | Critical/Optional | ✅ |
+| **VS Code** | Installed, DevContainers extension | Optional | ✅ |
+| **Disk Space** | ≥10GB recommended, ≥5GB minimum | Critical | ✅ |
+| **Ports** | 8000, 3000, 5432, 6379 availability | Info | ✅ |
+| **Containers** | Running container status | Info | ✅ |
+| **Config** | devcontainer.json, docker-compose.yml validity | Critical | ✅ |
+| **Services** | PostgreSQL, Redis health (if running) | Info | ✅ |
+| **Plugin** | docker-safety-hook.sh presence/permissions | Optional | ✅ |
+| **Network** | API/registry connectivity (opt-in) | Info | ⚠️ Requires `--include-network` |
 
 ## Exit Codes
 

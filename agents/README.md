@@ -8,6 +8,7 @@ This directory contains agent definitions for the sandboxxer plugin. Agents are 
 |-------|-------------|-------|
 | [devcontainer-generator.md](devcontainer-generator.md) | Generates DevContainer configurations from templates | haiku |
 | [devcontainer-validator.md](devcontainer-validator.md) | Comprehensive validation: file locations, JSON/YAML syntax, content structure | haiku |
+| [interactive-troubleshooter.md](interactive-troubleshooter.md) | Automated diagnostics: runs checks, identifies issues, provides targeted fixes | haiku |
 
 ## Agent Details
 
@@ -37,6 +38,27 @@ Performs **6-phase comprehensive validation**:
 - "verify devcontainer setup"
 - JSON/YAML parse errors during DevContainer build
 
+### interactive-troubleshooter
+
+**Actively diagnoses** sandbox issues by running commands and analyzing system state:
+
+1. **Quick Health Check** - Docker status, containers, files
+2. **Problem Categorization** - Startup, connectivity, network, permissions
+3. **Category-Specific Diagnostics** - Targeted checks based on issue type
+4. **Fix Suggestions** - Specific commands to resolve issues
+5. **Verification** - Commands to confirm fix worked
+
+**Triggers:**
+- "My container won't start"
+- "Connection refused" errors
+- "npm/pip install timing out"
+- "Troubleshoot my sandbox"
+- Any sandbox error requiring active investigation
+
+**Difference from troubleshoot skill:**
+- **Skill** = documentation/guidance (static)
+- **Agent** = active investigation (runs commands, analyzes output)
+
 ## How Agents Work
 
 Agents are invoked automatically by the plugin when specific tasks need to be performed. They follow structured prompts to ensure consistent, high-quality output.
@@ -55,6 +77,7 @@ Agents can have restricted tool access to enforce specific workflows:
 |-------|-------|--------|
 | devcontainer-generator | Bash, Read, Glob | Forces template copying (no Write/Edit) |
 | devcontainer-validator | Bash, Glob, Read | Read-only validation |
+| interactive-troubleshooter | Bash, Read, Glob | Diagnostic commands, read config files |
 
 ## See Also
 
