@@ -254,7 +254,7 @@ User: "I'm getting a connection refused error from PostgreSQL"
 Claude: [Automatically uses sandboxxer-troubleshoot skill]
 
 User: "Set up a secure development environment"
-Claude: [Automatically uses  skill]
+Claude: [Suggests /sandboxxer:quickstart command]
 ```
 
 ### Skill Workflow
