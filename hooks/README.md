@@ -4,9 +4,11 @@ This directory contains Claude Code hooks for the sandboxxer plugin. Hooks exten
 
 ## Available Hooks
 
-### 1. Docker Safety Hook
+### 1. Docker Safety Hook (ACTIVE)
 
 Prompts for confirmation on potentially destructive Docker commands.
+
+**Status:** ✅ **CONFIGURED AND ACTIVE** - This hook is enabled in hooks.json and will automatically protect your Docker operations.
 
 **Trigger:** Before tool use (PreToolUse event)
 
@@ -14,6 +16,8 @@ Prompts for confirmation on potentially destructive Docker commands.
 - **Prompted:** `docker prune`, `docker rm`, `docker rmi`, `docker kill`, `docker compose down` (destructive operations that can cause data loss)
 - **Prompted:** `docker stop`, `docker restart`, `docker pause` (disruptive operations that can cause service interruption)
 - **Prompted:** `docker --privileged`, `--cap-add=ALL`, `--pid=host`, `--net=host`, root volume mounts (security risks requiring elevated access)
+
+**Timeout:** 5 seconds
 
 ### 2. Knowledge Sync Hooks
 
@@ -46,9 +50,11 @@ Performs final sync and cleanup when a Claude session ends.
 
 **Timeout:** 15 seconds
 
-### 3. LangSmith Hook
+### 3. LangSmith Hook (OPTIONAL - NOT CONFIGURED)
 
 Automatically sends Claude Code traces to LangSmith for observability and debugging.
+
+**Status:** ⚠️ **NOT CONFIGURED** - This hook exists but is not enabled in hooks.json. To enable it, uncomment the Stop hook configuration and set the required environment variables.
 
 **Trigger:** After each Claude response (Stop event)
 

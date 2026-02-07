@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.12.0] - 2026-02-06
+
+### Added
+- **Hooks**: Activated docker-safety-hook in hooks.json - Docker safety protection now enabled by default
+  - Prompts for confirmation on destructive commands (prune, rm, rmi, kill, compose down)
+  - Prompts for disruptive operations (stop, restart, pause)
+  - Prompts for privileged containers and security risks
+- **Documentation**: Created hooks.example.json showing how to enable optional LangSmith tracing hook
+- **Documentation**: Updated hooks/README.md with activation status indicators (ACTIVE vs NOT CONFIGURED)
+
+### Changed
+- **Agents**: Enhanced devcontainer-generator whenToUse field with concrete triggering examples
+  - Added 3 context-specific examples showing when to invoke the agent
+  - Improved natural language phrases for intelligent agent routing
+- **Agents**: Enhanced devcontainer-validator whenToUse field with concrete triggering examples
+  - Added 3 validation scenarios with user-assistant exchanges
+  - Better integration with troubleshooting workflows
+
+### Fixed
+- **Critical**: docker-safety-hook was implemented but not configured - security protection was inactive
+  - Hook existed since earlier versions but was never added to hooks.json
+  - Users had no Docker command safety net despite hook being available
+- **Critical (Windows)**: run-hook.cmd didn't forward stdin to hook scripts on Windows
+  - Git Bash `-c` flag doesn't automatically pass stdin through
+  - docker-safety-hook.sh would receive empty input on Windows, causing it to exit 0 (allow all)
+  - Fixed by explicitly redirecting stdin with `<CON` in the CMD portion
+  - Unix/Linux/macOS/WSL users were not affected (stdin inheritance works correctly)
+- **Agent Discovery**: Poor whenToUse descriptions prevented intelligent agent routing
+  - Agents said "Manually invoked" without trigger phrases
+  - Claude couldn't auto-dispatch agents appropriately
+
 ## [4.11.2] - 2026-02-06
 
 ### Changed
