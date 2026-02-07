@@ -6,13 +6,14 @@ This directory contains Claude Code hooks for the sandboxxer plugin. Hooks exten
 
 ### 1. Docker Safety Hook
 
-Blocks or prompts for confirmation on potentially destructive Docker commands.
+Prompts for confirmation on potentially destructive Docker commands.
 
 **Trigger:** Before tool use (PreToolUse event)
 
 **Protections:**
-- **Blocked:** `docker prune`, `docker rm -f`, `docker rmi -f`
-- **Prompted:** `docker --privileged` (requires explicit approval)
+- **Prompted:** `docker prune`, `docker rm`, `docker rmi`, `docker kill`, `docker compose down` (destructive operations that can cause data loss)
+- **Prompted:** `docker stop`, `docker restart`, `docker pause` (disruptive operations that can cause service interruption)
+- **Prompted:** `docker --privileged`, `--cap-add=ALL`, `--pid=host`, `--net=host`, root volume mounts (security risks requiring elevated access)
 
 ### 2. Knowledge Sync Hooks
 
@@ -103,6 +104,21 @@ Claude Code supports these hook events:
 2. Check script has execute permissions: `chmod +x script.sh`
 3. Enable debug logging: `CC_LANGSMITH_DEBUG=true`
 4. Check log file: `~/.claude/state/hook.log`
+
+### Infinite loop or hooks hanging (Linux/WSL)
+
+**Symptom:** Claude Code hangs or enters an infinite loop when executing hooks, particularly on Linux or WSL environments.
+
+**Cause:** Windows path normalization pattern in hooks.json is incompatible with Linux shells. The pattern `${CLAUDE_PLUGIN_ROOT//\\\\//}` attempts to replace backslashes with forward slashes for Windows compatibility, but causes shell parsing issues on Unix-like systems.
+
+**Solution:** Remove the path normalization pattern from hook commands in hooks.json:
+
+```diff
+- "command": "\"${CLAUDE_PLUGIN_ROOT//\\\\//}/hooks/run-hook.cmd\" script.sh"
++ "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" script.sh"
+```
+
+**Note:** This issue was fixed in commit 8636e07. If you're experiencing this problem, ensure you're using the latest hooks.json configuration without the `//\\\\//` pattern.
 
 ### Windows-specific issues
 
