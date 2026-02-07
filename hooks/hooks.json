@@ -21,29 +21,6 @@
           }
         ]
       }
-    ],
-    "PreToolUse_DISABLED": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" docker-safety-hook.sh",
-            "timeout": 5000
-          }
-        ]
-      }
-    ],
-    "Stop_DISABLED": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" langsmith-hook.sh",
-            "timeout": 30000
-          }
-        ]
-      }
     ]
   }
 }
