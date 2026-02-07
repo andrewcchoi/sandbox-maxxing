@@ -7,24 +7,19 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        // Python Development (curated for domain allowlist configuration)
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
 
-        // JavaScript/TypeScript Development
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
 
-        // Database Tools
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
 
-        // Docker & DevContainers
         "ms-azuretools.vscode-docker",
         "ms-vscode-remote.remote-containers",
 
-        // Git Integration
         "eamodio.gitlens"
       ],
       "settings": {
