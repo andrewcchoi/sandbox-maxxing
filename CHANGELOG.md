@@ -4,6 +4,74 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.12.1] - 2026-02-07
+
+### Added
+- **Testing**: Comprehensive BATS test suite with 86 test cases
+  - `docker-safety-hook.test.sh`: 24 tests for Docker safety patterns
+  - `sudo-check.test.sh`: 10 tests for sudo detection and timeout
+  - `package-install.test.sh`: 16 tests for installation logic
+  - `common.test.sh`: 36 tests for utility functions
+- **Testing Infrastructure**: Test helpers and fixtures
+  - `tests/helpers/test_helper.bash`: Common assertions and utilities
+  - `tests/fixtures/sudo-check-function.sh`: Extracted testable function
+  - `tests/README.md`: Complete testing documentation (220 lines)
+- **Utilities**: New `scripts/common.sh` library with 6 functions
+  - `sanitize_project_name()`: Docker-safe project name conversion
+  - `merge_env_value()`: Safe .env file updates (handles |, &, \)
+  - `port_in_use()`: Port availability check (lsof/ss/netstat fallback)
+  - `find_available_port()`: Find next free port with exclusions
+  - `find_plugin_root()`: Locate plugin (env/dev/installed modes)
+  - `validate_templates()`: Verify template files exist
+- **Commands**: New `/sandboxxer:health` comprehensive diagnostics
+  - 10 check categories: Docker, Compose, tools, VS Code, disk, ports, containers, config, services, hooks
+  - Color-coded output with actionable fix suggestions
+  - Verbose mode (`--verbose`) for detailed information
+  - CI/CD friendly exit codes (0=pass, 1=fail)
+
+### Changed
+- **Commands**: Refactored `yolo-docker-maxxing.md` (421 → 227 lines, 46% reduction)
+  - Unified normal and portless modes into single bash block
+  - Automatic mode detection from `--portless` flag
+  - Sources `scripts/common.sh` for shared functions
+  - Zero remaining code duplication
+
+### Technical Details
+- Test mocking strategy avoids privileged operations (PATH manipulation, temp dirs)
+- Common functions eliminate 160 lines of duplication (38% reduction)
+- Health command checks: Docker daemon ≥20.10, Compose v2, jq, git, VS Code, disk ≥5GB, ports 8000/3000/5432/6379
+
+## [4.12.0] - 2026-02-06
+
+### Added
+- **Hooks**: Activated docker-safety-hook in hooks.json - Docker safety protection now enabled by default
+  - Prompts for confirmation on destructive commands (prune, rm, rmi, kill, compose down)
+  - Prompts for disruptive operations (stop, restart, pause)
+  - Prompts for privileged containers and security risks
+- **Documentation**: Created hooks.example.json showing how to enable optional LangSmith tracing hook
+- **Documentation**: Updated hooks/README.md with activation status indicators (ACTIVE vs NOT CONFIGURED)
+
+### Changed
+- **Agents**: Enhanced devcontainer-generator whenToUse field with concrete triggering examples
+  - Added 3 context-specific examples showing when to invoke the agent
+  - Improved natural language phrases for intelligent agent routing
+- **Agents**: Enhanced devcontainer-validator whenToUse field with concrete triggering examples
+  - Added 3 validation scenarios with user-assistant exchanges
+  - Better integration with troubleshooting workflows
+
+### Fixed
+- **Critical**: docker-safety-hook was implemented but not configured - security protection was inactive
+  - Hook existed since earlier versions but was never added to hooks.json
+  - Users had no Docker command safety net despite hook being available
+- **Critical (Windows)**: run-hook.cmd didn't forward stdin to hook scripts on Windows
+  - Git Bash `-c` flag doesn't automatically pass stdin through
+  - docker-safety-hook.sh would receive empty input on Windows, causing it to exit 0 (allow all)
+  - Fixed by explicitly redirecting stdin with `<CON` in the CMD portion
+  - Unix/Linux/macOS/WSL users were not affected (stdin inheritance works correctly)
+- **Agent Discovery**: Poor whenToUse descriptions prevented intelligent agent routing
+  - Agents said "Manually invoked" without trigger phrases
+  - Claude couldn't auto-dispatch agents appropriately
+
 ## [4.11.2] - 2026-02-06
 
 ### Changed

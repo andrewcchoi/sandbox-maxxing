@@ -35,6 +35,18 @@
           }
         ]
       }
+    ],
+    "_comment_stop_hook": "OPTIONAL: Uncomment the Stop hook below to enable LangSmith tracing. Requires TRACE_TO_LANGSMITH=true and CC_LANGSMITH_API_KEY environment variables. See langsmith-hook.sh for details.",
+    "_Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" langsmith-hook.sh",
+            "timeout": 30000
+          }
+        ]
+      }
     ]
   }
 }

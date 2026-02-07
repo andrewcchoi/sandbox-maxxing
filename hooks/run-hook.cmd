@@ -29,7 +29,7 @@ if "%BASH_EXE%"=="" (
     echo Git Bash not found. Please install Git for Windows. >&2
     exit /b 1
 )
-"%BASH_EXE%" -l -c "cd \"$(cygpath -u \"%SCRIPT_DIR%\")\" && \"./%SCRIPT_NAME%\""
+"%BASH_EXE%" -l -c "cd \"$(cygpath -u \"%SCRIPT_DIR%\")\" && \"./%SCRIPT_NAME%\"" <CON
 exit /b
 CMDBLOCK
 

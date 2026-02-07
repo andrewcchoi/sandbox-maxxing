@@ -1,7 +1,31 @@
 ---
 name: devcontainer-generator
 description: Generates DevContainer files by copying templates and customizing placeholders. Use this agent for manual devcontainer setup file generation.
-whenToUse: Manually invoked when you need to generate DevContainer files from templates. This agent copies templates and replaces placeholders using bash commands only. NOT automatically triggered.
+whenToUse: |
+  Use this agent when the user explicitly asks to "generate devcontainer files", "create devcontainer setup from templates",
+  "set up devcontainer configuration", "copy devcontainer templates", or when you need to manually create DevContainer
+  configuration files from the template system. This agent enforces template-based workflow by design.
+
+  <example>
+  Context: User wants to manually create DevContainer files
+  user: "Generate the devcontainer files for my Python project"
+  assistant: "I'll use the devcontainer-generator agent to create the files from templates."
+  <commentary>User explicitly requested devcontainer file generation, trigger the agent</commentary>
+  </example>
+
+  <example>
+  Context: User wants custom DevContainer setup outside the wizard
+  user: "Create devcontainer setup with PostgreSQL support"
+  assistant: "I'll use the devcontainer-generator agent to set up the DevContainer with PostgreSQL."
+  <commentary>Manual setup request triggers the generator agent</commentary>
+  </example>
+
+  <example>
+  Context: User is troubleshooting and needs to regenerate files
+  user: "Can you recreate my devcontainer files from scratch?"
+  assistant: "I'll use the devcontainer-generator agent to regenerate the DevContainer configuration."
+  <commentary>Regeneration request triggers the agent</commentary>
+  </example>
 model: haiku
 color: blue
 tools: ["Bash", "Read", "Glob"]

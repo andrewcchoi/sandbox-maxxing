@@ -19,6 +19,7 @@ Use this skill when:
 - Git or GitHub CLI authentication problems
 - Claude API authentication failures
 - System package installation errors
+- Sudo permission issues or credential timeout problems
 
 Do NOT use this skill when:
 - Setting up a new native Linux installation (use `/sandboxxer:yolo-linux-maxxing` instead)
@@ -78,6 +79,7 @@ Ask user to describe the issue, then categorize:
 - **PATH/Environment Issues**: Tools not found after installation
 - **Git/GitHub CLI Issues**: Authentication, configuration problems
 - **Authentication Issues**: Claude auth login failures, API key problems
+- **Sudo/Permission Issues**: Credential timeouts, sudoers access, privilege errors
 
 ### 2. Gather Diagnostic Information
 
@@ -444,6 +446,125 @@ sudo apt-get clean
 df -h
 ```
 
+#### Sudo Credential Timeout During Installation
+
+**Issue**: Installation steps hang or fail waiting for sudo password mid-way through setup
+
+**Cause**: The `yolo-linux-maxxing` installation validates sudo credentials at the start, but credentials expire after ~15 minutes (default `timestamp_timeout`). If you take time between steps, subsequent sudo commands will prompt for password again.
+
+**Prevention - Refresh credentials before each step**:
+```bash
+# Run before each step that uses sudo
+sudo -v
+```
+
+**Fix 1 - Enter password when prompted**:
+If a command hangs, it may be waiting for your sudo password. Type your password and press Enter.
+
+**Fix 2 - Refresh sudo credentials manually**:
+```bash
+# Refresh sudo credentials (will prompt if expired)
+sudo -v
+
+# Then retry the failed command
+```
+
+**Fix 3 - Extend sudo timeout temporarily**:
+```bash
+# Increase timeout to 60 minutes for this session
+sudo visudo
+# Add/modify: Defaults timestamp_timeout=60
+```
+
+#### User Not in Sudoers Group
+
+**Issue**: `sudo: user not in sudoers file`
+
+**Cause**: Your user account doesn't have sudo privileges
+
+**Fix 1 - Add user to sudo group (requires root access)**:
+```bash
+# If you have root password
+su -
+usermod -aG sudo your_username
+exit
+# Log out and back in
+```
+
+**Fix 2 - WSL2: Reset to default user**:
+```powershell
+# From Windows PowerShell (as Admin)
+wsl -d Ubuntu -u root
+usermod -aG sudo your_username
+exit
+```
+
+#### Partial GitHub CLI Installation (Cleanup)
+
+**Issue**: GitHub CLI installation failed partway through, leaving orphaned files
+
+**Cause**: Sudo timeout or network failure during the multi-step `gh` installation
+
+**Fix - Clean up and retry**:
+```bash
+# Remove partial installation artifacts
+sudo rm -f /etc/apt/keyrings/githubcli-archive-keyring.gpg
+sudo rm -f /etc/apt/sources.list.d/github-cli.list
+
+# Update apt to clear stale references
+sudo apt update
+
+# Retry GitHub CLI installation
+# (copy the full command from /sandboxxer:yolo-linux-maxxing Step 3)
+```
+
+#### Seccomp Filter Not Detected
+
+**Issue**: `/sandbox` shows "seccomp filter: not installed" after running npm install
+
+**Cause**: On Debian/Ubuntu, npm global packages require sudo to install to `/usr/lib/node_modules`. Without sudo, the package installs to user directories but the seccomp filter binary is not placed in the system location where Claude Code expects it.
+
+**Fix 1 - Install with sudo**:
+```bash
+# Install sandbox-runtime with sudo
+sudo npm install -g @anthropic-ai/sandbox-runtime
+
+# Verify installation
+npm list -g @anthropic-ai/sandbox-runtime
+
+# Test in Claude Code
+# Run /sandbox and check for "seccomp filter: installed"
+```
+
+**Fix 2 - If Node.js not installed first**:
+```bash
+# Install Node.js 20 (LTS)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Verify Node.js installation
+node --version
+npm --version
+
+# Then install sandbox-runtime with sudo
+sudo npm install -g @anthropic-ai/sandbox-runtime
+
+# Verify installation
+npm list -g @anthropic-ai/sandbox-runtime
+```
+
+**Fix 3 - Reinstall if already installed without sudo**:
+```bash
+# Remove existing installation (if installed without sudo)
+npm uninstall -g @anthropic-ai/sandbox-runtime
+
+# Reinstall with sudo
+sudo npm install -g @anthropic-ai/sandbox-runtime
+
+# Verify installation
+npm list -g @anthropic-ai/sandbox-runtime
+```
+
 ### 4. Verify the Fix
 
 After applying fixes, verify:
@@ -480,6 +601,14 @@ which gh
 
 ## Common Issues Quick Reference
 
+### "sudo: a password is required"
+**Cause**: Sudo credentials expired during multi-step installation
+**Fix**: Run `sudo -v` to refresh credentials, then retry the command
+
+### "sudo: user not in sudoers file"
+**Cause**: User account lacks sudo privileges
+**Fix**: Add user to sudo group via `su -` or WSL root access
+
 ### "claude: command not found"
 **Cause**: PATH not configured or shell not reloaded
 **Fix**: Run `source ~/.bashrc` and verify PATH includes Claude install location
@@ -511,6 +640,10 @@ which gh
 ### Changes to ~/.bashrc not taking effect
 **Cause**: Shell not reloaded or wrong shell configuration file
 **Fix**: Run `source ~/.bashrc` or restart terminal
+
+### "seccomp filter: not installed"
+**Cause**: npm package not installed globally with sudo, or Node.js not installed
+**Fix**: Run `sudo npm install -g @anthropic-ai/sandbox-runtime` (requires Node.js 20+ installed first)
 
 ## Reset Everything (Last Resort)
 

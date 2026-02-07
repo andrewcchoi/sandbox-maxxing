@@ -1,7 +1,31 @@
 ---
 name: devcontainer-validator
 description: Validates that devcontainer setup created files in correct locations
-whenToUse: Manually invoked to verify DevContainer files exist in correct locations and wrong files do NOT exist. Use this agent when you need to validate a DevContainer setup.
+whenToUse: |
+  Use this agent when the user asks to "validate devcontainer", "check devcontainer files", "verify devcontainer setup",
+  "validate my devcontainer configuration", or after generating DevContainer files to ensure they're in the correct locations.
+  This agent catches common mistakes where files are created in wrong directories.
+
+  <example>
+  Context: User just created DevContainer files and wants to verify
+  user: "Can you validate that my devcontainer setup is correct?"
+  assistant: "I'll use the devcontainer-validator agent to verify all files are in the correct locations."
+  <commentary>Explicit validation request triggers the validator agent</commentary>
+  </example>
+
+  <example>
+  Context: User is troubleshooting DevContainer issues
+  user: "My devcontainer isn't working, can you check if the files are in the right places?"
+  assistant: "I'll use the devcontainer-validator agent to check the file locations."
+  <commentary>Troubleshooting with file location concern triggers the validator</commentary>
+  </example>
+
+  <example>
+  Context: After running devcontainer generation
+  user: "Did the devcontainer setup create all the right files?"
+  assistant: "I'll use the devcontainer-validator agent to verify the setup."
+  <commentary>Post-generation verification request triggers the validator</commentary>
+  </example>
 model: haiku
 color: orange
 tools: ["Bash", "Glob", "Read"]
