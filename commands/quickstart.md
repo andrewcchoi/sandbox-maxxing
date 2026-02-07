@@ -143,22 +143,10 @@ fi
 If port conflicts were detected in Step 0, resolve them automatically or interactively.
 
 ```bash
-# Function to find the next available port
-find_available_port() {
-  local port=$1
-  local max_port=65535
-  while [ $port -le $max_port ]; do
-    if ! (lsof -i :$port > /dev/null 2>&1 || netstat -tuln 2>/dev/null | grep -q ":$port "); then
-      echo $port
-      return 0
-    fi
-    port=$((port + 1))
-  done
-  echo "ERROR: No available port found" >&2
-  return 1
-}
+# Source common utility functions
+source "${CLAUDE_PLUGIN_ROOT}/scripts/common.sh"
 
-# Only run if conflicts were detected
+# Only run if conflicts were detected (using find_available_port from common.sh)
 if [ "$PORT_CONFLICTS_FOUND" = "true" ]; then
   echo "Port conflicts detected:"
   for port in "${CONFLICTED[@]}"; do
@@ -814,16 +802,10 @@ echo "  Templates found at: $PLUGIN_ROOT/skills/_shared/templates/";
 ## Step 10: Build Dockerfile
 
 ```bash
-# Sanitize project name for Docker compatibility
-sanitize_project_name() {
-  local name="$1"
-  local sanitized
-  sanitized=$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
-  sanitized=$(echo "$sanitized" | sed 's/^-*//;s/-*$//;s/--*/-/g')
-  [ -z "$sanitized" ] && sanitized="sandbox-app"
-  echo "$sanitized"
-}
+# Source common utility functions
+source "${CLAUDE_PLUGIN_ROOT}/scripts/common.sh"
 
+# Sanitize project name for Docker compatibility (using sanitize_project_name from common.sh)
 RAW_PROJECT_NAME="$(basename $(pwd))"
 PROJECT_NAME="$(sanitize_project_name "$RAW_PROJECT_NAME")"
 if [ "$PROJECT_NAME" != "$RAW_PROJECT_NAME" ]; then

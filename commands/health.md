@@ -28,6 +28,9 @@ Performs comprehensive diagnostics of your sandbox-maxxing environment, checking
 
 set -uo pipefail
 
+# Source common utility functions
+source "${CLAUDE_PLUGIN_ROOT}/scripts/common.sh"
+
 # Colors for output (if terminal supports it)
 if [ -t 1 ]; then
   RED='\033[0;31m'
@@ -197,7 +200,9 @@ fi
 # ============================================================================
 print_section "Disk Space"
 
-AVAILABLE_GB=$(df -BG . | awk 'NR==2 {print $4}' | sed 's/G//')
+# Cross-platform disk space check (df -BG is GNU-specific, use -k for compatibility)
+AVAILABLE_KB=$(df -k . | awk 'NR==2 {print $4}')
+AVAILABLE_GB=$((AVAILABLE_KB / 1024 / 1024))
 if [ "$AVAILABLE_GB" -ge 10 ]; then
   print_pass "Disk space sufficient (${AVAILABLE_GB}GB available)"
 elif [ "$AVAILABLE_GB" -ge 5 ]; then
@@ -212,20 +217,7 @@ fi
 # ============================================================================
 print_section "Port Availability"
 
-# Function to check if port is in use
-port_in_use() {
-  local port=$1
-  if command -v lsof >/dev/null 2>&1; then
-    lsof -i ":$port" >/dev/null 2>&1 && return 0
-  elif command -v ss >/dev/null 2>&1; then
-    ss -tuln 2>/dev/null | grep -q ":$port " && return 0
-  elif command -v netstat >/dev/null 2>&1; then
-    netstat -tuln 2>/dev/null | grep -q ":$port " && return 0
-  fi
-  return 1
-}
-
-# Check standard ports
+# Check standard ports (using port_in_use from common.sh)
 STANDARD_PORTS="8000:App 3000:Frontend 5432:PostgreSQL 6379:Redis"
 PORTS_BUSY=0
 for entry in $STANDARD_PORTS; do
@@ -260,9 +252,10 @@ if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
     print_pass "$RUNNING_CONTAINERS container(s) running"
 
     if [ "$VERBOSE" -eq 1 ]; then
-      docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null | while read line; do
+      # Use process substitution to avoid subshell variable scoping issues
+      while read line; do
         print_info "  $line"
-      done
+      done < <(docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null)
     fi
   fi
 fi
@@ -346,24 +339,8 @@ fi
 # ============================================================================
 print_section "Plugin Configuration"
 
-# Try to find plugin root
-PLUGIN_ROOT=""
-if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
-  PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT//\\//}"
-elif [ -f "hooks/docker-safety-hook.sh" ]; then
-  PLUGIN_ROOT="."
-elif [ -d "$HOME/.claude/plugins" ]; then
-  PLUGIN_JSON=$(find "$HOME/.claude/plugins" -type f -name "plugin.json" \
-    -exec grep -l '"name".*:.*"sandboxxer"' {} \; 2>/dev/null | head -1)
-  if [ -n "$PLUGIN_JSON" ]; then
-    PLUGIN_DIR=$(dirname "$PLUGIN_JSON")
-    if [ "$(basename "$PLUGIN_DIR")" = ".claude-plugin" ]; then
-      PLUGIN_ROOT=$(dirname "$PLUGIN_DIR")
-    else
-      PLUGIN_ROOT="$PLUGIN_DIR"
-    fi
-  fi
-fi
+# Find plugin root using common.sh function
+PLUGIN_ROOT=$(find_plugin_root 2>/dev/null || echo "")
 
 if [ -n "$PLUGIN_ROOT" ] && [ -f "$PLUGIN_ROOT/hooks/docker-safety-hook.sh" ]; then
   print_pass "docker-safety-hook.sh found"

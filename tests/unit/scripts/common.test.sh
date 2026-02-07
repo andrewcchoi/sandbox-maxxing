@@ -6,8 +6,21 @@
 load '../../helpers/test_helper'
 
 setup() {
-  # Source common functions
+  # Standard test setup (from test_helper.bash)
+  export TEST_TEMP_DIR="$(mktemp -d)"
+  export ORIGINAL_DIR="$(pwd)"
+  export PLUGIN_ROOT="${ORIGINAL_DIR}"
+
+  # Source common functions for this test file
   source "${PLUGIN_ROOT}/scripts/common.sh"
+}
+
+teardown() {
+  # Clean up temporary directory
+  [ -n "${TEST_TEMP_DIR:-}" ] && rm -rf "${TEST_TEMP_DIR}"
+
+  # Return to original directory
+  [ -n "${ORIGINAL_DIR:-}" ] && cd "${ORIGINAL_DIR}"
 }
 
 # ============================================================================
@@ -212,6 +225,37 @@ EOF
   run netstat -tuln
 
   assert_success
+}
+
+@test "common: port_in_use rejects non-numeric input" {
+  run bash -c "source ${PLUGIN_ROOT}/scripts/common.sh && port_in_use 'not-a-number'"
+
+  assert_failure
+  [ "$status" -eq 2 ]
+  assert_output_contains "invalid port"
+}
+
+@test "common: port_in_use rejects empty input" {
+  run bash -c "source ${PLUGIN_ROOT}/scripts/common.sh && port_in_use ''"
+
+  assert_failure
+  [ "$status" -eq 2 ]
+  assert_output_contains "invalid port"
+}
+
+@test "common: port_in_use rejects input with special characters" {
+  run bash -c "source ${PLUGIN_ROOT}/scripts/common.sh && port_in_use '8000; echo hacked'"
+
+  assert_failure
+  [ "$status" -eq 2 ]
+  assert_output_contains "invalid port"
+}
+
+@test "common: port_in_use accepts valid numeric port" {
+  run bash -c "source ${PLUGIN_ROOT}/scripts/common.sh && port_in_use 8000"
+
+  # Should succeed or fail (0 or 1) but NOT return 2 (validation error)
+  [ "$status" -eq 0 ] || [ "$status" -eq 1 ]
 }
 
 # ============================================================================
