@@ -99,6 +99,12 @@ merge_env_value() {
 port_in_use() {
   local port=$1
 
+  # Validate port is numeric
+  if ! [[ "$port" =~ ^[0-9]+$ ]]; then
+    echo "ERROR: port_in_use: invalid port '$port' (must be numeric)" >&2
+    return 2
+  fi
+
   # Try lsof first (most reliable)
   if command -v lsof >/dev/null 2>&1; then
     lsof -i ":$port" >/dev/null 2>&1 && return 0
