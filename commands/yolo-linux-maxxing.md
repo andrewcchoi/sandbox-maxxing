@@ -13,6 +13,7 @@ This command installs Claude Code CLI directly on your Linux system.
 ## What You Get
 
 ✓ **Bubblewrap** - process-level filesystem sandboxing
+✓ **Seccomp filter** (optional) - syscall-level filtering for enhanced security
 ✓ **All Claude Code CLI features** - full functionality
 ✓ **Faster startup** - no container overhead
 
@@ -260,20 +261,16 @@ else
   echo "✓ PATH already configured correctly"
 fi
 
-# Optional: Git configuration
+# Git configuration check (auto-detect, no prompts)
 echo ""
-echo "Would you like to configure Git? (recommended for first-time setup)"
-echo "You can skip this if you've already configured Git."
-read -p "Configure Git now? [y/N] " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  read -p "Enter your name: " git_name
-  read -p "Enter your email: " git_email
-  git config --global user.name "$git_name"
-  git config --global user.email "$git_email"
-  echo "✓ Git configured"
+git_name=$(git config --global user.name 2>/dev/null || true)
+git_email=$(git config --global user.email 2>/dev/null || true)
+if [ -n "$git_name" ] && [ -n "$git_email" ]; then
+  echo "✓ Git already configured: $git_name <$git_email>"
 else
-  echo "Skipping Git configuration (you can run 'git config --global user.name \"Your Name\"' later)"
+  echo "ℹ Git user not configured (optional)"
+  echo "  To configure later: git config --global user.name \"Your Name\""
+  echo "                      git config --global user.email \"you@example.com\""
 fi
 ```
 
@@ -281,7 +278,65 @@ fi
 
 ---
 
-## Step 5: Final Verification
+## Step 5: Seccomp Filter (Optional Enhanced Security)
+
+The seccomp filter provides additional syscall-level sandboxing. This step is **optional** but recommended for enhanced security.
+
+```bash
+echo "=== Step 5: Seccomp Filter (Optional) ==="
+echo ""
+
+# Check if already installed
+if npm list -g @anthropic-ai/sandbox-runtime &>/dev/null 2>&1; then
+  echo "✓ Seccomp filter already installed"
+else
+  # Check if Node.js 18+ is available
+  if command -v node &>/dev/null; then
+    NODE_MAJOR=$(node --version | sed 's/v//' | cut -d. -f1)
+    if [ "$NODE_MAJOR" -ge 18 ]; then
+      echo "Node.js $NODE_MAJOR detected. Installing seccomp filter..."
+      sudo npm install -g @anthropic-ai/sandbox-runtime
+      if [ $? -eq 0 ]; then
+        echo "✓ Seccomp filter installed"
+      else
+        echo "⚠️  Seccomp filter installation failed (optional - continuing)"
+      fi
+    else
+      echo "⚠️  Node.js $NODE_MAJOR found but version 18+ required for seccomp filter"
+      echo "   Skipping seccomp filter (optional)"
+    fi
+  else
+    echo ""
+    echo "ℹ Seccomp filter skipped (Node.js 18+ not installed)"
+    echo "  This is optional - Claude Code works without it."
+    echo ""
+    echo "  To install later:"
+    echo "    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -"
+    echo "    sudo apt-get install -y nodejs"
+    echo "    sudo npm install -g @anthropic-ai/sandbox-runtime"
+  fi
+fi
+```
+
+**What this does**:
+- **Smart detection**: Auto-installs if Node.js 18+ exists, skips with instructions if not
+- **@anthropic-ai/sandbox-runtime**: Provides seccomp syscall filtering
+- **Optional**: Claude Code works without it; this is defense-in-depth
+- **Non-blocking**: Failures are warnings, not errors
+
+**To install later** (if skipped):
+```bash
+# Install Node.js 20 (if needed)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install seccomp filter
+sudo npm install -g @anthropic-ai/sandbox-runtime
+```
+
+---
+
+## Step 6: Final Verification
 
 Run comprehensive verification to ensure all components are installed:
 
@@ -333,6 +388,14 @@ check_cmd git "git" || all_ok=false
 check_cmd gh "GitHub CLI" || all_ok=false
 check_cmd claude "Claude Code CLI" || all_ok=false
 
+# Check seccomp filter (optional)
+echo -n "Checking seccomp filter... "
+if npm list -g @anthropic-ai/sandbox-runtime &>/dev/null 2>&1; then
+  echo "✅ seccomp filter: installed"
+else
+  echo "⚠️  seccomp filter: not installed (optional)"
+fi
+
 echo ""
 echo "=== Summary ==="
 if [ "$all_ok" = true ]; then
@@ -351,7 +414,7 @@ fi
 
 ---
 
-## Step 6: Next Steps
+## Step 7: Next Steps
 
 ### 1. Authenticate Claude Code
 
@@ -505,6 +568,7 @@ For detailed troubleshooting patterns and solutions, see:
 | Feature | Native Linux Setup | Docker-based Setup |
 |---------|-------------------|-------------------|
 | **Process Sandboxing** | ✓ Bubblewrap | ✓ Container |
+| **Seccomp Filter** | ✓ Optional | ✓ Container provides |
 | **Network Isolation** | ✗ No | ✓ Firewall + Allowlist |
 | **Filesystem Isolation** | Partial | ✓ Full |
 | **Resource Limits** | ✗ No | ✓ CPU/Memory Caps |
