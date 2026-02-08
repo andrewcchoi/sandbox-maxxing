@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Commands**: Major refactor of `/sandboxxer:quickstart` command (Issue #271)
+  - Reduced from 1,467 lines to 759 lines (48% reduction)
+  - Consolidated 11 AskUserQuestion calls to maximum 4 questions
+  - Implemented 4-phase architecture: Settings → Discovery → Configuration → Generation → Report
+  - Added preset profiles (Minimal, Backend, Full Stack, Custom) to stay within 4-option limit
+  - Added `--yes` flag for zero-question setup using settings file defaults
+  - Added `--profile=NAME` and `--tools=LIST` CLI flags for automation
+  - Settings file integration via `.claude/sandboxxer.local.md`
+  - Replaced decimal step numbering (0.5, 0.8, 1.75, etc.) with clear phase structure
+- **Utilities**: Extended `scripts/common.sh` to v1.2.0
+  - Added `read_setting_list()` for comma-separated settings (arrays)
+  - Added `get_profile_tools()` for profile-to-tools mapping
+  - Added `get_firewall_categories()` for firewall preset mapping
+
+### Added
+- **Templates**: New `sandboxxer.local.example.md` settings template
+  - Documents all available quickstart settings
+  - Provides examples for zero-question setup, secure corporate, and full stack configurations
+
 ## [4.13.0] - 2026-02-07
 
 ### Added
