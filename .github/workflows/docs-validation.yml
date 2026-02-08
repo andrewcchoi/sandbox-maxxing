@@ -1,0 +1,39 @@
+name: Documentation Validation
+
+# This workflow validates documentation consistency and integrity
+# NO UNTRUSTED INPUTS USED - only fixed commands and checkout
+
+on:
+  push:
+    branches: [ master, main, wip, 'fix/**', 'feat/**' ]
+  pull_request:
+    branches: [ master, main, wip ]
+
+jobs:
+  validate-documentation:
+    name: Validate Documentation Health
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install jq for JSON validation
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Run Documentation Health Check
+        run: bash scripts/doc-health-check.sh
+
+      - name: Report Success
+        if: success()
+        run: |
+          echo "All documentation health checks passed"
+          echo "Documentation is in excellent condition"
+
+      - name: Report Failure
+        if: failure()
+        run: |
+          echo "Documentation health check failed"
+          echo "See errors above for details"
+          echo "Run locally: bash scripts/doc-health-check.sh"
+          exit 1

@@ -1,6 +1,27 @@
+<!--
+---
+title: Plugin Architecture
+type: Component Hierarchy
+version: 4.13.0
+introduced: 4.3.0
+documents:
+  - README.md
+  - docs/ARCHITECTURE.md
+  - docs/diagrams/README.md
+components:
+  commands: 8
+  skills: 3
+  agents: 3
+  hooks: 1
+  shared_resources: 1
+last_updated: 2026-02-07
+purpose: Shows the component hierarchy of the sandboxxer plugin with relationships between commands, skills, agents, hooks, and shared resources
+---
+-->
+
 graph TB
     subgraph Plugin["sandboxxer Plugin"]
-        subgraph Commands["Commands (7)"]
+        subgraph Commands["Commands (8)"]
             C1["/quickstart<br/>Interactive setup"]
             C2["/yolo-docker-<br/>maxxing<br/>Quick setup"]
             C3["/troubleshoot<br/>Diagnostics"]
@@ -8,6 +29,7 @@ graph TB
             C5["/deploy-to-<br/>azure<br/>Azure deploy"]
             C6["/yolo-linux-<br/>maxxing<br/>Native Linux"]
             C7["/linux-<br/>troubleshoot<br/>Linux diag"]
+            C8["/health<br/>Health checks"]
         end
 
         subgraph Skills["Skills (3)"]
@@ -16,9 +38,10 @@ graph TB
             S3["sandboxxer-<br/>linux-<br/>troubleshoot<br/>Linux diag"]
         end
 
-        subgraph Agents["Agents (2)"]
+        subgraph Agents["Agents (3)"]
             A1["devcontainer-<br/>generator<br/>Config gen"]
             A2["devcontainer-<br/>validator<br/>Config val"]
+            A3["interactive-<br/>troubleshooter<br/>Active diag"]
         end
 
         subgraph Hooks["Hooks (1)"]

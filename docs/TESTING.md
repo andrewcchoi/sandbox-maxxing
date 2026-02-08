@@ -357,6 +357,123 @@ bash -n .devcontainer/init-firewall.sh
 docker-compose exec app iptables -L -n
 ```
 
+## Documentation Validation Testing
+
+The plugin includes automated scripts to validate documentation consistency and integrity.
+
+### Running Documentation Health Checks
+
+Execute the master health check script to validate all documentation:
+
+```bash
+bash scripts/doc-health-check.sh
+```
+
+This performs the following validations:
+1. **Version Consistency**: Ensures version numbers match across:
+   - `.claude-plugin/plugin.json`
+   - `.claude-plugin/marketplace.json`
+   - `README.md` version badge
+   - `CHANGELOG.md` latest entry
+
+2. **Diagram Inventory**: Validates that all diagrams have source files:
+   - All `.mmd` (Mermaid source) files have corresponding `.svg` outputs
+   - No orphaned SVG files without source files
+   - Checks all 12 diagrams in `docs/diagrams/`
+
+### Individual Validation Scripts
+
+You can run individual checks for specific validations:
+
+#### Version Consistency Check
+```bash
+bash scripts/version-checker.sh
+```
+**Purpose:** Detects version mismatches that could confuse users or break releases.
+
+**Expected Output:**
+```
+=== Version Consistency Check ===
+
+plugin.json:       4.13.0
+marketplace.json:  4.13.0
+README.md badge:   4.13.0
+CHANGELOG.md:      4.13.0
+
+✅ All critical version references are consistent
+```
+
+#### Diagram Source Validation
+```bash
+bash scripts/diagram-inventory.sh
+```
+**Purpose:** Ensures all diagrams can be regenerated if modified.
+
+**Expected Output:**
+```
+=== Diagram Inventory Check ===
+
+Mermaid source files (.mmd): 12
+SVG output files (.svg):     12
+
+Checking .mmd → .svg pairs...
+✅ plugin-architecture.mmd → plugin-architecture.svg
+[... 11 more diagrams ...]
+
+✅ All diagrams have source files and outputs
+```
+
+#### Internal Link Validation (Optional)
+```bash
+bash scripts/link-checker.sh
+```
+**Purpose:** Detects broken internal documentation links.
+
+**Note:** May report false positives for complex relative paths. Manual verification recommended.
+
+### When to Run Documentation Tests
+
+- **Before committing documentation changes**: Catch issues early
+- **After version updates**: Ensure all version references are synchronized
+- **After adding/removing commands, skills, or agents**: Validate counts and references
+- **After modifying diagrams**: Ensure source files are preserved
+- **In CI/CD pipelines**: Automate validation for pull requests
+
+### CI/CD Integration
+
+To integrate documentation validation into GitHub Actions:
+
+```yaml
+name: Documentation Validation
+on: [push, pull_request]
+
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Run Documentation Health Check
+        run: bash scripts/doc-health-check.sh
+```
+
+### Pre-commit Hook (Optional)
+
+For contributors who frequently modify documentation, setting up a pre-commit hook ensures validation runs automatically:
+
+```bash
+cat > .git/hooks/pre-commit << 'EOF'
+#!/usr/bin/env bash
+echo "Running documentation health check..."
+bash scripts/doc-health-check.sh || exit 1
+EOF
+
+chmod +x .git/hooks/pre-commit
+```
+
+**Note:** This is optional and not enforced globally to avoid disrupting development workflows.
+
 ## Future: Automated Testing
 
 Automated testing infrastructure is planned for future implementation. The automated test framework would:

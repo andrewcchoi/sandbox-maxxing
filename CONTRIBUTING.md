@@ -175,6 +175,36 @@ Run all tests before submitting:
 - Troubleshooting test
 - Security audit test
 
+### Documentation Validation
+
+Before committing documentation changes, run the documentation health check:
+
+```bash
+bash scripts/doc-health-check.sh
+```
+
+This validates:
+- ✅ Version consistency across plugin.json, marketplace.json, README.md, CHANGELOG.md
+- ✅ All diagram source files (.mmd) exist with corresponding SVGs
+- ℹ️ Optional link checking available via `bash scripts/link-checker.sh`
+
+**Optional: Pre-commit Hook**
+
+To automatically validate documentation before each commit, you can set up a pre-commit hook:
+
+```bash
+# Create .git/hooks/pre-commit (if it doesn't exist)
+cat > .git/hooks/pre-commit << 'EOF'
+#!/usr/bin/env bash
+echo "Running documentation health check..."
+bash scripts/doc-health-check.sh || exit 1
+EOF
+
+chmod +x .git/hooks/pre-commit
+```
+
+**Note:** This is optional and not enforced globally to avoid disrupting development workflows. However, it's recommended for contributors who frequently modify documentation.
+
 ## Submitting Changes
 
 1. Create a feature branch

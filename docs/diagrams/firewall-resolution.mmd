@@ -1,3 +1,20 @@
+<!--
+---
+title: Firewall Resolution
+type: Sequence Diagram
+version: 4.13.0
+introduced: 4.3.0
+documents:
+  - docs/features/SECURITY-MODEL.md
+  - docs/diagrams/README.md
+components:
+  process_steps: 6
+  systems: 4
+last_updated: 2026-02-07
+purpose: Sequence diagram showing how firewall processes domain allowlists through DNS resolution, ipset creation, iptables rules, and runtime enforcement
+---
+-->
+
 sequenceDiagram
     participant User
     participant Script as init-firewall.sh

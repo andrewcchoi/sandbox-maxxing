@@ -7,64 +7,50 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        // Python Development (Comprehensive)
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
-        // NOTE: ms-python.isort and ms-python.flake8 are deprecated
-        // Ruff provides isort and flake8 functionality
         "charliermarsh.ruff",
 
-        // JavaScript/TypeScript Development
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "mgmcdermott.vscode-language-babel",
         "dsznajder.es7-react-js-snippets",
 
-        // Database Tools
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
         "cweijan.vscode-database-client2",
 
-        // Docker & Containers
         "ms-azuretools.vscode-docker",
         "ms-vscode-remote.remote-containers",
 
-        // Git & Version Control
         "eamodio.gitlens",
         "mhutchie.git-graph",
         "donjayamanne.githistory",
 
-        // API & REST
         "humao.rest-client",
         "rangav.vscode-thunder-client",
 
-        // Testing & Quality
         "hbenl.vscode-test-explorer",
         "littlefoxteam.vscode-python-test-adapter",
         "orta.vscode-jest",
 
-        // Markdown & Documentation
         "yzhang.markdown-all-in-one",
         "davidanson.vscode-markdownlint",
 
-        // Code Quality & Analysis
         "sonarsource.sonarlint-vscode",
         "visualstudioexptteam.vscodeintellicode",
         "visualstudioexptteam.intellicode-api-usage-examples",
 
-        // Utilities
         "editorconfig.editorconfig",
         "gruntfuggly.todo-tree",
         "wayou.vscode-todo-highlight",
         "streetsidesoftware.code-spell-checker",
 
-        // Performance & Debugging
         "ms-vscode.vscode-js-profile-flame",
         "msjsdiag.vscode-react-native"
       ],
       "settings": {
-        // Python Configuration
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.linting.enabled": true,
         "python.linting.pylintEnabled": false,
@@ -80,13 +66,11 @@
         "python.testing.unittestEnabled": false,
         "python.testing.nosetestsEnabled": false,
 
-        // JavaScript/React Configuration
         "javascript.updateImportsOnFileMove.enabled": "always",
         "typescript.updateImportsOnFileMove.enabled": "always",
         "javascript.suggest.autoImports": true,
         "typescript.suggest.autoImports": true,
 
-        // Editor Configuration
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
         "editor.codeActionsOnSave": {
@@ -98,7 +82,6 @@
         "editor.guides.bracketPairs": true,
         "editor.inlineSuggest.enabled": true,
 
-        // File Associations
         "[python]": {
           "editor.defaultFormatter": "ms-python.black-formatter",
           "editor.tabSize": 4
@@ -118,13 +101,11 @@
           "editor.defaultFormatter": "yzhang.markdown-all-in-one"
         },
 
-        // Git Configuration
         "git.autofetch": true,
         "git.confirmSync": false,
         "git.enableSmartCommit": true,
         "gitlens.codeLens.enabled": true,
 
-        // Files Configuration
         "files.exclude": {
           "**/__pycache__": true,
           "**/.pytest_cache": true,
@@ -140,14 +121,11 @@
         "files.trimTrailingWhitespace": true,
         "files.insertFinalNewline": true,
 
-        // Terminal Configuration
         "terminal.integrated.defaultProfile.linux": "bash",
         "terminal.integrated.fontSize": 14,
 
-        // Testing Configuration
         "python.testing.pytestArgs": ["backend/tests"],
 
-        // SQLTools Configuration
         "sqltools.connections": [
           {
             "name": "PostgreSQL (Dev)",
@@ -160,7 +138,6 @@
           }
         ],
 
-        // TODO Highlight Configuration
         "todohighlight.keywords": [
           {
             "text": "TODO:",

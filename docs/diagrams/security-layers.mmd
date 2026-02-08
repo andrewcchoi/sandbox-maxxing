@@ -1,3 +1,20 @@
+<!--
+---
+title: Security Layers
+type: Layered Architecture
+version: 4.13.0
+introduced: 4.3.0
+documents:
+  - docs/features/SECURITY-MODEL.md
+  - docs/diagrams/README.md
+components:
+  layers: 3
+  security_mechanisms: 12
+last_updated: 2026-02-07
+purpose: Visualizes the 3-layer security model with container isolation, network isolation, and secret management
+---
+-->
+
 flowchart TB
     subgraph External["External Threats"]
         T1[Code Execution]

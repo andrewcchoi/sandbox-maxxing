@@ -6,7 +6,7 @@ The Claude Code DevContainer Setup plugin uses a command-based architecture with
 
 **Version 4.3.0+ Changes:**
 - **Command-based workflow** - Direct bash execution with template copying (not skill-based)
-- **Interactive project selection** - 8 language options with modular dockerfile partials
+- **Interactive project selection** - 9 project types with modular dockerfile partials
 - **Shared resources architecture** - Templates and data consolidated to `skills/_shared/`
 - **Simplified firewall** - Single init-firewall.sh script (v4.3.2)
 

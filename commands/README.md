@@ -29,13 +29,13 @@ Each command loads and executes the corresponding skill with user-friendly promp
 ```
 
 **What it does:**
-1. Asks about project type (8 language options)
+1. Asks about project type (9 project types)
 2. Asks about network restrictions (optional domain allowlist)
 3. Generates DevContainer configuration
 4. Creates docker-compose.yml with services
 
 **Features:**
-- Choose from 8 project types (Python/Node, Go, Ruby, Rust, C++ Clang/GCC, PHP, PostgreSQL)
+- Choose from 9 project types (Python/Node, Go, Ruby, Rust, C++ Clang/GCC, PHP, PostgreSQL, Azure CLI)
 - Optional firewall with domain allowlist
 - 2-3 questions for configuration
 - Ready in 2-3 minutes
@@ -136,6 +136,47 @@ See also: [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md)
 - Hardening sandbox environment
 
 See also: [Security Model](../docs/features/SECURITY-MODEL.md)
+
+---
+
+#### `/sandboxxer:health`
+**File:** `commands/health.md`
+**Description:** Comprehensive diagnostics and health checks for your DevContainer environment
+
+**Usage:**
+```bash
+# Run all health checks
+/sandboxxer:health
+
+# Include network diagnostics
+/sandboxxer:health --include-network
+```
+
+**What it does:**
+1. Checks Docker daemon and version
+2. Validates Docker Compose v2
+3. Verifies required tools (jq, git, VS Code)
+4. Checks disk space availability
+5. Validates port availability (8000, 3000, 5432, 6379)
+6. Inspects running containers
+7. Reviews DevContainer configuration
+8. Checks service connectivity
+9. Validates hook configuration
+10. Optional network diagnostics (--include-network)
+
+**Features:**
+- Color-coded output (✓ green pass, ✗ red fail)
+- Actionable fix suggestions for each failure
+- Verbose mode for detailed diagnostics
+- CI/CD friendly exit codes (0=pass, 1=fail)
+- 10 check categories covering full stack
+
+**When to use:**
+- Diagnosing environment issues
+- Pre-deployment validation
+- Verifying setup after changes
+- Troubleshooting container problems
+- CI/CD pipeline health checks
 
 ---
 
@@ -283,6 +324,7 @@ Result: DevContainer configuration created
 | `/sandboxxer:troubleshoot` | Diagnostic | Varies | N/A | Docker problem solving |
 | `/sandboxxer:linux-troubleshoot` | Diagnostic | Varies | N/A | Linux/WSL2 problem solving |
 | `/sandboxxer:audit` | Audit | 5-10 min | N/A | Security review |
+| `/sandboxxer:health` | None | < 1 min | N/A | Environment diagnostics |
 | `/sandboxxer:deploy-to-azure` | Azure config | 5-15 min | Azure security | Cloud deployment |
 
 ## Usage Examples

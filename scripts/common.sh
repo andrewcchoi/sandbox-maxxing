@@ -270,9 +270,94 @@ validate_templates() {
 }
 
 # ============================================================================
+# Read Plugin Settings
+# ============================================================================
+# Reads a setting from .claude/sandboxxer.local.md
+# Settings are stored in YAML frontmatter format
+#
+# Usage: VALUE=$(read_setting "default_firewall" "disabled")
+#
+# Args:
+#   $1: Setting name (e.g., "default_firewall")
+#   $2: Default value if setting not found
+#
+# Returns: Prints setting value, or default if not found
+# ============================================================================
+read_setting() {
+  local setting_name="$1"
+  local default_value="${2:-}"
+  local settings_file=".claude/sandboxxer.local.md"
+
+  # Check if settings file exists
+  if [ ! -f "$settings_file" ]; then
+    echo "$default_value"
+    return 0
+  fi
+
+  # Extract YAML frontmatter (between --- markers) and find setting
+  local value
+  value=$(sed -n '/^---$/,/^---$/p' "$settings_file" 2>/dev/null | \
+          grep "^${setting_name}:" | \
+          head -1 | \
+          cut -d: -f2- | \
+          sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
+          tr -d '"'"'")
+
+  # Return value or default
+  if [ -n "$value" ]; then
+    echo "$value"
+  else
+    echo "$default_value"
+  fi
+}
+
+# ============================================================================
+# Read Nested Plugin Settings
+# ============================================================================
+# Reads a nested setting from .claude/sandboxxer.local.md
+# For settings like default_ports.app
+#
+# Usage: PORT=$(read_nested_setting "default_ports" "app" "8000")
+#
+# Args:
+#   $1: Parent setting name
+#   $2: Child setting name
+#   $3: Default value if setting not found
+#
+# Returns: Prints setting value, or default if not found
+# ============================================================================
+read_nested_setting() {
+  local parent="$1"
+  local child="$2"
+  local default_value="${3:-}"
+  local settings_file=".claude/sandboxxer.local.md"
+
+  if [ ! -f "$settings_file" ]; then
+    echo "$default_value"
+    return 0
+  fi
+
+  # Look for indented child setting under parent
+  local value
+  value=$(sed -n '/^---$/,/^---$/p' "$settings_file" 2>/dev/null | \
+          sed -n "/^${parent}:/,/^[a-z]/p" | \
+          grep "^[[:space:]]*${child}:" | \
+          head -1 | \
+          cut -d: -f2- | \
+          sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
+          tr -d '"'"'")
+
+  if [ -n "$value" ]; then
+    echo "$value"
+  else
+    echo "$default_value"
+  fi
+}
+
+# ============================================================================
 # Version Information
 # ============================================================================
-COMMON_SH_VERSION="1.0.0"
+COMMON_SH_VERSION="1.1.0"
 
 # If sourced directly (for testing), print version
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
