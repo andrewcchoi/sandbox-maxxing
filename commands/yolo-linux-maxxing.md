@@ -558,7 +558,7 @@ If you see "Bubblewrap is working!", the installation is correct.
 ### Still Having Issues?
 
 For detailed troubleshooting patterns and solutions, see:
-- [Linux Troubleshooting](/sandboxxer:linux-troubleshoot) - Use the troubleshooting command for issues
+- Use the `/sandboxxer:linux-troubleshoot` command for issues
 - [Claude Code Documentation](https://claude.ai/code) - Official documentation
 
 ---

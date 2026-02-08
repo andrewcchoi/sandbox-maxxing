@@ -315,11 +315,9 @@ All diagrams follow this color scheme:
 
 To embed diagrams in markdown files, use relative paths based on your file location.
 
-**Syntax pattern:**
+**Markdown embedding syntax:**
 
-```
-![Alt Text](path/to/diagram.svg)
-```
+See the path examples below for the correct relative path from your file location.
 
 **Path examples based on file location:**
 
