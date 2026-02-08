@@ -429,6 +429,130 @@ EOF
 }
 
 # ============================================================================
+# read_setting() tests
+# ============================================================================
+
+@test "common: read_setting returns default when file missing" {
+  cd "$TEST_TEMP_DIR"
+
+  run read_setting "default_firewall" "disabled"
+
+  assert_success
+  [ "$output" = "disabled" ]
+}
+
+@test "common: read_setting reads value from settings file" {
+  cd "$TEST_TEMP_DIR"
+  mkdir -p .claude
+  cat > .claude/sandboxxer.local.md << 'EOF'
+---
+default_firewall: enabled
+default_language: go
+---
+EOF
+
+  run read_setting "default_firewall" "disabled"
+
+  assert_success
+  [ "$output" = "enabled" ]
+}
+
+@test "common: read_setting returns default for missing setting" {
+  cd "$TEST_TEMP_DIR"
+  mkdir -p .claude
+  cat > .claude/sandboxxer.local.md << 'EOF'
+---
+default_firewall: enabled
+---
+EOF
+
+  run read_setting "nonexistent_setting" "my_default"
+
+  assert_success
+  [ "$output" = "my_default" ]
+}
+
+@test "common: read_setting handles quoted values" {
+  cd "$TEST_TEMP_DIR"
+  mkdir -p .claude
+  cat > .claude/sandboxxer.local.md << 'EOF'
+---
+default_firewall: "enabled"
+default_language: 'go'
+---
+EOF
+
+  run read_setting "default_firewall" "disabled"
+  assert_success
+  [ "$output" = "enabled" ]
+
+  run read_setting "default_language" "none"
+  assert_success
+  [ "$output" = "go" ]
+}
+
+@test "common: read_setting handles spaces around values" {
+  cd "$TEST_TEMP_DIR"
+  mkdir -p .claude
+  cat > .claude/sandboxxer.local.md << 'EOF'
+---
+default_firewall:   enabled
+---
+EOF
+
+  run read_setting "default_firewall" "disabled"
+
+  assert_success
+  [ "$output" = "enabled" ]
+}
+
+# ============================================================================
+# read_nested_setting() tests
+# ============================================================================
+
+@test "common: read_nested_setting returns default when file missing" {
+  cd "$TEST_TEMP_DIR"
+
+  run read_nested_setting "default_ports" "app" "8000"
+
+  assert_success
+  [ "$output" = "8000" ]
+}
+
+@test "common: read_nested_setting reads nested value" {
+  cd "$TEST_TEMP_DIR"
+  mkdir -p .claude
+  cat > .claude/sandboxxer.local.md << 'EOF'
+---
+default_ports:
+  app: 9000
+  frontend: 4000
+---
+EOF
+
+  run read_nested_setting "default_ports" "app" "8000"
+
+  assert_success
+  [ "$output" = "9000" ]
+}
+
+@test "common: read_nested_setting returns default for missing nested setting" {
+  cd "$TEST_TEMP_DIR"
+  mkdir -p .claude
+  cat > .claude/sandboxxer.local.md << 'EOF'
+---
+default_ports:
+  app: 9000
+---
+EOF
+
+  run read_nested_setting "default_ports" "redis" "6379"
+
+  assert_success
+  [ "$output" = "6379" ]
+}
+
+# ============================================================================
 # Integration tests
 # ============================================================================
 

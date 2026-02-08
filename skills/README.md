@@ -15,10 +15,10 @@ Skills are invoked through slash commands in Claude Code. Setup commands like `/
 **When to use:** You want to create a customized sandbox with guided setup.
 
 **Features:**
-- Interactive project type selection (8 language options)
+- Interactive project type selection (9 project types)
 - Optional firewall with domain allowlist
 - Customizable configuration (2-3 questions)
-- Language-specific toolchains (Go, Ruby, Rust, Java, C++, PHP, PostgreSQL)
+- Language-specific toolchains (Go, Ruby, Rust, C++, PHP, PostgreSQL, Azure CLI)
 - Setup time: 2-3 minutes
 
 **Best for:**

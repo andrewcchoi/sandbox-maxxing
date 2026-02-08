@@ -1,3 +1,20 @@
+<!--
+---
+title: Mode Selection
+type: Decision Tree
+version: 4.13.0
+introduced: 4.3.0
+documents:
+  - docs/features/SETUP-OPTIONS.md
+  - docs/diagrams/README.md
+components:
+  modes: 4
+  decision_points: 3
+last_updated: 2026-02-07
+purpose: Decision tree for selecting the appropriate Docker Compose mode based on platform and use case
+---
+-->
+
 flowchart TD
     Start([Choose Docker Compose Mode]) --> Q1{What platform?}
 

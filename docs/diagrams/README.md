@@ -2,6 +2,16 @@
 
 This directory contains Mermaid diagrams visualizing the sandboxxer plugin architecture, workflows, and data flows.
 
+## ⚠️ CRITICAL: Mermaid Source Preservation
+
+**NEVER delete .mmd source files!** Each diagram consists of two files:
+- **`.mmd` (Mermaid source)**: Editable diagram definition - **THIS IS THE SOURCE OF TRUTH**
+- **`.svg` (SVG output)**: Generated image for documentation - can be regenerated from .mmd
+
+If you delete a `.mmd` file, the diagram becomes **permanently uneditable**. Always keep both files in version control.
+
+**Validation:** Run `bash scripts/diagram-inventory.sh` to verify all diagrams have source files.
+
 ## Available Diagrams
 
 ### 1. Plugin Architecture
@@ -11,9 +21,9 @@ This directory contains Mermaid diagrams visualizing the sandboxxer plugin archi
 **Purpose:** Shows the component hierarchy of the sandboxxer plugin.
 
 **Components visualized:**
-- **Commands (7)**: `/quickstart`, `/yolo-docker-maxxing`, `/troubleshoot`, `/audit`, `/deploy-to-azure`, `/yolo-linux-maxxing`, `/linux-troubleshoot`
+- **Commands (8)**: `/quickstart`, `/yolo-docker-maxxing`, `/troubleshoot`, `/audit`, `/deploy-to-azure`, `/yolo-linux-maxxing`, `/linux-troubleshoot`, `/health`
 - **Skills (3)**: `sandboxxer-troubleshoot`, `sandboxxer-audit`, `sandboxxer-linux-troubleshoot`
-- **Agents (2)**: `devcontainer-generator`, `devcontainer-validator`
+- **Agents (3)**: `devcontainer-generator`, `devcontainer-validator`, `interactive-troubleshooter`
 - **Hooks (1)**: PreToolUse for Docker safety
 - **Shared Resources**: Templates, data catalogs, language partials
 
@@ -31,12 +41,12 @@ This directory contains Mermaid diagrams visualizing the sandboxxer plugin archi
 
 **Workflow:**
 1. User runs `/quickstart`
-2. Project type selection (8 language options)
+2. Project type selection (9 options: Python/Node, Go, Ruby, Rust, C++ Clang, C++ GCC, PHP, PostgreSQL, Azure CLI)
 3. Network restrictions decision
 4. Optional firewall configuration with domain categories
 5. DevContainer file generation
 
-**Used in:** README.md, docs/features/SETUP-OPTIONS.md
+**Used in:** docs/diagrams/README.md (documentation reference only - not embedded in other docs)
 
 ![Quickstart Setup Flow](svg/quickstart-flow.svg)
 
@@ -305,11 +315,9 @@ All diagrams follow this color scheme:
 
 To embed diagrams in markdown files, use relative paths based on your file location.
 
-**Syntax pattern:**
+**Markdown embedding syntax:**
 
-```
-![Alt Text](path/to/diagram.svg)
-```
+See the path examples below for the correct relative path from your file location.
 
 **Path examples based on file location:**
 
@@ -330,17 +338,33 @@ To embed diagrams in markdown files, use relative paths based on your file locat
 
 ```
 docs/diagrams/
-├── README.md                   # This file
-├── puppeteer-config.json       # Config for Mermaid CLI in Docker
-├── plugin-architecture.mmd     # Mermaid source files
+├── README.md                      # This file
+├── puppeteer-config.json          # Config for Mermaid CLI in Docker
+├── plugin-architecture.mmd        # Mermaid source files (12 total)
 ├── quickstart-flow.mmd
 ├── file-generation.mmd
 ├── mode-selection.mmd
-└── svg/                        # Generated SVG files
+├── security-layers.mmd
+├── troubleshooting-flow.mmd
+├── azure-deployment-flow.mmd
+├── secrets-flow.mmd
+├── firewall-resolution.mmd
+├── security-audit-flow.mmd
+├── service-connectivity.mmd
+├── cicd-integration.mmd
+└── svg/                           # Generated SVG files (12 total)
     ├── plugin-architecture.svg
     ├── quickstart-flow.svg
     ├── file-generation.svg
-    └── mode-selection.svg
+    ├── mode-selection.svg
+    ├── security-layers.svg
+    ├── troubleshooting-flow.svg
+    ├── azure-deployment-flow.svg
+    ├── secrets-flow.svg
+    ├── firewall-resolution.svg
+    ├── security-audit-flow.svg
+    ├── service-connectivity.svg
+    └── cicd-integration.svg
 ```
 
 ---
