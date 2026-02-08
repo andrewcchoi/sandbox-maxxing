@@ -6,16 +6,17 @@ This guide helps diagnose and resolve common issues with Claude Code sandbox env
 
 1. [Quick Reference](#quick-reference)
 2. [Claude Code Installation](#claude-code-installation)
-3. [Problem Categories](#problem-categories)
-4. [Container Issues](#container-issues)
-5. [Network Issues](#network-issues)
-6. [Service Connectivity](#service-connectivity)
-7. [Firewall Issues](#firewall-issues)
-8. [Permission Errors](#permission-errors)
-9. [VS Code DevContainer Problems](#vs-code-devcontainer-problems)
-10. [Performance Issues](#performance-issues)
-11. [Git Worktree Issues](#git-worktree-issues)
-12. [Nuclear Option: Reset Everything](#nuclear-option-reset-everything)
+3. [Plugin and Hooks Issues](#plugin-and-hooks-issues)
+4. [Problem Categories](#problem-categories)
+5. [Container Issues](#container-issues)
+6. [Network Issues](#network-issues)
+7. [Service Connectivity](#service-connectivity)
+8. [Firewall Issues](#firewall-issues)
+9. [Permission Errors](#permission-errors)
+10. [VS Code DevContainer Problems](#vs-code-devcontainer-problems)
+11. [Performance Issues](#performance-issues)
+12. [Git Worktree Issues](#git-worktree-issues)
+13. [Nuclear Option: Reset Everything](#nuclear-option-reset-everything)
 
 ## Quick Reference
 
@@ -34,6 +35,7 @@ Common problems and their immediate fixes:
 | VS Code extension not loading   | Rebuild container without cache                 | [VS Code DevContainer Problems](#vs-code-devcontainer-problems) |
 | Cannot create git worktrees     | Restructure: `projects/my-project/my-repo/`     | [Git Worktree Issues](#git-worktree-issues)                     |
 | Git dubious ownership error     | `git config --global --add safe.directory '*'`  | [Git Worktree Issues](#git-worktree-issues)                     |
+| Plugin hook loading fails       | Fix `matcher` field to use string format        | [Plugin and Hooks Issues](#plugin-and-hooks-issues)             |
 | Native Linux/WSL2 issues          | Use `/sandboxxer:linux-troubleshoot`            | [Linux/WSL2 Troubleshooting](#linuxwsl2-troubleshooting) |
 
 ![Troubleshooting Flow](../diagrams/svg/troubleshooting-flow.svg)
@@ -167,6 +169,73 @@ fi
 ```
 
 This pattern is included in all examples since version 2.2.1.
+
+## Plugin and Hooks Issues
+
+### Issue: Plugin fails to load with "expected string, received object" error
+
+**Symptoms:**
+- Plugin fails to load with error: `Failed to load hooks from ...hooks.json: Invalid input: expected string, received object`
+- Hooks don't trigger even though they're configured
+- Error appears in Claude Code logs when starting a session
+
+**Cause:**
+The `matcher` field in PreToolUse/PostToolUse hooks is incorrectly formatted as an object (`{"tool_name": "Bash"}`) instead of a string (`"Bash"`).
+
+**Root Cause:**
+Claude Code's hook loader validates that the `matcher` field must be a string (regex pattern) that matches against tool names, not an object structure. The matcher acts as a regex pattern - for example, `"Bash"` matches the Bash tool, or `"Bash|Write|Edit"` matches multiple tools.
+
+**Solution:**
+
+Change the matcher from object format to string format in your hooks configuration file:
+
+**Before (incorrect):**
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": {
+          "tool_name": "Bash"
+        },
+        "hooks": [...]
+      }
+    ]
+  }
+}
+```
+
+**After (correct):**
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [...]
+      }
+    ]
+  }
+}
+```
+
+**Files to update:**
+1. Check `hooks/hooks.json` in your plugin directory
+2. Check `hooks/hooks.example.json` if present
+3. Any custom hook configuration files
+
+**Verification:**
+1. Reload the plugin: `claude code plugins reload <plugin-name>`
+2. Start a new session - no hook loading errors should appear
+3. Test that hooks trigger correctly when using the matched tool
+
+**Advanced matcher patterns:**
+The matcher field supports regex patterns for flexible matching:
+- `"Bash"` - Match only the Bash tool
+- `"Bash|Write|Edit"` - Match multiple tools
+- `".*"` - Match all tools (use with caution)
+
+This issue was fixed in sandbox-maxxing plugin version 4.12.1.
 
 ## Problem Categories
 
