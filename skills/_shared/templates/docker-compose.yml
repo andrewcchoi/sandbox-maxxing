@@ -46,7 +46,7 @@ services:
       - NET_ADMIN
       - NET_RAW
     volumes:
-      - .:/workspace:cached
+      - ..:/workspace:cached
       - py312-uv-venv:/workspace/.venv             # Issue #108: Named volume - isolates .venv from bind mount
       # NOTE: Host bind mounts require these paths to exist on the host system
       # Create them manually if needed: mkdir -p ~/.claude ~/.config/claude-env ~/.config/gh
