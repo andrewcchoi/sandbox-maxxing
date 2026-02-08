@@ -246,7 +246,18 @@ Warnings:       0
    - Extend link-checker to verify claimed diagram usage matches actual embeds
    - Alert on mismatches between DIAGRAM_STATUS.md claims and actual usage
 
-4. **Documentation Templates**
+4. **Link Checker Improvements (Known Issue)**
+   - **Current Issue:** `scripts/link-checker.sh` has relative path resolution bug
+   - **Problem:** Grep output includes `filename:link` format, but filters expect just links (causing external URLs to be checked)
+   - **Root Cause:** Script extracts links and loses source file context, can't resolve relative paths correctly
+   - **Impact:** Script exits with code 1 and reports false positives for relative links
+   - **Fix Required:**
+     - Parse `filename:link` format correctly
+     - Resolve relative paths from source file's directory, not plugin root
+     - Properly filter external URLs (https://, mailto:)
+   - **Workaround:** Manually verify critical cross-document links
+
+5. **Documentation Templates**
    - Create templates that reference ${PROJECT_TYPE_COUNT} variable
    - Auto-generate counts from actual directory contents
 
