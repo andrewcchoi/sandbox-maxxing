@@ -355,9 +355,125 @@ read_nested_setting() {
 }
 
 # ============================================================================
+# Read Plugin Settings List (Issue #271)
+# ============================================================================
+# Reads a comma-separated list setting from .claude/sandboxxer.local.md
+# Handles both "a,b,c" and "[a,b,c]" YAML formats
+#
+# Usage: TOOLS=$(read_setting_list "default_tools" "")
+#
+# Args:
+#   $1: Setting name (e.g., "default_tools")
+#   $2: Default value if setting not found
+#
+# Returns: Prints comma-separated values (spaces removed)
+# ============================================================================
+read_setting_list() {
+  local setting_name="$1"
+  local default_value="${2:-}"
+  local settings_file=".claude/sandboxxer.local.md"
+
+  # Check if settings file exists
+  if [ ! -f "$settings_file" ]; then
+    echo "$default_value"
+    return 0
+  fi
+
+  # Extract YAML frontmatter and find setting
+  local value
+  value=$(sed -n '/^---$/,/^---$/p' "$settings_file" 2>/dev/null | \
+          grep "^${setting_name}:" | \
+          head -1 | \
+          cut -d: -f2- | \
+          sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
+          tr -d '"'"'" | \
+          tr -d '[]' | \
+          tr -d ' ')  # Remove spaces around commas
+
+  # Return value or default
+  if [ -n "$value" ]; then
+    echo "$value"
+  else
+    echo "$default_value"
+  fi
+}
+
+# ============================================================================
+# Profile to Tools Mapping (Issue #271)
+# ============================================================================
+# Maps quickstart profile names to comma-separated tool lists
+# Used by the consolidated quickstart command for preset profiles
+#
+# Usage: TOOLS=$(get_profile_tools "backend")
+#
+# Profiles:
+#   minimal   - Base only (Python 3.12 + Node 20)
+#   backend   - Backend development (+ Go, PostgreSQL)
+#   fullstack - Full stack (+ Go, Rust, PostgreSQL)
+#   custom    - Pass-through (returns input as-is)
+#
+# Returns: Comma-separated tool list
+# ============================================================================
+get_profile_tools() {
+  local profile="$1"
+
+  case "$profile" in
+    minimal|Minimal|"Minimal (Python 3.12 + Node 20)")
+      echo ""
+      ;;
+    backend|Backend|"Backend Developer"|"Backend Developer (+ Go, PostgreSQL)")
+      echo "go,postgres"
+      ;;
+    fullstack|"Full Stack"|"Full Stack (+ Go, Rust, PostgreSQL)")
+      echo "go,rust,postgres"
+      ;;
+    *)
+      # Custom: pass through the input (allows "go,ruby,php")
+      echo "$profile"
+      ;;
+  esac
+}
+
+# ============================================================================
+# Firewall Category Mapping (Issue #271)
+# ============================================================================
+# Maps firewall preset names to domain category lists
+# Categories match keys in allowable-domains.json
+#
+# Usage: CATEGORIES=$(get_firewall_categories "essentials")
+#
+# Presets:
+#   essentials - Package managers, version control, container registries
+#   cloud      - Essentials + cloud platforms (AWS, GCP, Azure)
+#   all        - All categories including analytics
+#   custom     - Pass-through (returns input as-is)
+#
+# Returns: Comma-separated category list
+# ============================================================================
+get_firewall_categories() {
+  local preset="$1"
+
+  case "$preset" in
+    essentials|"Development essentials"|"Development essentials (npm, PyPI, GitHub, Docker Hub)")
+      echo "package_managers,version_control,container_registries,anthropic_services,linux_distributions"
+      ;;
+    cloud|"+ Cloud services"|"+ Cloud services (AWS, GCP, Azure)")
+      echo "package_managers,version_control,container_registries,cloud_platforms,anthropic_services,linux_distributions"
+      ;;
+    all|"+ All categories")
+      echo "package_managers,version_control,container_registries,cloud_platforms,development_tools,vscode,analytics_telemetry,anthropic_services,linux_distributions"
+      ;;
+    *)
+      # Custom: pass through the input
+      echo "$preset"
+      ;;
+  esac
+}
+
+# ============================================================================
 # Version Information
 # ============================================================================
-COMMON_SH_VERSION="1.1.0"
+COMMON_SH_VERSION="1.2.0"
 
 # If sourced directly (for testing), print version
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
