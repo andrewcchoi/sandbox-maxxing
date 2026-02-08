@@ -43,6 +43,12 @@ tools: ["Bash", "Read", "Glob"]
 
 This agent **actively diagnoses** sandbox issues by running commands, analyzing output, and providing targeted fixes. Unlike the static troubleshooting skill, this agent investigates the actual system state.
 
+**Agent vs Skill Differentiation:**
+- **`interactive-troubleshooter` Agent (this)**: Active diagnostics - runs diagnostic commands, analyzes real-time system state, applies fixes automatically
+- **`/sandboxxer:troubleshoot` Skill**: Reference-based troubleshooting - provides documentation, troubleshooting guides, and manual fix procedures
+- **Use Agent when**: You need automated diagnosis and fixes based on actual system state
+- **Use Skill when**: You want troubleshooting documentation or manual guidance
+
 ## Diagnostic Workflow
 
 Follow this systematic approach:

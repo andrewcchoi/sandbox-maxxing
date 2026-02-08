@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.0] - 2026-02-07
+
+### Added
+- **Agents**: New `interactive-troubleshooter` agent for active diagnostics
+  - Provides interactive, step-by-step guidance for troubleshooting
+  - Complements `/sandboxxer:troubleshoot` skill with active diagnostic approach
+  - Agent focuses on guided problem-solving vs skill's reference-based troubleshooting
+- **Commands**: Added `SETTINGS.md` documentation for plugin configuration
+  - Documents `.claude/sandboxxer.local.md` pattern for per-project settings
+  - Explains YAML frontmatter configuration options
+  - Provides examples for common customization scenarios
+- **Commands**: Enhanced `/sandboxxer:health` command features
+  - Added `--include-network` flag for network diagnostics
+  - Improved actionable fix suggestions across all check categories
+
+### Changed
+- **Agents**: Enhanced `devcontainer-validator` with 6-phase validation
+  - Added JSON/YAML syntax validation (Phase 1: Syntax Check)
+  - Added content validation for devcontainer.json structure (Phase 2-6)
+  - Improved error reporting with specific line numbers and fix suggestions
+  - Validates docker-compose.yml structure and service configuration
+
 ## [4.12.1] - 2026-02-07
 
 ### Added

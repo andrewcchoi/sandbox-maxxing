@@ -1,6 +1,6 @@
 # Sandboxxer Plugin
 
-![Version](https://img.shields.io/badge/version-4.12.0-blue)
+![Version](https://img.shields.io/badge/version-4.13.0-blue)
 ![Claude Code](https://img.shields.io/badge/claude--code-plugin-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
@@ -224,6 +224,7 @@ Claude: Creating DevContainer with defaults...
 | `/sandboxxer:troubleshoot`        | Diagnose and fix sandbox issues                                   |
 | `/sandboxxer:linux-troubleshoot`  | Diagnose and fix native Linux/WSL2 Claude Code setup issues       |
 | `/sandboxxer:audit`               | Security audit and recommendations                                |
+| `/sandboxxer:health`              | Comprehensive diagnostics and health checks                       |
 
 **v4.6.0:** Added Azure deployment support for cloud-based development environments.
 **v4.3.0:** Setup now offers interactive project-type selection or instant defaults with no questions.
@@ -554,6 +555,7 @@ The plugin includes comprehensive documentation in the `docs/` directory:
 - [OLLAMA_INTEGRATION.md](docs/features/OLLAMA_INTEGRATION.md) - Local AI with Ollama setup
 - [SECRETS.md](docs/features/SECRETS.md) - Secrets management and security
 - [SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) - Security architecture and best practices
+- [SETTINGS.md](docs/features/SETTINGS.md) - Plugin configuration and per-project settings
 - [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) - Interactive vs non-interactive setup guide
 - [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md) - Common issues and solutions
 - [VARIABLES.md](docs/features/VARIABLES.md) - Template variables reference
@@ -608,7 +610,8 @@ sandbox-maxxing/
 │   └── marketplace.json         # Marketplace configuration
 ├── agents/                      # Subagent definitions
 │   ├── devcontainer-generator.md   # File generation subagent
-│   └── devcontainer-validator.md   # Post-setup validation subagent
+│   ├── devcontainer-validator.md   # Post-setup validation subagent
+│   └── interactive-troubleshooter.md # Interactive diagnostics subagent
 ├── commands/                    # Slash commands
 │   ├── quickstart.md            # /sandboxxer:quickstart (interactive setup)
 │   ├── yolo-docker-maxxing.md   # /sandboxxer:yolo-docker-maxxing (instant setup)
@@ -616,7 +619,8 @@ sandbox-maxxing/
 │   ├── deploy-to-azure.md       # /sandboxxer:deploy-to-azure (Azure deployment)
 │   ├── troubleshoot.md          # /sandboxxer:troubleshoot
 │   ├── linux-troubleshoot.md    # /sandboxxer:linux-troubleshoot
-│   └── audit.md                 # /sandboxxer:audit
+│   ├── audit.md                 # /sandboxxer:audit
+│   └── health.md                # /sandboxxer:health
 ├── hooks/                       # Event hooks
 │   ├── hooks.json               # Hook configuration
 │   ├── docker-safety-hook.sh    # Docker safety checks
