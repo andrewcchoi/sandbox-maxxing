@@ -52,6 +52,84 @@ Required API keys for this project:
 - OPENAI_API_KEY
 ```
 
+## Quickstart v2 Settings (Issue #271)
+
+The refactored `/sandboxxer:quickstart` command supports additional settings for zero-question setup:
+
+### Profile Settings
+
+| Setting | Values | Default | Description |
+|---------|--------|---------|-------------|
+| `default_profile` | `minimal`, `backend`, `fullstack`, `custom` | (none) | Pre-select stack profile |
+| `default_tools` | comma-separated list | (none) | Tools for custom profile (e.g., `go,rust,postgres`) |
+
+**Profile Tool Mappings:**
+- `minimal` → Python 3.12 + Node 20 only
+- `backend` → + Go 1.22, PostgreSQL tools
+- `fullstack` → + Go 1.22, Rust, PostgreSQL tools
+- `custom` → Uses `default_tools` list
+
+### Question Control
+
+| Setting | Values | Default | Description |
+|---------|--------|---------|-------------|
+| `skip_all_questions` | `true`, `false` | `false` | Skip all questions, use settings |
+
+When `skip_all_questions: true`, quickstart runs non-interactively using all settings. Same as `--yes` flag.
+
+### Firewall Presets
+
+| Setting | Values | Default | Description |
+|---------|--------|---------|-------------|
+| `firewall_preset` | `essentials`, `cloud`, `all`, `custom` | `essentials` | Domain category preset |
+| `custom_domains` | comma-separated list | (none) | Custom domains for firewall |
+
+**Preset Mappings:**
+- `essentials` → npm, PyPI, GitHub, GitLab, Docker Hub
+- `cloud` → Essentials + AWS, GCP, Azure
+- `all` → All categories including analytics
+- `custom` → Uses `custom_domains` list
+
+### Example: Zero-Question Backend Setup
+
+```yaml
+---
+default_profile: backend
+default_firewall: disabled
+default_workspace_mode: bind
+skip_all_questions: true
+---
+```
+
+Run `/sandboxxer:quickstart` and it generates configuration instantly with no prompts.
+
+### Example: Secure Corporate Environment
+
+```yaml
+---
+default_profile: minimal
+default_firewall: enabled
+firewall_preset: essentials
+custom_domains: api.company.com,registry.internal.corp
+default_workspace_mode: volume
+---
+```
+
+### CLI Flag Overrides
+
+CLI flags override settings file values:
+
+| Flag | Overrides Setting |
+|------|------------------|
+| `--yes` | `skip_all_questions` |
+| `--profile=NAME` | `default_profile` |
+| `--tools=LIST` | `default_tools` |
+| `--firewall` | `default_firewall=enabled` |
+| `--no-firewall` | `default_firewall=disabled` |
+| `--volume` | `default_workspace_mode=volume` |
+
+---
+
 ## Settings Reference
 
 ### Firewall Settings
