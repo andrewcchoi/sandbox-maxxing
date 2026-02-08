@@ -29,16 +29,16 @@ Each command loads and executes the corresponding skill with user-friendly promp
 ```
 
 **What it does:**
-1. Asks about project type (9 project types)
-2. Asks about network restrictions (optional domain allowlist)
-3. Generates DevContainer configuration
-4. Creates docker-compose.yml with services
+1. Loads settings from `.claude/sandboxxer.local.md` (if present)
+2. Detects project context and available ports
+3. Asks about stack profile, firewall, and workspace mode (max 4 questions)
+4. Generates DevContainer configuration
 
 **Features:**
-- Choose from 9 project types (Python/Node, Go, Ruby, Rust, C++ Clang/GCC, PHP, PostgreSQL, Azure CLI)
-- Optional firewall with domain allowlist
-- 2-3 questions for configuration
-- Ready in 2-3 minutes
+- Profile-based selection (Minimal, Backend, Full Stack, Custom)
+- Firewall presets (Essentials, Cloud, All, Custom domains)
+- Settings file support for zero-question setup (`--yes` flag or `skip_all_questions: true`)
+- Max 4 questions for configuration
 
 **When to use:**
 - Creating a new sandbox environment
@@ -334,18 +334,31 @@ Result: DevContainer configuration created
 **Interactive Quickstart:**
 ```
 User: /sandboxxer:quickstart
-Claude: What type of project are you setting up?
-        • Python/Node (base only)
-        • Go (adds Go toolchain)
-        • Ruby (adds Ruby, bundler)
-        ...
-User: Python/Node
-Claude: Do you need network restrictions?
-        • No - Container isolation only
-        • Yes - Domain allowlist (choose categories)
-User: Yes
-Claude: [Asks about domain categories]
+Claude: Which stack profile matches your project?
+        • Minimal (Python 3.12 + Node 20)
+        • Backend Developer (+ Go, PostgreSQL)
+        • Full Stack (+ Go, Rust, PostgreSQL)
+        • Custom (select tools)
+User: Backend Developer
+Claude: Do you need network firewall restrictions?
+        • No (Recommended) - Container isolation only
+        • Essentials - npm, PyPI, GitHub, Docker Hub
+        • Cloud - + AWS, GCP, Azure
+        • Custom domains
+User: No
+Claude: Workspace mode?
+        • Bind mount (real-time sync)
+        • Volume (fast I/O for Windows/macOS)
+User: Bind mount
 Claude: [Generates DevContainer configuration]
+```
+
+**Zero-Question Quickstart (with settings file):**
+```
+User: /sandboxxer:quickstart --yes
+Claude: Using settings from .claude/sandboxxer.local.md...
+        Profile: backend, Firewall: disabled, Mode: bind
+        [Generates DevContainer configuration instantly]
 ```
 
 **Non-Interactive YOLO Docker Maxxing:**

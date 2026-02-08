@@ -44,24 +44,30 @@
 
 ---
 
-### 2. Quickstart Setup Flow
+### 2. Quickstart Setup Flow (v2)
 **File:** `quickstart-flow.mmd` → `svg/quickstart-flow.svg`
 **Type:** Interactive Workflow
 **Status:** ✅ Active
 
-**Purpose:** Interactive setup workflow showing the `/quickstart` command process
+**Purpose:** Interactive setup workflow showing the `/quickstart` command with profile-based selection
 
-**Workflow Steps:**
-1. User runs `/quickstart`
-2. Project type selection (9 options shown in diagram)
-3. Network restrictions decision
-4. Optional firewall configuration with domain categories
-5. DevContainer file generation
+**Workflow (5 phases, max 4 questions):**
+1. **Phase 0: Settings Load** - Read defaults from `.claude/sandboxxer.local.md`
+2. **Phase 1: Discovery** - Detect project context, scan for languages, check ports
+3. **Phase 2: Configuration** - Profile selection, firewall preset, workspace mode
+4. **Phase 3: Generation** - Copy templates, apply partials, configure firewall
+5. **Phase 4: Report** - Summary of files created and next steps
+
+**Profiles:**
+- **Minimal** - Python 3.12 + Node 20 only
+- **Backend** - + Go 1.22, PostgreSQL tools
+- **Full Stack** - + Go, Rust, PostgreSQL tools
+- **Custom** - Select individual tools
 
 **Used In:**
-- ✅ README.md (line ~233 - after Slash Commands table)
-- ✅ docs/features/SETUP-OPTIONS.md (line ~17 - after Interactive Setup Features table)
-- ✅ docs/diagrams/README.md (line 51 - diagram gallery)
+- ✅ README.md (line ~232 - after Slash Commands table)
+- ✅ docs/features/SETUP-OPTIONS.md (line ~16 - after Interactive Setup Features table)
+- ✅ docs/diagrams/README.md (line 57 - diagram gallery)
 
 **Sync Status:** ✅ Properly embedded in all documented locations
 
@@ -295,15 +301,17 @@
 
 ---
 
-## ⚠️ Issues Found
+## ✅ Issues Status
 
-### High Priority
-1. **Quickstart Flow Diagram** - Claims "Used in: README.md, SETUP-OPTIONS.md" but not actually embedded
-   - **Action Required:** Either add embeds or update "Used in" documentation
+All previously identified issues have been resolved:
 
-### Medium Priority
-2. **Project Type Count** - Diagram shows 9 types, documentation varies (5-8)
-   - **Action Required:** Reconcile project type documentation across all files
+| Issue | Status | Resolution |
+|-------|--------|------------|
+| Quickstart flow embed locations | ✅ RESOLVED | Diagram properly embedded in README.md:232, SETUP-OPTIONS.md:16 |
+| Project type count consistency | ✅ RESOLVED | All documentation now consistently states "9 project types" |
+| Quickstart v2 description sync | ✅ RESOLVED | DIAGRAM_STATUS.md updated to match v2 5-phase architecture |
+
+**Last audit:** 2026-02-07
 
 ---
 
@@ -365,18 +373,14 @@ All diagrams follow this color scheme:
 
 ## 📝 Next Steps
 
-1. **Immediate:**
-   - Fix quickstart-flow.svg embedding in claimed locations
-   - Reconcile project type counts across documentation
-
-2. **Short-term:**
+1. **Short-term:**
    - Add automated tests to verify diagram counts match documentation
    - Enhance diagram-inventory.sh with content validation
 
-3. **Long-term:**
-   - Add metadata to .mmd files (YAML frontmatter)
+2. **Long-term:**
    - Implement bidirectional validation (docs match diagrams)
    - Create automated dashboard regeneration
+   - Integrate health checks into CI/CD pipeline
 
 ---
 
