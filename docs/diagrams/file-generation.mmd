@@ -1,3 +1,21 @@
+<!--
+---
+title: File Generation Process
+type: Data Flow Diagram
+version: 4.13.0
+introduced: 4.3.0
+documents:
+  - docs/ARCHITECTURE.md
+  - docs/diagrams/README.md
+components:
+  templates: 4
+  partials: 8
+  output_files: 4
+last_updated: 2026-02-07
+purpose: Shows how templates are processed to generate DevContainer files through template copying, partial appending, and placeholder replacement
+---
+-->
+
 flowchart LR
     subgraph Templates["skills/_shared/templates/"]
         T1[base.dockerfile]

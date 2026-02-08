@@ -7,11 +7,15 @@ This guide explains how to create a DevContainer with this plugin using **Intera
 | Feature                    | Details                                             |
 | -------------------------- | --------------------------------------------------- |
 | **Questions Asked**        | 2-3 (minimal configuration)                         |
-| **Project Type Selection** | Yes (Python/Node, Go, Ruby, Rust, Java)             |
+| **Project Type Selection** | Yes (9 options: Python/Node, Go, Ruby, Rust, C++ Clang, C++ GCC, PHP, PostgreSQL, Azure CLI) |
 | **Firewall Customization** | Yes (optional, interactive domain selection)        |
 | **Setup Time**             | 2-3 minutes                                         |
 | **Base Image**             | Base + optional language partial                    |
 | **Network Security**       | Optional strict firewall with allowlist or disabled |
+
+![Quickstart Flow](../diagrams/svg/quickstart-flow.svg)
+
+*Interactive quickstart workflow showing the complete setup process from project type selection through DevContainer generation.*
 
 ## Interactive Setup
 
@@ -29,7 +33,11 @@ What type of project are you setting up?
   ○ Go (adds Go toolchain, linters)
   ○ Ruby (adds Ruby, bundler, gems)
   ○ Rust (adds Cargo, rustfmt, clippy)
-  ○ Java (adds JDK, Maven, Gradle)
+  ○ C++ Clang (adds Clang 17, CMake, debuggers)
+  ○ C++ GCC (adds GCC, CMake, debuggers)
+  ○ PHP (adds PHP 8.3, Composer)
+  ○ PostgreSQL (adds PostgreSQL client tools)
+  ○ Azure CLI (adds Azure CLI and tools)
 ```
 
 **Step 2: Network Security**
