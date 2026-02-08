@@ -33,18 +33,24 @@ If you delete a `.mmd` file, the diagram becomes **permanently uneditable**. Alw
 
 ---
 
-### 2. Quickstart Setup Flow
+### 2. Quickstart Setup Flow (v2)
 
 **File:** [`quickstart-flow.mmd`](quickstart-flow.mmd) | **SVG:** [`svg/quickstart-flow.svg`](svg/quickstart-flow.svg)
 
-**Purpose:** Interactive setup workflow showing the `/quickstart` command process.
+**Purpose:** Interactive setup workflow showing the `/quickstart` command with profile-based selection.
 
-**Workflow:**
-1. User runs `/quickstart`
-2. Project type selection (9 options: Python/Node, Go, Ruby, Rust, C++ Clang, C++ GCC, PHP, PostgreSQL, Azure CLI)
-3. Network restrictions decision
-4. Optional firewall configuration with domain categories
-5. DevContainer file generation
+**Workflow (5 phases, max 4 questions):**
+1. **Phase 0: Settings Load** - Read defaults from `.claude/sandboxxer.local.md`
+2. **Phase 1: Discovery** - Detect project context, scan for languages, check ports
+3. **Phase 2: Configuration** - Profile selection (Minimal/Backend/Full Stack/Custom), firewall preset, workspace mode
+4. **Phase 3: Generation** - Copy templates, apply partials, configure firewall
+5. **Phase 4: Report** - Summary of files created and next steps
+
+**Profiles:**
+- **Minimal** - Python 3.12 + Node 20 only
+- **Backend** - + Go 1.22, PostgreSQL tools
+- **Full Stack** - + Go, Rust, PostgreSQL tools
+- **Custom** - Select individual tools
 
 **Used in:** docs/diagrams/README.md (documentation reference only - not embedded in other docs)
 

@@ -20,9 +20,16 @@ All notable changes to this project will be documented in this file.
   - Added `get_firewall_categories()` for firewall preset mapping
 
 ### Added
-- **Templates**: New `sandboxxer.local.example.md` settings template
+- **Templates**: New `sandboxxer-settings.example.md` settings template
   - Documents all available quickstart settings
   - Provides examples for zero-question setup, secure corporate, and full stack configurations
+
+### Fixed
+- **Documentation**: Synchronized docs with quickstart v2 refactor
+  - Updated `quickstart-flow.mmd` diagram to show 5-phase architecture with profile selection
+  - Updated `docs/diagrams/README.md` quickstart description
+  - Updated `commands/README.md` quickstart documentation and usage examples
+  - Fixed broken link to non-existent `docs/LOW_PRIORITY_FIXES_v2.2.1.md` (referenced in v2.2.0 changelog but file never created)
 
 ## [4.13.0] - 2026-02-07
 
@@ -644,7 +651,7 @@ Update your usage:
   - `templates/README.md` - Template system documentation with master templates guide
 - **SECURITY.md** - Security policy with responsible disclosure process
 - **docs/CONSOLIDATION_RECOMMENDATIONS.md** - Future documentation improvement suggestions
-- **docs/LOW_PRIORITY_FIXES_v2.2.1.md** - Status report on all low priority issues
+- **docs/LOW_PRIORITY_FIXES_v2.2.1.md** - Status report on all low priority issues *(Note: file was never created; documented here for historical accuracy)*
 - **Version footers** added to all key documentation files for traceability
 
 ### Fixed
