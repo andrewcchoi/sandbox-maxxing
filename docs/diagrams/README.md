@@ -41,12 +41,12 @@ If you delete a `.mmd` file, the diagram becomes **permanently uneditable**. Alw
 
 **Workflow:**
 1. User runs `/quickstart`
-2. Project type selection (8 language options)
+2. Project type selection (9 options: Python/Node, Go, Ruby, Rust, C++ Clang, C++ GCC, PHP, PostgreSQL, Azure CLI)
 3. Network restrictions decision
 4. Optional firewall configuration with domain categories
 5. DevContainer file generation
 
-**Used in:** README.md, docs/features/SETUP-OPTIONS.md
+**Used in:** docs/diagrams/README.md (documentation reference only - not embedded in other docs)
 
 ![Quickstart Setup Flow](svg/quickstart-flow.svg)
 
@@ -340,17 +340,33 @@ To embed diagrams in markdown files, use relative paths based on your file locat
 
 ```
 docs/diagrams/
-├── README.md                   # This file
-├── puppeteer-config.json       # Config for Mermaid CLI in Docker
-├── plugin-architecture.mmd     # Mermaid source files
+├── README.md                      # This file
+├── puppeteer-config.json          # Config for Mermaid CLI in Docker
+├── plugin-architecture.mmd        # Mermaid source files (12 total)
 ├── quickstart-flow.mmd
 ├── file-generation.mmd
 ├── mode-selection.mmd
-└── svg/                        # Generated SVG files
+├── security-layers.mmd
+├── troubleshooting-flow.mmd
+├── azure-deployment-flow.mmd
+├── secrets-flow.mmd
+├── firewall-resolution.mmd
+├── security-audit-flow.mmd
+├── service-connectivity.mmd
+├── cicd-integration.mmd
+└── svg/                           # Generated SVG files (12 total)
     ├── plugin-architecture.svg
     ├── quickstart-flow.svg
     ├── file-generation.svg
-    └── mode-selection.svg
+    ├── mode-selection.svg
+    ├── security-layers.svg
+    ├── troubleshooting-flow.svg
+    ├── azure-deployment-flow.svg
+    ├── secrets-flow.svg
+    ├── firewall-resolution.svg
+    ├── security-audit-flow.svg
+    ├── service-connectivity.svg
+    └── cicd-integration.svg
 ```
 
 ---

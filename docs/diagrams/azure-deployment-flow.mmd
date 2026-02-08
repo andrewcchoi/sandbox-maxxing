@@ -1,3 +1,21 @@
+<!--
+---
+title: Azure Deployment Flow
+type: Multi-Step Pipeline
+version: 4.13.0
+introduced: 4.6.0
+documents:
+  - commands/deploy-to-azure.md
+  - docs/features/AZURE-DEPLOYMENT.md
+  - docs/diagrams/README.md
+components:
+  phases: 6
+  validation_steps: 10
+last_updated: 2026-02-07
+purpose: Multi-step Azure Container Apps deployment pipeline with pre-flight validation, authentication, configuration, infrastructure generation, deployment, and verification
+---
+-->
+
 flowchart TB
     Start([User runs /sandboxxer:deploy-to-azure]) --> Preflight[Pre-flight Validation]
 

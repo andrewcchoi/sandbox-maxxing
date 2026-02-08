@@ -53,6 +53,16 @@ npm run test:hooks
 bats tests/unit/hooks/
 ```
 
+### Run Documentation Tests
+```bash
+bats tests/unit/documentation/
+```
+
+### Run Integration Tests
+```bash
+bats tests/integration/
+```
+
 ### Run Specific Test File
 ```bash
 bats tests/unit/hooks/docker-safety-hook.test.sh
@@ -72,16 +82,22 @@ bats --tap tests/unit/
 
 ```
 tests/
-├── README.md                           # This file
-├── unit/                               # Unit tests
-│   └── hooks/
-│       ├── docker-safety-hook.test.sh  # Hook safety tests
-│       ├── sudo-check.test.sh          # Sudo detection tests
-│       └── package-install.test.sh     # Package install tests
-├── fixtures/                           # Test fixtures and data
-│   └── sudo-check-function.sh          # Extracted sudo check logic
-└── helpers/                            # Test helper functions
-    └── test_helper.bash                # Common test utilities
+├── README.md                                      # This file
+├── unit/                                          # Unit tests
+│   ├── hooks/
+│   │   ├── docker-safety-hook.test.sh             # Hook safety tests
+│   │   ├── sudo-check.test.sh                     # Sudo detection tests
+│   │   └── package-install.test.sh                # Package install tests
+│   └── documentation/                             # NEW: Documentation tests
+│       ├── diagram-existence.test.sh              # File existence checks
+│       ├── diagram-content.test.sh                # Content validation
+│       └── version-consistency.test.sh            # Version synchronization
+├── integration/                                   # NEW: Integration tests
+│   └── health-check.test.sh                       # Health check scripts
+├── fixtures/                                      # Test fixtures and data
+│   └── sudo-check-function.sh                     # Extracted sudo check logic
+└── helpers/                                       # Test helper functions
+    └── test_helper.bash                           # Common test utilities
 ```
 
 ## Writing Tests
@@ -133,8 +149,10 @@ Tests automatically get:
 
 ## Test Coverage Goals
 
-### Phase 1: Minimum Viable (Current)
+### Phase 1: Core Functionality (Current)
 - ✅ docker-safety-hook: All patterns (destructive, privileged, disruptive)
+- ✅ Documentation: Diagram existence, version consistency, content validation
+- ✅ Health checks: Script validation, inventory checks
 - 🔄 sudo-check: Passwordless, timeout, group checks
 - 🔄 package-install: apt operations, idempotency
 - 🔄 Windows stdin: CI workflow test

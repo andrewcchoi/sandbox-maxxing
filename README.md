@@ -156,7 +156,7 @@ See [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) for comprehensive guide.
 > **Testing:** Very minimal. Configuration files may require iteration to work correctly.
 
 **Key Features**:
-- Choose from 8 project types (Python/Node, Go, Ruby, Rust, C++ Clang, C++ GCC, PHP, PostgreSQL)
+- Choose from 9 project types (Python/Node, Go, Ruby, Rust, C++ Clang, C++ GCC, PHP, PostgreSQL, Azure CLI)
 - Optional firewall with domain allowlist
 - Customizable security settings
 - 2-3 questions for configuration
