@@ -2,6 +2,16 @@
 
 This directory contains Mermaid diagrams visualizing the sandboxxer plugin architecture, workflows, and data flows.
 
+## ⚠️ CRITICAL: Mermaid Source Preservation
+
+**NEVER delete .mmd source files!** Each diagram consists of two files:
+- **`.mmd` (Mermaid source)**: Editable diagram definition - **THIS IS THE SOURCE OF TRUTH**
+- **`.svg` (SVG output)**: Generated image for documentation - can be regenerated from .mmd
+
+If you delete a `.mmd` file, the diagram becomes **permanently uneditable**. Always keep both files in version control.
+
+**Validation:** Run `bash scripts/diagram-inventory.sh` to verify all diagrams have source files.
+
 ## Available Diagrams
 
 ### 1. Plugin Architecture
