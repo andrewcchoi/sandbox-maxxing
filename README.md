@@ -229,6 +229,10 @@ Claude: Creating DevContainer with defaults...
 **v4.6.0:** Added Azure deployment support for cloud-based development environments.
 **v4.3.0:** Setup now offers interactive project-type selection or instant defaults with no questions.
 
+![Quickstart Flow](docs/diagrams/svg/quickstart-flow.svg)
+
+*Interactive quickstart workflow showing project type selection, network restrictions decision, and optional firewall configuration.*
+
 ## Auto-Detection
 
 The plugin automatically activates when you:
@@ -430,7 +434,7 @@ Interactive quickstart wizard with project type and firewall customization.
 - User wants to configure firewalls for development
 
 **Workflow**:
-1. Project type selection (8 languages)
+1. Project type selection (9 project types)
 2. Network restrictions question
 3. Domain allowlist configuration (if enabled)
 4. Template generation

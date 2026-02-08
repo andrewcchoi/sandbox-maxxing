@@ -59,10 +59,11 @@
 5. DevContainer file generation
 
 **Used In:**
-- ⚠️ **CLAIMED:** README.md, SETUP-OPTIONS.md
-- ❌ **ACTUAL:** Not embedded in claimed locations (only in diagrams/README.md line 51)
+- ✅ README.md (line ~233 - after Slash Commands table)
+- ✅ docs/features/SETUP-OPTIONS.md (line ~17 - after Interactive Setup Features table)
+- ✅ docs/diagrams/README.md (line 51 - diagram gallery)
 
-**Sync Status:** ⚠️ Usage documentation mismatch
+**Sync Status:** ✅ Properly embedded in all documented locations
 
 ---
 

@@ -405,7 +405,7 @@ Update your usage:
 
 ### Benefits
 - Users can build realistic multi-stack projects (frontend + backend + database)
-- All 8 language options discoverable through categories
+- All 9 project types discoverable through categories
 - Stays within AskUserQuestion 4-option limit
 - No ENV conflicts when composing multiple partials
 

@@ -13,6 +13,10 @@ This guide explains how to create a DevContainer with this plugin using **Intera
 | **Base Image**             | Base + optional language partial                    |
 | **Network Security**       | Optional strict firewall with allowlist or disabled |
 
+![Quickstart Flow](../diagrams/svg/quickstart-flow.svg)
+
+*Interactive quickstart workflow showing the complete setup process from project type selection through DevContainer generation.*
+
 ## Interactive Setup
 
 **Command:** `/sandboxxer:quickstart`
