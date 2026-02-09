@@ -1,6 +1,15 @@
 ---
 name: sandboxxer-troubleshoot
 description: Use when user encounters problems with Claude Code Docker sandbox - diagnose and fix container startup failures, network issues, service connectivity, firewall blocking, or permission errors
+whenToUse: |
+  - Container won't start or build fails
+  - Can't connect to services (PostgreSQL, Redis, MongoDB)
+  - Network connectivity issues or DNS resolution problems
+  - Firewall blocking legitimate traffic
+  - Permission denied errors in container
+  - VS Code DevContainer problems or crashes
+  - Port conflicts or binding issues
+  - Docker Compose service dependencies not working
 ---
 
 # Sandbox Troubleshooting Assistant

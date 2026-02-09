@@ -590,3 +590,15 @@ azd down
 ```
 
 ---
+
+## Related Commands
+
+- **`/sandboxxer:quickstart`** - Create DevContainer configuration before deploying
+- **`/sandboxxer:audit`** - Security review before cloud deployment
+- **`/sandboxxer:health`** - Verify environment before deployment
+
+## Related Documentation
+
+- [Azure Deployment Guide](../docs/features/AZURE-DEPLOYMENT.md) - Comprehensive deployment documentation
+- [CI/CD Integration](../docs/diagrams/svg/cicd-integration.svg) - Pipeline diagram
+- [Azure Deployment Flow](../docs/diagrams/svg/azure-deployment-flow.svg) - Deployment workflow

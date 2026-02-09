@@ -636,3 +636,16 @@ wsl --shutdown
 You now have Claude Code CLI running natively on Linux/WSL2. Start coding with AI assistance by running `claude` in your project directory.
 
 For enhanced security and isolation, consider the Docker-based setup: `/sandboxxer:yolo-docker-maxxing`
+
+---
+
+## Related Commands
+
+- **`/sandboxxer:linux-troubleshoot`** - Fix native Linux/WSL2 issues
+- **`/sandboxxer:yolo-docker-maxxing`** - Docker-based alternative with enhanced isolation
+- **`/sandboxxer:health`** - Verify installation
+
+## Related Documentation
+
+- [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md) - Native Linux troubleshooting
+- [Setup Options](../docs/features/SETUP-OPTIONS.md) - Configuration alternatives

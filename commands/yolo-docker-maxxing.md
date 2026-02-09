@@ -258,3 +258,16 @@ echo ""
 echo "Next: Open in VS Code → 'Reopen in Container'"
 echo "=========================================="
 ```
+
+---
+
+## Related Commands
+
+- **`/sandboxxer:quickstart`** - Interactive setup with customization options
+- **`/sandboxxer:health`** - Verify environment after setup
+- **`/sandboxxer:troubleshoot`** - Fix issues if setup fails
+
+## Related Documentation
+
+- [Setup Options](../docs/features/SETUP-OPTIONS.md) - Available configuration options
+- [Quickstart Flow](../docs/diagrams/svg/quickstart-flow.svg) - Setup workflow diagram

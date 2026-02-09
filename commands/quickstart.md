@@ -849,3 +849,19 @@ Use Docker JSON array format instead of shell scripts for `initializeCommand` in
 ### Port conflicts
 
 Run with `--skip-validation` to skip port checks, or the command will auto-assign alternative ports.
+
+---
+
+## Related Commands
+
+- **`/sandboxxer:yolo-docker-maxxing`** - YOLO mode: instant setup with no questions
+- **`/sandboxxer:health`** - Verify environment after setup
+- **`/sandboxxer:troubleshoot`** - Fix issues during or after setup
+- **`/sandboxxer:audit`** - Security review of configuration
+- **`/sandboxxer:deploy-to-azure`** - Deploy to Azure Container Apps
+
+## Related Documentation
+
+- [Setup Options](../docs/features/SETUP-OPTIONS.md) - Detailed setup configuration guide
+- [Quickstart Flow Diagram](../docs/diagrams/svg/quickstart-flow.svg) - Visual workflow
+- [Settings Reference](../docs/features/SETTINGS.md) - Default settings and customization
