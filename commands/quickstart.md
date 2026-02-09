@@ -480,6 +480,58 @@ if [ "$NEEDS_FIREWALL" = "Yes" ]; then
 fi
 ```
 
+### Question 5: Project Config Files
+
+Ask whether to generate additional project configuration files.
+
+Skip this question if: `AUTO_ACCEPT=true`
+
+```
+Generate project configuration files?
+
+Options:
+1. Yes - generate .dockerignore, .gitignore, .editorconfig (Recommended)
+   → Optimizes Docker builds, protects secrets, ensures consistent formatting
+
+2. .dockerignore only
+   → Only optimize Docker build context (skip .gitignore, .editorconfig)
+
+3. .gitignore only
+   → Only protect secrets and build artifacts (skip others)
+
+4. No - I'll manage these myself
+   → Skip all project config file generation
+```
+
+Store as `PROJECT_CONFIG_CHOICE`.
+
+```bash
+# Process project config choice
+GENERATE_DOCKERIGNORE=false
+GENERATE_GITIGNORE=false
+GENERATE_EDITORCONFIG=false
+
+case "$PROJECT_CONFIG_CHOICE" in
+  "Yes"*|"1")
+    GENERATE_DOCKERIGNORE=true
+    GENERATE_GITIGNORE=true
+    GENERATE_EDITORCONFIG=true
+    echo "Will generate: .dockerignore, .gitignore, .editorconfig"
+    ;;
+  ".dockerignore"*|"2")
+    GENERATE_DOCKERIGNORE=true
+    echo "Will generate: .dockerignore only"
+    ;;
+  ".gitignore"*|"3")
+    GENERATE_GITIGNORE=true
+    echo "Will generate: .gitignore only"
+    ;;
+  "No"*|"4")
+    echo "Skipping project config file generation"
+    ;;
+esac
+```
+
 ---
 
 ## Phase 3: Generation
@@ -638,6 +690,42 @@ cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
 cp "$TEMPLATES/setup-frontend.sh" .devcontainer/
 cp "$TEMPLATES/data/allowable-domains.json" data/
 cp "$TEMPLATES/.env.example" ./.env.example
+
+# Copy .gitattributes if not exists
+if [ ! -f ".gitattributes" ]; then
+  cp "$TEMPLATES/.gitattributes" ./.gitattributes
+else
+  echo "    Skipped .gitattributes (already exists)"
+fi
+
+# Copy project config files based on user choice
+if [ "$GENERATE_DOCKERIGNORE" = "true" ]; then
+  if [ ! -f ".dockerignore" ]; then
+    cp "$TEMPLATES/.dockerignore" ./.dockerignore
+    echo "    Generated .dockerignore"
+  else
+    echo "    Skipped .dockerignore (already exists)"
+  fi
+fi
+
+if [ "$GENERATE_GITIGNORE" = "true" ]; then
+  if [ ! -f ".gitignore" ]; then
+    cp "$TEMPLATES/.gitignore" ./.gitignore
+    echo "    Generated .gitignore"
+  else
+    echo "    Skipped .gitignore (already exists)"
+  fi
+fi
+
+if [ "$GENERATE_EDITORCONFIG" = "true" ]; then
+  if [ ! -f ".editorconfig" ]; then
+    cp "$TEMPLATES/.editorconfig" ./.editorconfig
+    echo "    Generated .editorconfig"
+  else
+    echo "    Skipped .editorconfig (already exists)"
+  fi
+fi
+
 chmod +x .devcontainer/*.sh
 
 # Merge existing config if requested
@@ -727,6 +815,10 @@ echo "  .devcontainer/init-firewall.sh"
 echo "  .devcontainer/setup-claude-credentials.sh"
 echo "  docker-compose.yml"
 echo "  .env"
+[ ! -f ".gitattributes.backup" ] && echo "  .gitattributes" || echo "  .gitattributes (preserved existing)"
+[ "$GENERATE_DOCKERIGNORE" = "true" ] && { [ ! -f ".dockerignore.backup" ] && echo "  .dockerignore" || echo "  .dockerignore (preserved existing)"; }
+[ "$GENERATE_GITIGNORE" = "true" ] && { [ ! -f ".gitignore.backup" ] && echo "  .gitignore" || echo "  .gitignore (preserved existing)"; }
+[ "$GENERATE_EDITORCONFIG" = "true" ] && { [ ! -f ".editorconfig.backup" ] && echo "  .editorconfig" || echo "  .editorconfig (preserved existing)"; }
 echo ""
 echo "Next steps:"
 echo "1. Edit .env and add your API keys"
