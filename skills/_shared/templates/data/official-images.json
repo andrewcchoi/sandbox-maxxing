@@ -3,7 +3,7 @@
   "description": "Official Docker images registry",
   "metadata": {
     "hub_search_url": "https://hub.docker.com/search?type=image&badges=official&operating_system=linux&q=",
-    "last_updated": "2025-12-16"
+    "last_updated": "2026-02-08"
   },
   "images": {
     "python": {
