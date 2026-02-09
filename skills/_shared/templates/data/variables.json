@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Environment variables catalog for DevContainer configurations",
   "metadata": {
-    "last_updated": "2026-01-02",
+    "last_updated": "2026-02-08",
     "usage": "Skills reference this file for variable validation and documentation"
   },
   "variable_types": {

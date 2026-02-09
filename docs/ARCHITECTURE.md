@@ -282,6 +282,6 @@ Skills can invoke each other for related tasks:
 
 ### Examples
 - [Examples README](examples/README.md) - Example projects
-- [Minimal Configuration](examples/demo-app-sandbox-basic/) - Minimal configuration result
-- [Domain Allowlist](examples/demo-app-sandbox-advanced/) - Domain allowlist result
+- [Minimal Configuration](examples/demo-app-sandbox-basic/README.md) - Minimal configuration result
+- [Domain Allowlist](examples/demo-app-sandbox-advanced/README.md) - Domain allowlist result
 

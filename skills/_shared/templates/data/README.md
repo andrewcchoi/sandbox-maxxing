@@ -224,6 +224,6 @@ These data files are tracked in git. When updating:
 ## Questions?
 
 For questions about data file structure or usage, see:
-- Plugin documentation: `../docs/ARCHITECTURE.md`
-- Mode guide: `../docs/SETUP-OPTIONS.md`
+- Plugin documentation: `../../../../docs/ARCHITECTURE.md`
+- Mode guide: `../../../../docs/features/SETUP-OPTIONS.md`
 
