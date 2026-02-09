@@ -1,9 +1,9 @@
 # Sandboxxer Plugin
 
-![Version](https://img.shields.io/badge/version-4.13.1-blue)
-![Claude Code](https://img.shields.io/badge/claude--code-plugin-purple)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
+![Plugin version 4.13.1](https://img.shields.io/badge/version-4.13.1-blue)
+![Claude Code official plugin](https://img.shields.io/badge/claude--code-plugin-purple)
+![MIT License](https://img.shields.io/badge/license-MIT-green)
+![Supported platforms: Linux, macOS, Windows WSL2](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
 
 > **Repository:** [andrewcchoi/sandbox-maxxing](https://github.com/andrewcchoi/sandbox-maxxing)
 > **Plugin Name:** sandboxxer (used in commands: /sandboxxer:quickstart, /sandboxxer:yolo-docker-maxxing)
@@ -34,7 +34,7 @@ Interactive assistant for creating VS Code DevContainer configurations with Dock
 - **🛡️ Smart Firewall Management** - Optional domain allowlist with 30-100+ curated domains
 - **🎯 Intelligent Detection** - Auto-detects project type and suggests appropriate setup
 
-![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
+![Plugin architecture diagram showing commands, skills, agents, and data templates organized in a component hierarchy](docs/diagrams/svg/plugin-architecture.svg)
 *Plugin component overview - see [docs/diagrams/](docs/diagrams/) for detailed diagrams*
 
 ## Table of Contents
@@ -229,7 +229,7 @@ Claude: Creating DevContainer with defaults...
 **v4.6.0:** Added Azure deployment support for cloud-based development environments.
 **v4.3.0:** Setup now offers interactive project-type selection or instant defaults with no questions.
 
-![Quickstart Flow](docs/diagrams/svg/quickstart-flow.svg)
+![Quickstart workflow flowchart illustrating the interactive setup path with project type selection, network restrictions decision, and optional firewall configuration steps](docs/diagrams/svg/quickstart-flow.svg)
 
 *Interactive quickstart workflow showing project type selection, network restrictions decision, and optional firewall configuration.*
 

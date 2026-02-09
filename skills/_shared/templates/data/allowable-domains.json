@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Standard allowable domains for firewall configuration in sandbox environments",
   "metadata": {
-    "last_updated": "2025-12-16",
+    "last_updated": "2026-02-08",
     "usage": "Skills reference this file to generate firewall configurations. Categories can be included or excluded per mode."
   },
   "categories": {
