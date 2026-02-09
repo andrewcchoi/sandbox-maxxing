@@ -401,8 +401,8 @@ echo ""
 TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 AZURE_TEMPLATES="$TEMPLATES/azure"
 
-# Detect current version (optional)
-VERSION="4.11.1"  # Could be read from plugin.json
+# Detect current version from plugin manifest
+VERSION=$(jq -r '.version' "$PLUGIN_ROOT/.claude-plugin/plugin.json" 2>/dev/null || echo "unknown")
 
 # Create azure.yaml
 if [ -f "$AZURE_TEMPLATES/azure.yaml" ]; then
