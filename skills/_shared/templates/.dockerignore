@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+
+# Dependencies (rebuilt in container)
+node_modules
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+
+# Environment/secrets
+.env
+.env.local
+*.pem
+*.key
+
+# IDE/Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build artifacts
+dist
+build
+coverage
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# DevContainer backups
+.devcontainer.backup
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs

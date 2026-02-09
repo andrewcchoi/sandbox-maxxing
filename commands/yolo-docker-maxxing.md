@@ -97,7 +97,11 @@ validate_templates "$PLUGIN_ROOT" \
   "$DEVCONTAINER_TEMPLATE" \
   "$COMPOSE_TEMPLATE" \
   setup-claude-credentials.sh \
-  setup-frontend.sh || exit 1
+  setup-frontend.sh \
+  .gitattributes \
+  .dockerignore \
+  .gitignore \
+  .editorconfig || exit 1
 
 # Port allocation (only for normal mode)
 if [ "$MODE" = "normal" ]; then
@@ -129,6 +133,31 @@ cp "$TEMPLATES/$DEVCONTAINER_TEMPLATE" .devcontainer/devcontainer.json || { echo
 cp "$TEMPLATES/$COMPOSE_TEMPLATE" ./docker-compose.yml || { echo "ERROR: Template copy failed"; exit 1; }
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/ || { echo "ERROR: Template copy failed"; exit 1; }
 cp "$TEMPLATES/setup-frontend.sh" .devcontainer/ || { echo "ERROR: Template copy failed"; exit 1; }
+
+# Copy project config files if they don't exist
+if [ ! -f ".gitattributes" ]; then
+  cp "$TEMPLATES/.gitattributes" ./.gitattributes || { echo "ERROR: Template copy failed"; exit 1; }
+else
+  echo "Skipped .gitattributes (already exists)"
+fi
+
+if [ ! -f ".dockerignore" ]; then
+  cp "$TEMPLATES/.dockerignore" ./.dockerignore || { echo "ERROR: Template copy failed"; exit 1; }
+else
+  echo "Skipped .dockerignore (already exists)"
+fi
+
+if [ ! -f ".gitignore" ]; then
+  cp "$TEMPLATES/.gitignore" ./.gitignore || { echo "ERROR: Template copy failed"; exit 1; }
+else
+  echo "Skipped .gitignore (already exists)"
+fi
+
+if [ ! -f ".editorconfig" ]; then
+  cp "$TEMPLATES/.editorconfig" ./.editorconfig || { echo "ERROR: Template copy failed"; exit 1; }
+else
+  echo "Skipped .editorconfig (already exists)"
+fi
 
 # Generate no-op firewall script (YOLO mode)
 cat > .devcontainer/init-firewall.sh << 'EOF'
@@ -221,7 +250,24 @@ echo "  .devcontainer/setup-frontend.sh"
 echo "  .devcontainer/init-firewall.sh"
 echo "  docker-compose.yml"
 echo "  .env"
+[ ! -f ".gitattributes.backup" ] && echo "  .gitattributes" || echo "  .gitattributes (preserved existing)"
+[ ! -f ".dockerignore.backup" ] && echo "  .dockerignore" || echo "  .dockerignore (preserved existing)"
+[ ! -f ".gitignore.backup" ] && echo "  .gitignore" || echo "  .gitignore (preserved existing)"
+[ ! -f ".editorconfig.backup" ] && echo "  .editorconfig" || echo "  .editorconfig (preserved existing)"
 echo ""
 echo "Next: Open in VS Code → 'Reopen in Container'"
 echo "=========================================="
 ```
+
+---
+
+## Related Commands
+
+- **`/sandboxxer:quickstart`** - Interactive setup with customization options
+- **`/sandboxxer:health`** - Verify environment after setup
+- **`/sandboxxer:troubleshoot`** - Fix issues if setup fails
+
+## Related Documentation
+
+- [Setup Options](../docs/features/SETUP-OPTIONS.md) - Available configuration options
+- [Quickstart Flow](../docs/diagrams/svg/quickstart-flow.svg) - Setup workflow diagram

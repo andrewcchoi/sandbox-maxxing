@@ -1,6 +1,15 @@
 ---
 name: sandboxxer-audit
 description: Use when user wants to audit sandbox security, review firewall configuration, check for security best practices, or harden their Claude Code Docker sandbox environment
+whenToUse: |
+  - User wants security audit of existing sandbox
+  - User asks about security best practices
+  - User needs to review firewall configuration
+  - User preparing for production deployment
+  - User working with sensitive data or credentials
+  - User wants to verify secure configuration
+  - Before deploying to cloud environments (Azure, AWS, etc.)
+  - Compliance or security review requirements
 ---
 
 # Sandbox Security Auditor

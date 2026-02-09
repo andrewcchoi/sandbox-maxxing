@@ -16,6 +16,10 @@ The plugin uses two types of files:
 - `base.dockerfile` → Copied to `.devcontainer/Dockerfile`
 - `devcontainer.json` → Copied to `.devcontainer/devcontainer.json`
 - `docker-compose.yml` → Copied to project root
+- `.gitattributes` → Copied to project root (ensures LF line endings for Docker/shell files)
+- `.dockerignore` → Copied to project root (optimizes Docker build context)
+- `.gitignore` → Copied to project root (protects secrets and build artifacts)
+- `.editorconfig` → Copied to project root (ensures consistent editor settings)
 - `extensions.json` → Simple list of VS Code extensions (copied to devcontainer)
 - `variables.json` → Simple environment variable templates
 - `mcp.json` → MCP server configuration template
