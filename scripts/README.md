@@ -58,10 +58,10 @@ bash scripts/version-checker.sh
 ```
 === Version Consistency Check ===
 
-plugin.json:       4.13.0
-marketplace.json:  4.13.0
-README.md badge:   4.13.0
-CHANGELOG.md:      4.13.0
+plugin.json:       4.13.1
+marketplace.json:  4.13.1
+README.md badge:   4.13.1
+CHANGELOG.md:      4.13.1
 
 ✅ All critical version references are consistent
 ```
@@ -253,6 +253,6 @@ All scripts follow these conventions:
 
 ## Version
 
-These scripts were added in sandboxxer v4.13.0 as part of ULTRATHINK audit implementation.
+These scripts were added in sandboxxer v4.13.1 as part of ULTRATHINK audit implementation.
 
 **Last Updated:** 2026-02-07

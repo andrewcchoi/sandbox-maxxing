@@ -486,7 +486,7 @@ alembic init migrations
 
 ## Learn More
 
-- [Claude Code Sandbox Documentation](../../)
+- [Claude Code Sandbox Documentation](../../README.md)
 - [Security Model](../../features/SECURITY-MODEL.md)
 - [Development Guide](../../../DEVELOPMENT.md)
 - [Contributing](../../../CONTRIBUTING.md)

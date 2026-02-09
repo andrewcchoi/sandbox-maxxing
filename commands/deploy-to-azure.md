@@ -401,8 +401,8 @@ echo ""
 TEMPLATES="$PLUGIN_ROOT/skills/_shared/templates"
 AZURE_TEMPLATES="$TEMPLATES/azure"
 
-# Detect current version (optional)
-VERSION="4.11.1"  # Could be read from plugin.json
+# Detect current version from plugin manifest
+VERSION=$(jq -r '.version' "$PLUGIN_ROOT/.claude-plugin/plugin.json" 2>/dev/null || echo "unknown")
 
 # Create azure.yaml
 if [ -f "$AZURE_TEMPLATES/azure.yaml" ]; then
@@ -590,3 +590,15 @@ azd down
 ```
 
 ---
+
+## Related Commands
+
+- **`/sandboxxer:quickstart`** - Create DevContainer configuration before deploying
+- **`/sandboxxer:audit`** - Security review before cloud deployment
+- **`/sandboxxer:health`** - Verify environment before deployment
+
+## Related Documentation
+
+- [Azure Deployment Guide](../docs/features/AZURE-DEPLOYMENT.md) - Comprehensive deployment documentation
+- [CI/CD Integration](../docs/diagrams/svg/cicd-integration.svg) - Pipeline diagram
+- [Azure Deployment Flow](../docs/diagrams/svg/azure-deployment-flow.svg) - Deployment workflow

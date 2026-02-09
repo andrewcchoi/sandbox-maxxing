@@ -31,6 +31,15 @@ All notable changes to this project will be documented in this file.
   - Updated `commands/README.md` quickstart documentation and usage examples
   - Fixed broken link to non-existent `docs/LOW_PRIORITY_FIXES_v2.2.1.md` (referenced in v2.2.0 changelog but file never created)
 
+## [4.13.1] - 2026-02-07
+
+### Fixed
+- **Docker Compose**: Fixed parent directory mount path in docker-compose template
+- **Hooks**: Corrected matcher field format in hooks.json configuration
+
+### Added
+- **Documentation**: Added hooks.json matcher format troubleshooting guide
+
 ## [4.13.0] - 2026-02-07
 
 ### Added
