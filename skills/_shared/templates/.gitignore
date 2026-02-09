@@ -1,0 +1,47 @@
+# Environment (CRITICAL - contains secrets)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+coverage/
+
+# Test/lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# DevContainer backups
+.devcontainer.backup/
+
+# Logs
+*.log
+logs/
+
+# Database files (if local)
+*.sqlite3
+*.db
