@@ -145,6 +145,59 @@ shift
 - Standard bash or sh shell (already installed)
 - Execute permission on `.cmd` file: `chmod +x run-hook.cmd`
 
+## Critical: Line Endings Must Be LF
+
+**The polyglot wrapper REQUIRES LF (Unix) line endings to work on Linux/macOS/WSL.**
+
+### Why LF Is Required
+
+The polyglot technique uses a bash heredoc (`<< 'CMDBLOCK'`) to hide Windows batch commands. With CRLF line endings:
+- The heredoc delimiter becomes `CMDBLOCK\r` (with carriage return)
+- Bash looks for exact match `CMDBLOCK` (without carriage return)
+- The heredoc never closes, causing "unexpected end of file" errors
+- Result: **Permission denied** or parsing failures on WSL2/Linux
+
+### Ensuring LF Line Endings
+
+The `.gitattributes` file contains an exception for the polyglot wrapper:
+
+```gitattributes
+# Windows Batch/CMD Files - MUST be CRLF
+*.cmd text eol=crlf
+
+# Exception: Polyglot hook wrapper needs LF for bash heredoc compatibility
+hooks/run-hook.cmd text eol=lf
+```
+
+This ensures `run-hook.cmd` gets LF endings even though other `.cmd` files use CRLF.
+
+### Fixing CRLF Issues
+
+If you encounter "Permission denied" errors on WSL2/Linux, check line endings:
+
+```bash
+# Check current line endings
+file hooks/run-hook.cmd
+# Should show: "ASCII text" (NOT "with CRLF line terminators")
+
+# If CRLF detected, convert to LF
+git add --renormalize hooks/run-hook.cmd
+# or
+sed -i 's/\r$//' hooks/run-hook.cmd
+
+# Verify the fix
+file hooks/run-hook.cmd
+```
+
+### Why CMD Tolerates LF
+
+Despite popular belief, Windows CMD.exe **handles LF line endings correctly**:
+- CMD parses line-by-line regardless of line ending style
+- Both `\r\n` and `\n` work as line terminators
+- The `<CON` redirect on line 32 prevents input buffering issues
+
+This allows `run-hook.cmd` to use LF endings on all platforms.
+
 ## Writing Cross-Platform Hook Scripts
 
 Your actual hook logic goes in `.sh` files. To ensure they work when called via Git Bash on Windows:

@@ -126,6 +126,41 @@ Claude Code supports these hook events:
 
 **Note:** This issue was fixed in commit 8636e07. If you're experiencing this problem, ensure you're using the latest hooks.json configuration without the `//\\\\//` pattern.
 
+### Permission denied on WSL2/Linux
+
+**Symptom:** Hook execution fails with "Permission denied" or "unexpected end of file" errors on WSL2 or native Linux.
+
+**Cause:** The polyglot wrapper `run-hook.cmd` has CRLF line endings instead of LF. CRLF breaks bash heredoc parsing because the delimiter `CMDBLOCK\r` doesn't match `CMDBLOCK`.
+
+**Solution:**
+
+1. Check line endings:
+   ```bash
+   file hooks/run-hook.cmd
+   # Should show: "ASCII text" (NOT "with CRLF line terminators")
+   ```
+
+2. Convert to LF if needed:
+   ```bash
+   git add --renormalize hooks/run-hook.cmd
+   # or
+   sed -i 's/\r$//' hooks/run-hook.cmd
+   ```
+
+3. Verify execute permission:
+   ```bash
+   chmod +x hooks/run-hook.cmd
+   ```
+
+4. Test execution:
+   ```bash
+   ./hooks/run-hook.cmd sync-knowledge.sh
+   ```
+
+**Prevention:** The `.gitattributes` file ensures `hooks/run-hook.cmd` uses LF endings. This issue only occurs if the file was checked out before the gitattributes rule was added.
+
+See [docs/windows/polyglot-hooks.md](../docs/windows/polyglot-hooks.md) for detailed explanation of the polyglot technique and line ending requirements.
+
 ### Windows-specific issues
 
 See [README-WINDOWS.md](README-WINDOWS.md) for:
