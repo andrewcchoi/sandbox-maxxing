@@ -15,12 +15,14 @@ PLUGIN_VERSION=$(jq -r '.version' .claude-plugin/plugin.json 2>/dev/null || echo
 MARKET_VERSION=$(jq -r '.version' .claude-plugin/marketplace.json 2>/dev/null || echo "ERROR")
 README_VERSION=$(grep -oP 'version-\K[0-9]+\.[0-9]+\.[0-9]+' README.md 2>/dev/null | head -1 || echo "ERROR")
 CHANGELOG_VERSION=$(grep -oP '^\## \[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md 2>/dev/null | head -1 || echo "ERROR")
+PKG_VERSION=$(jq -r '.version' package.json 2>/dev/null || echo "N/A")
 
 # Display versions
 echo "plugin.json:       $PLUGIN_VERSION"
 echo "marketplace.json:  $MARKET_VERSION"
 echo "README.md badge:   $README_VERSION"
 echo "CHANGELOG.md:      $CHANGELOG_VERSION"
+echo "package.json:      $PKG_VERSION"
 echo ""
 
 # Check for inconsistencies
@@ -39,6 +41,12 @@ fi
 if [[ "$PLUGIN_VERSION" != "$CHANGELOG_VERSION" ]]; then
   echo "⚠️  WARNING: plugin.json ($PLUGIN_VERSION) != CHANGELOG.md ($CHANGELOG_VERSION)"
   echo "   (This may be expected if CHANGELOG has unreleased version)"
+fi
+
+# Check package.json
+if [[ "$PKG_VERSION" != "N/A" && "$PLUGIN_VERSION" != "$PKG_VERSION" ]]; then
+  echo "❌ ERROR: plugin.json ($PLUGIN_VERSION) != package.json ($PKG_VERSION)"
+  ((ERRORS++))
 fi
 
 if [[ $ERRORS -eq 0 ]]; then

@@ -117,12 +117,6 @@ if [ "$MODE" = "normal" ]; then
   echo ""
 fi
 
-# Backup existing .env if present
-if [ -f ".env" ]; then
-  cp .env .env.backup
-  echo "Backed up existing .env"
-fi
-
 # Create directories
 mkdir -p .devcontainer || { echo "ERROR: Cannot create .devcontainer"; exit 1; }
 
@@ -168,27 +162,18 @@ exit 0
 EOF
 chmod +x .devcontainer/init-firewall.sh
 
-# Create .env with ENABLE_FIREWALL=false
-cat > .env << 'EOF'
+# Create or update .env
+if [ ! -f ".env" ]; then
+  # Fresh .env — write template
+  cat > .env << 'EOF'
 # YOLO Mode Configuration
 ENABLE_FIREWALL=false
 EOF
-
-# Preserve values from backup
-if [ -f ".env.backup" ]; then
-  echo "Preserving .env values..."
-  preserved_count=0
-  while IFS='=' read -r key value || [ -n "$key" ]; do
-    [ -z "$key" ] && continue
-    [[ "$key" =~ ^[[:space:]]*# ]] && continue
-
-    # Always overlay backup values (user data wins over template defaults)
-    merge_env_value "$key" "$value" .env
-    preserved_count=$((preserved_count + 1))
-    echo "  Preserved: $key"
-  done < .env.backup
-  echo "  Preserved $preserved_count values"
-  rm -f .env.backup
+  echo "Created new .env"
+else
+  # Existing .env — merge required values only
+  echo "Updating existing .env..."
+  merge_env_value "ENABLE_FIREWALL" "false" .env
 fi
 
 # Write ports to .env (normal mode only)

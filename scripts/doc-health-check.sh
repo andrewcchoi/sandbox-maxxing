@@ -60,6 +60,24 @@ run_check() {
 run_check "Version Consistency" "$SCRIPT_DIR/version-checker.sh" || true
 run_check "Diagram Inventory" "$SCRIPT_DIR/diagram-inventory.sh" || true
 
+# Check for CRLF in polyglot hook wrapper
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "CHECK: Polyglot Hook Line Endings"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+if file hooks/run-hook.cmd | grep -q "CRLF"; then
+    echo "⚠️  WARNING: hooks/run-hook.cmd has CRLF line endings"
+    echo "   This breaks bash heredoc parsing on WSL2/Linux"
+    echo ""
+    echo "   To fix:"
+    echo "   git add --renormalize hooks/run-hook.cmd"
+    echo ""
+    ((WARNINGS++))
+else
+    echo "✅ hooks/run-hook.cmd has correct LF line endings"
+fi
+echo ""
+
 # Note: Link checker is available but not run by default due to complexity
 # Run manually with: bash scripts/link-checker.sh
 echo "ℹ️  Note: Link checking available via scripts/link-checker.sh (not run by default)"
