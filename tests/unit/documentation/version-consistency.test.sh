@@ -53,7 +53,7 @@ setup() {
   [ "$plugin_version" = "$readme_version" ]
 }
 
-@test "All version sources are consistent (4.13.1)" {
+@test "All version sources are consistent" {
   if ! command -v jq &> /dev/null; then
     skip "jq not installed"
   fi

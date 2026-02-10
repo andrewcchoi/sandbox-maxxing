@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.2] - 2026-02-09
+
 ### Changed
 - **Commands**: Major refactor of `/sandboxxer:quickstart` command (Issue #271)
   - Reduced from 1,467 lines to 759 lines (48% reduction)
