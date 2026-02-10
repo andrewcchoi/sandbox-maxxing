@@ -1,6 +1,6 @@
 # Sandboxxer Plugin
 
-![Plugin version 4.13.1](https://img.shields.io/badge/version-4.13.1-blue)
+![Plugin version 4.13.2](https://img.shields.io/badge/version-4.13.2-blue)
 ![Claude Code official plugin](https://img.shields.io/badge/claude--code-plugin-purple)
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 ![Supported platforms: Linux, macOS, Windows WSL2](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
