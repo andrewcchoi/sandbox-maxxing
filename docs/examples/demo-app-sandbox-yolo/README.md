@@ -768,8 +768,8 @@ npm update
 
 ## Learn More
 
-- [Claude Code Sandbox Documentation](../../README.md)
-- [Security Model](../../features/SECURITY-MODEL.md)
+- [Claude Code Sandbox Documentation](../../../README.md)
+- [Security Model](../../../docs/features/SECURITY-MODEL.md)
 - [Development Guide](../../../DEVELOPMENT.md)
 - [Contributing](../../../CONTRIBUTING.md)
 
