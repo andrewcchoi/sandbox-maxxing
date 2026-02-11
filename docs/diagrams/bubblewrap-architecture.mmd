@@ -1,0 +1,89 @@
+<!--
+---
+title: Bubblewrap Architecture (Native Linux)
+type: Layered Architecture
+introduced: 4.13.3
+documents:
+  - docs/diagrams/README.md
+  - commands/yolo-linux-maxxing.md
+components:
+  layers: 2
+  security_mechanisms: 5
+  missing_features: 4
+last_updated: 2026-02-10
+purpose: Visualizes native Linux/WSL2 sandboxing architecture using bubblewrap, highlighting security tradeoffs vs Docker
+---
+-->
+
+flowchart TB
+    subgraph External["External Threats"]
+        T1[Code Execution]
+        T2[Network Exfiltration]
+        T3[Resource Abuse]
+        T4[Filesystem Access]
+    end
+
+    subgraph Layer1["Layer 1: Bubblewrap Namespace Isolation"]
+        B1[--ro-bind /<br/>Read-only root filesystem]
+        B2[--dev /dev<br/>Minimal device access]
+        B3[--proc /proc<br/>Process namespace isolation]
+        B4[--tmpfs /tmp<br/>Ephemeral temp storage]
+        B5[--unshare-pid<br/>Process ID isolation]
+    end
+
+    subgraph Layer2["Layer 2: Seccomp Filter (Optional)"]
+        S1["@anthropic-ai/sandbox-runtime<br/>Syscall filtering"]
+        S2[Requires Node.js 18+]
+        S1 --> S2
+    end
+
+    subgraph Missing["⚠️ NOT PROVIDED (vs Docker)"]
+        M1[❌ Network Isolation<br/>Direct host network access]
+        M2[❌ Resource Limits<br/>No CPU/memory caps]
+        M3[❌ Container Boundaries<br/>Shared kernel, no cgroups]
+        M4[❌ Firewall/Allowlist<br/>Cannot restrict domains]
+    end
+
+    subgraph Protected["Partially Protected"]
+        P1[Filesystem<br/>Read-only system files]
+        P2[Process Isolation<br/>Namespace separation]
+    end
+
+    subgraph Exposed["⚠️ Still Exposed"]
+        E1[Host Network<br/>Full internet access]
+        E2[System Resources<br/>CPU/memory unrestricted]
+    end
+
+    T1 --> Layer1
+    T4 --> Layer1
+    Layer1 --> |Mitigates| P1
+    Layer1 --> |Mitigates| P2
+
+    T1 --> Layer2
+    Layer2 -.-> |Optional<br/>defense-in-depth| P2
+
+    T2 --> Missing
+    T3 --> Missing
+    Missing --> |Not mitigated| E1
+    Missing --> |Not mitigated| E2
+
+    subgraph Comparison["Security Comparison"]
+        direction LR
+        Docker[Docker Sandbox<br/>✅ 3 security layers<br/>✅ Network firewall<br/>✅ Resource limits<br/>✅ Full isolation]
+        Native[Native Linux<br/>✅ 1-2 security layers<br/>❌ No network control<br/>❌ No resource limits<br/>⚠️ Partial isolation]
+    end
+
+    style Layer1 fill:#FFB366,stroke:#333,stroke-width:3px
+    style Layer2 fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Missing fill:#FF6B6B,stroke:#333,stroke-width:3px
+    style External fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style Protected fill:#90EE90,stroke:#333,stroke-width:2px
+    style Exposed fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Comparison fill:#f0f0f0,stroke:#999,stroke-width:1px
+    style Docker fill:#90EE90,stroke:#333,stroke-width:2px
+    style Native fill:#FFE4B5,stroke:#333,stroke-width:2px
+
+    style M1 fill:#FF6B6B,stroke:#333,stroke-width:1px
+    style M2 fill:#FF6B6B,stroke:#333,stroke-width:1px
+    style M3 fill:#FF6B6B,stroke:#333,stroke-width:1px
+    style M4 fill:#FF6B6B,stroke:#333,stroke-width:1px

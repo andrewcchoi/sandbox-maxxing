@@ -1,0 +1,74 @@
+<!--
+---
+title: Docker Sandbox Explained (Beginner-Friendly)
+type: Conceptual Overview
+introduced: 4.13.3
+audience: Beginners unfamiliar with sandboxing concepts
+documents:
+  - docs/diagrams/README.md
+technical_version: security-layers.mmd
+last_updated: 2026-02-10
+purpose: Simple, approachable explanation of Docker sandbox using analogies and plain language. Answers "what is this?" and "why should I care?"
+---
+-->
+
+flowchart TB
+    subgraph Computer["🖥️ YOUR COMPUTER"]
+        subgraph Sandbox["🔒 THE SANDBOX (Docker Container)<br/><i>A secure container that isolates code from your computer</i>"]
+            subgraph Inside["📦 What Runs Inside the Sandbox"]
+                Claude["Claude Code<br/><i>AI assistant</i>"]
+                Code["Your Project Code<br/><i>Files you're working on</i>"]
+                Tools["Dev Tools<br/><i>Node, Python, etc.</i>"]
+            end
+
+            subgraph Can["✅ SANDBOX CAN DO"]
+                C1["📝 Write & edit project files"]
+                C2["🧪 Run tests and build code"]
+                C3["🌐 Access allowed websites<br/><i>Like npm registry, GitHub</i>"]
+                C4["💾 Read/write in project folder"]
+            end
+
+            subgraph Cannot["🚫 SANDBOX CANNOT DO"]
+                X1["🗑️ Delete your personal files<br/><i>Photos, documents, etc.</i>"]
+                X2["🔑 Access your passwords<br/><i>Browser credentials, SSH keys</i>"]
+                X3["😈 Install malware on your computer<br/><i>Protected by container walls</i>"]
+                X4["📡 Connect to unauthorized servers<br/><i>Firewall blocks unknown domains</i>"]
+            end
+        end
+
+        subgraph Protected["🛡️ PROTECTED (Outside Sandbox)<br/><i>These stay safe even if code misbehaves</i>"]
+            Files["📂 Your Documents & Files<br/><i>Pictures, music, work files</i>"]
+            Passwords["🔐 Passwords & Credentials<br/><i>SSH keys, auth tokens</i>"]
+            Apps["📱 Other Applications<br/><i>Browser, email, etc.</i>"]
+            System["💻 Operating System<br/><i>Windows, macOS, Linux</i>"]
+        end
+    end
+
+    subgraph Layers["🔐 THREE LAYERS OF PROTECTION"]
+        Layer1["<b>Layer 1: Container Walls</b><br/>Like a jail cell - code can't escape"]
+        Layer2["<b>Layer 2: Network Firewall</b><br/>Blocks connections to suspicious sites"]
+        Layer3["<b>Layer 3: Secret Protection</b><br/>Passwords never enter the sandbox"]
+
+        Layer1 --> Layer2
+        Layer2 --> Layer3
+    end
+
+    subgraph Analogy["💡 THINK OF IT LIKE..."]
+        A1["A <b>playground</b> with a fence:<br/>Kids play inside, can't run into traffic"]
+        A2["A <b>fish tank</b> in your house:<br/>Fish swim safely, can't flood your home"]
+    end
+
+    Sandbox -.-> |"Uses"| Layers
+
+    style Computer fill:#f0f0f0,stroke:#333,stroke-width:3px
+    style Sandbox fill:#FFB366,stroke:#333,stroke-width:4px
+    style Inside fill:#FFF8DC,stroke:#333,stroke-width:2px
+    style Can fill:#90EE90,stroke:#333,stroke-width:2px
+    style Cannot fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style Protected fill:#90EE90,stroke:#333,stroke-width:3px
+    style Layers fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Analogy fill:#E6E6FA,stroke:#333,stroke-width:2px
+
+    style Layer1 fill:#FFB366,stroke:#333,stroke-width:1px
+    style Layer2 fill:#87CEEB,stroke:#333,stroke-width:1px
+    style Layer3 fill:#DDA0DD,stroke:#333,stroke-width:1px
