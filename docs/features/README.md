@@ -8,6 +8,7 @@ Detailed documentation for sandboxxer plugin features.
 |----------|-------------|
 | [SETUP-OPTIONS.md](SETUP-OPTIONS.md) | Setup modes and configuration options |
 | [SECURITY-MODEL.md](SECURITY-MODEL.md) | Security architecture and threat model |
+| [SETTINGS.md](SETTINGS.md) | Plugin configuration and per-project settings |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues and solutions |
 | [SECRETS.md](SECRETS.md) | Secrets management approaches |
 | [EXTENSIONS.md](EXTENSIONS.md) | VS Code extension configuration |
