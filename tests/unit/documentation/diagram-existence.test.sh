@@ -6,20 +6,26 @@ setup() {
   export DIAGRAMS_DIR="$PLUGIN_ROOT/docs/diagrams"
 }
 
-@test "All 12 expected .mmd source files exist" {
+@test "All 18 expected .mmd source files exist" {
   local expected_diagrams=(
+    "azure-deployment-flow"
+    "bubblewrap-architecture"
+    "bubblewrap-explained"
+    "cicd-integration"
+    "file-generation"
+    "firewall-resolution"
+    "health-check-flow"
+    "linux-setup-flow"
+    "mode-selection"
     "plugin-architecture"
     "quickstart-flow"
-    "file-generation"
-    "mode-selection"
-    "security-layers"
-    "troubleshooting-flow"
-    "azure-deployment-flow"
+    "sandbox-explained"
     "secrets-flow"
-    "firewall-resolution"
     "security-audit-flow"
+    "security-layers"
     "service-connectivity"
-    "cicd-integration"
+    "setup-comparison"
+    "troubleshooting-flow"
   )
 
   for diagram in "${expected_diagrams[@]}"; do
@@ -27,20 +33,26 @@ setup() {
   done
 }
 
-@test "All 12 expected .svg output files exist" {
+@test "All 18 expected .svg output files exist" {
   local expected_diagrams=(
+    "azure-deployment-flow"
+    "bubblewrap-architecture"
+    "bubblewrap-explained"
+    "cicd-integration"
+    "file-generation"
+    "firewall-resolution"
+    "health-check-flow"
+    "linux-setup-flow"
+    "mode-selection"
     "plugin-architecture"
     "quickstart-flow"
-    "file-generation"
-    "mode-selection"
-    "security-layers"
-    "troubleshooting-flow"
-    "azure-deployment-flow"
+    "sandbox-explained"
     "secrets-flow"
-    "firewall-resolution"
     "security-audit-flow"
+    "security-layers"
     "service-connectivity"
-    "cicd-integration"
+    "setup-comparison"
+    "troubleshooting-flow"
   )
 
   for diagram in "${expected_diagrams[@]}"; do
@@ -64,10 +76,10 @@ setup() {
   [ -d "$DIAGRAMS_DIR/svg" ]
 }
 
-@test "Diagram count matches expected (12 pairs)" {
+@test "Diagram count matches expected (18 pairs)" {
   local mmd_count=$(find "$DIAGRAMS_DIR" -maxdepth 1 -name "*.mmd" -type f | wc -l)
   local svg_count=$(find "$DIAGRAMS_DIR/svg" -name "*.svg" -type f | wc -l)
 
-  [ "$mmd_count" -eq 12 ]
-  [ "$svg_count" -eq 12 ]
+  [ "$mmd_count" -eq 18 ]
+  [ "$svg_count" -eq 18 ]
 }
