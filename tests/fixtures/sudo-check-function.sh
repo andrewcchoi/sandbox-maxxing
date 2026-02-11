@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
 #
-# Extracted sudo access check function from yolo-linux-maxxing.md (lines 77-121)
+# Extracted sudo access check function from yolo-linux-maxxing.md
 # This fixture is used for unit testing the sudo detection logic
 #
-# Source: commands/yolo-linux-maxxing.md:77-121
+# Source: commands/yolo-linux-maxxing.md
+#
+# NOTE: The main command's check_sudo_access() calls open_auth_window()
+# which opens a popup terminal for password entry. This fixture provides
+# a simplified version for unit testing that doesn't require the popup.
+
+# Stub for open_auth_window - override in tests if needed
+open_auth_window() {
+  # Default stub returns failure (no popup available in test env)
+  return 1
+}
 
 check_sudo_access() {
-  # Check if stdin is interactive
-  if [ ! -t 0 ]; then
-    echo "WARNING: Running in non-interactive mode."
-    echo "Password prompts may not work correctly."
-  fi
-
   # Test passwordless sudo first
   if sudo -n true 2>/dev/null; then
     echo "  ✓ Sudo access available (passwordless)"
@@ -29,24 +33,26 @@ check_sudo_access() {
     return 1
   fi
 
-  echo "  Sudo access requires password authentication."
-  echo "  You will be prompted for your password (30 second timeout)."
+  # User needs to enter password - try popup window
+  echo "  Sudo requires password authentication."
+  echo ""
+  echo "  Opening authentication window..."
   echo ""
 
-  # Attempt with timeout to prevent hang
-  if ! timeout 30 sudo -v 2>/dev/null; then
-    echo ""
-    echo "  ✗ ERROR: Could not validate sudo access"
-    echo ""
-    echo "  Possible causes:"
-    echo "    - Incorrect password"
-    echo "    - Sudo timeout (30 seconds)"
-    echo "    - Authentication backend issue"
-    echo ""
-    echo "  Fix: Run 'sudo -v' manually to verify access"
-    return 1
+  if open_auth_window; then
+    # Verify sudo now works
+    if sudo -n true 2>/dev/null; then
+      return 0
+    fi
   fi
 
-  echo "  ✓ Sudo access verified"
-  return 0
+  # Popup failed or unavailable - provide manual instructions
+  echo ""
+  echo "  ✗ Could not open authentication window."
+  echo ""
+  echo "  Please run this command in your terminal first:"
+  echo "    sudo -v"
+  echo ""
+  echo "  Then re-run: /sandboxxer:yolo-linux-maxxing"
+  return 1
 }

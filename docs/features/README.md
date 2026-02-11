@@ -8,6 +8,7 @@ Detailed documentation for sandboxxer plugin features.
 |----------|-------------|
 | [SETUP-OPTIONS.md](SETUP-OPTIONS.md) | Setup modes and configuration options |
 | [SECURITY-MODEL.md](SECURITY-MODEL.md) | Security architecture and threat model |
+| [SETTINGS.md](SETTINGS.md) | Plugin configuration and per-project settings |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues and solutions |
 | [SECRETS.md](SECRETS.md) | Secrets management approaches |
 | [EXTENSIONS.md](EXTENSIONS.md) | VS Code extension configuration |
@@ -16,6 +17,7 @@ Detailed documentation for sandboxxer plugin features.
 | [MCP.md](MCP.md) | Model Context Protocol integration |
 | [AZURE-DEPLOYMENT.md](AZURE-DEPLOYMENT.md) | Deploying to Azure Container Instances |
 | [OLLAMA_INTEGRATION.md](OLLAMA_INTEGRATION.md) | Local LLM integration with Ollama |
+| [KROKI_INTEGRATION.md](KROKI_INTEGRATION.md) | Self-hosted diagram rendering with Kroki |
 | [NPM_PLATFORM_FIX.md](NPM_PLATFORM_FIX.md) | Fixing npm platform compatibility issues |
 
 ## Quick Links

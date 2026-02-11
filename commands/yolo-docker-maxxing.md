@@ -11,6 +11,8 @@ allowed-tools: [Bash]
 - No firewall (Docker isolation only)
 - All standard development tools
 
+**New to sandboxing?** See the [Docker sandbox visual guide](../docs/diagrams/svg/sandbox-explained.svg) to understand what Docker sandboxes protect.
+
 **Portless mode:** Add `--portless` flag to create containers without host port mappings for running multiple devcontainers in parallel.
 
 **Need customization?** Use `/sandboxxer:quickstart` for interactive mode with project type selection and firewall options.
