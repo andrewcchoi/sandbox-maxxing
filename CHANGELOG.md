@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Commands**: Popup sudo authentication for `/sandboxxer:yolo-linux-maxxing`
+  - Opens a terminal window for password entry when running via Claude Code
+  - Eliminates need for manual pre-authentication (`sudo -v`)
+  - Supports WSL2 (Windows Terminal, cmd.exe) and native Linux (gnome-terminal, xterm, konsole)
+  - Graceful fallback to manual instructions when popup unavailable
+
+### Fixed
+- **Commands**: Implemented `--skip-validation` flag for `/sandboxxer:yolo-linux-maxxing`
+  - Flag was documented in argument-hint but never parsed
+  - Now correctly bypasses sudo check for CI/automation scenarios
+- **Commands**: Added Windows shell detection for `/sandboxxer:yolo-linux-maxxing`
+  - Detects Git Bash/MSYS/Cygwin and shows helpful error with WSL2 instructions
+  - Prevents confusing errors when running from wrong environment
+
 ## [4.13.2] - 2026-02-09
 
 ### Changed
