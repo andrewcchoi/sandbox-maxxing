@@ -140,12 +140,17 @@ See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installati
 
 ## Setup Options
 
-The plugin offers two setup paths:
+The plugin offers three setup paths:
 
 > **Testing Status:** `/yolo-docker-maxxing` has moderate testing and is the most reliable option. `/quickstart` has very minimal testing - generated configurations may need manual adjustments.
 
 1. **Interactive Quickstart** (`/sandboxxer:quickstart`) - Guided configuration with project type and firewall customization
 2. **Non-Interactive YOLO Docker Maxxing** (`/sandboxxer:yolo-docker-maxxing`) - Instant defaults with no questions (Python+Node, container isolation)
+3. **Native Linux/WSL2** (`/sandboxxer:yolo-linux-maxxing`) - No Docker required, faster startup with bubblewrap sandboxing
+
+**New to sandboxing?** Visual guides:
+- [Docker sandbox explained](docs/diagrams/svg/sandbox-explained.svg) - What is a sandbox and how does it protect you?
+- [Bubblewrap explained](docs/diagrams/svg/bubblewrap-explained.svg) - Docker vs bubblewrap comparison
 
 See [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) for comprehensive guide.
 
@@ -253,6 +258,8 @@ Claude: [Automatically uses /sandboxxer:quickstart command]
 ```
 
 ## Security Features
+
+**New to sandboxing?** See the [beginner-friendly Docker sandbox explanation](docs/diagrams/svg/sandbox-explained.svg) for a simple visual guide showing how sandboxes protect your computer.
 
 > **Testing:** Firewall features have received **no testing**. The `init-firewall.sh` script and domain allowlist configuration are highly experimental. Generated configurations may not correctly block/allow traffic and will likely require manual adjustment and iteration.
 

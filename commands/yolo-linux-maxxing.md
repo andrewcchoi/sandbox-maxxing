@@ -42,6 +42,8 @@ Example:
 
 **Note**: Optional features (--with-tools, --with-shell, --project-config) bring native Linux setup closer to Docker-based DevX, while maintaining faster startup and simpler architecture.
 
+**New to bubblewrap?** See the [beginner-friendly bubblewrap explanation](../docs/diagrams/svg/bubblewrap-explained.svg) for a visual comparison showing when to use Docker vs bubblewrap.
+
 ## Recommendation
 
 **For security-sensitive work**, use:
