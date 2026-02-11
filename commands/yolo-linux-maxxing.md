@@ -42,6 +42,8 @@ Example:
 
 **Note**: Optional features (--with-tools, --with-shell, --project-config) bring native Linux setup closer to Docker-based DevX, while maintaining faster startup and simpler architecture.
 
+**New to bubblewrap?** See the [beginner-friendly bubblewrap explanation](../docs/diagrams/svg/bubblewrap-explained.svg) for a visual comparison showing when to use Docker vs bubblewrap.
+
 ## Recommendation
 
 **For security-sensitive work**, use:
@@ -70,6 +72,24 @@ echo ""
 
 # Detect environment
 detect_environment() {
+  # Check if running directly on Windows (Git Bash, MSYS, Cygwin)
+  case "$OSTYPE" in
+    msys*|cygwin*|mingw*)
+      echo "✗ ERROR: Running on Windows shell (Git Bash/MSYS/Cygwin)"
+      echo ""
+      echo "This command requires WSL2 or native Linux."
+      echo ""
+      echo "Fix: Open WSL2 terminal and run this command there:"
+      echo "  1. Open PowerShell or Windows Terminal"
+      echo "  2. Run: wsl"
+      echo "  3. Navigate to your project"
+      echo "  4. Run: claude"
+      echo "  5. Then: /sandboxxer:yolo-linux-maxxing"
+      return 1
+      ;;
+  esac
+
+  # Existing WSL2/Debian detection continues...
   if grep -qi "microsoft" /proc/version 2>/dev/null; then
     echo "✓ Detected: WSL2"
     return 0
@@ -91,14 +111,8 @@ detect_environment() {
 
 detect_environment || exit 1
 
-# Check sudo access with timeout and clear error handling
+# Check sudo access - opens popup window for password if needed
 check_sudo_access() {
-  # Check if stdin is interactive
-  if [ ! -t 0 ]; then
-    echo "WARNING: Running in non-interactive mode."
-    echo "Password prompts may not work correctly."
-  fi
-
   # Test passwordless sudo first
   if sudo -n true 2>/dev/null; then
     echo "  ✓ Sudo access available (passwordless)"
@@ -116,31 +130,133 @@ check_sudo_access() {
     return 1
   fi
 
-  echo "  Sudo access requires password authentication."
-  echo "  You will be prompted for your password (30 second timeout)."
+  # User needs to enter password - try popup window
+  echo "  Sudo requires password authentication."
+  echo ""
+  echo "  Opening authentication window..."
   echo ""
 
-  # Attempt with timeout to prevent hang
-  if ! timeout 30 sudo -v 2>/dev/null; then
-    echo ""
-    echo "  ✗ ERROR: Could not validate sudo access"
-    echo ""
-    echo "  Possible causes:"
-    echo "    - Incorrect password"
-    echo "    - Sudo timeout (30 seconds)"
-    echo "    - Authentication backend issue"
-    echo ""
-    echo "  Fix: Run 'sudo -v' manually to verify access"
-    return 1
+  if open_auth_window; then
+    # Verify sudo now works
+    if sudo -n true 2>/dev/null; then
+      return 0
+    fi
   fi
 
-  echo "  ✓ Sudo access verified"
-  return 0
+  # Popup failed or unavailable - provide manual instructions
+  echo ""
+  echo "  ✗ Could not open authentication window."
+  echo ""
+  echo "  Please run this command in your terminal first:"
+  echo "    sudo -v"
+  echo ""
+  echo "  Then re-run: /sandboxxer:yolo-linux-maxxing"
+  return 1
 }
 
+# Opens a separate terminal window for sudo authentication
+# Works on: WSL2 (Windows 10/11), Native Linux with GUI
+open_auth_window() {
+  # Create authentication script
+  cat > /tmp/sandboxxer-sudo-auth.sh << 'AUTHSCRIPT'
+#!/bin/bash
+clear
+echo "╔═══════════════════════════════════════════════════════════╗"
+echo "║           SANDBOXXER AUTHENTICATION                       ║"
+echo "╠═══════════════════════════════════════════════════════════╣"
+echo "║  Enter your sudo password to continue installation        ║"
+echo "║  This window will close automatically after success       ║"
+echo "╚═══════════════════════════════════════════════════════════╝"
 echo ""
-echo "=== Sudo Access Check ==="
-check_sudo_access || exit 1
+if sudo -v; then
+  touch /tmp/.sandboxxer_authenticated
+  echo ""
+  echo "✓ Authentication successful!"
+  echo "  Closing in 2 seconds..."
+  sleep 2
+else
+  echo ""
+  echo "✗ Authentication failed."
+  echo "  Press Enter to close and try again."
+  read
+fi
+AUTHSCRIPT
+  chmod +x /tmp/sandboxxer-sudo-auth.sh
+
+  # Try to open a terminal window based on environment
+  local opened=false
+
+  # WSL2: Try Windows Terminal first (Windows 11 default)
+  if grep -qi microsoft /proc/version 2>/dev/null; then
+    if command -v wt.exe &>/dev/null; then
+      wt.exe -w 0 nt wsl.exe -e bash /tmp/sandboxxer-sudo-auth.sh 2>/dev/null && opened=true
+    fi
+
+    # WSL2: Fallback to cmd.exe (always available on Windows)
+    if [ "$opened" = false ] && command -v cmd.exe &>/dev/null; then
+      cmd.exe /c start wsl.exe -e bash /tmp/sandboxxer-sudo-auth.sh 2>/dev/null && opened=true
+    fi
+  else
+    # Native Linux: Try common terminal emulators
+    if command -v gnome-terminal &>/dev/null; then
+      gnome-terminal -- bash /tmp/sandboxxer-sudo-auth.sh 2>/dev/null && opened=true
+    elif command -v xterm &>/dev/null; then
+      xterm -e bash /tmp/sandboxxer-sudo-auth.sh 2>/dev/null && opened=true
+    elif command -v konsole &>/dev/null; then
+      konsole -e bash /tmp/sandboxxer-sudo-auth.sh 2>/dev/null && opened=true
+    fi
+  fi
+
+  if [ "$opened" = false ]; then
+    return 1  # Could not open window
+  fi
+
+  # Wait for authentication (poll for flag file)
+  echo -n "  Waiting for authentication"
+  for i in {1..90}; do
+    if [ -f /tmp/.sandboxxer_authenticated ]; then
+      rm -f /tmp/.sandboxxer_authenticated
+      echo ""
+      echo "  ✓ Sudo credentials cached"
+      return 0
+    fi
+    echo -n "."
+    sleep 1
+  done
+
+  echo ""
+  echo "  ✗ Authentication timed out (90 seconds)"
+  return 1
+}
+
+# Parse flags BEFORE sudo check (so --skip-validation can bypass it)
+SKIP_VALIDATION=false
+WITH_TOOLS=false
+WITH_SHELL=false
+PROJECT_CONFIG=false
+WITH_VSCODE=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --skip-validation) SKIP_VALIDATION=true ;;
+    --with-tools) WITH_TOOLS=true ;;
+    --with-shell) WITH_SHELL=true ;;
+    --project-config) PROJECT_CONFIG=true ;;
+    --with-vscode) WITH_VSCODE=true ;;
+    --full) WITH_TOOLS=true; WITH_SHELL=true; PROJECT_CONFIG=true; WITH_VSCODE=true ;;
+  esac
+done
+
+# Sudo access check (can be skipped with --skip-validation)
+if [ "$SKIP_VALIDATION" != true ]; then
+  echo ""
+  echo "=== Sudo Access Check ==="
+  check_sudo_access || exit 1
+else
+  echo ""
+  echo "=== Sudo Access Check (SKIPPED) ==="
+  echo "  --skip-validation provided. Sudo will be validated on first use."
+fi
 
 # Check disk space (minimum 4GB)
 available_space=$(df -BG . | awk 'NR==2 {print $4}' | sed 's/G//')
@@ -154,22 +270,6 @@ fi
 echo ""
 echo "✓ Pre-flight checks complete"
 echo ""
-
-# Parse optional flags
-WITH_TOOLS=false
-WITH_SHELL=false
-PROJECT_CONFIG=false
-WITH_VSCODE=false
-
-for arg in "$@"; do
-  case "$arg" in
-    --with-tools) WITH_TOOLS=true ;;
-    --with-shell) WITH_SHELL=true ;;
-    --project-config) PROJECT_CONFIG=true ;;
-    --with-vscode) WITH_VSCODE=true ;;
-    --full) WITH_TOOLS=true; WITH_SHELL=true; PROJECT_CONFIG=true; WITH_VSCODE=true ;;
-  esac
-done
 
 # Show what will be installed
 if [ "$WITH_TOOLS" = true ] || [ "$WITH_SHELL" = true ] || [ "$PROJECT_CONFIG" = true ] || [ "$WITH_VSCODE" = true ]; then
@@ -400,7 +500,7 @@ if [ "$WITH_TOOLS" = true ]; then
   # Node tools (if npm available)
   if command -v npm &>/dev/null; then
     echo "Installing Node tools..."
-    sudo npm install -g typescript ts-node eslint prettier 2>/dev/null || echo "⚠️  Some Node tools failed (non-critical)"
+    sudo npm install -g typescript ts-node eslint prettier @mermaid-js/mermaid-cli 2>/dev/null || echo "⚠️  Some Node tools failed (non-critical)"
   else
     echo "⚠️  npm not found - skipping Node tools"
   fi
@@ -417,7 +517,7 @@ fi
 
 **What this does**:
 - **Python tools**: uv (fast package manager), pytest (testing), black (formatting), ruff (linting), mypy (type checking), ipython (enhanced REPL)
-- **Node tools**: TypeScript compiler, ts-node (execute TypeScript), ESLint (linting), Prettier (formatting)
+- **Node tools**: TypeScript compiler, ts-node (execute TypeScript), ESLint (linting), Prettier (formatting), mermaid-cli (diagram rendering)
 - **CLI tools**: jq (JSON processor)
 - **Graceful degradation**: Skips unavailable tools without failing
 

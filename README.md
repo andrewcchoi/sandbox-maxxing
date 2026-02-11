@@ -1,6 +1,6 @@
 # Sandboxxer Plugin
 
-![Plugin version 4.13.2](https://img.shields.io/badge/version-4.13.2-blue)
+![Plugin version 4.13.3](https://img.shields.io/badge/version-4.13.3-blue)
 ![Claude Code official plugin](https://img.shields.io/badge/claude--code-plugin-purple)
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 ![Supported platforms: Linux, macOS, Windows WSL2](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
@@ -9,6 +9,16 @@
 > **Plugin Name:** sandboxxer (used in commands: /sandboxxer:quickstart, /sandboxxer:yolo-docker-maxxing)
 
 Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Choose between interactive setup with project type selection and firewall customization, or quick one-command setup with defaults.
+
+## What is Sandboxing?
+
+**New to sandboxing?** A sandbox is a secure, isolated environment where code runs safely without accessing your personal files, passwords, or system settings. Think of it like a protective bubble - code can run inside, but can't escape to harm your computer.
+
+**Visual guides for beginners:**
+- 🔒 [Docker Sandbox Explained](docs/diagrams/svg/sandbox-explained.svg) - Simple visual showing what sandboxes can and cannot do
+- 🛡️ [Bubblewrap Explained](docs/diagrams/svg/bubblewrap-explained.svg) - Comparison: Docker (maximum security) vs Bubblewrap (lightweight)
+
+This plugin helps you set up sandboxed development environments using either Docker containers (full isolation with firewall) or bubblewrap (lightweight native Linux sandboxing).
 
 ## Important: Experimental Status
 
@@ -39,26 +49,19 @@ Interactive assistant for creating VS Code DevContainer configurations with Dock
 
 ## Table of Contents
 
+- [What is Sandboxing?](#what-is-sandboxing)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
 - [Setup Options](#setup-options)
 - [Slash Commands](#slash-commands)
-- [Auto-Detection](#auto-detection)
 - [Security Features](#security-features)
-- [Troubleshooting Features](#troubleshooting-features)
 - [Cloud Deployment](#cloud-deployment)
-- [Files Generated](#files-generated)
-- [Configuration Placeholders](#configuration-placeholders)
-- [Skills Reference](#skills-reference)
+- [Command Reference](#command-reference)
 - [Reference Documentation](#reference-documentation)
-- [Naming Convention](#naming-convention)
 - [Development](#development)
-- [Examples](#examples)
 - [Example Applications](#example-applications)
 - [Contributing](#contributing)
-- [License](#license)
-- [Support](#support)
 - [Changelog](#changelog)
 
 ## Prerequisites
@@ -140,12 +143,17 @@ See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installati
 
 ## Setup Options
 
-The plugin offers two setup paths:
+The plugin offers three setup paths:
 
 > **Testing Status:** `/yolo-docker-maxxing` has moderate testing and is the most reliable option. `/quickstart` has very minimal testing - generated configurations may need manual adjustments.
 
 1. **Interactive Quickstart** (`/sandboxxer:quickstart`) - Guided configuration with project type and firewall customization
 2. **Non-Interactive YOLO Docker Maxxing** (`/sandboxxer:yolo-docker-maxxing`) - Instant defaults with no questions (Python+Node, container isolation)
+3. **Native Linux/WSL2** (`/sandboxxer:yolo-linux-maxxing`) - No Docker required, faster startup with bubblewrap sandboxing
+
+**New to sandboxing?** Visual guides:
+- [Docker sandbox explained](docs/diagrams/svg/sandbox-explained.svg) - What is a sandbox and how does it protect you?
+- [Bubblewrap explained](docs/diagrams/svg/bubblewrap-explained.svg) - Docker vs bubblewrap comparison
 
 See [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) for comprehensive guide.
 
@@ -254,6 +262,8 @@ Claude: [Automatically uses /sandboxxer:quickstart command]
 
 ## Security Features
 
+**New to sandboxing?** See the [beginner-friendly Docker sandbox explanation](docs/diagrams/svg/sandbox-explained.svg) for a simple visual guide showing how sandboxes protect your computer.
+
 > **Testing:** Firewall features have received **no testing**. The `init-firewall.sh` script and domain allowlist configuration are highly experimental. Generated configurations may not correctly block/allow traffic and will likely require manual adjustment and iteration.
 
 ### Firewall Options
@@ -351,52 +361,6 @@ Deploy your DevContainer to Azure Container Apps for cloud-based development:
 - Troubleshooting
 - Cost estimation
 
-## Git Worktrees Support
-
-The DevContainer template supports git worktrees for isolated development branches. To enable worktree support, structure your folders with a project-specific parent:
-
-### Recommended Folder Structure
-
-```
-projects/
-  └── my-project/           ← Project folder (mounted at /workspace)
-      └── my-repo/          ← Repository (open this in VS Code)
-          ├── .devcontainer/
-          └── src/
-```
-
-### Creating Worktrees
-
-Inside the container:
-```bash
-# Create worktree as sibling to your repo
-git worktree add ../my-repo-feature feature-branch
-git worktree add ../my-repo-hotfix hotfix/123
-
-# Switch to worktree
-cd ../my-repo-feature
-```
-
-### Why This Structure?
-
-The devcontainer mounts the parent folder (`..:/workspace`). With a project-specific parent:
-- Worktrees are created as siblings in the mounted workspace
-- Only your project folder is visible (not other projects)
-- Standard git worktree commands work as expected
-- Each worktree appears at `/workspace/<worktree-name>/`
-
-### Backwards Compatibility
-
-Existing flat structures continue to work without changes:
-```
-projects/
-  └── my-repo/              ← Still works! Opens at /workspace/my-repo
-      ├── .devcontainer/
-      └── src/
-```
-
-The template uses `${localWorkspaceFolderBasename}` to automatically resolve the correct working directory regardless of folder nesting depth.
-
 ## Files Generated
 
 Both setup commands create:
@@ -421,130 +385,22 @@ Templates use these placeholders:
 - `{{FIREWALL_MODE}}` - strict or permissive
 - `{{BASE_IMAGE}}` - Docker base image
 
-## Skills Reference
+## Command Reference
 
-### /sandboxxer:quickstart (Interactive Quickstart)
-Interactive quickstart wizard with project type and firewall customization.
+For detailed command documentation including workflows, triggers, and examples, see **[commands/README.md](commands/README.md)**.
 
-**Testing:** Very minimal
+**Quick Reference:**
 
-**Triggers**:
-- User mentions "devcontainer", "docker sandbox"
-- User asks about isolated development environments
-- User wants to configure firewalls for development
-
-**Workflow**:
-1. Project type selection (9 project types)
-2. Network restrictions question
-3. Domain allowlist configuration (if enabled)
-4. Template generation
-5. Verification steps
-
-### /sandboxxer:troubleshoot
-Diagnoses and resolves common sandbox issues.
-
-**Testing:** Not tested
-
-**Triggers**:
-- Container won't start
-- Network connectivity problems
-- Service connectivity failures
-- Firewall blocking issues
-- Permission errors
-
-**Workflow**:
-1. Identify problem category
-2. Gather diagnostic information
-3. Apply systematic fixes
-4. Verify the fix
-
-### /sandboxxer:audit
-Performs comprehensive security audits.
-
-**Testing:** Not tested
-
-**Triggers**:
-- User wants security audit
-- User asks about security best practices
-- User preparing for production
-- User working with sensitive data
-
-**Workflow**:
-1. Scan configuration files
-2. Firewall audit
-3. Credentials and secrets check
-4. Port exposure review
-5. Container permissions audit
-6. Generate security report
-
-### /sandboxxer:yolo-docker-maxxing
-Non-interactive instant DevContainer setup with sensible defaults.
-
-**Testing:** Moderate (most reliable)
-
-**Triggers**:
-- User wants fastest path to sandbox
-- User mentions "yolo", "quick setup", "no questions"
-- User needs rapid prototyping environment
-
-**Workflow**:
-1. Apply default configuration (Python 3.12 + Node 20)
-2. Set container isolation (no firewall)
-3. Add PostgreSQL 16 + Redis 7 services
-4. Generate all configuration files
-5. Display next steps
-
-### /sandboxxer:deploy-to-azure
-Deploy DevContainer configurations to Azure Container Apps.
-
-**Testing:** No testing
-
-**Triggers**:
-- User wants cloud-based development
-- User mentions "Azure", "cloud deployment", "remote container"
-- User needs team/shared environments
-
-**Workflow**:
-1. Verify Azure CLI and subscription
-2. Configure deployment options
-3. Generate Azure Developer CLI manifest
-4. Generate Bicep infrastructure templates
-5. Execute deployment
-6. Provide connection instructions
-
-### /sandboxxer:yolo-linux-maxxing
-Native Linux/WSL2 Claude Code setup without Docker.
-
-**Testing:** No testing
-
-**Triggers**:
-- User wants native Linux performance
-- User mentions "WSL2", "native Linux", "no Docker"
-- User needs lightweight setup without container overhead
-
-**Workflow**:
-1. Install Claude CLI and dependencies
-2. Configure Bubblewrap sandbox
-3. Set up GitHub CLI authentication
-4. Validate installation
-5. Provide usage guidance
-
-### /sandboxxer:linux-troubleshoot
-Diagnoses and resolves native Linux/WSL2 setup issues.
-
-**Testing:** Not tested
-
-**Triggers**:
-- Bubblewrap sandbox failures
-- Claude CLI PATH or installation issues
-- WSL2-specific problems
-- Git/GitHub CLI authentication failures
-
-**Workflow**:
-1. Identify Linux/WSL2-specific problem
-2. Run diagnostic commands
-3. Apply systematic fixes
-4. Verify resolution
+| Command | Testing Status | Best For |
+|---------|---------------|----------|
+| `/sandboxxer:quickstart` | Very minimal | Projects needing specific languages or firewall |
+| `/sandboxxer:yolo-docker-maxxing` | Moderate ✅ | Rapid prototyping, trusted code |
+| `/sandboxxer:yolo-linux-maxxing` | No testing | Native Linux without Docker |
+| `/sandboxxer:troubleshoot` | No testing | Diagnosing sandbox issues |
+| `/sandboxxer:linux-troubleshoot` | No testing | WSL2/Linux-specific issues |
+| `/sandboxxer:audit` | No testing | Security audits |
+| `/sandboxxer:deploy-to-azure` | No testing | Cloud deployment |
+| `/sandboxxer:health` | Moderate | Diagnostics and health checks |
 
 ## Reference Documentation
 
@@ -568,114 +424,24 @@ The plugin includes comprehensive documentation in the `docs/` directory:
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Plugin architecture overview
 - [docs/CODESPACES.md](docs/CODESPACES.md) - GitHub Codespaces integration
 - [docs/TESTING.md](docs/TESTING.md) - Testing guide for examples
+- [docs/TEST-COVERAGE-REPORT.md](docs/TEST-COVERAGE-REPORT.md) - Test coverage analysis report
 - [docs/windows/README.md](docs/windows/README.md) - Windows-specific setup guide
 
-## Naming Convention
-
-This plugin uses consistent naming across different contexts:
-
-| Context           | Name              | Example                                               |
-| ----------------- | ----------------- | ----------------------------------------------------- |
-| Plugin name       | sandboxxer        | Plugin installation and management                    |
-| Marketplace name  | sandbox-maxxing   | Marketplace listing name                              |
-| GitHub repository | sandbox-maxxing   | github.com/andrewcchoi/sandbox-maxxing                |
-| Slash commands    | /sandboxxer:*     | /sandboxxer:quickstart, /sandboxxer:yolo-docker-maxxing |
-| Skills            | sandboxxer-*      | Internal skill naming                                 |
-| User-facing title | Sandboxxer Plugin | In documentation headers                              |
-
-**Why different names?**
-- **sandboxxer**: Official plugin name used for installation and management
-- **sandbox-maxxing**: Repository and marketplace name (reflects Windows WSL 2 compatibility)
-- **Sandboxxer Plugin**: Full descriptive name for user-facing documentation
+### Internal Development Documentation
+- [docs/code-review/](docs/code-review/) - Code review process and prompt improvements
 
 ## Development
 
-### Local Installation
-
 ```bash
-# Clone the repository
+# Clone and install locally
 git clone https://github.com/andrewcchoi/sandbox-maxxing
 cd sandbox-maxxing
-
-# Install locally
 claude plugins add .
 ```
 
-### Plugin Structure
-
 ![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
 
-*Visual overview of the sandboxxer plugin components and their relationships. See [docs/diagrams/](docs/diagrams/) for more diagrams.*
-
-```
-sandbox-maxxing/
-├── .claude-plugin/
-│   ├── plugin.json              # Plugin manifest
-│   └── marketplace.json         # Marketplace configuration
-├── agents/                      # Subagent definitions
-│   ├── devcontainer-generator.md   # File generation subagent
-│   ├── devcontainer-validator.md   # Post-setup validation subagent
-│   └── interactive-troubleshooter.md # Interactive diagnostics subagent
-├── commands/                    # Slash commands
-│   ├── quickstart.md            # /sandboxxer:quickstart (interactive setup)
-│   ├── yolo-docker-maxxing.md   # /sandboxxer:yolo-docker-maxxing (instant setup)
-│   ├── yolo-linux-maxxing.md    # /sandboxxer:yolo-linux-maxxing (native Linux)
-│   ├── deploy-to-azure.md       # /sandboxxer:deploy-to-azure (Azure deployment)
-│   ├── troubleshoot.md          # /sandboxxer:troubleshoot
-│   ├── linux-troubleshoot.md    # /sandboxxer:linux-troubleshoot
-│   ├── audit.md                 # /sandboxxer:audit
-│   └── health.md                # /sandboxxer:health
-├── hooks/                       # Event hooks
-│   ├── hooks.json               # Hook configuration
-│   ├── docker-safety-hook.sh    # Docker safety checks
-│   ├── session-end-hook.sh      # Session cleanup
-│   ├── sync-knowledge.sh        # Knowledge sync
-│   └── run-hook.cmd             # Windows wrapper
-├── skills/                      # Skills and shared resources
-│   ├── _shared/                 # Shared templates and data
-│   │   └── templates/           # DevContainer templates
-│   │       ├── base.dockerfile
-│   │       ├── devcontainer.json
-│   │       ├── docker-compose.yml
-│   │       ├── docker-compose.volume.yml
-│   │       ├── docker-compose.prebuilt.yml
-│   │       ├── docker-compose-profiles.yml
-│   │       ├── init-firewall.sh
-│   │       ├── init-volume.sh
-│   │       ├── setup-claude-credentials.sh
-│   │       ├── azure/           # Azure deployment templates
-│   │       │   ├── azure.yaml
-│   │       │   └── infra/
-│   │       ├── partials/        # Language-specific Dockerfile sections
-│   │       │   ├── azure-cli.dockerfile
-│   │       │   ├── cpp-clang.dockerfile
-│   │       │   ├── cpp-gcc.dockerfile
-│   │       │   ├── go.dockerfile
-│   │       │   ├── php.dockerfile
-│   │       │   ├── postgres.dockerfile
-│   │       │   ├── ruby.dockerfile
-│   │       │   └── rust.dockerfile
-│   │       └── data/            # Configuration data
-│   │           ├── allowable-domains.json
-│   │           ├── azure-regions.json
-│   │           ├── mcp-servers.json
-│   │           ├── official-images.json
-│   │           ├── ollama-models.json
-│   │           └── vscode-extensions.json
-│   ├── sandboxxer-troubleshoot/ # Troubleshooting assistant
-│   │   └── SKILL.md
-│   ├── sandboxxer-audit/        # Security auditor
-│   │   └── SKILL.md
-│   └── sandboxxer-linux-troubleshoot/
-│       └── SKILL.md             # Linux/WSL2 troubleshooting
-└── docs/                        # Documentation
-    ├── examples/                # Working example applications
-    │   ├── streamlit-sandbox-basic/
-    │   ├── demo-app-sandbox-basic/
-    │   ├── demo-app-sandbox-advanced/
-    │   └── demo-app-sandbox-yolo/
-    └── features/                # Feature documentation
-```
+For complete development guide, plugin structure, git worktrees support, and naming conventions, see **[DEVELOPMENT.md](DEVELOPMENT.md)**.
 
 ## Examples
 
@@ -751,167 +517,23 @@ Claude: Running security audit...
 
 ## Example Applications
 
-The plugin includes comprehensive working examples in the `docs/examples/` directory, demonstrating different configuration approaches (minimal, domain allowlist, full) with real applications.
+The plugin includes working examples in `docs/examples/`:
 
-### Example Structure
-
-```
-docs/examples/
-├── README.md                        # Comprehensive examples guide
-├── docker-compose.yml               # Shared PostgreSQL + Redis services
-│
-├── streamlit-shared/                # Shared: Streamlit connection validator
-├── streamlit-sandbox-basic/         # Self-contained with minimal configuration
-│
-├── demo-app-shared/                 # Shared: Full-stack blog application
-├── demo-app-sandbox-basic/          # Demo app with minimal configuration
-├── demo-app-sandbox-advanced/       # Demo app with domain allowlist
-└── demo-app-sandbox-yolo/            # Demo app with full configuration
-```
-
-### Quick Validation: Streamlit App
-
-**Shared Code**: `docs/examples/streamlit-shared/`
-**Sandbox Example**: `docs/examples/streamlit-sandbox-basic/` (minimal configuration)
-
-Minimal Python Streamlit app for 30-second environment validation:
-- PostgreSQL connection test with visual feedback
-- Redis connection test with visual feedback
-- Perfect first step to verify sandbox setup
-
-```bash
-# Option 1: Use shared services
-cd examples && docker compose up -d
-cd streamlit-shared && uv add -r requirements.txt && streamlit run app.py
-
-# Option 2: Self-contained DevContainer
-code docs/examples/streamlit-sandbox-basic  # Open in VS Code
-# Reopen in Container → Auto-starts all services
-```
-
-### Production Demo: Blog Application
-
-**Shared Code**: `docs/examples/demo-app-shared/`
-
-A complete full-stack blogging platform with:
-- **Backend**: FastAPI + SQLAlchemy + PostgreSQL + Redis
-- **Frontend**: React + Vite
-- **Testing**: Pytest (backend) + Jest + React Testing Library (frontend)
-- **Features**: CRUD operations, caching, view counters, comprehensive tests
-
-**Example Configurations Available**:
-
-#### 1. Minimal Configuration
-**Location**: `docs/examples/demo-app-sandbox-basic/`
-
-**What's included**:
-- Auto-detected Python + Node.js stack
-- Minimal configuration (4 files)
-- Essential VS Code extensions (2)
-- Domain allowlist by default
-- Ready in < 3 minutes
-
-**Best for**: Prototypes, solo developers, quick start
-
-#### 2. Domain Allowlist
-**Location**: `docs/examples/demo-app-sandbox-advanced/`
-
-**What's included**:
-- Configurable Python/Node.js versions (build args)
-- Curated VS Code extensions (10+)
-- User-controlled firewall (domain allowlist/container isolation)
-- Enhanced developer experience (formatting on save, SQLTools)
-- Development tools (Black, Pylint, IPython)
-
-**Best for**: Team development, active projects, customization needs
-
-#### 3. Full Configuration
-**Location**: `docs/examples/demo-app-sandbox-yolo/`
-
-**What's included**:
-- Multi-stage optimized Dockerfile (7 stages)
-- Comprehensive VS Code extensions (20+)
-- Complete development tooling (linters, formatters, profilers, security scanners)
-- Production patterns (resource limits, health checks, security hardening)
-- Database initialization scripts
-- Optional admin tools (pgAdmin, Redis Commander)
-- Full observability and debugging
-
-**Best for**: Large teams, production projects, comprehensive needs
-
-### Running the Examples
-
-**Quick validation** (Streamlit):
-```bash
-cd docs/examples/streamlit-sandbox-basic
-# Open in VS Code → Reopen in Container
-streamlit run app.py
-```
-
-**Full-stack demo** (any configuration):
-```bash
-cd docs/examples/demo-app-sandbox-basic  # or -advanced or -yolo
-# Open in VS Code → Reopen in Container
-
-# Terminal 1: Backend
-cd backend && uvicorn app.api:app --reload
-
-# Terminal 2: Frontend
-cd frontend && npm run dev
-
-# Visit: http://localhost:5173
-```
-
-**Run tests**:
-```bash
-./run-tests.sh           # Linux/Mac/Git Bash
-.\run-tests.ps1          # Windows PowerShell
-./run-tests.sh --coverage  # With coverage reports
-```
-
-### Learning Path
-
-1. **Start here**: `streamlit-sandbox-basic/` - 30-second validation
-2. **Learn basics**: `demo-app-sandbox-basic/` - Understand minimal setup
-3. **Explore features**: `demo-app-sandbox-advanced/` - See customization options
-4. **Study production**: `demo-app-sandbox-yolo/` - Learn best practices
-
-See `docs/examples/README.md` for detailed comparison and customization guides
-
-### Dogfooding Approach
-
-This plugin uses itself for development! The `.devcontainer/` configuration was generated using the plugin's **interactive quickstart**, which correctly detected this as a documentation/template repository and created a minimal development environment.
-
-**What the plugin detected:**
-- Primary content: Markdown files (skills, documentation, commands)
-- Languages: Python 3.12 + Node.js 20 (for examples and templates)
-- Services needed: None (no database/cache in plugin code itself)
-
-**What was generated:**
-- Lightweight devcontainer with Python + Node.js runtimes
-- VS Code extensions for markdown and code editing
-- No PostgreSQL or Redis (not needed for plugin development)
-- Examples have separate `docker-compose.yml` for optional testing
+| Example | Configuration | Best For |
+|---------|--------------|----------|
+| `streamlit-sandbox-basic/` | Minimal | 30-second environment validation |
+| `demo-app-sandbox-basic/` | Minimal | Quick start, prototypes |
+| `demo-app-sandbox-advanced/` | Domain allowlist | Team development |
+| `demo-app-sandbox-yolo/` | Full | Production projects |
 
 **Quick Start:**
 ```bash
-# Open in VS Code
-code .
-
-# Reopen in container (F1 → Dev Containers: Reopen in Container)
-# Container builds in ~2 minutes, ready to edit plugin files immediately
-
-# Optional: Test examples (requires services)
-cd docs/examples
-docker compose up -d                    # Start PostgreSQL + Redis
-cd streamlit-sandbox-basic
-uv add -r requirements.txt
+cd docs/examples/streamlit-sandbox-basic
+code .  # Open in VS Code → Reopen in Container
 streamlit run app.py
 ```
 
-This demonstrates the plugin's intelligent detection - it generates **only what you need**, not a one-size-fits-all template.
-
-See [DEVELOPMENT.md](DEVELOPMENT.md) for complete development guide.
+For detailed examples, learning paths, and customization guides, see **[docs/examples/README.md](docs/examples/README.md)**.
 
 ## Contributing
 
@@ -932,4 +554,6 @@ MIT License - See LICENSE file for details
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.
+
+**Upgrading?** See [MIGRATION.md](MIGRATION.md) for breaking changes and migration guides between major versions.
 

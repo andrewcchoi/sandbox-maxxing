@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Kroki diagram rendering engines catalog for sandbox diagram integration",
+  "metadata": {
+    "last_updated": "2026-02-10",
+    "usage": "Skills reference this file to configure Kroki engine recommendations",
+    "security_note": "KROKI_SAFE_MODE=secure is required to prevent PlantUML code execution"
+  },
+  "engines": [
+    {
+      "name": "mermaid",
+      "display_name": "Mermaid",
+      "description": "Flowcharts, sequence diagrams, class diagrams, state diagrams, ERDs",
+      "container": "kroki-mermaid",
+      "size_mb": 350,
+      "formats": ["svg", "png", "pdf"],
+      "safe_mode_impact": "none",
+      "examples": [
+        "graph TD; A-->B",
+        "sequenceDiagram; Alice->>Bob: Hello"
+      ]
+    },
+    {
+      "name": "plantuml",
+      "display_name": "PlantUML",
+      "description": "UML diagrams, C4 architecture, wireframes, mind maps",
+      "container": "kroki (built-in)",
+      "size_mb": 0,
+      "formats": ["svg", "png", "pdf", "txt"],
+      "safe_mode_impact": "high",
+      "security_notes": [
+        "PlantUML supports !include directives that can read local files",
+        "KROKI_SAFE_MODE=secure disables !include and external URLs",
+        "Without safe mode, arbitrary file read is possible"
+      ],
+      "examples": [
+        "@startuml\nAlice -> Bob: Hello\n@enduml",
+        "@startuml\nclass User {\n  +name: String\n}\n@enduml"
+      ]
+    },
+    {
+      "name": "graphviz",
+      "display_name": "GraphViz (DOT)",
+      "description": "Graph visualization, network diagrams, dependency trees",
+      "container": "kroki (built-in)",
+      "size_mb": 0,
+      "formats": ["svg", "png", "pdf"],
+      "safe_mode_impact": "none",
+      "examples": [
+        "digraph G { A -> B }",
+        "graph { A -- B -- C }"
+      ]
+    },
+    {
+      "name": "ditaa",
+      "display_name": "Ditaa",
+      "description": "ASCII art diagrams converted to images",
+      "container": "kroki (built-in)",
+      "size_mb": 0,
+      "formats": ["svg", "png"],
+      "safe_mode_impact": "none",
+      "examples": [
+        "+--------+   +-------+\n|        |-->| World |\n|  Hello |   +-------+\n+--------+"
+      ]
+    },
+    {
+      "name": "blockdiag",
+      "display_name": "BlockDiag",
+      "description": "Block diagrams for system architecture",
+      "container": "kroki (built-in)",
+      "size_mb": 0,
+      "formats": ["svg", "png", "pdf"],
+      "safe_mode_impact": "none",
+      "examples": [
+        "blockdiag { A -> B -> C }"
+      ]
+    },
+    {
+      "name": "c4plantuml",
+      "display_name": "C4 with PlantUML",
+      "description": "C4 architecture diagrams using PlantUML syntax",
+      "container": "kroki (built-in)",
+      "size_mb": 0,
+      "formats": ["svg", "png", "pdf"],
+      "safe_mode_impact": "high",
+      "security_notes": [
+        "Inherits PlantUML security concerns",
+        "KROKI_SAFE_MODE=secure required"
+      ],
+      "examples": [
+        "@startuml\n!include C4_Container.puml\nPerson(user, \"User\")\n@enduml"
+      ]
+    },
+    {
+      "name": "erd",
+      "display_name": "ERD",
+      "description": "Entity-Relationship diagrams for database modeling",
+      "container": "kroki (built-in)",
+      "size_mb": 0,
+      "formats": ["svg", "png", "pdf"],
+      "safe_mode_impact": "none",
+      "examples": [
+        "[Person] *--1 [Address]"
+      ]
+    },
+    {
+      "name": "nomnoml",
+      "display_name": "Nomnoml",
+      "description": "UML-style diagrams with a simple text syntax",
+      "container": "kroki (built-in)",
+      "size_mb": 0,
+      "formats": ["svg"],
+      "safe_mode_impact": "none",
+      "examples": [
+        "[Pirate|eyeCount: Int|raid();pillage()]"
+      ]
+    }
+  ],
+  "safe_mode_options": {
+    "secure": {
+      "description": "Recommended. Disables !include, !import, and external URL access",
+      "plantuml_impact": "Cannot use !include or fetch external resources",
+      "recommended": true
+    },
+    "unsafe": {
+      "description": "Allows all PlantUML features including file inclusion",
+      "plantuml_impact": "Full functionality but potential security risk",
+      "recommended": false
+    }
+  },
+  "default_port": 8010,
+  "internal_port": 8000
+}

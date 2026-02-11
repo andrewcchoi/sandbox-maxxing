@@ -1,0 +1,75 @@
+<!--
+---
+title: Bubblewrap Explained (Beginner-Friendly)
+type: Conceptual Overview
+introduced: 4.13.3
+audience: Beginners choosing between Docker sandbox and native Linux
+documents:
+  - docs/diagrams/README.md
+technical_version: bubblewrap-architecture.mmd
+last_updated: 2026-02-10
+purpose: Simple explanation of bubblewrap as "lightweight shield" - faster than Docker but fewer protections. Helps users choose the right setup.
+---
+-->
+
+flowchart TB
+    subgraph Computer["🖥️ YOUR COMPUTER (Native Linux/WSL2)"]
+        subgraph Bubblewrap["🛡️ BUBBLEWRAP (Lightweight Shield)<br/><i>Lighter protection than Docker - runs directly on your system</i>"]
+            subgraph Inside["📦 What Runs Inside Bubblewrap"]
+                Claude["Claude Code<br/><i>AI assistant</i>"]
+                Code["Your Project Code<br/><i>Files you're working on</i>"]
+            end
+
+            subgraph Protected["✅ PROTECTED BY BUBBLEWRAP"]
+                P1["🔒 System files are read-only<br/><i>Can't accidentally break your OS</i>"]
+                P2["🏢 Process isolation<br/><i>Separated from other programs</i>"]
+                P3["📂 Can't modify system folders<br/><i>/usr, /etc are locked</i>"]
+            end
+        end
+
+        subgraph StillOpen["⚠️ STILL OPEN (No Protection)<br/><i>These are NOT protected like in Docker</i>"]
+            O1["🌐 Full network access<br/><i>Can connect to any website</i>"]
+            O2["⚡ No resource limits<br/><i>Can use all CPU & memory</i>"]
+            O3["🔓 Shared kernel with host<br/><i>Lighter but less isolated</i>"]
+        end
+
+        subgraph Speed["⚡ WHY USE BUBBLEWRAP?"]
+            Fast["<b>Faster Setup</b><br/>No Docker required"]
+            Quick["<b>Quick Iteration</b><br/>No container overhead"]
+            Native["<b>Native Performance</b><br/>Runs directly on Linux"]
+
+            Fast --> Quick --> Native
+        end
+    end
+
+    subgraph Comparison["📊 WHEN TO USE WHAT"]
+        UseDocker["<b>Use Docker Sandbox When:</b><br/>✅ Working with untrusted code<br/>✅ Need network firewall<br/>✅ Want maximum security<br/>✅ Multi-language projects"]
+        UseBubblewrap["<b>Use Bubblewrap When:</b><br/>✅ Personal trusted projects<br/>✅ Fast iteration needed<br/>✅ Native Linux/WSL2 available<br/>✅ Don't have Docker installed"]
+
+        UseDocker -.-> |"vs"| UseBubblewrap
+    end
+
+    subgraph Analogy["💡 THINK OF IT LIKE..."]
+        A1["Docker = <b>Bank vault</b><br/>Maximum security, heavier setup"]
+        A2["Bubblewrap = <b>Locked room</b><br/>Basic protection, faster access"]
+
+        A1 -.-> |"Trade-off"| A2
+    end
+
+    Bubblewrap -.-> |"vs"| StillOpen
+
+    style Computer fill:#f0f0f0,stroke:#333,stroke-width:3px
+    style Bubblewrap fill:#87CEEB,stroke:#333,stroke-width:4px
+    style Inside fill:#E0F7FA,stroke:#333,stroke-width:2px
+    style Protected fill:#90EE90,stroke:#333,stroke-width:2px
+    style StillOpen fill:#FFE4B5,stroke:#333,stroke-width:3px
+    style Speed fill:#E6E6FA,stroke:#333,stroke-width:2px
+    style Comparison fill:#FFF8DC,stroke:#333,stroke-width:2px
+    style Analogy fill:#E6E6FA,stroke:#333,stroke-width:2px
+
+    style UseDocker fill:#90EE90,stroke:#333,stroke-width:2px
+    style UseBubblewrap fill:#FFE4B5,stroke:#333,stroke-width:2px
+
+    style O1 fill:#FF6B6B,stroke:#333,stroke-width:1px
+    style O2 fill:#FF6B6B,stroke:#333,stroke-width:1px
+    style O3 fill:#FF6B6B,stroke:#333,stroke-width:1px

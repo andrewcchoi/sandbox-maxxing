@@ -54,13 +54,18 @@ FAILED=0
 while IFS= read -r mmd_file; do
   basename="$(basename "$mmd_file" .mmd)"
   svg_file="$SVG_DIR/${basename}.svg"
+  temp_file="/tmp/claude/${basename}.mmd"
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "Processing: $basename.mmd → svg/$basename.svg"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-  # Run mermaid-cli with error handling
-  if npx -y @mermaid-js/mermaid-cli@latest -i "$mmd_file" -o "$svg_file" -b transparent 2>&1; then
+  # Strip HTML comment blocks (frontmatter) and create clean temp file
+  # This removes everything from <!-- to --> (multiline)
+  sed '/<!--/,/-->/d' "$mmd_file" > "$temp_file"
+
+  # Run mermaid-cli with error handling on cleaned file
+  if npx -y @mermaid-js/mermaid-cli@latest -i "$temp_file" -o "$svg_file" -b transparent 2>&1; then
     if [[ -f "$svg_file" ]]; then
       SIZE=$(du -h "$svg_file" | cut -f1)
       echo "✅ Success: $svg_file ($SIZE)"
@@ -73,6 +78,9 @@ while IFS= read -r mmd_file; do
     echo "❌ Failed: Mermaid compilation error"
     ((FAILED++))
   fi
+
+  # Clean up temp file
+  rm -f "$temp_file"
 
   echo ""
 done < <(find . -maxdepth 1 -name "*.mmd" -type f)

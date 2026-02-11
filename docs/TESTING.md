@@ -8,6 +8,8 @@ The project currently uses manual testing procedures for sandbox setup commands.
 
 ## Test Coverage
 
+> **See also:** [TEST-COVERAGE-REPORT.md](TEST-COVERAGE-REPORT.md) - Detailed coverage analysis and recommendations
+
 Manual testing covers:
 - ✅ Interactive quickstart setup
 - ✅ Non-interactive YOLO docker maxxing setup
@@ -395,10 +397,10 @@ bash scripts/version-checker.sh
 ```
 === Version Consistency Check ===
 
-plugin.json:       4.13.1
-marketplace.json:  4.13.1
-README.md badge:   4.13.1
-CHANGELOG.md:      4.13.1
+plugin.json:       4.13.3
+marketplace.json:  4.13.3
+README.md badge:   4.13.3
+CHANGELOG.md:      4.13.3
 
 ✅ All critical version references are consistent
 ```

@@ -59,6 +59,9 @@ run_check() {
 # Run all checks
 run_check "Version Consistency" "$SCRIPT_DIR/version-checker.sh" || true
 run_check "Diagram Inventory" "$SCRIPT_DIR/diagram-inventory.sh" || true
+# Note: bidirectional-validation.sh disabled due to sandbox restrictions on find commands
+# Run manually in non-sandboxed environments: bash scripts/bidirectional-validation.sh
+# run_check "Bidirectional Validation" "$SCRIPT_DIR/bidirectional-validation.sh" || true
 
 # Check for CRLF in polyglot hook wrapper
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -78,9 +81,10 @@ else
 fi
 echo ""
 
-# Note: Link checker is available but not run by default due to complexity
-# Run manually with: bash scripts/link-checker.sh
-echo "ℹ️  Note: Link checking available via scripts/link-checker.sh (not run by default)"
+# Note: Additional validation scripts available for manual runs
+echo "ℹ️  Note: Additional validation available:"
+echo "   • Link checking: bash scripts/link-checker.sh"
+echo "   • Bidirectional validation: bash scripts/bidirectional-validation.sh (requires non-sandboxed environment)"
 echo ""
 
 # Summary

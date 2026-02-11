@@ -279,10 +279,10 @@ docker-compose down
 
 ## Related Examples
 
-- `examples/demo-app-shared/` - Uses shared Docker Compose services
-- `examples/demo-app-sandbox-advanced/` - Domain allowlist configuration with strict firewall
-- `examples/demo-app-sandbox-yolo/` - Custom configuration with full customization
-- `examples/streamlit-sandbox-basic/` - Simpler Python-only app
+- `../demo-app-shared/` - Uses shared Docker Compose services
+- `../demo-app-sandbox-advanced/` - Domain allowlist configuration with strict firewall
+- `../demo-app-sandbox-yolo/` - Custom configuration with full customization
+- `../streamlit-sandbox-basic/` - Simpler Python-only app
 
 ## Learn More
 

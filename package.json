@@ -1,6 +1,6 @@
 {
   "name": "sandbox-maxxing-tests",
-  "version": "4.13.2",
+  "version": "4.13.3",
   "description": "Test suite for sandbox-maxxing Claude Code plugin",
   "private": true,
   "devDependencies": {
@@ -12,7 +12,12 @@
     "test:watch": "find tests -name '*.test.sh' | entr bats tests/unit/",
     "install:bats": "echo 'Install BATS via system package manager:' && echo 'Ubuntu/Debian: sudo apt-get install bats' && echo 'macOS: brew install bats-core' && echo 'Arch: sudo pacman -S bats'"
   },
-  "keywords": ["testing", "bats", "claude-code", "devcontainer"],
+  "keywords": [
+    "testing",
+    "bats",
+    "claude-code",
+    "devcontainer"
+  ],
   "author": "Sandbox-Maxxing Contributors",
   "license": "MIT",
   "note": "BATS must be installed system-wide due to npm sandbox restrictions. Run 'npm run install:bats' for platform-specific instructions."

@@ -6,6 +6,20 @@
 #
 # NOTE: Customize exposed ports with APP_PORT and FRONTEND_PORT env vars.
 # ============================================================================
+#
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║  ⚠️  SECURITY WARNING - DEVELOPMENT DEFAULTS                              ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║  This file contains DEFAULT DEVELOPMENT PASSWORDS for convenience.        ║
+# ║                                                                           ║
+# ║  ❌ DO NOT use in production without changing passwords                   ║
+# ║  ❌ DO NOT commit custom passwords to version control                     ║
+# ║  ✅ DO change POSTGRES_PASSWORD before deploying                          ║
+# ║  ✅ DO use environment variables or secret management in production       ║
+# ║                                                                           ║
+# ║  Default passwords used: devpassword                                      ║
+# ║  See: docs/features/SECRETS.md for secure credential management           ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
 
 services:
   # ===========================================================================
@@ -32,7 +46,7 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_DB: $${POSTGRES_DB:-sandbox_dev}
       POSTGRES_USER: $${POSTGRES_USER:-sandbox_user}
-      POSTGRES_PASSWORD: $${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_PASSWORD: $${POSTGRES_PASSWORD:-devpassword}  # ⚠️ CHANGE FOR PRODUCTION
       # Redis connection string (ready to use in application code)
       REDIS_URL: redis://redis:6379/0
       REDIS_HOST: redis
@@ -83,7 +97,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-sandbox_dev}
       POSTGRES_USER: ${POSTGRES_USER:-sandbox_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}  # ⚠️ CHANGE FOR PRODUCTION
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
