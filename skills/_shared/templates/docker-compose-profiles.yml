@@ -145,6 +145,48 @@ services:
       - dev-network
 
   # ===========================================================================
+  # Diagram Services (activate with: docker compose --profile diagrams up)
+  # ===========================================================================
+  kroki:
+    profiles: [diagrams]
+    image: yuzutech/kroki:latest
+    container_name: {{PROJECT_NAME}}-kroki
+    restart: unless-stopped
+    environment:
+      KROKI_SAFE_MODE: ${KROKI_SAFE_MODE:-secure}
+      KROKI_MERMAID_HOST: kroki-mermaid
+    ports:
+      - "${KROKI_PORT:-8010}:8000"
+    volumes:
+      - kroki-cache:/var/cache/kroki
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - dev-network
+    depends_on:
+      - kroki-mermaid
+
+  kroki-mermaid:
+    profiles: [diagrams]
+    image: yuzutech/kroki-mermaid:latest
+    container_name: {{PROJECT_NAME}}-kroki-mermaid
+    restart: unless-stopped
+    expose:
+      - "8002"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8002/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - dev-network
+
+  # ===========================================================================
   # Application Services (activate with: docker compose --profile app up)
   # ===========================================================================
   # These services run your application in containers alongside the DevContainer
@@ -245,5 +287,8 @@ volumes:
     driver: local
   ssh-keys:                                # Shared SSH keys across all devcontainers
     name: sandboxxer-shared-ssh-keys
+    driver: local
+  kroki-cache:                             # Diagram cache shared across all devcontainers
+    name: sandboxxer-kroki-cache
     driver: local
 

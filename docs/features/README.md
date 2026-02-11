@@ -16,6 +16,7 @@ Detailed documentation for sandboxxer plugin features.
 | [MCP.md](MCP.md) | Model Context Protocol integration |
 | [AZURE-DEPLOYMENT.md](AZURE-DEPLOYMENT.md) | Deploying to Azure Container Instances |
 | [OLLAMA_INTEGRATION.md](OLLAMA_INTEGRATION.md) | Local LLM integration with Ollama |
+| [KROKI_INTEGRATION.md](KROKI_INTEGRATION.md) | Self-hosted diagram rendering with Kroki |
 | [NPM_PLATFORM_FIX.md](NPM_PLATFORM_FIX.md) | Fixing npm platform compatibility issues |
 
 ## Quick Links

@@ -117,8 +117,8 @@ if [ "$SKIP_VALIDATION" = "false" ]; then
     echo "    ✓ Docker Compose available"
   fi
 
-  # Port availability check
-  for port in 8000 3000 5432 6379; do
+  # Port availability check (includes optional service ports)
+  for port in 8000 3000 5432 6379 8010 11434; do
     if port_in_use "$port"; then
       CONFLICTED+=("$port")
       PORT_CONFLICTS_FOUND=true
@@ -151,6 +151,8 @@ APP_PORT=8000
 FRONTEND_PORT=3000
 POSTGRES_PORT=5432
 REDIS_PORT=6379
+KROKI_PORT=8010
+OLLAMA_PORT=11434
 
 if [ "$PORT_CONFLICTS_FOUND" = "true" ]; then
   echo "  [1.2] Resolving port conflicts..."
@@ -161,6 +163,8 @@ if [ "$PORT_CONFLICTS_FOUND" = "true" ]; then
       3000) FRONTEND_PORT=$new_port; echo "    Frontend: 3000 → $new_port" ;;
       5432) POSTGRES_PORT=$new_port; echo "    PostgreSQL: 5432 → $new_port" ;;
       6379) REDIS_PORT=$new_port; echo "    Redis: 6379 → $new_port" ;;
+      8010) KROKI_PORT=$new_port; echo "    Kroki: 8010 → $new_port" ;;
+      11434) OLLAMA_PORT=$new_port; echo "    Ollama: 11434 → $new_port" ;;
     esac
   done
 else
@@ -534,6 +538,65 @@ case "$PROJECT_CONFIG_CHOICE" in
 esac
 ```
 
+### Question 6: Shared Services
+
+Optional development services that run alongside the DevContainer.
+
+Skip this question if: `AUTO_ACCEPT=true`
+
+```
+Would you like to enable any shared development services?
+
+Options:
+1. None (Recommended)
+   → Use base infrastructure only (PostgreSQL, Redis)
+
+2. Local AI (Ollama)
+   → Self-hosted LLM for code assistance (~4GB base)
+
+3. Diagram Rendering (Kroki)
+   → Self-hosted diagrams: Mermaid, PlantUML, GraphViz (~350MB)
+
+4. Both AI + Diagrams
+   → Full development toolset
+```
+
+Store as `SHARED_SERVICES_CHOICE`.
+
+```bash
+# Process shared services choice
+ENABLE_OLLAMA=false
+ENABLE_KROKI=false
+KROKI_PORT=8010
+
+case "$SHARED_SERVICES_CHOICE" in
+  "None"*|"1")
+    echo "No additional shared services"
+    ;;
+  "Local AI"*|"2")
+    ENABLE_OLLAMA=true
+    echo "Ollama enabled (docker compose --profile ai up)"
+    ;;
+  "Diagram"*|"3")
+    ENABLE_KROKI=true
+    echo "Kroki enabled (docker compose --profile diagrams up)"
+    ;;
+  "Both"*|"4")
+    ENABLE_OLLAMA=true
+    ENABLE_KROKI=true
+    echo "Ollama + Kroki enabled (docker compose --profile ai --profile diagrams up)"
+    ;;
+esac
+
+# Check Kroki port if enabled
+if [ "$ENABLE_KROKI" = "true" ]; then
+  if port_in_use "8010"; then
+    KROKI_PORT=$(find_available_port "8010")
+    echo "    Kroki port: 8010 → $KROKI_PORT"
+  fi
+fi
+```
+
 ---
 
 ## Phase 3: Generation
@@ -631,7 +694,8 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
        s/{{APP_PORT}}/$APP_PORT/g; \
        s/{{FRONTEND_PORT}}/$FRONTEND_PORT/g; \
        s/{{POSTGRES_PORT}}/$POSTGRES_PORT/g; \
-       s/{{REDIS_PORT}}/$REDIS_PORT/g" \
+       s/{{REDIS_PORT}}/$REDIS_PORT/g; \
+       s/{{KROKI_PORT}}/$KROKI_PORT/g" \
     "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 done
 
@@ -804,11 +868,19 @@ echo ""
 echo "Security: $([ "$NEEDS_FIREWALL" = "Yes" ] && echo "Firewall enabled" || echo "Docker isolation only")"
 echo "Workspace: $([ "$WORKSPACE_MODE" = "volume" ] && echo "Volume mode" || echo "Bind mount")"
 echo ""
+if [ "$ENABLE_OLLAMA" = "true" ] || [ "$ENABLE_KROKI" = "true" ]; then
+  echo "Shared Services:"
+  [ "$ENABLE_OLLAMA" = "true" ] && echo "  + Ollama (Local AI) - localhost:$OLLAMA_PORT"
+  [ "$ENABLE_KROKI" = "true" ] && echo "  + Kroki (Diagrams) - localhost:$KROKI_PORT"
+  echo ""
+fi
 echo "Ports:"
 echo "  App:        localhost:$APP_PORT → container:8000"
 echo "  Frontend:   localhost:$FRONTEND_PORT → container:3000"
 echo "  PostgreSQL: localhost:$POSTGRES_PORT → container:5432"
 echo "  Redis:      localhost:$REDIS_PORT → container:6379"
+[ "$ENABLE_KROKI" = "true" ] && echo "  Kroki:      localhost:$KROKI_PORT → container:8000"
+[ "$ENABLE_OLLAMA" = "true" ] && echo "  Ollama:     localhost:$OLLAMA_PORT → container:11434"
 echo ""
 echo "Files created:"
 echo "  .devcontainer/Dockerfile"
@@ -827,6 +899,17 @@ echo "1. Edit .env and add your API keys"
 echo "2. Open this folder in VS Code"
 echo "3. Click 'Reopen in Container' when prompted"
 echo "4. Wait for container build (~2-5 minutes first time)"
+if [ "$ENABLE_OLLAMA" = "true" ] || [ "$ENABLE_KROKI" = "true" ]; then
+  echo ""
+  echo "To start shared services:"
+  if [ "$ENABLE_OLLAMA" = "true" ] && [ "$ENABLE_KROKI" = "true" ]; then
+    echo "  docker compose --profile ai --profile diagrams up -d"
+  elif [ "$ENABLE_OLLAMA" = "true" ]; then
+    echo "  docker compose --profile ai up -d"
+  else
+    echo "  docker compose --profile diagrams up -d"
+  fi
+fi
 echo ""
 echo "=========================================="
 ```
