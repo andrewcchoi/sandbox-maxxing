@@ -8,6 +8,8 @@ The project currently uses manual testing procedures for sandbox setup commands.
 
 ## Test Coverage
 
+> **See also:** [TEST-COVERAGE-REPORT.md](TEST-COVERAGE-REPORT.md) - Detailed coverage analysis and recommendations
+
 Manual testing covers:
 - ✅ Interactive quickstart setup
 - ✅ Non-interactive YOLO docker maxxing setup

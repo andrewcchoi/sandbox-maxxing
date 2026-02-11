@@ -600,7 +600,11 @@ The plugin includes comprehensive documentation in the `docs/` directory:
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Plugin architecture overview
 - [docs/CODESPACES.md](docs/CODESPACES.md) - GitHub Codespaces integration
 - [docs/TESTING.md](docs/TESTING.md) - Testing guide for examples
+- [docs/TEST-COVERAGE-REPORT.md](docs/TEST-COVERAGE-REPORT.md) - Test coverage analysis report
 - [docs/windows/README.md](docs/windows/README.md) - Windows-specific setup guide
+
+### Internal Development Documentation
+- [docs/code-review/](docs/code-review/) - Code review process and prompt improvements
 
 ## Naming Convention
 
