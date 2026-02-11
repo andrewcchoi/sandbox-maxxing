@@ -135,7 +135,7 @@ services:
     environment:
       # Database credentials
       POSTGRES_USER: ${POSTGRES_USER:-sandbox_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}  # ⚠️ CHANGE FOR PRODUCTION
       POSTGRES_DB: ${POSTGRES_DB:-sandbox_dev}
 
       # PostgreSQL configuration
