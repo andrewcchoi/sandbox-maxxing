@@ -211,8 +211,37 @@ See also: [Security Model](../docs/features/SECURITY-MODEL.md)
 
 **Usage:**
 ```bash
+# Basic setup (interactive sudo authentication)
 /sandboxxer:yolo-linux-maxxing
+
+# Skip sudo validation for CI/automation
+/sandboxxer:yolo-linux-maxxing --skip-validation
+
+# Install with development tools (Python + Node toolchains)
+/sandboxxer:yolo-linux-maxxing --with-tools
+
+# Install enhanced shell (zsh + Powerlevel10k + fzf + delta)
+/sandboxxer:yolo-linux-maxxing --with-shell
+
+# Create project configuration files
+/sandboxxer:yolo-linux-maxxing --project-config
+
+# Output VS Code extension recommendations
+/sandboxxer:yolo-linux-maxxing --with-vscode
+
+# Full setup with all optional features
+/sandboxxer:yolo-linux-maxxing --full
 ```
+
+**Optional Flags:**
+| Flag | Description |
+|------|-------------|
+| `--skip-validation` | Skip sudo validation for CI/automation scenarios |
+| `--with-tools` | Install Python and Node development tools |
+| `--with-shell` | Install zsh + Powerlevel10k + fzf + delta |
+| `--project-config` | Create project configuration files |
+| `--with-vscode` | Output VS Code extension recommendations |
+| `--full` | Enable all optional features |
 
 **What it does:**
 1. Installs Claude CLI and required dependencies
@@ -227,6 +256,8 @@ See also: [Security Model](../docs/features/SECURITY-MODEL.md)
 - System package management integration
 - WSL2 compatibility
 - Full GitHub integration
+- **Popup sudo authentication** - Opens a terminal window for password entry when running via Claude Code (WSL2: Windows Terminal/cmd.exe; Linux: gnome-terminal/xterm/konsole)
+- **Windows shell detection** - Detects Git Bash/MSYS/Cygwin and shows helpful error with WSL2 instructions
 
 **When to use:**
 - Running Claude Code natively on Linux or WSL2

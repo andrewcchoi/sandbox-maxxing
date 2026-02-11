@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [4.13.3] - 2026-02-10
 
 ### Added
 - **Commands**: Popup sudo authentication for `/sandboxxer:yolo-linux-maxxing`

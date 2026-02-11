@@ -1,0 +1,182 @@
+<!--
+---
+title: Health Check Flow (/health)
+type: Flowchart
+introduced: 4.13.3
+documents:
+  - docs/diagrams/README.md
+  - commands/health.md
+components:
+  checks: 11
+  flags: 2
+  exit_codes: 2
+last_updated: 2026-02-10
+purpose: Visualizes the 11 diagnostic checks in /health command with conditional --verbose and --include-network flags
+---
+-->
+
+flowchart TD
+    Start([/sandboxxer:health]) --> ParseFlags[Parse Flags]
+
+    ParseFlags --> Flags{Flags?}
+    Flags -->|--verbose| SetVerbose[Enable detailed output]
+    Flags -->|--include-network| SetNetwork[Enable network checks<br/>⚠️ May fail behind proxy]
+    Flags -->|None| DefaultMode[Standard mode]
+
+    SetVerbose --> Check1
+    SetNetwork --> Check1
+    DefaultMode --> Check1
+
+    subgraph CoreChecks["Core Checks (Always Run)"]
+        Check1[Check 1: Docker Daemon<br/>docker info]
+        Check1 --> C1Result{Running?}
+        C1Result -->|Yes| C1Pass[✓ Docker v20.10+]
+        C1Result -->|No| C1Fail[✗ Start Docker Desktop]
+
+        C1Pass --> Check2
+        C1Fail --> Check2
+
+        Check2[Check 2: Docker Compose<br/>docker compose version]
+        Check2 --> C2Result{v2 Available?}
+        C2Result -->|Yes| C2Pass[✓ Compose v2]
+        C2Result -->|No| C2Fail[✗ Install docker-compose-plugin]
+
+        C2Pass --> Check3
+        C2Fail --> Check3
+
+        Check3[Check 3: Required Tools<br/>jq, git, gh]
+        Check3 --> C3jq{jq?}
+        C3jq -->|Yes| C3git{git?}
+        C3jq -->|No| C3jqFail[✗ jq required for hooks]
+        C3git -->|Yes| C3gh{gh?}
+        C3git -->|No| C3gitWarn[⚠️ git recommended]
+        C3gh -->|Yes| C3Pass[✓ All tools available]
+        C3gh -->|No| C3ghWarn[⚠️ gh optional]
+
+        C3Pass --> Check4
+        C3jqFail --> Check4
+        C3gitWarn --> Check4
+        C3ghWarn --> Check4
+
+        Check4[Check 4: VS Code & Extensions<br/>code --list-extensions]
+        Check4 --> C4Result{DevContainers?}
+        C4Result -->|Yes| C4Pass[✓ Extension installed]
+        C4Result -->|No| C4Warn[⚠️ Install ms-vscode-remote.remote-containers]
+
+        C4Pass --> Check5
+        C4Warn --> Check5
+
+        Check5[Check 5: Disk Space<br/>df -k .]
+        Check5 --> C5Result{≥10GB?}
+        C5Result -->|≥10GB| C5Pass[✓ Sufficient space]
+        C5Result -->|5-10GB| C5Warn[⚠️ Low space warning]
+        C5Result -->|<5GB| C5Fail[✗ Critical: Free disk space]
+
+        C5Pass --> Check6
+        C5Warn --> Check6
+        C5Fail --> Check6
+
+        Check6[Check 6: Port Availability<br/>8000, 3000, 5432, 6379]
+        Check6 --> C6Pass[ℹ Available or auto-reassign]
+
+        C6Pass --> Check7
+
+        Check7[Check 7: Running Containers<br/>docker ps]
+        Check7 --> C7Pass[ℹ Container status]
+
+        C7Pass --> Check8
+    end
+
+    subgraph ConfigChecks["Configuration Checks"]
+        Check8[Check 8: Config Files<br/>.devcontainer/devcontainer.json<br/>docker-compose.yml]
+        Check8 --> C8JSON{Valid JSON?}
+        C8JSON -->|Yes| C8Pass[✓ Config valid]
+        C8JSON -->|No| C8Fail[✗ Syntax errors]
+        C8JSON -->|Not found| C8Info[ℹ No DevContainer configured]
+
+        C8Pass --> Check9
+        C8Fail --> Check9
+        C8Info --> Check9
+
+        Check9[Check 9: Service Health<br/>PostgreSQL pg_isready<br/>Redis ping]
+        Check9 --> C9Result{Services running?}
+        C9Result -->|Running + healthy| C9Pass[✓ Services healthy]
+        C9Result -->|Running + unhealthy| C9Warn[⚠️ Service not responding]
+        C9Result -->|Not running| C9Info[ℹ Services not started]
+
+        C9Pass --> Check10
+        C9Warn --> Check10
+        C9Info --> Check10
+
+        Check10[Check 10: Plugin Installation<br/>docker-safety-hook.sh]
+        Check10 --> C10Result{Hook found?}
+        C10Result -->|Yes + executable| C10Pass[✓ Hook configured]
+        C10Result -->|Yes + not executable| C10Warn[⚠️ chmod +x needed]
+        C10Result -->|Not found| C10Info[ℹ Plugin hooks not installed]
+
+        C10Pass --> NetworkDecision
+        C10Warn --> NetworkDecision
+        C10Info --> NetworkDecision
+    end
+
+    NetworkDecision{--include-network?}
+    NetworkDecision -->|No| SkipNetwork[ℹ Network checks skipped<br/>Use --include-network to enable]
+    NetworkDecision -->|Yes| Check11
+
+    subgraph NetworkChecks["Network Checks (Opt-in)"]
+        Check11[Check 11: Network Connectivity<br/>⚠️ May fail behind proxy]
+
+        Check11 --> N1[api.anthropic.com]
+        N1 --> N2[ghcr.io]
+        N2 --> N3[registry.npmjs.org]
+        N3 --> N4[pypi.org]
+
+        N4 --> NetResult{All reachable?}
+        NetResult -->|Yes| NetPass[✓ Network connectivity OK]
+        NetResult -->|Partial| NetWarn[⚠️ Some endpoints blocked<br/>May be proxy/firewall]
+        NetResult -->|No| NetFail[✗ Network unreachable]
+    end
+
+    SkipNetwork --> Summary
+    NetPass --> Summary
+    NetWarn --> Summary
+    NetFail --> Summary
+
+    subgraph SummarySection["Summary"]
+        Summary[Aggregate Results]
+        Summary --> FinalResult{Any failures?}
+
+        FinalResult -->|No failures, no warnings| AllPass[✅ PASSED<br/>All systems operational]
+        FinalResult -->|No failures, some warnings| PassWarn[✅ PASSED with warnings<br/>Address warnings for optimal experience]
+        FinalResult -->|Has failures| Failed[❌ FAILED<br/>Fix critical issues]
+
+        AllPass --> Exit0([Exit 0])
+        PassWarn --> Exit0
+        Failed --> Exit1([Exit 1])
+    end
+
+    style Start fill:#90EE90,stroke:#333,stroke-width:2px
+    style Exit0 fill:#90EE90,stroke:#333,stroke-width:2px
+    style Exit1 fill:#FF6B6B,stroke:#333,stroke-width:2px
+
+    style CoreChecks fill:#87CEEB,stroke:#333,stroke-width:2px
+    style ConfigChecks fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style NetworkChecks fill:#FFB366,stroke:#333,stroke-width:2px
+    style SummarySection fill:#f0f0f0,stroke:#333,stroke-width:2px
+
+    style Flags fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style NetworkDecision fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style FinalResult fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style C1Result fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style C2Result fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style C3jq fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style C4Result fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style C5Result fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style C8JSON fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style C9Result fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style C10Result fill:#FFE4B5,stroke:#333,stroke-width:1px
+    style NetResult fill:#FFE4B5,stroke:#333,stroke-width:1px
+
+    style AllPass fill:#90EE90,stroke:#333,stroke-width:2px
+    style PassWarn fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Failed fill:#FF6B6B,stroke:#333,stroke-width:2px

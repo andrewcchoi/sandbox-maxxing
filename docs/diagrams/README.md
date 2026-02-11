@@ -255,6 +255,109 @@ If you delete a `.mmd` file, the diagram becomes **permanently uneditable**. Alw
 
 ---
 
+### 13. Bubblewrap Architecture (Native Linux)
+
+**File:** [`bubblewrap-architecture.mmd`](bubblewrap-architecture.mmd) | **SVG:** [`svg/bubblewrap-architecture.svg`](svg/bubblewrap-architecture.svg)
+
+**Purpose:** Visualizes the native Linux/WSL2 sandboxing architecture using bubblewrap, highlighting security tradeoffs vs Docker.
+
+**Security Layers:**
+- **Layer 1: Bubblewrap Namespace Isolation** - Read-only root, device access, proc isolation, tmpfs
+- **Layer 2: Seccomp Filter (Optional)** - @anthropic-ai/sandbox-runtime syscall filtering
+
+**Missing vs Docker:**
+- ❌ Network isolation (direct host network access)
+- ❌ Resource limits (no CPU/memory caps)
+- ❌ Container boundaries (shared kernel, no cgroups)
+- ❌ Firewall/Allowlist (cannot restrict domains)
+
+**Used in:** commands/yolo-linux-maxxing.md, docs/diagrams/README.md
+
+![Bubblewrap Architecture](svg/bubblewrap-architecture.svg)
+
+---
+
+### 14. Setup Command Comparison
+
+**File:** [`setup-comparison.mmd`](setup-comparison.mmd) | **SVG:** [`svg/setup-comparison.svg`](svg/setup-comparison.svg)
+
+**Purpose:** Decision tree helping users choose between `/quickstart`, `/yolo-docker-maxxing`, and `/yolo-linux-maxxing`.
+
+**Commands Compared:**
+- **/quickstart** - Interactive with up to 4 questions, profile selection, optional firewall
+- **/yolo-docker-maxxing** - Zero questions, Python+Node base, Docker isolation only
+- **/yolo-linux-maxxing** - No Docker required, bubblewrap sandboxing, optional flags
+
+**Decision Points:**
+1. Do you have Docker installed?
+2. Need customization?
+3. Priority: speed vs security?
+
+**Used in:** docs/diagrams/README.md, docs/features/SETUP-OPTIONS.md
+
+![Setup Command Comparison](svg/setup-comparison.svg)
+
+---
+
+### 15. Linux Setup Flow
+
+**File:** [`linux-setup-flow.mmd`](linux-setup-flow.mmd) | **SVG:** [`svg/linux-setup-flow.svg`](svg/linux-setup-flow.svg)
+
+**Purpose:** Visualizes the 10-step `/yolo-linux-maxxing` installation process with optional enhancement flags.
+
+**Phases:**
+1. **Preflight** - Environment detection (WSL2/Linux), sudo validation, disk space check
+2. **Core Installation** - System packages, GitHub CLI, Claude Code CLI, environment config, seccomp
+3. **Optional Enhancements** - Dev tools, shell enhancements, project config, VS Code extensions
+4. **Verification** - Component check and troubleshooting
+
+**Optional Flags:**
+- `--with-tools` - Python + Node development tools
+- `--with-shell` - zsh + Powerlevel10k + fzf + delta
+- `--project-config` - .editorconfig, .gitignore, .gitattributes
+- `--with-vscode` - VS Code extension recommendations
+- `--full` - All optional features
+- `--skip-validation` - Skip preflight checks
+
+**Used in:** commands/yolo-linux-maxxing.md, docs/diagrams/README.md
+
+![Linux Setup Flow](svg/linux-setup-flow.svg)
+
+---
+
+### 16. Health Check Flow
+
+**File:** [`health-check-flow.mmd`](health-check-flow.mmd) | **SVG:** [`svg/health-check-flow.svg`](svg/health-check-flow.svg)
+
+**Purpose:** Visualizes the 11 diagnostic checks in `/health` command with conditional `--verbose` and `--include-network` flags.
+
+**11 Checks:**
+1. Docker Daemon (running, version ≥20.10)
+2. Docker Compose (v2 plugin available)
+3. Required Tools (jq required, git/gh optional)
+4. VS Code & DevContainers extension
+5. Disk Space (≥10GB recommended, ≥5GB minimum)
+6. Port Availability (8000, 3000, 5432, 6379)
+7. Running Containers (status information)
+8. Config Files (devcontainer.json, docker-compose.yml validation)
+9. Service Health (PostgreSQL, Redis if running)
+10. Plugin Installation (docker-safety-hook.sh)
+11. Network Connectivity (opt-in, may fail behind proxy)
+
+**Flags:**
+- `--verbose` - Detailed output with additional information
+- `--include-network` - Enable network connectivity tests (⚠️ may fail behind proxy)
+
+**Exit Codes:**
+- **0** - Passed (or passed with warnings)
+- **1** - Failed (critical issues found)
+
+**Used in:** commands/health.md, docs/diagrams/README.md
+
+![Health Check Flow](svg/health-check-flow.svg)
+
+---
+
 ## Editing Diagrams
 
 ### Using Mermaid Live Editor (Recommended)
@@ -346,7 +449,7 @@ See the path examples below for the correct relative path from your file locatio
 docs/diagrams/
 ├── README.md                      # This file
 ├── puppeteer-config.json          # Config for Mermaid CLI in Docker
-├── plugin-architecture.mmd        # Mermaid source files (12 total)
+├── plugin-architecture.mmd        # Mermaid source files (16 total)
 ├── quickstart-flow.mmd
 ├── file-generation.mmd
 ├── mode-selection.mmd
@@ -358,7 +461,11 @@ docs/diagrams/
 ├── security-audit-flow.mmd
 ├── service-connectivity.mmd
 ├── cicd-integration.mmd
-└── svg/                           # Generated SVG files (12 total)
+├── bubblewrap-architecture.mmd    # Native Linux sandboxing architecture
+├── setup-comparison.mmd           # Command selection decision tree
+├── linux-setup-flow.mmd           # /yolo-linux-maxxing workflow
+├── health-check-flow.mmd          # /health diagnostic checks
+└── svg/                           # Generated SVG files (16 total)
     ├── plugin-architecture.svg
     ├── quickstart-flow.svg
     ├── file-generation.svg
@@ -370,7 +477,11 @@ docs/diagrams/
     ├── firewall-resolution.svg
     ├── security-audit-flow.svg
     ├── service-connectivity.svg
-    └── cicd-integration.svg
+    ├── cicd-integration.svg
+    ├── bubblewrap-architecture.svg
+    ├── setup-comparison.svg
+    ├── linux-setup-flow.svg
+    └── health-check-flow.svg
 ```
 
 ---

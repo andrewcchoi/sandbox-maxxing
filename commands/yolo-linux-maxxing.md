@@ -498,7 +498,7 @@ if [ "$WITH_TOOLS" = true ]; then
   # Node tools (if npm available)
   if command -v npm &>/dev/null; then
     echo "Installing Node tools..."
-    sudo npm install -g typescript ts-node eslint prettier 2>/dev/null || echo "⚠️  Some Node tools failed (non-critical)"
+    sudo npm install -g typescript ts-node eslint prettier @mermaid-js/mermaid-cli 2>/dev/null || echo "⚠️  Some Node tools failed (non-critical)"
   else
     echo "⚠️  npm not found - skipping Node tools"
   fi
@@ -515,7 +515,7 @@ fi
 
 **What this does**:
 - **Python tools**: uv (fast package manager), pytest (testing), black (formatting), ruff (linting), mypy (type checking), ipython (enhanced REPL)
-- **Node tools**: TypeScript compiler, ts-node (execute TypeScript), ESLint (linting), Prettier (formatting)
+- **Node tools**: TypeScript compiler, ts-node (execute TypeScript), ESLint (linting), Prettier (formatting), mermaid-cli (diagram rendering)
 - **CLI tools**: jq (JSON processor)
 - **Graceful degradation**: Skips unavailable tools without failing
 

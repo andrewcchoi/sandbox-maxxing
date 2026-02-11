@@ -1,0 +1,124 @@
+<!--
+---
+title: Linux Setup Flow (/yolo-linux-maxxing)
+type: Flowchart
+introduced: 4.13.3
+documents:
+  - docs/diagrams/README.md
+  - commands/yolo-linux-maxxing.md
+components:
+  phases: 3
+  steps: 10
+  optional_flags: 6
+last_updated: 2026-02-10
+purpose: Visualizes the 10-step /yolo-linux-maxxing installation process with optional enhancement flags
+---
+-->
+
+flowchart TD
+    Start([/yolo-linux-maxxing]) --> ParseFlags
+
+    subgraph Preflight["Phase 0: Preflight"]
+        ParseFlags[Parse CLI Flags<br/>--skip-validation, --with-tools<br/>--with-shell, --project-config<br/>--with-vscode, --full]
+        ParseFlags --> EnvDetect{Environment?}
+
+        EnvDetect -->|Windows Shell| WinError[✗ ERROR: Requires WSL2<br/>Open WSL terminal first]
+        EnvDetect -->|WSL2| WSL2OK[✓ WSL2 Detected]
+        EnvDetect -->|Debian/Ubuntu| LinuxOK[✓ Linux Detected]
+        EnvDetect -->|RHEL/Other| UnsupportedOS[✗ Unsupported<br/>Debian/Ubuntu only]
+
+        WinError --> Stop1([Exit])
+        UnsupportedOS --> Stop2([Exit])
+
+        WSL2OK --> SudoCheck
+        LinuxOK --> SudoCheck
+
+        SudoCheck{Sudo Access?}
+        SudoCheck -->|Passwordless| SudoOK[✓ Sudo ready]
+        SudoCheck -->|Need password| AuthWindow[Open auth window<br/>for sudo -v]
+        SudoCheck -->|Not in group| SudoFail[✗ Add user to sudo group]
+
+        AuthWindow --> AuthResult{Authenticated?}
+        AuthResult -->|Yes| SudoOK
+        AuthResult -->|No/Timeout| ManualSudo[Manual: run sudo -v]
+        SudoFail --> Stop3([Exit])
+
+        SudoOK --> DiskCheck[Check disk space ≥4GB]
+        ManualSudo --> DiskCheck
+    end
+
+    DiskCheck --> Step1
+
+    subgraph Install["Phase 1: Core Installation (2 sudo blocks)"]
+        Step1[Step 1: System Packages<br/>sudo apt update && upgrade<br/>bubblewrap, socat, curl, wget, git]
+
+        Step1 --> Step2[Step 2: GitHub CLI<br/>Add apt repo + install gh]
+
+        Step2 --> Step3["Step 3: Claude Code CLI<br/>curl install.sh | bash"]
+
+        Step3 --> Step4[Step 4: Environment Config<br/>Update PATH, check git config]
+
+        Step4 --> Step5{Node.js 18+?}
+        Step5 -->|Yes| Step5a[Step 5: Install seccomp filter<br/>@anthropic-ai/sandbox-runtime]
+        Step5 -->|No| Step5b[Step 5: Skip seccomp<br/>Instructions for later]
+    end
+
+    Step5a --> OptionalCheck
+    Step5b --> OptionalCheck
+
+    subgraph Optional["Phase 2: Optional Enhancements"]
+        OptionalCheck{Flags enabled?}
+
+        OptionalCheck -->|--with-tools| Step6[Step 6: Dev Tools<br/>uv, pytest, black, ruff<br/>typescript, eslint, prettier]
+
+        OptionalCheck -->|--with-shell| Step7[Step 7: Shell Enhancements<br/>zsh, Powerlevel10k<br/>fzf, git-delta]
+
+        OptionalCheck -->|--project-config| Step8[Step 8: Project Config<br/>.editorconfig<br/>.gitignore<br/>.gitattributes]
+
+        OptionalCheck -->|--with-vscode| Step9[Step 9: VS Code Extensions<br/>Output install command]
+
+        OptionalCheck -->|--full| AllOptional[Enable all above]
+        OptionalCheck -->|None| SkipOptional[Skip optional steps]
+
+        AllOptional --> Step6
+        Step6 --> Step7
+        Step7 --> Step8
+        Step8 --> Step9
+    end
+
+    Step9 --> Step10
+    SkipOptional --> Step10
+
+    subgraph Verify["Phase 3: Verification"]
+        Step10[Step 10: Final Verification<br/>Check all components]
+        Step10 --> VerifyResult{All OK?}
+
+        VerifyResult -->|Yes| Success[✅ Installation Complete<br/>Next: claude auth login]
+        VerifyResult -->|Missing| Partial[⚠️ Some components missing<br/>Review and retry]
+    end
+
+    Success --> Done([Ready to use])
+    Partial --> Troubleshoot[Run /sandboxxer:linux-troubleshoot]
+    Troubleshoot --> Done
+
+    style Start fill:#90EE90,stroke:#333,stroke-width:2px
+    style Done fill:#90EE90,stroke:#333,stroke-width:2px
+    style Stop1 fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style Stop2 fill:#FF6B6B,stroke:#333,stroke-width:2px
+    style Stop3 fill:#FF6B6B,stroke:#333,stroke-width:2px
+
+    style Preflight fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style Install fill:#87CEEB,stroke:#333,stroke-width:2px
+    style Optional fill:#FFB366,stroke:#333,stroke-width:2px
+    style Verify fill:#90EE90,stroke:#333,stroke-width:2px
+
+    style EnvDetect fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style SudoCheck fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Step5 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style OptionalCheck fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style VerifyResult fill:#FFE4B5,stroke:#333,stroke-width:2px
+
+    style WinError fill:#FF6B6B,stroke:#333,stroke-width:1px
+    style UnsupportedOS fill:#FF6B6B,stroke:#333,stroke-width:1px
+    style SudoFail fill:#FF6B6B,stroke:#333,stroke-width:1px
+    style Success fill:#90EE90,stroke:#333,stroke-width:2px

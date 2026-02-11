@@ -1,6 +1,6 @@
 # Sandboxxer Plugin
 
-![Plugin version 4.13.2](https://img.shields.io/badge/version-4.13.2-blue)
+![Plugin version 4.13.3](https://img.shields.io/badge/version-4.13.3-blue)
 ![Claude Code official plugin](https://img.shields.io/badge/claude--code-plugin-purple)
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 ![Supported platforms: Linux, macOS, Windows WSL2](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
@@ -522,12 +522,26 @@ Native Linux/WSL2 Claude Code setup without Docker.
 - User mentions "WSL2", "native Linux", "no Docker"
 - User needs lightweight setup without container overhead
 
+**Optional Flags**:
+- `--skip-validation` - Skip sudo validation for CI/automation
+- `--with-tools` - Install Python and Node development tools
+- `--with-shell` - Install zsh + Powerlevel10k + fzf + delta
+- `--project-config` - Create project configuration files
+- `--with-vscode` - Output VS Code extension recommendations
+- `--full` - Enable all optional features
+
+**Features**:
+- Popup sudo authentication window for password entry (WSL2: Windows Terminal; Linux: gnome-terminal/xterm/konsole)
+- Windows shell detection with WSL2 guidance (Git Bash/MSYS/Cygwin)
+
 **Workflow**:
-1. Install Claude CLI and dependencies
-2. Configure Bubblewrap sandbox
-3. Set up GitHub CLI authentication
-4. Validate installation
-5. Provide usage guidance
+1. Detect environment (Linux/WSL2 vs Git Bash/Cygwin)
+2. Open popup for sudo authentication (or skip with `--skip-validation`)
+3. Install Claude CLI and dependencies
+4. Configure Bubblewrap sandbox
+5. Set up GitHub CLI authentication
+6. Validate installation
+7. Provide usage guidance
 
 ### /sandboxxer:linux-troubleshoot
 Diagnoses and resolves native Linux/WSL2 setup issues.
