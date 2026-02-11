@@ -358,6 +358,62 @@ If you delete a `.mmd` file, the diagram becomes **permanently uneditable**. Alw
 
 ---
 
+### 17. Docker Sandbox Explained (Beginner-Friendly)
+
+**File:** [`sandbox-explained.mmd`](sandbox-explained.mmd) | **SVG:** [`svg/sandbox-explained.svg`](svg/sandbox-explained.svg)
+
+**Purpose:** Simple, approachable explanation of Docker sandbox for beginners unfamiliar with sandboxing concepts.
+
+**Key Messages:**
+- "A sandbox is a secure container that isolates code from your computer"
+- "Think of it as a protective bubble - code runs inside but can't escape"
+- Visual analogies: playground with fence, fish tank in house
+
+**What It Shows:**
+- Nested containment layers (Computer → Sandbox → Code)
+- ✅ What sandbox CAN do (write code, run tests, access allowed sites)
+- 🚫 What sandbox CANNOT do (delete files, access passwords, install malware)
+- 🛡️ Protected resources outside the sandbox
+- Three layers of protection explained in plain language
+
+**Comparison to Technical Version:**
+- **Technical:** [`security-layers.mmd`](security-layers.mmd) uses jargon (namespaces, cgroups, iptables)
+- **Beginner:** This diagram uses analogies and plain language for newcomers
+
+**Used in:** docs/diagrams/README.md (supplement to technical security diagrams)
+
+![Docker Sandbox Explained](svg/sandbox-explained.svg)
+
+---
+
+### 18. Bubblewrap Explained (Beginner-Friendly)
+
+**File:** [`bubblewrap-explained.mmd`](bubblewrap-explained.mmd) | **SVG:** [`svg/bubblewrap-explained.svg`](svg/bubblewrap-explained.svg)
+
+**Purpose:** Simple explanation of bubblewrap as "lightweight shield" helping users choose between Docker and native Linux setup.
+
+**Key Messages:**
+- "Bubblewrap is a lightweight shield - faster than Docker but fewer protections"
+- "Protects your system files from accidental changes"
+- "Best for personal projects you trust; use Docker sandbox for untrusted code"
+
+**What It Shows:**
+- ✅ Protected by bubblewrap (read-only system files, process isolation)
+- ⚠️ Still open/unprotected (full network access, no resource limits)
+- ⚡ Why use bubblewrap (faster setup, no Docker required, native performance)
+- 📊 When to use Docker vs Bubblewrap comparison
+- Visual analogy: Docker = bank vault (maximum security), Bubblewrap = locked room (basic protection)
+
+**Comparison to Technical Version:**
+- **Technical:** [`bubblewrap-architecture.mmd`](bubblewrap-architecture.mmd) details namespaces, seccomp, syscalls
+- **Beginner:** This diagram uses analogies and focuses on trade-offs for decision-making
+
+**Used in:** docs/diagrams/README.md (supplement to technical bubblewrap architecture)
+
+![Bubblewrap Explained](svg/bubblewrap-explained.svg)
+
+---
+
 ## Editing Diagrams
 
 ### Using Mermaid Live Editor (Recommended)
@@ -449,7 +505,7 @@ See the path examples below for the correct relative path from your file locatio
 docs/diagrams/
 ├── README.md                      # This file
 ├── puppeteer-config.json          # Config for Mermaid CLI in Docker
-├── plugin-architecture.mmd        # Mermaid source files (16 total)
+├── plugin-architecture.mmd        # Mermaid source files (18 total)
 ├── quickstart-flow.mmd
 ├── file-generation.mmd
 ├── mode-selection.mmd
@@ -465,7 +521,9 @@ docs/diagrams/
 ├── setup-comparison.mmd           # Command selection decision tree
 ├── linux-setup-flow.mmd           # /yolo-linux-maxxing workflow
 ├── health-check-flow.mmd          # /health diagnostic checks
-└── svg/                           # Generated SVG files (16 total)
+├── sandbox-explained.mmd          # Beginner-friendly Docker sandbox explanation
+├── bubblewrap-explained.mmd       # Beginner-friendly bubblewrap explanation
+└── svg/                           # Generated SVG files (18 total)
     ├── plugin-architecture.svg
     ├── quickstart-flow.svg
     ├── file-generation.svg
@@ -481,7 +539,9 @@ docs/diagrams/
     ├── bubblewrap-architecture.svg
     ├── setup-comparison.svg
     ├── linux-setup-flow.svg
-    └── health-check-flow.svg
+    ├── health-check-flow.svg
+    ├── sandbox-explained.svg
+    └── bubblewrap-explained.svg
 ```
 
 ---
