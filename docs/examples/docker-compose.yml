@@ -3,6 +3,15 @@
 # This file provides PostgreSQL and Redis services for testing example applications.
 # It is separate from the devcontainer to keep plugin development lightweight.
 #
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║  ⚠️  SECURITY WARNING - DEVELOPMENT DEFAULTS                               ║
+# ╠════════════════════════════════════════════════════════════════════════════╣
+# ║  This file uses DEFAULT PASSWORDS (devpassword) for development only.      ║
+# ║  ❌ DO NOT deploy to production without changing passwords                  ║
+# ║  ✅ Use environment variables or secrets management in production           ║
+# ║  See: docs/features/SECRETS.md for secure credential management            ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+#
 # IMPORTANT: Run this on your HOST machine, NOT inside the devcontainer/sandbox.
 # Example applications (demo-app, basic-streamlit) run on the HOST and connect to these services.
 #
