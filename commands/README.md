@@ -2,6 +2,14 @@
 
 This directory contains slash commands for the Claude Code Sandbox Plugin. Commands provide user-friendly interfaces to the underlying skills, with smart routing and sensible defaults.
 
+## New to Sandboxing?
+
+**What is a sandbox?** A sandbox is a secure container that isolates code from your computer - like a protective bubble where code can run safely without accessing your personal files, passwords, or system settings.
+
+**Visual guides for beginners:**
+- 🔒 [Docker Sandbox Explained](../docs/diagrams/svg/sandbox-explained.svg) - Simple visual guide showing what sandboxes protect and how they work
+- 🛡️ [Bubblewrap Explained](../docs/diagrams/svg/bubblewrap-explained.svg) - Comparison of Docker vs bubblewrap (native Linux) sandboxing
+
 ## Overview
 
 Commands are invoked with the `/sandboxxer:` prefix in Claude Code:

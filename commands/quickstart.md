@@ -11,6 +11,8 @@ Create a customized VS Code DevContainer configuration with:
 - Optional network firewall with domain allowlist
 - All standard Claude Code sandbox features
 
+**New to sandboxing?** See the [Docker sandbox visual guide](../docs/diagrams/svg/sandbox-explained.svg) to understand how sandboxes protect your computer.
+
 **Quick paths:**
 - Use `/sandboxxer:yolo-docker-maxxing` for instant setup with no questions
 - Use `--yes` flag to accept all defaults from settings file

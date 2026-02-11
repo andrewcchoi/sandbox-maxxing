@@ -10,6 +10,16 @@
 
 Interactive assistant for creating VS Code DevContainer configurations with Docker Compose support. Choose between interactive setup with project type selection and firewall customization, or quick one-command setup with defaults.
 
+## What is Sandboxing?
+
+**New to sandboxing?** A sandbox is a secure, isolated environment where code runs safely without accessing your personal files, passwords, or system settings. Think of it like a protective bubble - code can run inside, but can't escape to harm your computer.
+
+**Visual guides for beginners:**
+- 🔒 [Docker Sandbox Explained](docs/diagrams/svg/sandbox-explained.svg) - Simple visual showing what sandboxes can and cannot do
+- 🛡️ [Bubblewrap Explained](docs/diagrams/svg/bubblewrap-explained.svg) - Comparison: Docker (maximum security) vs Bubblewrap (lightweight)
+
+This plugin helps you set up sandboxed development environments using either Docker containers (full isolation with firewall) or bubblewrap (lightweight native Linux sandboxing).
+
 ## Important: Experimental Status
 
 > **This plugin is experimental and provided as-is.** Most features have received minimal to no testing. Generated configurations may not work correctly on the first try and may require several iterations to get working.
@@ -39,6 +49,7 @@ Interactive assistant for creating VS Code DevContainer configurations with Dock
 
 ## Table of Contents
 
+- [What is Sandboxing?](#what-is-sandboxing)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
