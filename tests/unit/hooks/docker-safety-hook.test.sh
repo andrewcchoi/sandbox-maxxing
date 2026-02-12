@@ -3,6 +3,10 @@
 # Unit tests for docker-safety-hook.sh
 # Tests the PreToolUse hook for Docker command safety checks
 
+# Calculate plugin root from test file location
+BATS_TEST_DIR="$(cd "$(dirname "${BATS_TEST_FILENAME}")" && pwd)"
+PLUGIN_ROOT="$(cd "$BATS_TEST_DIR/../../.." && pwd)"
+
 load '../../helpers/test_helper'
 
 # Path to the hook script

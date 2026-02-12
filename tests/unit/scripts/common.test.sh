@@ -3,13 +3,16 @@
 # Unit tests for scripts/common.sh
 # Tests all common utility functions
 
+# Calculate plugin root from test file location
+BATS_TEST_DIR="$(cd "$(dirname "${BATS_TEST_FILENAME}")" && pwd)"
+PLUGIN_ROOT="$(cd "$BATS_TEST_DIR/../../.." && pwd)"
+
 load '../../helpers/test_helper'
 
 setup() {
   # Standard test setup (from test_helper.bash)
   export TEST_TEMP_DIR="$(mktemp -d)"
   export ORIGINAL_DIR="$(pwd)"
-  export PLUGIN_ROOT="${ORIGINAL_DIR}"
 
   # Source common functions for this test file
   source "${PLUGIN_ROOT}/scripts/common.sh"
