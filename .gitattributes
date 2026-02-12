@@ -14,9 +14,6 @@
 *.bat text eol=crlf
 *.cmd text eol=crlf
 
-# Exception: Polyglot hook wrapper needs LF for bash heredoc compatibility
-hooks/run-hook.cmd text eol=lf
-
 # ============================================================================
 # Shell RC/Config Files Without Extensions - MUST be LF
 # ============================================================================
