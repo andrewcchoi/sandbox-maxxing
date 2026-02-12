@@ -53,6 +53,20 @@ npm run test:hooks
 bats tests/unit/hooks/
 ```
 
+### Run Validation Tests
+```bash
+npm run test:validation
+# or
+bats tests/unit/validation/
+```
+
+### Run Diagnostic Tests
+```bash
+npm run test:diagnostics
+# or
+bats tests/unit/diagnostics/
+```
+
 ### Run Documentation Tests
 ```bash
 bats tests/unit/documentation/
@@ -60,7 +74,21 @@ bats tests/unit/documentation/
 
 ### Run Integration Tests
 ```bash
+npm run test:integration
+# or
 bats tests/integration/
+```
+
+### Run All Tests (Unit + Integration)
+```bash
+npm run test:all
+# or
+bats tests/
+```
+
+### Run Tests with CI Format (TAP)
+```bash
+npm run test:ci
 ```
 
 ### Run Specific Test File
@@ -84,15 +112,24 @@ bats --tap tests/unit/
 tests/
 ├── README.md                                      # This file
 ├── unit/                                          # Unit tests
-│   ├── hooks/
+│   ├── hooks/                                     # Hook tests
 │   │   ├── docker-safety-hook.test.sh             # Hook safety tests
 │   │   ├── sudo-check.test.sh                     # Sudo detection tests
-│   │   └── package-install.test.sh                # Package install tests
-│   └── documentation/                             # NEW: Documentation tests
-│       ├── diagram-existence.test.sh              # File existence checks
-│       ├── diagram-content.test.sh                # Content validation
-│       └── version-consistency.test.sh            # Version synchronization
-├── integration/                                   # NEW: Integration tests
+│   │   ├── package-install.test.sh                # Package install tests
+│   │   └── run-hook-wrapper.test.sh               # Hook wrapper tests
+│   ├── validation/                                # Validation tests (NEW)
+│   │   ├── manifest-validation.test.sh            # plugin.json, marketplace.json, hooks.json
+│   │   ├── frontmatter-validation.test.sh         # Command/agent/skill frontmatter
+│   │   └── template-validation.test.sh            # JSON, YAML, Dockerfile, shell
+│   ├── diagnostics/                               # Diagnostic tests (NEW)
+│   │   └── troubleshoot-checks.test.sh            # Troubleshoot command validation
+│   ├── documentation/                             # Documentation tests
+│   │   ├── diagram-existence.test.sh              # File existence checks
+│   │   ├── diagram-content.test.sh                # Content validation
+│   │   └── version-consistency.test.sh            # Version synchronization
+│   └── scripts/                                   # Script tests
+│       └── common.test.sh                         # Common script utilities
+├── integration/                                   # Integration tests
 │   └── health-check.test.sh                       # Health check scripts
 ├── fixtures/                                      # Test fixtures and data
 │   └── sudo-check-function.sh                     # Extracted sudo check logic
@@ -133,6 +170,11 @@ From `test_helper.bash`:
 - `assert_output_matches "regex"` - Output matches pattern
 - `assert_output_not_contains "text"` - Output doesn't contain string
 - `assert_json_contains ".path" "value"` - JSON assertion with jq
+- `assert_valid_json "file"` - Validate JSON file syntax
+- `assert_valid_yaml "file"` - Validate YAML file syntax
+- `assert_frontmatter_has "file" "field"` - Check YAML frontmatter field
+- `assert_valid_shell "file"` - Validate bash syntax
+- `assert_file_executable "file"` - Check execute permissions
 
 ### Helper Functions
 
@@ -149,31 +191,50 @@ Tests automatically get:
 
 ## Test Coverage Goals
 
-### Phase 1: Core Functionality (Current)
+### Phase 1: Core Functionality ✅ COMPLETE
 - ✅ docker-safety-hook: All patterns (destructive, privileged, disruptive)
 - ✅ Documentation: Diagram existence, version consistency, content validation
 - ✅ Health checks: Script validation, inventory checks
-- 🔄 sudo-check: Passwordless, timeout, group checks
-- 🔄 package-install: apt operations, idempotency
-- 🔄 Windows stdin: CI workflow test
+- ✅ sudo-check: Passwordless, timeout, group checks
+- ✅ package-install: apt operations, idempotency
+- ✅ Windows stdin: CI workflow test
 
-### Phase 2: Comprehensive
+### Phase 2: Plugin Functionality ✅ COMPLETE
+- ✅ Manifest validation: plugin.json, marketplace.json, hooks.json (~15 tests)
+- ✅ Frontmatter validation: commands, agents, skills (~20 tests)
+- ✅ Template validation: JSON, YAML, Dockerfile, shell scripts (~25 tests)
+- ✅ Diagnostic checks: troubleshoot command validation (~15 tests)
+- ✅ CI integration: BATS tests run in GitHub Actions
+
+### Phase 3: Advanced (Future)
 - Command execution patterns
-- Template processing
 - Port allocation logic
 - Environment file merging
 - Firewall initialization
+- E2E container build tests
 
 ## CI Integration
 
-Tests run automatically in CI via `.github/workflows/test.yml`:
+Tests run automatically in CI via `.github/workflows/docs-validation.yml`:
+
+**Three parallel jobs:**
+1. **Documentation Validation** - Runs `doc-health-check.sh`
+2. **Unit Tests** - Runs all unit tests (validation, diagnostics, hooks, documentation)
+3. **Integration Tests** - Runs integration tests
 
 ```yaml
-- name: Install BATS
-  run: sudo apt-get install -y bats
+- name: Install dependencies
+  run: |
+    sudo apt-get update
+    sudo apt-get install -y bats jq
+    sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+    sudo chmod +x /usr/local/bin/yq
 
-- name: Run Tests
-  run: bats tests/unit/
+- name: Run Unit Tests
+  run: bats tests/unit/ --tap
+
+- name: Run Integration Tests
+  run: bats tests/integration/ --tap
 ```
 
 ## Troubleshooting

@@ -126,6 +126,115 @@ skip_on_platform() {
   fi
 }
 
+# Assert a file contains valid JSON
+assert_valid_json() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    echo "ERROR: File not found: $file" >&2
+    return 1
+  fi
+
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "ERROR: jq is required for JSON validation" >&2
+    return 1
+  fi
+
+  local error_output
+  if ! error_output=$(jq empty "$file" 2>&1); then
+    echo "ERROR: Invalid JSON in $file" >&2
+    echo "$error_output" >&2
+    return 1
+  fi
+}
+
+# Assert a file contains valid YAML
+assert_valid_yaml() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    echo "ERROR: File not found: $file" >&2
+    return 1
+  fi
+
+  if ! command -v yq >/dev/null 2>&1; then
+    echo "ERROR: yq is required for YAML validation" >&2
+    return 1
+  fi
+
+  local error_output
+  if ! error_output=$(yq eval '.' "$file" 2>&1 >/dev/null); then
+    echo "ERROR: Invalid YAML in $file" >&2
+    echo "$error_output" >&2
+    return 1
+  fi
+}
+
+# Assert YAML frontmatter contains a required field
+assert_frontmatter_has() {
+  local file="$1"
+  local field="$2"
+
+  if [ ! -f "$file" ]; then
+    echo "ERROR: File not found: $file" >&2
+    return 1
+  fi
+
+  if ! command -v yq >/dev/null 2>&1; then
+    echo "ERROR: yq is required for frontmatter validation" >&2
+    return 1
+  fi
+
+  # Extract frontmatter (between --- delimiters) and check field
+  local frontmatter
+  frontmatter=$(sed -n '/^---$/,/^---$/p' "$file" | sed '1d;$d')
+
+  if [ -z "$frontmatter" ]; then
+    echo "ERROR: No frontmatter found in $file" >&2
+    return 1
+  fi
+
+  local value
+  value=$(echo "$frontmatter" | yq eval ".$field" - 2>/dev/null)
+
+  if [ "$value" = "null" ] || [ -z "$value" ]; then
+    echo "ERROR: Field '$field' not found in frontmatter of $file" >&2
+    return 1
+  fi
+}
+
+# Assert a shell script has valid bash syntax
+assert_valid_shell() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    echo "ERROR: File not found: $file" >&2
+    return 1
+  fi
+
+  local error_output
+  if ! error_output=$(bash -n "$file" 2>&1); then
+    echo "ERROR: Invalid shell syntax in $file" >&2
+    echo "$error_output" >&2
+    return 1
+  fi
+}
+
+# Assert a file has execute permissions
+assert_file_executable() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    echo "ERROR: File not found: $file" >&2
+    return 1
+  fi
+
+  if [ ! -x "$file" ]; then
+    echo "ERROR: File is not executable: $file" >&2
+    return 1
+  fi
+}
+
 # Load bats-support and bats-assert if available (optional)
 if [ -f "/usr/lib/bats-support/load.bash" ]; then
   load '/usr/lib/bats-support/load.bash'
