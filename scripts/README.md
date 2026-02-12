@@ -88,8 +88,8 @@ bash scripts/diagram-inventory.sh
 ```
 === Diagram Inventory Check ===
 
-Mermaid source files (.mmd): 12
-SVG output files (.svg):     12
+Mermaid source files (.mmd): 18
+SVG output files (.svg):     18
 
 Checking .mmd → .svg pairs...
 ✅ plugin-architecture.mmd → plugin-architecture.svg

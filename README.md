@@ -50,13 +50,18 @@ This plugin helps you set up sandboxed development environments using either Doc
 ## Table of Contents
 
 - [What is Sandboxing?](#what-is-sandboxing)
+- [Important: Experimental Status](#important-experimental-status)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
 - [Setup Options](#setup-options)
 - [Slash Commands](#slash-commands)
+- [Auto-Detection](#auto-detection)
 - [Security Features](#security-features)
+- [Troubleshooting Features](#troubleshooting-features)
 - [Cloud Deployment](#cloud-deployment)
+- [Files Generated](#files-generated)
+- [Configuration Placeholders](#configuration-placeholders)
 - [Command Reference](#command-reference)
 - [Reference Documentation](#reference-documentation)
 - [Development](#development)
@@ -417,6 +422,7 @@ The plugin includes comprehensive documentation in the `docs/` directory:
 - [SECURITY-MODEL.md](docs/features/SECURITY-MODEL.md) - Security architecture and best practices
 - [SETTINGS.md](docs/features/SETTINGS.md) - Plugin configuration and per-project settings
 - [SETUP-OPTIONS.md](docs/features/SETUP-OPTIONS.md) - Interactive vs non-interactive setup guide
+- [KROKI_INTEGRATION.md](docs/features/KROKI_INTEGRATION.md) - Self-hosted diagram rendering
 - [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md) - Common issues and solutions
 - [VARIABLES.md](docs/features/VARIABLES.md) - Template variables reference
 
