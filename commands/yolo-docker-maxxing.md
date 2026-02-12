@@ -24,9 +24,16 @@ allowed-tools: [Bash]
 - If the user provided an argument (project name), Claude substitutes it in the script
 - Otherwise, the script uses the current directory name: `basename $(pwd)`
 
+## Determine Mode
+
+**Note:** Claude performs argument substitution before execution. If the user provides the `--portless` flag, Claude changes `MODE="normal"` to `MODE="portless"` in the bash script below.
+
+- If `--portless` flag is present: Claude substitutes `MODE="portless"` on line 42
+- Otherwise: Script uses default `MODE="normal"`
+
 ## Execute These Bash Commands
 
-**Note:** This command automatically detects mode (normal vs portless) from the `--portless` flag and executes the appropriate setup in a single unified bash block.
+**Note:** Claude substitutes the MODE variable based on the `--portless` flag before executing this script.
 
 ```bash
 # ============================================================================
@@ -37,14 +44,9 @@ allowed-tools: [Bash]
 # Disable history expansion (fixes ! in Windows paths)
 set +H 2>/dev/null || true
 
-# Detect mode from arguments
+# Mode: "normal" (with ports) or "portless" (no host port mappings)
+# Claude substitutes this value based on --portless flag
 MODE="normal"
-for arg in "$@"; do
-  if [ "$arg" = "--portless" ]; then
-    MODE="portless"
-    break
-  fi
-done
 
 echo "=== Mode: ${MODE} ==="
 echo ""

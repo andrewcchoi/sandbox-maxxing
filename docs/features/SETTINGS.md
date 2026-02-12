@@ -272,6 +272,10 @@ Run the health check with verbose output:
 
 This shows which settings are active and where they came from.
 
+## Template File
+
+See [sandboxxer-settings.example.md](../../skills/_shared/templates/sandboxxer-settings.example.md) for a complete template with all available settings.
+
 ## See Also
 
 - [CUSTOMIZATION.md](CUSTOMIZATION.md) - Other customization options
