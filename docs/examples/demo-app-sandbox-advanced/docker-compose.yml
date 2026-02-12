@@ -47,6 +47,7 @@ services:
       - demo-advanced-network
     # Restart policy for development
     restart: unless-stopped
+    user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"  # Default to node user; override for macOS/enterprise
     # Resource limits (domain allowlist configuration)
     deploy:
       resources:

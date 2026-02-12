@@ -123,6 +123,36 @@ POSTGRES_DB=mydb
 - Message queue settings
 - Development defaults (use secrets for production!)
 
+### Container User Configuration
+
+**Purpose:** Override the container user UID/GID to match host user for proper file ownership.
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `CONTAINER_UID` | `1000` | User ID inside container |
+| `CONTAINER_GID` | `1000` | Group ID inside container |
+
+**Usage in docker-compose.yml:**
+```yaml
+services:
+  app:
+    user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"
+```
+
+**When to Override:**
+
+| Platform | Host UID | Configuration |
+|----------|----------|---------------|
+| Linux (standard) | 1000 | Use defaults |
+| macOS | 501 | `CONTAINER_UID=501 CONTAINER_GID=20` |
+| Enterprise/LDAP | varies | Match your user's UID/GID |
+
+**Example .env file for macOS:**
+```bash
+CONTAINER_UID=501
+CONTAINER_GID=20
+```
+
 ### 4. VS Code Input Variables (User Prompts)
 
 **Purpose:** Prompt users for sensitive or user-specific values at container start.

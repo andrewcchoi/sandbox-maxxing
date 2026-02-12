@@ -37,3 +37,70 @@ jobs:
           echo "See errors above for details"
           echo "Run locally: bash scripts/doc-health-check.sh"
           exit 1
+
+  run-unit-tests:
+    name: Run BATS Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats jq
+
+          # Install yq for YAML validation
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Run Unit Tests
+        run: bats tests/unit/ --tap
+
+      - name: Report Success
+        if: success()
+        run: |
+          echo "All unit tests passed"
+          echo "Test coverage: validation, diagnostics, hooks, documentation"
+
+      - name: Report Failure
+        if: failure()
+        run: |
+          echo "Unit tests failed"
+          echo "See errors above for details"
+          echo "Run locally: npm test"
+          exit 1
+
+  run-integration-tests:
+    name: Run BATS Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats jq
+
+          # Install yq for YAML validation
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Run Integration Tests
+        run: bats tests/integration/ --tap
+
+      - name: Report Success
+        if: success()
+        run: |
+          echo "All integration tests passed"
+
+      - name: Report Failure
+        if: failure()
+        run: |
+          echo "Integration tests failed"
+          echo "See errors above for details"
+          echo "Run locally: npm run test:integration"
+          exit 1

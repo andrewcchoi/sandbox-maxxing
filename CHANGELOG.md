@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 > **Note:** For versions prior to v4.0.0, see [CHANGELOG-ARCHIVE.md](CHANGELOG-ARCHIVE.md).
 > For migration guides between major versions, see [MIGRATION.md](MIGRATION.md).
 
+## [4.13.4] - 2026-02-11
+
+### Fixed
+- **Docker Compose**: Added `user` directive to fix permission mismatch in standalone docker-compose usage (#306)
+  - Containers now run as `user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"` instead of defaulting to root
+  - Fixes Claude credentials copy failures from host to container
+  - Fixes permission errors on volume mounts
+  - Fixes terminal showing `root@` instead of `node@`
+
+### Added
+- **Configuration**: New environment variables `CONTAINER_UID` and `CONTAINER_GID` for container user override
+  - Default to 1000:1000 (standard `node` user on Linux)
+  - macOS users: set `CONTAINER_UID=501` and `CONTAINER_GID=20`
+
 ## [4.13.3] - 2026-02-10
 
 ### Added
