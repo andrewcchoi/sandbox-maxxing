@@ -105,6 +105,7 @@ services:
       - demo-yolo-network
 
     restart: unless-stopped
+    user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"  # Default to node user; override for macOS/enterprise
 
     # Resource limits (Custom configuration: Production-ready)
     deploy:

@@ -1,6 +1,6 @@
 {
   "name": "sandbox-maxxing-tests",
-  "version": "4.13.3",
+  "version": "4.13.4",
   "description": "Test suite for sandbox-maxxing Claude Code plugin",
   "private": true,
   "devDependencies": {
@@ -9,6 +9,11 @@
   "scripts": {
     "test": "bats tests/unit/",
     "test:hooks": "bats tests/unit/hooks/",
+    "test:validation": "bats tests/unit/validation/",
+    "test:diagnostics": "bats tests/unit/diagnostics/",
+    "test:integration": "bats tests/integration/",
+    "test:all": "bats tests/",
+    "test:ci": "bats tests/ --tap",
     "test:watch": "find tests -name '*.test.sh' | entr bats tests/unit/",
     "install:bats": "echo 'Install BATS via system package manager:' && echo 'Ubuntu/Debian: sudo apt-get install bats' && echo 'macOS: brew install bats-core' && echo 'Arch: sudo pacman -S bats'"
   },

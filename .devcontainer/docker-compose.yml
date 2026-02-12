@@ -12,6 +12,7 @@ services:
       dockerfile: .devcontainer/Dockerfile
     container_name: sandboxxer-plugin-dev
     restart: unless-stopped
+    user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"  # Default to node user; override for macOS/enterprise
     working_dir: /workspace
     volumes:
       - ..:/workspace:cached

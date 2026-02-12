@@ -28,6 +28,7 @@ services:
   app:
     container_name: {{PROJECT_NAME}}-app
     restart: unless-stopped
+    user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"  # Default to node user; override for macOS/enterprise
     build:
       # Build context: current directory (.) contains Dockerfile at .devcontainer/Dockerfile
       # This allows the Dockerfile to access files in the project root if needed

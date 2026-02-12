@@ -39,8 +39,15 @@ WRAPPER_SCRIPT="${PLUGIN_ROOT}/hooks/run-hook.cmd"
 }
 
 @test "run-hook.cmd: executes target script successfully" {
+  # Create a temporary hooks directory structure in TEST_TEMP_DIR
+  local temp_hooks="${TEST_TEMP_DIR}/hooks"
+  mkdir -p "$temp_hooks"
+
+  # Copy the wrapper to temp hooks directory
+  cp "$WRAPPER_SCRIPT" "$temp_hooks/"
+
   # Create a temporary test script
-  local test_script="${PLUGIN_ROOT}/hooks/.test-hook-execution.sh"
+  local test_script="${temp_hooks}/.test-hook-execution.sh"
   cat > "$test_script" <<'EOF'
 #!/usr/bin/env bash
 echo "TEST_HOOK_EXECUTED"
@@ -48,20 +55,24 @@ exit 0
 EOF
   chmod +x "$test_script"
 
-  # Execute via wrapper
-  cd "${PLUGIN_ROOT}/hooks"
-  run "$WRAPPER_SCRIPT" .test-hook-execution.sh
-
-  # Cleanup
-  rm -f "$test_script"
+  # Execute via wrapper from hooks directory (as designed)
+  cd "$temp_hooks"
+  run ./run-hook.cmd .test-hook-execution.sh
 
   assert_success
   assert_output_contains "TEST_HOOK_EXECUTED"
 }
 
 @test "run-hook.cmd: passes arguments to target script" {
+  # Create a temporary hooks directory structure in TEST_TEMP_DIR
+  local temp_hooks="${TEST_TEMP_DIR}/hooks"
+  mkdir -p "$temp_hooks"
+
+  # Copy the wrapper to temp hooks directory
+  cp "$WRAPPER_SCRIPT" "$temp_hooks/"
+
   # Create a temporary test script that echoes its arguments
-  local test_script="${PLUGIN_ROOT}/hooks/.test-hook-args.sh"
+  local test_script="${temp_hooks}/.test-hook-args.sh"
   cat > "$test_script" <<'EOF'
 #!/usr/bin/env bash
 echo "ARG1=$1"
@@ -70,12 +81,9 @@ exit 0
 EOF
   chmod +x "$test_script"
 
-  # Execute via wrapper with arguments
-  cd "${PLUGIN_ROOT}/hooks"
-  run "$WRAPPER_SCRIPT" .test-hook-args.sh "foo" "bar"
-
-  # Cleanup
-  rm -f "$test_script"
+  # Execute via wrapper with arguments from hooks directory
+  cd "$temp_hooks"
+  run ./run-hook.cmd .test-hook-args.sh "foo" "bar"
 
   assert_success
   assert_output_contains "ARG1=foo"
@@ -83,28 +91,39 @@ EOF
 }
 
 @test "run-hook.cmd: preserves exit codes from target script" {
+  # Create a temporary hooks directory structure in TEST_TEMP_DIR
+  local temp_hooks="${TEST_TEMP_DIR}/hooks"
+  mkdir -p "$temp_hooks"
+
+  # Copy the wrapper to temp hooks directory
+  cp "$WRAPPER_SCRIPT" "$temp_hooks/"
+
   # Create a temporary test script that exits with specific code
-  local test_script="${PLUGIN_ROOT}/hooks/.test-hook-exitcode.sh"
+  local test_script="${temp_hooks}/.test-hook-exitcode.sh"
   cat > "$test_script" <<'EOF'
 #!/usr/bin/env bash
 exit 42
 EOF
   chmod +x "$test_script"
 
-  # Execute via wrapper
-  cd "${PLUGIN_ROOT}/hooks"
-  run "$WRAPPER_SCRIPT" .test-hook-exitcode.sh
-
-  # Cleanup
-  rm -f "$test_script"
+  # Execute via wrapper from hooks directory
+  cd "$temp_hooks"
+  run ./run-hook.cmd .test-hook-exitcode.sh
 
   # Should preserve exit code 42
   [ "$status" -eq 42 ]
 }
 
 @test "run-hook.cmd: handles scripts with spaces in output" {
+  # Create a temporary hooks directory structure in TEST_TEMP_DIR
+  local temp_hooks="${TEST_TEMP_DIR}/hooks"
+  mkdir -p "$temp_hooks"
+
+  # Copy the wrapper to temp hooks directory
+  cp "$WRAPPER_SCRIPT" "$temp_hooks/"
+
   # Create a temporary test script with complex output
-  local test_script="${PLUGIN_ROOT}/hooks/.test-hook-spaces.sh"
+  local test_script="${temp_hooks}/.test-hook-spaces.sh"
   cat > "$test_script" <<'EOF'
 #!/usr/bin/env bash
 echo "Line with    multiple    spaces"
@@ -115,12 +134,9 @@ exit 0
 EOF
   chmod +x "$test_script"
 
-  # Execute via wrapper
-  cd "${PLUGIN_ROOT}/hooks"
-  run "$WRAPPER_SCRIPT" .test-hook-spaces.sh
-
-  # Cleanup
-  rm -f "$test_script"
+  # Execute via wrapper from hooks directory
+  cd "$temp_hooks"
+  run ./run-hook.cmd .test-hook-spaces.sh
 
   assert_success
   assert_output_contains "multiple    spaces"
@@ -128,8 +144,15 @@ EOF
 }
 
 @test "run-hook.cmd: handles stderr from target script" {
+  # Create a temporary hooks directory structure in TEST_TEMP_DIR
+  local temp_hooks="${TEST_TEMP_DIR}/hooks"
+  mkdir -p "$temp_hooks"
+
+  # Copy the wrapper to temp hooks directory
+  cp "$WRAPPER_SCRIPT" "$temp_hooks/"
+
   # Create a temporary test script that outputs to stderr
-  local test_script="${PLUGIN_ROOT}/hooks/.test-hook-stderr.sh"
+  local test_script="${temp_hooks}/.test-hook-stderr.sh"
   cat > "$test_script" <<'EOF'
 #!/usr/bin/env bash
 echo "stdout output"
@@ -138,12 +161,9 @@ exit 0
 EOF
   chmod +x "$test_script"
 
-  # Execute via wrapper
-  cd "${PLUGIN_ROOT}/hooks"
-  run "$WRAPPER_SCRIPT" .test-hook-stderr.sh
-
-  # Cleanup
-  rm -f "$test_script"
+  # Execute via wrapper from hooks directory
+  cd "$temp_hooks"
+  run ./run-hook.cmd .test-hook-stderr.sh
 
   assert_success
   # Both stdout and stderr should be captured

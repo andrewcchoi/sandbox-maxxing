@@ -12,6 +12,7 @@ services:
   app:
     container_name: {{PROJECT_NAME}}-app
     restart: unless-stopped
+    user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"  # Default to node user; override for macOS/enterprise
     # Pre-built image: pulls from registry instead of building locally for faster startup
     image: ${PREBUILT_IMAGE:-ghcr.io/andrewcchoi/sandbox-maxxing/sandboxxer-base:latest}
     environment:
