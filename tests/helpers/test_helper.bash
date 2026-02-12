@@ -235,6 +235,59 @@ assert_file_executable() {
   fi
 }
 
+# Assert a file has CRLF line endings (required for Windows batch files)
+# Uses `file` command which is consistent across Linux, macOS, and Windows Git Bash
+# Verified working in Alpine Linux Docker containers
+assert_crlf_line_endings() {
+  local file="$1"
+  if [ ! -f "$file" ]; then
+    echo "ERROR: File not found: $file" >&2
+    return 1
+  fi
+
+  # Require file command (standard on all Unix systems)
+  if ! command -v file >/dev/null 2>&1; then
+    echo "ERROR: 'file' command required for line ending detection" >&2
+    return 1
+  fi
+
+  local file_info
+  file_info=$(file "$file")
+
+  if ! echo "$file_info" | grep -q "CRLF"; then
+    echo "ERROR: File should have CRLF line endings: $file" >&2
+    echo "Actual: $file_info" >&2
+    echo "Fix: unix2dos $file" >&2
+    return 1
+  fi
+}
+
+# Assert a file has LF line endings (required for shell scripts)
+# Uses `file` command which is consistent across Linux, macOS, and Windows Git Bash
+assert_lf_line_endings() {
+  local file="$1"
+  if [ ! -f "$file" ]; then
+    echo "ERROR: File not found: $file" >&2
+    return 1
+  fi
+
+  # Require file command (standard on all Unix systems)
+  if ! command -v file >/dev/null 2>&1; then
+    echo "ERROR: 'file' command required for line ending detection" >&2
+    return 1
+  fi
+
+  local file_info
+  file_info=$(file "$file")
+
+  if echo "$file_info" | grep -q "CRLF"; then
+    echo "ERROR: File should have LF line endings (not CRLF): $file" >&2
+    echo "Actual: $file_info" >&2
+    echo "Fix: dos2unix $file" >&2
+    return 1
+  fi
+}
+
 # Load bats-support and bats-assert if available (optional)
 if [ -f "/usr/lib/bats-support/load.bash" ]; then
   load '/usr/lib/bats-support/load.bash'
