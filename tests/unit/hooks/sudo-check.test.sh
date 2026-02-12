@@ -3,11 +3,28 @@
 # Unit tests for sudo access check function
 # Tests the check_sudo_access() function from yolo-linux-maxxing.md
 
+# Calculate plugin root from test file location
+BATS_TEST_DIR="$(cd "$(dirname "${BATS_TEST_FILENAME}")" && pwd)"
+PLUGIN_ROOT="$(cd "$BATS_TEST_DIR/../../.." && pwd)"
+
 load '../../helpers/test_helper'
 
 # Source the function under test
 setup() {
+  # Call test_helper's setup to create TEST_TEMP_DIR
+  export TEST_TEMP_DIR="$(mktemp -d)"
+  export ORIGINAL_DIR="$(pwd)"
+
+  # Source the fixture
   source "${PLUGIN_ROOT}/tests/fixtures/sudo-check-function.sh"
+}
+
+teardown() {
+  # Clean up temporary directory
+  [ -n "${TEST_TEMP_DIR:-}" ] && rm -rf "${TEST_TEMP_DIR}"
+
+  # Return to original directory
+  [ -n "${ORIGINAL_DIR:-}" ] && cd "${ORIGINAL_DIR}" 2>/dev/null || true
 }
 
 @test "sudo-check: passwordless sudo is detected" {

@@ -25,8 +25,8 @@ setup() {
 
 @test "diagram-inventory.sh reports correct diagram counts" {
   run bash "$PLUGIN_ROOT/scripts/diagram-inventory.sh"
-  [[ "$output" =~ "Mermaid source files (.mmd): 12" ]]
-  [[ "$output" =~ "SVG output files (.svg):     12" ]]
+  [[ "$output" =~ "Mermaid source files (.mmd): 18" ]]
+  [[ "$output" =~ "SVG output files (.svg):     18" ]]
 }
 
 @test "diagram-inventory.sh reports no missing SVGs" {

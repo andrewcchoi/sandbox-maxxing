@@ -397,10 +397,10 @@ bash scripts/version-checker.sh
 ```
 === Version Consistency Check ===
 
-plugin.json:       4.13.3
-marketplace.json:  4.13.3
-README.md badge:   4.13.3
-CHANGELOG.md:      4.13.3
+plugin.json:       4.13.4
+marketplace.json:  4.13.4
+README.md badge:   4.13.4
+CHANGELOG.md:      4.13.4
 
 ✅ All critical version references are consistent
 ```
@@ -415,8 +415,8 @@ bash scripts/diagram-inventory.sh
 ```
 === Diagram Inventory Check ===
 
-Mermaid source files (.mmd): 12
-SVG output files (.svg):     12
+Mermaid source files (.mmd): 18
+SVG output files (.svg):     18
 
 Checking .mmd → .svg pairs...
 ✅ plugin-architecture.mmd → plugin-architecture.svg

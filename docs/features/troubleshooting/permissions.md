@@ -58,6 +58,35 @@ If you need different UID/GID, edit `devcontainer.json`:
 }
 ```
 
+## Container Running as Root (Standalone docker-compose)
+
+**Symptoms:**
+```
+root@container:/workspace#
+# Terminal shows root@ instead of node@
+# Claude credentials copy fails with permission errors
+```
+
+**Cause:** When using `docker compose up` directly (not via VS Code DevContainers), containers may default to root.
+
+**Solution: Set Environment Variables**
+
+```bash
+# Linux (usually defaults work)
+docker compose up
+
+# macOS (check with `id -u` and `id -g`)
+CONTAINER_UID=501 CONTAINER_GID=20 docker compose up
+```
+
+Or add to `.env` file:
+```bash
+CONTAINER_UID=501
+CONTAINER_GID=20
+```
+
+**Note:** VS Code DevContainer users with `updateRemoteUserUID: true` are not affected.
+
 ---
 
 **Next:** [VS Code DevContainer Problems](vscode.md) | [Back to Main](../TROUBLESHOOTING.md)
