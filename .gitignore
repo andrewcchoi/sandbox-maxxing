@@ -19,7 +19,6 @@ refs
 .claude/agents
 .claude/commands
 .claude/skills
-.claude/settings.json
 .claude/plans/
 .claude/ultrathink-temp/
 
@@ -54,6 +53,5 @@ Thumbs.db
 .env
 .env.local
 .claude/settings.local.json
-.claude/settings.json
 .claude/state
 *.local.*
