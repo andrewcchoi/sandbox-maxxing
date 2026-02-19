@@ -2,8 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
-> **Note:** For versions prior to v4.0.0, see [CHANGELOG-ARCHIVE.md](CHANGELOG-ARCHIVE.md).
-> For migration guides between major versions, see [MIGRATION.md](MIGRATION.md).
+> **Note:** For versions prior to v4.0.0, see [CHANGELOG-ARCHIVE.md](docs/archive/CHANGELOG-ARCHIVE.md).
+> For migration guides between major versions, see [MIGRATION.md](docs/MIGRATION.md).
 
 ## [4.13.5] - 2026-02-18
 

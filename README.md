@@ -447,7 +447,7 @@ claude plugins add .
 
 ![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
 
-For complete development guide, plugin structure, git worktrees support, and naming conventions, see **[DEVELOPMENT.md](DEVELOPMENT.md)**.
+For complete development guide, plugin structure, git worktrees support, and naming conventions, see **[DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
 
 ## Examples
 
@@ -561,5 +561,5 @@ MIT License - See LICENSE file for details
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
-**Upgrading?** See [MIGRATION.md](MIGRATION.md) for breaking changes and migration guides between major versions.
+**Upgrading?** See [MIGRATION.md](docs/MIGRATION.md) for breaking changes and migration guides between major versions.
 
