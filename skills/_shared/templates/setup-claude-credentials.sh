@@ -164,6 +164,19 @@ echo "Setting up Claude Code environment..."
 echo "================================================================"
 
 # ============================================================================
+# 0. Fix Git Worktree Paths (if applicable)
+# ============================================================================
+if [ -f "$WORKSPACE_DIR/.devcontainer/fix-worktree-paths.sh" ]; then
+    echo ""
+    echo "[Pre-init] Detecting and fixing git worktree paths..."
+    if bash "$WORKSPACE_DIR/.devcontainer/fix-worktree-paths.sh"; then
+        echo "  ✓ Git worktree paths validated"
+    else
+        echo "  ⚠ Warning: Git worktree path fix failed (see above)" >&2
+    fi
+fi
+
+# ============================================================================
 # 1. Cross-Platform Git Configuration
 # ============================================================================
 echo ""

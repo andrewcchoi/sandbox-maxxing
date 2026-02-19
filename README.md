@@ -1,6 +1,6 @@
 # Sandboxxer Plugin
 
-![Plugin version 4.13.4](https://img.shields.io/badge/version-4.13.4-blue)
+![Plugin version 4.13.5](https://img.shields.io/badge/version-4.13.5-blue)
 ![Claude Code official plugin](https://img.shields.io/badge/claude--code-plugin-purple)
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 ![Supported platforms: Linux, macOS, Windows WSL2](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
@@ -447,7 +447,7 @@ claude plugins add .
 
 ![Plugin Architecture](docs/diagrams/svg/plugin-architecture.svg)
 
-For complete development guide, plugin structure, git worktrees support, and naming conventions, see **[DEVELOPMENT.md](DEVELOPMENT.md)**.
+For complete development guide, plugin structure, git worktrees support, and naming conventions, see **[DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
 
 ## Examples
 
@@ -561,5 +561,5 @@ MIT License - See LICENSE file for details
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
-**Upgrading?** See [MIGRATION.md](MIGRATION.md) for breaking changes and migration guides between major versions.
+**Upgrading?** See [MIGRATION.md](docs/MIGRATION.md) for breaking changes and migration guides between major versions.
 

@@ -415,23 +415,27 @@ cd ../my-repo-feature
 
 ### Why This Structure?
 
-The devcontainer mounts the parent folder (`..:/workspace`). With a project-specific parent:
-- Worktrees are created as siblings in the mounted workspace
-- Only your project folder is visible (not other projects)
-- Standard git worktree commands work as expected
-- Each worktree appears at `/workspace/<worktree-name>/`
+The devcontainer mounts the parent directory (`../..:/workspace`). This enables git worktree support:
+- The project opens at `/workspace/sandbox-maxxing/` (matching VS Code's `workspaceFolder` setting)
+- Worktrees are created as siblings: `/workspace/feature-branch-worktree/`, `/workspace/hotfix-worktree/`, etc.
+- Each worktree has its own working directory but shares the git object database
+- Standard git worktree commands work seamlessly from inside the container
+
+**Host structure:**
+```
+/mnt/d/_plugins/sandbox-maxxing/    ← Mounted to /workspace/
+├── sandbox-maxxing/                ← Project (opens at /workspace/sandbox-maxxing/)
+│   ├── .devcontainer/
+│   └── src/
+├── feature-branch-worktree/        ← Worktree at /workspace/feature-branch-worktree/
+└── hotfix-worktree/                ← Worktree at /workspace/hotfix-worktree/
+```
+
+**Security consideration:** Mounting the parent directory exposes sibling folders. Ensure no sensitive directories exist at the parent level.
 
 ### Backwards Compatibility
 
-Existing flat structures continue to work without changes:
-```
-projects/
-  └── my-repo/              ← Still works! Opens at /workspace/my-repo
-      ├── .devcontainer/
-      └── src/
-```
-
-The template uses `${localWorkspaceFolderBasename}` to automatically resolve the correct working directory regardless of folder nesting depth.
+The template uses `${localWorkspaceFolderBasename}` to automatically resolve the correct working directory. Projects using single-folder mounts (`.:/workspace`) continue to work, but won't have worktree support without adapting to the parent mount pattern.
 
 ## Naming Convention
 
