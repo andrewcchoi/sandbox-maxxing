@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 > **Note:** For versions prior to v4.0.0, see [CHANGELOG-ARCHIVE.md](docs/archive/CHANGELOG-ARCHIVE.md).
 > For migration guides between major versions, see [MIGRATION.md](docs/MIGRATION.md).
 
+## [Unreleased]
+
+### Fixed
+- **Templates**: Fixed `fix-worktree-paths.sh` hardcoded path bug (#314)
+  - Changed `/workspace` hardcode to use `$WORKSPACE_DIR` variable for testability
+  - Added comprehensive test suite (7 tests) for git worktree path translation
+
 ## [4.13.5] - 2026-02-18
 
 ### Added

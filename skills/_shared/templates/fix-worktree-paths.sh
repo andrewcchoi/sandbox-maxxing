@@ -46,7 +46,7 @@ MAIN_REPO=$(echo "$GITDIR_PATH" | sed -E 's|.*/([^/]+)/\.git/worktrees/.*|\1|')
 WORKTREE_NAME=$(basename "$GITDIR_PATH")
 
 # Verify main repo is accessible as sibling
-EXPECTED_PATH="/workspace/$MAIN_REPO/.git/worktrees/$WORKTREE_NAME"
+EXPECTED_PATH="$WORKSPACE_DIR/$MAIN_REPO/.git/worktrees/$WORKTREE_NAME"
 if [ -d "$EXPECTED_PATH" ]; then
     echo "gitdir: ../$MAIN_REPO/.git/worktrees/$WORKTREE_NAME" > "$GIT_FILE"
     echo "✓ Fixed worktree path: ../$MAIN_REPO/.git/worktrees/$WORKTREE_NAME"
