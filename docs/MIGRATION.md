@@ -267,4 +267,4 @@ If you have existing `.devcontainer/` files from an older version:
 
 ---
 
-*Last updated: v4.13.4 (2026-02-11)*
+*Last updated: v4.13.5 (2026-02-11)*

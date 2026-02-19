@@ -397,10 +397,10 @@ bash scripts/version-checker.sh
 ```
 === Version Consistency Check ===
 
-plugin.json:       4.13.4
-marketplace.json:  4.13.4
-README.md badge:   4.13.4
-CHANGELOG.md:      4.13.4
+plugin.json:       4.13.5
+marketplace.json:  4.13.5
+README.md badge:   4.13.5
+CHANGELOG.md:      4.13.5
 
 ✅ All critical version references are consistent
 ```

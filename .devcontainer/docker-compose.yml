@@ -13,11 +13,11 @@ services:
     container_name: sandboxxer-plugin-dev
     restart: unless-stopped
     user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"  # Default to node user; override for macOS/enterprise
-    working_dir: /workspace
+    working_dir: /workspace/sandbox-maxxing
     volumes:
-      - ..:/workspace:cached
+      - ../..:/workspace:cached
       # Issue #108: Named volume - isolates .venv from bind mount
-      - py312-uv-venv:/workspace/.venv
+      - py312-uv-venv:/workspace/sandbox-maxxing/.venv
       # Host Claude config (read-only)
       - ~/.claude:/tmp/host-claude:ro
       # Optional: environment variables sync
@@ -29,6 +29,7 @@ services:
       - ssh-keys:/home/node/.ssh                        # Shared SSH keys across all projects
     environment:
       - FIREWALL_MODE=permissive
+      - WORKSPACE_DIR=/workspace/sandbox-maxxing
     command: sleep infinity
     healthcheck:
       # Check if PID 1 (sleep infinity) is running by testing /proc/1
