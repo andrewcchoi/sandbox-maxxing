@@ -8,6 +8,10 @@
 test-*
 !test-config.yml
 
+# Node.js
+node_modules/
+package-lock.json
+
 # Python
 __pycache__/
 *.py[cod]
