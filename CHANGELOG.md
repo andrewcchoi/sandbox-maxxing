@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 > **Note:** For versions prior to v4.0.0, see [CHANGELOG-ARCHIVE.md](CHANGELOG-ARCHIVE.md).
 > For migration guides between major versions, see [MIGRATION.md](MIGRATION.md).
 
+## [4.13.5] - 2026-02-18
+
+### Added
+- **Documentation**: New `CLAUDE.md` file (210 lines) for Claude Code session context
+  - Commands table with all 8 user-facing commands
+  - Template system documentation (copy + sed, tier markers explained)
+  - Design decisions: multi-stage Docker builds for proxy support, no sudo in container
+  - Common errors reference from 50+ closed GitHub issues
+  - Mandatory regression testing requirements
+  - Test suite evolution guidelines
+
+### Fixed
+- **Templates**: Git worktree support for Windows hosts (#314)
+  - New `fix-worktree-paths.sh` for runtime Windows path translation
+  - Automatically converts Windows paths in `.git` files to relative Unix paths
+  - Runs early in `postCreateCommand` before git operations
+  - Added Section 0 to `setup-claude-credentials.sh` (now 14 steps)
+
 ## [4.13.4] - 2026-02-11
 
 ### Fixed
