@@ -2,8 +2,11 @@
 # Development container for plugin development
 # Lightweight Node.js + Python environment with CLI tools
 
-# Stage 1: Get Python + uv from official Astral image
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
+# Stage 1a: Get uv/uvx from Astral image
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS uv-source
+
+# Stage 1b: Get Python 3.12 with proper shared library
+FROM python:3.12-slim-bookworm AS python-source
 
 # Stage 2: Main build
 FROM node:20-bookworm-slim
@@ -31,18 +34,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   tzdata \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy Python 3.12 binaries and shared library
-COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/
-COPY --from=python-uv-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
-COPY --from=python-uv-source /usr/local/lib/libpython3.12.so* /usr/local/lib/
-COPY --from=python-uv-source /usr/local/bin/pip* /usr/local/bin/
+# Copy Python 3.12 from official image (includes shared library)
+COPY --from=python-source /usr/local/bin/python3* /usr/local/bin/
+COPY --from=python-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=python-source /usr/local/lib/libpython3.12.so* /usr/local/lib/
+COPY --from=python-source /usr/local/bin/pip* /usr/local/bin/
 RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
     ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3 && \
     ldconfig
 
-# Copy uv and uvx binaries
-COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/
-COPY --from=python-uv-source /usr/local/bin/uvx /usr/local/bin/
+# Copy uv and uvx from Astral image
+COPY --from=uv-source /usr/local/bin/uv /usr/local/bin/
+COPY --from=uv-source /usr/local/bin/uvx /usr/local/bin/
 
 # Puppeteer dependencies for mermaid-cli (updated for Puppeteer v24)
 RUN apt-get update && apt-get install -y --no-install-recommends \

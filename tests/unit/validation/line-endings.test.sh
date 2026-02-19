@@ -20,15 +20,18 @@ load '../../helpers/test_helper'
   [ -n "$cmd_files" ] || skip "No .cmd files found"
 
   while IFS= read -r cmd_file; do
+    # Skip run-hook.cmd - it's a polyglot requiring LF
+    [[ "$(basename "$cmd_file")" == "run-hook.cmd" ]] && continue
     assert_crlf_line_endings "$cmd_file"
   done <<< "$cmd_files"
 }
 
-@test "hooks/run-hook.cmd has CRLF line endings" {
+@test "hooks/run-hook.cmd has LF line endings (required for polyglot heredoc)" {
   local file="${PLUGIN_ROOT}/hooks/run-hook.cmd"
   [ -f "$file" ] || skip "run-hook.cmd not found"
 
-  assert_crlf_line_endings "$file"
+  # LF is required - CRLF breaks bash heredoc parsing
+  assert_lf_line_endings "$file"
 }
 
 # ============================================================================
@@ -70,27 +73,27 @@ load '../../helpers/test_helper'
 # Polyglot Script Validation
 # ============================================================================
 
-@test "run-hook.cmd polyglot works with CRLF on bash" {
+@test "run-hook.cmd polyglot works with LF on bash" {
   local wrapper="${PLUGIN_ROOT}/hooks/run-hook.cmd"
   [ -f "$wrapper" ] || skip "run-hook.cmd not found"
 
-  # Verify it has CRLF
-  file "$wrapper" | grep -q "CRLF" || skip "File doesn't have CRLF"
+  # Verify it has LF (NOT CRLF)
+  assert_lf_line_endings "$wrapper"
 
-  # Verify bash can still parse and execute it
+  # Verify bash can parse and execute it
   run bash -n "$wrapper"
   assert_success
 }
 
-@test "run-hook.cmd executes successfully with CRLF line endings" {
+@test "run-hook.cmd executes successfully with LF line endings" {
   local temp_hooks="${TEST_TEMP_DIR}/hooks"
   mkdir -p "$temp_hooks"
 
-  # Copy the CRLF wrapper
+  # Copy the LF wrapper
   cp "${PLUGIN_ROOT}/hooks/run-hook.cmd" "$temp_hooks/"
 
-  # Create a test script (with LF - as shell scripts should be)
-  printf '#!/usr/bin/env bash\necho "CRLF_TEST_PASSED"\nexit 0\n' > "$temp_hooks/test.sh"
+  # Create a test script (with LF)
+  printf '#!/usr/bin/env bash\necho "LF_TEST_PASSED"\nexit 0\n' > "$temp_hooks/test.sh"
   chmod +x "$temp_hooks/test.sh"
 
   # Execute via wrapper
@@ -98,5 +101,5 @@ load '../../helpers/test_helper'
   run bash ./run-hook.cmd test.sh
 
   assert_success
-  assert_output_contains "CRLF_TEST_PASSED"
+  assert_output_contains "LF_TEST_PASSED"
 }
