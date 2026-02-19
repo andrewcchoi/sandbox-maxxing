@@ -64,25 +64,17 @@ run_check "Diagram Inventory" "$SCRIPT_DIR/diagram-inventory.sh" || true
 # run_check "Bidirectional Validation" "$SCRIPT_DIR/bidirectional-validation.sh" || true
 
 # Check line endings for polyglot hook wrapper
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "CHECK: Polyglot Hook Line Endings"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
 if file hooks/run-hook.cmd | grep -q "CRLF"; then
-    echo "✅ hooks/run-hook.cmd has correct CRLF line endings (required for Windows CMD)"
-    ((CHECKS_PASSED++)) || true
-else
-    echo "❌ ERROR: hooks/run-hook.cmd missing CRLF line endings"
-    echo "   Windows CMD.exe requires CRLF to parse batch files correctly"
-    echo "   Bash handles CRLF fine via the polyglot heredoc technique"
-    echo ""
-    echo "   To fix:"
-    echo "   unix2dos hooks/run-hook.cmd"
-    echo "   git add hooks/run-hook.cmd"
-    echo ""
+    echo "ERROR: hooks/run-hook.cmd has CRLF line endings"
+    echo "   Polyglot heredoc requires LF for bash to parse correctly"
+    echo "   CRLF causes 'unexpected end of file' errors on Linux/WSL"
+    echo "   To fix: sed -i 's/\\r$//' hooks/run-hook.cmd"
     ((ERRORS++)) || true
+else
+    echo "hooks/run-hook.cmd has correct LF line endings"
+    ((CHECKS_PASSED++)) || true
 fi
-echo ""
 
 # Note: Additional validation scripts available for manual runs
 echo "ℹ️  Note: Additional validation available:"

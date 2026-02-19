@@ -17,14 +17,15 @@ WRAPPER_SCRIPT="${PLUGIN_ROOT}/hooks/run-hook.cmd"
   [ -x "$WRAPPER_SCRIPT" ]
 }
 
-@test "run-hook.cmd: has CRLF line endings (required for Windows CMD)" {
-  # CRLF is required for Windows CMD.exe to parse batch files correctly
-  # Bash handles CRLF fine via the polyglot heredoc technique
+@test "run-hook.cmd: has LF line endings (required for polyglot heredoc)" {
+  # LF is required for bash heredoc parsing in the polyglot technique
+  # CRLF causes "unexpected end of file" errors on Linux/WSL
+  # Windows CMD.exe handles LF just fine
   run file "$WRAPPER_SCRIPT"
   assert_success
 
-  # Must have CRLF for Windows compatibility
-  assert_output_contains "CRLF"
+  # Must NOT have CRLF
+  assert_output_not_contains "CRLF"
   assert_output_contains "ASCII text"
 }
 
