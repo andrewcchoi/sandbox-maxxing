@@ -85,6 +85,61 @@ The firewall script can be configured for different modes:
 - **Permissive mode** (default) - Allows all traffic while providing extensibility points
 - **Strict mode** - Can be customized for allowlist-based firewall with domain restrictions
 
+## Git Worktrees (Windows)
+
+**Location:** `skills/_shared/templates/fix-worktree-paths.sh`
+
+Sandboxxer automatically supports git worktrees on Windows hosts. Git worktrees have a `.git` file (not directory) containing an absolute Windows path that is invalid inside Linux containers.
+
+### How It Works
+
+When you open a git worktree from Windows in a DevContainer:
+
+1. **Detection:** The `fix-worktree-paths.sh` script detects Windows paths in `.git` file (e.g., `C:/Users/...`)
+2. **Translation:** Extracts main repo name and worktree name from the path
+3. **Verification:** Confirms main repo is accessible as sibling (via parent directory mount)
+4. **Rewriting:** Updates `.git` to relative Unix path: `gitdir: ../<main-repo>/.git/worktrees/<worktree-name>`
+
+### Requirements
+
+**Standard Layout:** Worktrees must be siblings of the main repo (standard git worktree behavior):
+
+```
+repos/
+├── my-project/           ← main repo
+└── my-project-feature/   ← worktree (opened in VS Code)
+```
+
+The DevContainer template mounts the parent directory (`..:/workspace:cached`), so both the main repo and worktree are accessible.
+
+### Troubleshooting
+
+If git commands fail in the container:
+
+1. Check `.git` file contents:
+   ```bash
+   cat /workspace/.git
+   ```
+
+2. Should show relative Unix path:
+   ```
+   gitdir: ../<main-repo>/.git/worktrees/<worktree-name>
+   ```
+
+3. If Windows path still present:
+   - Verify worktrees are siblings of main repo
+   - Check container logs during `postCreateCommand`
+   - Manually run: `bash .devcontainer/fix-worktree-paths.sh`
+
+### Implementation
+
+The fix runs automatically at two points:
+
+1. **Early in `postCreateCommand`** (devcontainer.json:71) - Runs before other git operations
+2. **Section 0 of `setup-claude-credentials.sh`** - Double-checks before git configuration
+
+This ensures git commands work throughout the container setup process.
+
 ## Template Placeholders
 
 Templates use placeholders that are replaced during setup:

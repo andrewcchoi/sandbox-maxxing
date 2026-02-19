@@ -164,10 +164,23 @@ echo "Setting up Claude Code environment..."
 echo "================================================================"
 
 # ============================================================================
+# 0. Fix Git Worktree Paths (if applicable)
+# ============================================================================
+if [ -f "$WORKSPACE_DIR/.devcontainer/fix-worktree-paths.sh" ]; then
+    echo ""
+    echo "[0/14] Detecting and fixing git worktree paths..."
+    if bash "$WORKSPACE_DIR/.devcontainer/fix-worktree-paths.sh"; then
+        echo "  ✓ Git worktree paths validated"
+    else
+        echo "  ⚠ Warning: Git worktree path fix failed (see above)" >&2
+    fi
+fi
+
+# ============================================================================
 # 1. Cross-Platform Git Configuration
 # ============================================================================
 echo ""
-echo "[1/13] Configuring git for cross-platform development..."
+echo "[1/14] Configuring git for cross-platform development..."
 
 # Prevent file mode (755/644) differences between Linux/Windows
 git config --global core.filemode false
@@ -184,7 +197,7 @@ echo "  ✓ Git configured for cross-platform compatibility"
 # 2. Create Directory Structure
 # ============================================================================
 echo ""
-echo "[2/13] Creating directory structure..."
+echo "[2/14] Creating directory structure..."
 
 mkdir -p "$CLAUDE_DIR"
 mkdir -p "$CLAUDE_DIR/hooks"
@@ -198,7 +211,7 @@ echo "  ✓ Directories created"
 # 3. Core Configuration Files
 # ============================================================================
 echo ""
-echo "[3/13] Copying core configuration files..."
+echo "[3/14] Copying core configuration files..."
 
 for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json" ".mcp.json"; do
     if [ -f "$HOST_CLAUDE/$config_file" ]; then
@@ -212,7 +225,7 @@ done
 # 4. Hooks Directory
 # ============================================================================
 echo ""
-echo "[4/13] Syncing hooks directory..."
+echo "[4/14] Syncing hooks directory..."
 
 # Try to copy from host
 if copy_hooks "$HOST_CLAUDE/hooks" "$CLAUDE_DIR/hooks"; then
@@ -227,7 +240,7 @@ fi
 # 5. State Directory
 # ============================================================================
 echo ""
-echo "[5/13] Syncing state directory..."
+echo "[5/14] Syncing state directory..."
 
 # Try to copy from host
 if copy_directory "$HOST_CLAUDE/state" "$CLAUDE_DIR/state"; then
@@ -244,7 +257,7 @@ fi
 # 6. MCP Configuration
 # ============================================================================
 echo ""
-echo "[6/13] Syncing MCP configuration..."
+echo "[6/14] Syncing MCP configuration..."
 
 # Note: .mcp.json is already copied in section 3 core configuration files
 if copy_directory "$HOST_CLAUDE/mcp" "$CLAUDE_DIR/mcp"; then
@@ -258,7 +271,7 @@ fi
 # 7. Environment Variables (Optional)
 # ============================================================================
 echo ""
-echo "[7/13] Loading environment variables..."
+echo "[7/14] Loading environment variables..."
 
 # SECURITY NOTE: Sourcing environment files can execute arbitrary shell code.
 # Only mount trusted directories to /tmp/host-env in your docker-compose.yml.
@@ -294,7 +307,7 @@ fi
 # 8. GitHub CLI Authentication (Optional)
 # ============================================================================
 echo ""
-echo "[8/13] Setting up GitHub CLI authentication..."
+echo "[8/14] Setting up GitHub CLI authentication..."
 
 # Note: GitHub CLI config files (hosts.yml, config.yml) are YAML data files
 # that are parsed by the gh CLI tool, not sourced as shell scripts.
@@ -325,7 +338,7 @@ fi
 # 9. Mark Native Installation Complete
 # ============================================================================
 echo ""
-echo "[9/13] Marking native installation as complete..."
+echo "[9/14] Marking native installation as complete..."
 
 # Run claude install to suppress migration notice
 # This is needed because copying host config makes Claude think it's a migration
@@ -340,7 +353,7 @@ fi
 # 10. SSH Key Generation and Configuration
 # ============================================================================
 echo ""
-echo "[10/13] Setting up SSH keys for Git operations..."
+echo "[10/14] Setting up SSH keys for Git operations..."
 
 SSH_DIR="$HOME/.ssh"
 SSH_KEY="$SSH_DIR/id_ed25519"
@@ -444,7 +457,7 @@ echo ""
 # 11. Install Knowledge Sync Script (Host-Side)
 # ============================================================================
 echo ""
-echo "[11/13] Installing knowledge sync script to host..."
+echo "[11/14] Installing knowledge sync script to host..."
 
 # Copy sync script to host ~/.claude/scripts/ if not exists
 if [ -d "$HOST_CLAUDE" ]; then
@@ -500,7 +513,7 @@ echo ""
 # 12. .gitignore Management
 # ============================================================================
 echo ""
-echo "[12/13] Configuring .gitignore for SSH keys..."
+echo "[12/14] Configuring .gitignore for SSH keys..."
 
 GITIGNORE_PATH="$WORKSPACE_DIR/.gitignore"
 SSH_EXCLUSION=".devcontainer/devcontainer-ssh.pub"
@@ -544,7 +557,7 @@ rm -f "$GITIGNORE_LOCKFILE" 2>/dev/null || true
 # 13. Fix Permissions
 # ============================================================================
 echo ""
-echo "[13/13] Setting permissions..."
+echo "[13/14] Setting permissions..."
 
 # Only attempt chown if directories exist
 if [ -d "$CLAUDE_DIR" ]; then
