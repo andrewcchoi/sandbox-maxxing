@@ -5,7 +5,7 @@
 # Language-specific additions are inserted at the marker below
 #
 # BUILD ARGUMENTS:
-#   INSTALL_SHELL_EXTRAS=true  - git-delta, zsh plugins (default: true)
+#   INSTALL_SHELL_EXTRAS=true  - zsh plugins (default: true)
 #   INSTALL_DEV_TOOLS=true     - Language dev tools, linters (default: true)
 #   INSTALL_CA_CERT=false      - Corporate CA certificate (default: false)
 #   ENABLE_FIREWALL=false      - Install firewall packages and script (default: false)
@@ -173,14 +173,17 @@ RUN mkdir -p /workspace /home/node/.claude && \
 
 WORKDIR /workspace
 
-# GIT delta (enhanced git diff) - conditional on INSTALL_SHELL_EXTRAS
-ARG GIT_DELTA_VERSION=0.18.2
-RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
-    ARCH=$(dpkg --print-architecture) && \
-    wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
-    dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
-    rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"; \
-  fi
+# bat (better cat/git diff viewer) - proxy-friendly from apt
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bat \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Create 'bat' symlink (Debian installs as 'batcat' to avoid conflict)
+USER root
+RUN mkdir -p /home/node/.local/bin && \
+    ln -sf /usr/bin/batcat /home/node/.local/bin/bat && \
+    chown -R node:node /home/node/.local
+USER node
 
 # Domain allowlist - conditional based on ENABLE_FIREWALL
 RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
