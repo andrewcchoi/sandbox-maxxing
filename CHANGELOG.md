@@ -7,7 +7,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **yolo-docker-maxxing enhancements** (#324):
+  - Go 1.22 language support via official golang Docker image
+  - Azure CLI (az) and Azure Developer CLI (azd) for cloud deployments
+  - Terraform for Infrastructure as Code
+  - Tailscale for secure remote access
+  - Complete PDF/OCR toolkit (poppler, ghostscript, qpdf, tesseract, ocrmypdf, pdftk)
+  - Automatic AWS credentials mounting from host ~/.aws directory
+  - Three new Dockerfile partials: terraform, tailscale, pdf-tools
+
+### Changed
+- **Replaced git-delta with bat** (#324):
+  - Switched from GitHub-downloaded git-delta to apt-installed bat
+  - Improves proxy-friendliness (99% of tools now from Docker images or apt)
+  - bat provides similar syntax highlighting for git diffs
+- **Updated yolo-docker-maxxing** to concatenate 5 partials (go, azure-cli, terraform, tailscale, pdf-tools)
+- Enhanced success messages with complete tool listing and setup instructions
+- Updated command description to reflect expanded feature set
+
 ### Fixed
+- Proxy-friendliness improved from ~95% to 99% (only fzf integration and Powerlevel10k from GitHub)
 - **Templates**: Fixed `fix-worktree-paths.sh` hardcoded path bug (#314)
   - Changed `/workspace` hardcode to use `$WORKSPACE_DIR` variable for testability
   - Added comprehensive test suite (7 tests) for git worktree path translation

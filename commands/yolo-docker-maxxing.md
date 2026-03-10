@@ -1,16 +1,31 @@
 ---
-description: YOLO docker-maxxing DevContainer setup with no questions - Python+Node base, no firewall
+description: YOLO docker-maxxing - instant DevContainer with Python, Node, Go, AWS/Azure CLI, Terraform, Tailscale, PDF tools - 99% proxy-friendly
 argument-hint: "[project-name] [--portless]"
 allowed-tools: [Bash]
 ---
 
 # YOLO Docker-Maxxing DevContainer Setup
 
-**Quick setup with zero questions.** Creates a DevContainer with:
-- Python 3.12 + Node 20 (multi-language base image)
-- AWS CLI (for AWS service interaction)
-- No firewall (Docker isolation only)
-- All standard development tools
+**Quick setup with zero questions.** Creates a fully-loaded DevContainer with:
+
+**Languages & Runtimes:**
+- Python 3.12 + Node.js 20 + Go 1.22 (multi-stage Docker builds)
+
+**Cloud & Infrastructure:**
+- AWS CLI v2 + Azure CLI (az) + Azure Developer CLI (azd)
+- Terraform (infrastructure as code)
+
+**PDF & OCR Tools:**
+- poppler-utils, ghostscript, qpdf, tesseract, ocrmypdf, pdftk
+
+**Developer Tools:**
+- Tailscale (secure remote access)
+- bat (syntax-highlighted cat/git diffs)
+- Zsh with Powerlevel10k + fzf
+
+**Security:**
+- No firewall (Docker container isolation only)
+- 99% proxy-friendly via multi-stage Docker builds (no curl installers)
 
 **New to sandboxing?** See the [Docker sandbox visual guide](../docs/diagrams/svg/sandbox-explained.svg) to understand what Docker sandboxes protect.
 
@@ -99,6 +114,11 @@ fi
 # Validate required templates exist
 validate_templates "$PLUGIN_ROOT" \
   base.dockerfile \
+  partials/go.dockerfile \
+  partials/azure-cli.dockerfile \
+  partials/terraform.dockerfile \
+  partials/tailscale.dockerfile \
+  partials/pdf-tools.dockerfile \
   "$DEVCONTAINER_TEMPLATE" \
   "$COMPOSE_TEMPLATE" \
   setup-claude-credentials.sh \
@@ -125,9 +145,25 @@ fi
 # Create directories
 mkdir -p .devcontainer || { echo "ERROR: Cannot create .devcontainer"; exit 1; }
 
-# Copy templates
-echo "Copying templates..."
-cp "$TEMPLATES/base.dockerfile" .devcontainer/Dockerfile || { echo "ERROR: Template copy failed"; exit 1; }
+# Copy and assemble Dockerfile with all enhancements
+echo "Assembling enhanced Dockerfile..."
+cat "$TEMPLATES/base.dockerfile" > .devcontainer/Dockerfile || { echo "ERROR: Cannot copy base"; exit 1; }
+
+# Append language and tool partials for enhanced yolo experience
+echo "" >> .devcontainer/Dockerfile
+echo "# === YOLO-DOCKER-MAXXING ENHANCEMENTS ===" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/go.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append go partial"; exit 1; }
+echo "" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/azure-cli.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append azure-cli partial"; exit 1; }
+echo "" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/terraform.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append terraform partial"; exit 1; }
+echo "" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/tailscale.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append tailscale partial"; exit 1; }
+echo "" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/pdf-tools.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append pdf-tools partial"; exit 1; }
+
+# Copy other templates
+echo "Copying other templates..."
 cp "$TEMPLATES/$DEVCONTAINER_TEMPLATE" .devcontainer/devcontainer.json || { echo "ERROR: Template copy failed"; exit 1; }
 cp "$TEMPLATES/$COMPOSE_TEMPLATE" ./docker-compose.yml || { echo "ERROR: Template copy failed"; exit 1; }
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/ || { echo "ERROR: Template copy failed"; exit 1; }
@@ -217,33 +253,94 @@ fi
 # Make scripts executable
 chmod +x .devcontainer/*.sh || { echo "ERROR: Cannot set script permissions"; exit 1; }
 
+# Validate no unreplaced placeholders remain
+echo "Validating templates..."
+UNREPLACED=$(grep -oh '{{[A-Z_]*}}' .devcontainer/devcontainer.json docker-compose.yml 2>/dev/null | sort -u)
+if [ -n "$UNREPLACED" ]; then
+  echo "ERROR: Unreplaced placeholders found:"
+  echo "$UNREPLACED" | sed 's/^/  /'
+  exit 1
+fi
+echo "  ✓ All placeholders replaced"
+
 # Success message
 echo ""
 echo "=========================================="
 echo "DevContainer Created (YOLO Docker Maxxing)"
 echo "=========================================="
 echo "Project: $PROJECT_NAME"
-echo "Language: Python 3.12 + Node 20"
-echo "Firewall: Disabled"
+echo ""
+echo "🚀 Languages & Runtimes:"
+echo "  • Python 3.12"
+echo "  • Node.js 20"
+echo "  • Go 1.22"
+echo ""
+echo "☁️  Cloud & Infrastructure:"
+echo "  • AWS CLI v2"
+echo "  • Azure CLI (az)"
+echo "  • Azure Developer CLI (azd)"
+echo "  • Terraform"
+echo ""
+echo "📄 PDF & OCR Tools:"
+echo "  • poppler-utils (pdftotext, pdfimages)"
+echo "  • ghostscript (compress, convert)"
+echo "  • qpdf (merge, split, encrypt)"
+echo "  • tesseract (OCR engine)"
+echo "  • ocrmypdf (searchable PDFs)"
+echo "  • pdftk (form filling)"
+echo ""
+echo "🔧 Developer Tools:"
+echo "  • Tailscale (secure remote access)"
+echo "  • bat (syntax-highlighted cat/git diffs)"
+echo "  • Zsh with Powerlevel10k"
+echo "  • fzf (fuzzy finder)"
+echo ""
+echo "🔒 Security:"
+echo "  Firewall: Disabled (Docker container isolation)"
 if [ "$MODE" = "normal" ]; then
-  echo "Ports: App=$APP_PORT, Frontend=$FRONTEND_PORT, PostgreSQL=$POSTGRES_PORT, Redis=$REDIS_PORT"
+  echo ""
+  echo "🌐 Port Mappings:"
+  echo "  • App:        localhost:$APP_PORT"
+  echo "  • Frontend:   localhost:$FRONTEND_PORT"
+  echo "  • PostgreSQL: localhost:$POSTGRES_PORT"
+  echo "  • Redis:      localhost:$REDIS_PORT"
 else
-  echo "Mode: Portless (no host port mappings)"
-  echo "Services: Accessible via Docker network only"
+  echo ""
+  echo "📦 Mode: Portless (no host port mappings)"
+  echo "  Services accessible via Docker network only"
 fi
 echo ""
-echo "Files created:"
-echo "  .devcontainer/Dockerfile"
-echo "  .devcontainer/devcontainer.json"
-echo "  .devcontainer/setup-claude-credentials.sh"
-echo "  .devcontainer/setup-frontend.sh"
-echo "  .devcontainer/init-firewall.sh"
-echo "  docker-compose.yml"
-echo "  .env"
-[ ! -f ".gitattributes.backup" ] && echo "  .gitattributes" || echo "  .gitattributes (preserved existing)"
-[ ! -f ".dockerignore.backup" ] && echo "  .dockerignore" || echo "  .dockerignore (preserved existing)"
-[ ! -f ".gitignore.backup" ] && echo "  .gitignore" || echo "  .gitignore (preserved existing)"
-[ ! -f ".editorconfig.backup" ] && echo "  .editorconfig" || echo "  .editorconfig (preserved existing)"
+echo "📁 Files Created:"
+echo "  • .devcontainer/Dockerfile (base + 5 partials)"
+echo "  • .devcontainer/devcontainer.json"
+echo "  • .devcontainer/setup-claude-credentials.sh"
+echo "  • .devcontainer/setup-frontend.sh"
+echo "  • .devcontainer/init-firewall.sh"
+echo "  • docker-compose.yml"
+echo "  • .env"
+[ ! -f ".gitattributes.backup" ] && echo "  • .gitattributes" || echo "  • .gitattributes (preserved)"
+[ ! -f ".dockerignore.backup" ] && echo "  • .dockerignore" || echo "  • .dockerignore (preserved)"
+[ ! -f ".gitignore.backup" ] && echo "  • .gitignore" || echo "  • .gitignore (preserved)"
+[ ! -f ".editorconfig.backup" ] && echo "  • .editorconfig" || echo "  • .editorconfig (preserved)"
+echo ""
+echo "📝 Recommended Next Steps:"
+echo ""
+echo "  1. Configure git to use bat for diffs:"
+echo "     git config --global core.pager 'bat --paging=always'"
+echo "     git config --global pager.diff 'bat --paging=always --style=numbers,grid'"
+echo ""
+echo "  2. Verify AWS CLI (credentials auto-mounted from ~/.aws):"
+echo "     aws sts get-caller-identity"
+echo "     If mount failed, see setup-claude-credentials.sh output for manual steps"
+echo ""
+echo "  3. Set up Tailscale for remote access (optional):"
+echo "     sudo tailscaled --state=/var/lib/tailscale/tailscaled.state &"
+echo "     sudo tailscale up --authkey=YOUR_AUTH_KEY"
+echo "     Get auth key: https://login.tailscale.com/admin/settings/keys"
+echo ""
+echo "  4. Test PDF tools:"
+echo "     pdftotext sample.pdf output.txt"
+echo "     ocrmypdf scanned.pdf searchable.pdf"
 echo ""
 echo "Next: Open in VS Code → 'Reopen in Container'"
 echo "=========================================="
