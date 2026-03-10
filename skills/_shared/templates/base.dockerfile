@@ -54,6 +54,12 @@ FROM mcr.microsoft.com/azure-cli:latest AS azure-cli-source
 # Stage 9: Get AWS CLI from official Amazon image (always installed for yolo)
 FROM amazon/aws-cli:latest AS aws-cli-source
 
+# Stage 11: Get Terraform from official HashiCorp image (used when terraform partial is selected)
+FROM hashicorp/terraform:latest AS terraform-source
+
+# Stage 12: Get Tailscale from official image (used when tailscale partial is selected)
+FROM tailscale/tailscale:latest AS tailscale-source
+
 # Stage 10: Main build
 FROM node:20-bookworm-slim
 
