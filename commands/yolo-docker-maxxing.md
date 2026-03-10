@@ -1,16 +1,31 @@
 ---
-description: YOLO docker-maxxing DevContainer setup with no questions - Python+Node base, no firewall
+description: YOLO docker-maxxing - instant DevContainer with Python, Node, Go, AWS/Azure CLI, Terraform, Tailscale, PDF tools - 99% proxy-friendly
 argument-hint: "[project-name] [--portless]"
 allowed-tools: [Bash]
 ---
 
 # YOLO Docker-Maxxing DevContainer Setup
 
-**Quick setup with zero questions.** Creates a DevContainer with:
-- Python 3.12 + Node 20 (multi-language base image)
-- AWS CLI (for AWS service interaction)
-- No firewall (Docker isolation only)
-- All standard development tools
+**Quick setup with zero questions.** Creates a fully-loaded DevContainer with:
+
+**Languages & Runtimes:**
+- Python 3.12 + Node.js 20 + Go 1.22 (multi-stage Docker builds)
+
+**Cloud & Infrastructure:**
+- AWS CLI v2 + Azure CLI (az) + Azure Developer CLI (azd)
+- Terraform (infrastructure as code)
+
+**PDF & OCR Tools:**
+- poppler-utils, ghostscript, qpdf, tesseract, ocrmypdf, pdftk
+
+**Developer Tools:**
+- Tailscale (secure remote access)
+- bat (syntax-highlighted cat/git diffs)
+- Zsh with Powerlevel10k + fzf
+
+**Security:**
+- No firewall (Docker container isolation only)
+- 99% proxy-friendly via multi-stage Docker builds (no curl installers)
 
 **New to sandboxing?** See the [Docker sandbox visual guide](../docs/diagrams/svg/sandbox-explained.svg) to understand what Docker sandboxes protect.
 
