@@ -99,6 +99,11 @@ fi
 # Validate required templates exist
 validate_templates "$PLUGIN_ROOT" \
   base.dockerfile \
+  partials/go.dockerfile \
+  partials/azure-cli.dockerfile \
+  partials/terraform.dockerfile \
+  partials/tailscale.dockerfile \
+  partials/pdf-tools.dockerfile \
   "$DEVCONTAINER_TEMPLATE" \
   "$COMPOSE_TEMPLATE" \
   setup-claude-credentials.sh \
@@ -125,9 +130,25 @@ fi
 # Create directories
 mkdir -p .devcontainer || { echo "ERROR: Cannot create .devcontainer"; exit 1; }
 
-# Copy templates
-echo "Copying templates..."
-cp "$TEMPLATES/base.dockerfile" .devcontainer/Dockerfile || { echo "ERROR: Template copy failed"; exit 1; }
+# Copy and assemble Dockerfile with all enhancements
+echo "Assembling enhanced Dockerfile..."
+cat "$TEMPLATES/base.dockerfile" > .devcontainer/Dockerfile || { echo "ERROR: Cannot copy base"; exit 1; }
+
+# Append language and tool partials for enhanced yolo experience
+echo "" >> .devcontainer/Dockerfile
+echo "# === YOLO-DOCKER-MAXXING ENHANCEMENTS ===" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/go.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append go partial"; exit 1; }
+echo "" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/azure-cli.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append azure-cli partial"; exit 1; }
+echo "" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/terraform.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append terraform partial"; exit 1; }
+echo "" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/tailscale.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append tailscale partial"; exit 1; }
+echo "" >> .devcontainer/Dockerfile
+cat "$TEMPLATES/partials/pdf-tools.dockerfile" >> .devcontainer/Dockerfile || { echo "ERROR: Cannot append pdf-tools partial"; exit 1; }
+
+# Copy other templates
+echo "Copying other templates..."
 cp "$TEMPLATES/$DEVCONTAINER_TEMPLATE" .devcontainer/devcontainer.json || { echo "ERROR: Template copy failed"; exit 1; }
 cp "$TEMPLATES/$COMPOSE_TEMPLATE" ./docker-compose.yml || { echo "ERROR: Template copy failed"; exit 1; }
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/ || { echo "ERROR: Template copy failed"; exit 1; }
