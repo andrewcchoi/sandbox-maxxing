@@ -8,6 +8,7 @@ allowed-tools: [Bash]
 
 **Quick setup with zero questions.** Creates a DevContainer with:
 - Python 3.12 + Node 20 (multi-language base image)
+- AWS CLI (for AWS service interaction)
 - No firewall (Docker isolation only)
 - All standard development tools
 
