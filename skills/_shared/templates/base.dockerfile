@@ -173,17 +173,14 @@ RUN mkdir -p /workspace /home/node/.claude && \
 
 WORKDIR /workspace
 
-# bat (better cat/git diff viewer) - proxy-friendly from apt
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    bat \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Create 'bat' symlink (Debian installs as 'batcat' to avoid conflict)
-USER root
-RUN mkdir -p /home/node/.local/bin && \
+# bat (better cat/git diff viewer) - proxy-friendly from apt, conditional on INSTALL_SHELL_EXTRAS
+RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
+    apt-get update && apt-get install -y --no-install-recommends bat && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /home/node/.local/bin && \
     ln -sf /usr/bin/batcat /home/node/.local/bin/bat && \
-    chown -R node:node /home/node/.local
-USER node
+    chown -R node:node /home/node/.local; \
+  fi
 
 # Domain allowlist - conditional based on ENABLE_FIREWALL
 RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \
