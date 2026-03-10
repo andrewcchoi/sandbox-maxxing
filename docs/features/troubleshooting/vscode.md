@@ -6,6 +6,77 @@ Extension loading, connection issues, and port forwarding in VS Code DevContaine
 
 ---
 
+## "Cannot convert object to primitive value" Error
+
+**Symptoms:**
+```
+TypeError: Cannot convert object to primitive value
+    at RegExp.test (<anonymous>)
+    at devContainersSpecCLI.js:391:16611
+```
+- Container fails to start
+- Error occurs during VS Code DevContainer initialization
+- References `devcontainer.json` parsing
+
+**Root Cause:**
+This error occurs when `devcontainer.json` contains **unreplaced template placeholders** like `{{PROJECT_NAME}}`, `{{APP_PORT}}`, `{{KROKI_PORT}}`, etc. VS Code expects valid JSON but receives placeholder tokens that cannot be evaluated as numbers or strings.
+
+**Common scenarios:**
+- Running a template setup script that didn't replace all placeholders
+- Manually copying a template file without replacing placeholders
+- Using `/sandboxxer:yolo-docker-maxxing` before version 4.14.0 (KROKI_PORT bug)
+
+**How to Diagnose:**
+```bash
+# Check for unreplaced placeholders in your devcontainer.json
+grep -o '{{[A-Z_]*}}' .devcontainer/devcontainer.json
+
+# Common unreplaced placeholders:
+# {{PROJECT_NAME}}
+# {{APP_PORT}}
+# {{FRONTEND_PORT}}
+# {{POSTGRES_PORT}}
+# {{REDIS_PORT}}
+# {{KROKI_PORT}}
+```
+
+**Solutions:**
+
+**1. Quick Fix - Replace placeholders manually:**
+```bash
+# Replace PROJECT_NAME
+sed -i 's/{{PROJECT_NAME}}/my-project/g' .devcontainer/devcontainer.json
+
+# Replace port numbers
+sed -i 's/{{APP_PORT}}/8000/g' .devcontainer/devcontainer.json
+sed -i 's/{{FRONTEND_PORT}}/5173/g' .devcontainer/devcontainer.json
+sed -i 's/{{POSTGRES_PORT}}/5432/g' .devcontainer/devcontainer.json
+sed -i 's/{{REDIS_PORT}}/6379/g' .devcontainer/devcontainer.json
+```
+
+**2. Re-run setup with validation (recommended):**
+```bash
+# For new projects, use sandboxxer commands which include validation
+/sandboxxer:yolo-docker-maxxing  # Includes placeholder validation since v4.14.0
+/sandboxxer:quickstart           # Includes placeholder validation since v4.14.0
+```
+
+**3. Remove unused optional features:**
+If you see placeholders for features you don't need (like `{{KROKI_PORT}}`), remove those configuration blocks entirely:
+```json
+// Remove lines like:
+"forwardPorts": [..., {{KROKI_PORT}}],  // ← Remove {{KROKI_PORT}}
+```
+
+**Prevention:**
+- Always use sandboxxer commands (`/sandboxxer:yolo-docker-maxxing`, `/sandboxxer:quickstart`) to generate DevContainer configurations
+- These commands include automatic placeholder validation that fails fast with clear error messages
+- Never manually copy template files from `skills/_shared/templates/` without processing
+
+**Note:** This is NOT an extension compatibility issue. Extensions like `ms-vscode-remote.remote-containers` work correctly - the error occurs during JSON parsing before any extensions are loaded.
+
+---
+
 ## Extension Not Loading
 
 **Symptoms:**

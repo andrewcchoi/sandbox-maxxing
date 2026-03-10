@@ -694,10 +694,32 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
        s/{{APP_PORT}}/$APP_PORT/g; \
        s/{{FRONTEND_PORT}}/$FRONTEND_PORT/g; \
        s/{{POSTGRES_PORT}}/$POSTGRES_PORT/g; \
-       s/{{REDIS_PORT}}/$REDIS_PORT/g; \
-       s/{{KROKI_PORT}}/$KROKI_PORT/g" \
+       s/{{REDIS_PORT}}/$REDIS_PORT/g" \
     "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 done
+
+# Add Kroki configuration if enabled
+if [ "$ENABLE_KROKI" = "true" ]; then
+  echo "  Injecting Kroki configuration..."
+  # Add KROKI_PORT to forwardPorts array (before closing bracket)
+  sed -i "s/\(\"forwardPorts\": \[.*\)\]/\1, $KROKI_PORT]/" .devcontainer/devcontainer.json
+
+  # Add KROKI to portsAttributes (after Redis entry, before closing brace)
+  sed -i "/\"$REDIS_PORT\".*Redis/a\\    \"$KROKI_PORT\": { \"label\": \"Kroki Diagrams\", \"onAutoForward\": \"silent\" }," .devcontainer/devcontainer.json
+
+  # Add KROKI_URL to containerEnv (after POWERLEVEL9K line)
+  sed -i "/POWERLEVEL9K_DISABLE_GITSTATUS/a\\    \"KROKI_URL\": \"http://kroki:8000\"," .devcontainer/devcontainer.json
+fi
+
+# Validate no unreplaced placeholders remain
+echo "  [3.3.1] Validating templates..."
+UNREPLACED=$(grep -oh '{{[A-Z_]*}}' .devcontainer/devcontainer.json docker-compose.yml 2>/dev/null | sort -u)
+if [ -n "$UNREPLACED" ]; then
+  echo "ERROR: Unreplaced placeholders found:"
+  echo "$UNREPLACED" | sed 's/^/  /'
+  exit 1
+fi
+echo "    ✓ All placeholders replaced"
 
 # 3.4 Generate firewall script
 echo "  [3.4] Configuring firewall..."

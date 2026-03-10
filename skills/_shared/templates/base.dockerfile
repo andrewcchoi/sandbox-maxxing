@@ -5,7 +5,7 @@
 # Language-specific additions are inserted at the marker below
 #
 # BUILD ARGUMENTS:
-#   INSTALL_SHELL_EXTRAS=true  - git-delta, zsh plugins (default: true)
+#   INSTALL_SHELL_EXTRAS=true  - zsh plugins (default: true)
 #   INSTALL_DEV_TOOLS=true     - Language dev tools, linters (default: true)
 #   INSTALL_CA_CERT=false      - Corporate CA certificate (default: false)
 #   ENABLE_FIREWALL=false      - Install firewall packages and script (default: false)
@@ -53,6 +53,12 @@ FROM mcr.microsoft.com/azure-cli:latest AS azure-cli-source
 
 # Stage 9: Get AWS CLI from official Amazon image (always installed for yolo)
 FROM amazon/aws-cli:latest AS aws-cli-source
+
+# Stage 11: Get Terraform from official HashiCorp image (used when terraform partial is selected)
+FROM hashicorp/terraform:latest AS terraform-source
+
+# Stage 12: Get Tailscale from official image (used when tailscale partial is selected)
+FROM tailscale/tailscale:latest AS tailscale-source
 
 # Stage 10: Main build
 FROM node:20-bookworm-slim
@@ -173,13 +179,13 @@ RUN mkdir -p /workspace /home/node/.claude && \
 
 WORKDIR /workspace
 
-# GIT delta (enhanced git diff) - conditional on INSTALL_SHELL_EXTRAS
-ARG GIT_DELTA_VERSION=0.18.2
+# bat (better cat/git diff viewer) - proxy-friendly from apt, conditional on INSTALL_SHELL_EXTRAS
 RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
-    ARCH=$(dpkg --print-architecture) && \
-    wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
-    dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
-    rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"; \
+    apt-get update && apt-get install -y --no-install-recommends bat && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /home/node/.local/bin && \
+    ln -sf /usr/bin/batcat /home/node/.local/bin/bat && \
+    chown -R node:node /home/node/.local; \
   fi
 
 # Domain allowlist - conditional based on ENABLE_FIREWALL
