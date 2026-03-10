@@ -51,7 +51,10 @@ FROM gcc:13-bookworm AS gcc-source
 # Stage 8: Get Azure CLI from official Microsoft image (used when azure-cli partial is selected)
 FROM mcr.microsoft.com/azure-cli:latest AS azure-cli-source
 
-# Stage 9: Main build
+# Stage 9: Get AWS CLI from official Amazon image (always installed for yolo)
+FROM amazon/aws-cli:latest AS aws-cli-source
+
+# Stage 10: Main build
 FROM node:20-bookworm-slim
 
 # Re-declare ARGs after FROM (Docker requirement)
@@ -118,6 +121,12 @@ RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
 # Copy uv and uvx from Astral image
 COPY --from=uv-source /usr/local/bin/uv /usr/local/bin/
 COPY --from=uv-source /usr/local/bin/uvx /usr/local/bin/
+
+# AWS CLI from official Amazon image (proxy-friendly)
+# Installs aws CLI for interacting with AWS services
+COPY --from=aws-cli-source /usr/local/aws-cli /usr/local/aws-cli
+COPY --from=aws-cli-source /usr/local/bin/aws /usr/local/bin/aws
+COPY --from=aws-cli-source /usr/local/bin/aws_completer /usr/local/bin/aws_completer
 
 # Database clients
 RUN apt-get update && apt-get install -y --no-install-recommends \
