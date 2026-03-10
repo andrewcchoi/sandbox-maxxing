@@ -85,6 +85,12 @@
   // Codespaces secrets: Configure in repo Settings > Secrets > Codespaces
   // ANTHROPIC_API_KEY, OPENAI_API_KEY, etc. will be available as env vars
 
+  // Mounts: Sync host files/directories into container
+  "mounts": [
+    // AWS credentials (sync with host)
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/home/node/.aws,type=bind,consistency=cached"
+  ],
+
   // Environment Variables:
   // - containerEnv: Set at container build time, available in Dockerfile
   // - remoteEnv: Set at runtime, can reference host env vars with ${localEnv:VAR}
