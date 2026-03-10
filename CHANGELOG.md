@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.6] - 2026-03-10
+
+### Fixed
+- **yolo-docker-maxxing**: Fixed grep pattern quotes in placeholder validation
+  - Changed single quotes to double quotes for consistent shell quoting
+
+## [4.13.5] - 2026-02-18
+
 ### Added
 - **yolo-docker-maxxing enhancements** (#324):
   - Go 1.22 language support via official golang Docker image
