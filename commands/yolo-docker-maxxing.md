@@ -33,6 +33,15 @@ allowed-tools: [Bash]
 
 **Need customization?** Use `/sandboxxer:quickstart` for interactive mode with project type selection and firewall options.
 
+## Execution Instructions
+
+**IMPORTANT:** Execute the bash script immediately without asking questions. This is a YOLO command—zero user interaction required.
+
+- Do NOT ask if the user wants to run the setup
+- Do NOT present options or choices
+- Execute the bash script in the current directory
+- Only ask questions if the script fails or returns errors
+
 ## Determine Project Name
 
 **Note:** Claude performs argument substitution before execution. If the user provides a project name argument, Claude replaces the `basename $(pwd)` expression in the bash script with that value. The bash script itself does not process command-line arguments.
