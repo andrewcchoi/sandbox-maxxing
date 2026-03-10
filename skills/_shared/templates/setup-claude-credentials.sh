@@ -599,8 +599,7 @@ fi
 # Summary
 # ============================================================================
 echo ""
-echo "================================================================"
-echo "✓ Development environment ready!"
+echo "[15/15] 🎉 Setup Complete!"
 echo "================================================================"
 echo "  Config directory: $CLAUDE_DIR"
 echo "  Hooks: $(count_files "$CLAUDE_DIR/hooks") installed"
