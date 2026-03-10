@@ -559,17 +559,17 @@ rm -f "$GITIGNORE_LOCKFILE" 2>/dev/null || true
 echo ""
 echo "[13/15] Checking AWS credentials..."
 
-if [ -d "/home/node/.aws" ] && [ -n "$(ls -A /home/node/.aws 2>/dev/null)" ]; then
+if [ -d "$HOME/.aws" ] && [ -n "$(ls -A $HOME/.aws 2>/dev/null)" ]; then
   echo "  ✓ AWS credentials mounted from host"
   echo "  Run 'aws sts get-caller-identity' to verify"
 else
-  echo "  ⚠️  AWS credentials not found"
+  echo "  ⚠  AWS credentials not found"
   echo "  To add credentials manually:"
   echo "    1. Create ~/.aws/credentials on your host machine"
   echo "    2. Rebuild container to mount: 'Dev Containers: Rebuild Container'"
   echo "    3. Or copy manually:"
-  echo "       docker cp ~/.aws <container-name>:/home/node/.aws"
-  echo "       docker exec <container-name> chown -R node:node /home/node/.aws"
+  echo "       docker cp ~/.aws <container-name>:$HOME/.aws"
+  echo "       docker exec <container-name> chown -R $(id -un):$(id -gn) $HOME/.aws"
 fi
 
 # ============================================================================
