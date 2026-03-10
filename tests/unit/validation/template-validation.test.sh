@@ -397,3 +397,25 @@ TEMPLATES_DIR="${PLUGIN_ROOT}/skills/_shared/templates"
     }
   done
 }
+
+# ============================================================================
+# AWS credentials mount validation
+# ============================================================================
+
+@test "devcontainer.json: includes AWS credentials mount" {
+  local template="$PLUGIN_ROOT/skills/_shared/templates/devcontainer.json"
+  [ -f "$template" ]
+
+  # Check for AWS mount
+  grep -q '\${localEnv:HOME}\${localEnv:USERPROFILE}/\.aws' "$template"
+  grep -q 'target=/home/node/\.aws' "$template"
+}
+
+@test "devcontainer.portless.json: includes AWS credentials mount" {
+  local template="$PLUGIN_ROOT/skills/_shared/templates/devcontainer.portless.json"
+  [ -f "$template" ]
+
+  # Check for AWS mount
+  grep -q '\${localEnv:HOME}\${localEnv:USERPROFILE}/\.aws' "$template"
+  grep -q 'target=/home/node/\.aws' "$template"
+}
