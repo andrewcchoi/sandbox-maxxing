@@ -25,6 +25,7 @@ Common problems and their immediate fixes:
 | npm/uv add fails                | Firewall blocking, whitelist registries         | [Firewall Issues](troubleshooting/firewall.md)   |
 | Permission denied               | Fix file ownership: `sudo chown -R 1000:1000 .` | [Permission Errors](troubleshooting/permissions.md) |
 | Port already in use             | Stop conflicting service or change port         | [Service Connectivity](troubleshooting/services.md) |
+| "Cannot convert object to primitive" | Unreplaced `{{PLACEHOLDER}}` in devcontainer.json | [VS Code DevContainer](troubleshooting/vscode.md) |
 | VS Code extension not loading   | Rebuild container without cache                 | [VS Code DevContainer](troubleshooting/vscode.md) |
 | Cannot create git worktrees     | Restructure: `projects/my-project/my-repo/`     | [Git Worktrees](troubleshooting/worktrees.md)    |
 | Git dubious ownership error     | `git config --global --add safe.directory '*'`  | [Git Worktrees](troubleshooting/worktrees.md)    |
