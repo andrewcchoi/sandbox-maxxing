@@ -35,7 +35,7 @@ This plugin helps you set up sandboxed development environments using either Doc
 
 ## Features
 
-- **🚀 Two-Path Setup System** - Interactive quickstart with project type selection, or non-interactive YOLO docker maxxing for instant defaults (Python+Node, container isolation)
+- **🚀 Two-Path Setup System** - Interactive quickstart with project type selection, or non-interactive YOLO docker maxxing for instant defaults (Python+Node+AWS CLI, container isolation)
 - **🐧 Native Linux Support** - Run Claude Code directly on Linux/WSL2 without Docker overhead
 - **☁️ Azure Cloud Deployment** - Deploy DevContainers to Azure Container Apps for cloud-based development environments
 - **📊 Data-Driven Templates** - Configurations generated from curated registries of official Docker images and allowable domains
@@ -101,7 +101,7 @@ claude plugins list
 # Interactive quickstart - choose project type and firewall options
 /sandboxxer:quickstart
 
-# YOLO docker-maxxing - no questions, instant DevContainer (Python+Node, no firewall)
+# YOLO docker-maxxing - no questions, instant DevContainer (Python+Node+AWS CLI, no firewall)
 /sandboxxer:yolo-docker-maxxing
 
 # Native Linux setup (no Docker)
@@ -153,7 +153,7 @@ The plugin offers three setup paths:
 > **Testing Status:** `/yolo-docker-maxxing` has moderate testing and is the most reliable option. `/quickstart` has very minimal testing - generated configurations may need manual adjustments.
 
 1. **Interactive Quickstart** (`/sandboxxer:quickstart`) - Guided configuration with project type and firewall customization
-2. **Non-Interactive YOLO Docker Maxxing** (`/sandboxxer:yolo-docker-maxxing`) - Instant defaults with no questions (Python+Node, container isolation)
+2. **Non-Interactive YOLO Docker Maxxing** (`/sandboxxer:yolo-docker-maxxing`) - Instant defaults with no questions (Python+Node+AWS CLI, container isolation)
 3. **Native Linux/WSL2** (`/sandboxxer:yolo-linux-maxxing`) - No Docker required, faster startup with bubblewrap sandboxing
 
 **New to sandboxing?** Visual guides:
@@ -207,7 +207,7 @@ Claude: Which domain categories should be allowed?
 
 **Key Features**:
 - Zero questions asked
-- Python 3.12 + Node 20 base
+- Python 3.12 + Node 20 + AWS CLI base
 - Container isolation (no network firewall)
 - PostgreSQL + Redis services
 - Essential VS Code extensions
@@ -218,7 +218,7 @@ Claude: Which domain categories should be allowed?
 You: /sandboxxer:yolo-docker-maxxing
 
 Claude: Creating DevContainer with defaults...
-        - Base: Python 3.12 + Node 20
+        - Base: Python 3.12 + Node 20 + AWS CLI
         - Firewall: Disabled (container isolation)
         - Services: PostgreSQL 16 + Redis 7
         ✓ Done in 18 seconds
@@ -231,7 +231,7 @@ Claude: Creating DevContainer with defaults...
 | Command                           | Description                                                       |
 | --------------------------------- | ----------------------------------------------------------------- |
 | `/sandboxxer:quickstart`          | Interactive quickstart - choose project type and firewall options |
-| `/sandboxxer:yolo-docker-maxxing`   | YOLO docker-maxxing - no questions, sensible defaults (Python+Node) |
+| `/sandboxxer:yolo-docker-maxxing`   | YOLO docker-maxxing - no questions, sensible defaults (Python+Node+AWS CLI) |
 | `/sandboxxer:yolo-linux-maxxing`  | Native Linux/WSL2 setup (no Docker required)                      |
 | `/sandboxxer:deploy-to-azure`     | Deploy DevContainer to Azure Container Apps for cloud development |
 | `/sandboxxer:troubleshoot`        | Diagnose and fix sandbox issues                                   |
