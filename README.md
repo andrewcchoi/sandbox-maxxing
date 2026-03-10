@@ -122,6 +122,35 @@ claude plugins list
 
 **Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/sandboxxer:yolo-docker-maxxing` (non-interactive YOLO docker maxxing) for the fastest path with sensible defaults.
 
+## ⚡ Quick Start Features
+
+The **yolo-docker-maxxing** command provides a complete development environment:
+
+**Languages & Runtimes:**
+- Python 3.12 with uv package manager
+- Node.js 20 with npm, yarn, pnpm
+- Go 1.22 for cloud-native development
+
+**Cloud & Infrastructure:**
+- AWS CLI v2 (with auto-mounted credentials)
+- Azure CLI (az) and Azure Developer CLI (azd)
+- Terraform for Infrastructure as Code
+
+**PDF & Document Processing:**
+- poppler-utils (extract text/images)
+- ghostscript (compress/convert PDFs)
+- qpdf (merge/split/encrypt)
+- tesseract + ocrmypdf (OCR for searchable PDFs)
+- pdftk (fill PDF forms)
+
+**Developer Experience:**
+- Tailscale (secure remote access)
+- bat (syntax-highlighted cat/diffs)
+- Zsh with Powerlevel10k theme
+- fzf (fuzzy finder with keyboard shortcuts)
+
+**99% Proxy-Friendly:** All tools from Docker images or apt packages (except optional shell enhancements).
+
 ### Claude Code Installation
 
 > **Important:** Claude Code must be installed each time the devcontainer is rebuilt.
@@ -231,7 +260,7 @@ Claude: Creating DevContainer with defaults...
 | Command                           | Description                                                       |
 | --------------------------------- | ----------------------------------------------------------------- |
 | `/sandboxxer:quickstart`          | Interactive quickstart - choose project type and firewall options |
-| `/sandboxxer:yolo-docker-maxxing`   | YOLO docker-maxxing - no questions, sensible defaults (Python+Node+AWS CLI) |
+| `/sandboxxer:yolo-docker-maxxing`   | **Enhanced YOLO setup** - Creates production-ready DevContainer with Python 3.12, Node 20, Go 1.22, AWS/Azure/Terraform CLIs, PDF/OCR toolkit, and Tailscale. 99% proxy-friendly. No firewall. |
 | `/sandboxxer:yolo-linux-maxxing`  | Native Linux/WSL2 setup (no Docker required)                      |
 | `/sandboxxer:deploy-to-azure`     | Deploy DevContainer to Azure Container Apps for cloud development |
 | `/sandboxxer:troubleshoot`        | Diagnose and fix sandbox issues                                   |
