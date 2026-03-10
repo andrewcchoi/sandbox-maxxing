@@ -17,9 +17,6 @@
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
 
-        "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers",
-
         "eamodio.gitlens"
       ],
       "settings": {
