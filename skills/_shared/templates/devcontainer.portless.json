@@ -21,7 +21,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "explicit"
-        },
+        }
         // Dotfiles: Personalize your container with your shell configs, aliases, and preferences
         // Uncomment and configure to use your dotfiles repository:
         // "dotfiles.repository": "https://github.com/YOUR_USERNAME/dotfiles",
@@ -33,8 +33,6 @@
       "extensions": [
         // Core tools
         "anthropic.claude-code",
-        "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers",
         "redhat.vscode-yaml",
         "eamodio.gitlens",
         // Python (base stack includes Python 3.12)

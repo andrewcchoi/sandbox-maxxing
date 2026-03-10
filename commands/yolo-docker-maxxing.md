@@ -217,6 +217,16 @@ fi
 # Make scripts executable
 chmod +x .devcontainer/*.sh || { echo "ERROR: Cannot set script permissions"; exit 1; }
 
+# Validate no unreplaced placeholders remain
+echo "Validating templates..."
+UNREPLACED=$(grep -oh '{{[A-Z_]*}}' .devcontainer/devcontainer.json docker-compose.yml 2>/dev/null | sort -u)
+if [ -n "$UNREPLACED" ]; then
+  echo "ERROR: Unreplaced placeholders found:"
+  echo "$UNREPLACED" | sed 's/^/  /'
+  exit 1
+fi
+echo "  ✓ All placeholders replaced"
+
 # Success message
 echo ""
 echo "=========================================="

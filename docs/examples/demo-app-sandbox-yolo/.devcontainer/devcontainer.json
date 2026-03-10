@@ -21,9 +21,6 @@
         "mtxr.sqltools-driver-pg",
         "cweijan.vscode-database-client2",
 
-        "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers",
-
         "eamodio.gitlens",
         "mhutchie.git-graph",
         "donjayamanne.githistory",

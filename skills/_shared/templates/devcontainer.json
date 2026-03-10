@@ -21,7 +21,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "explicit"
-        },
+        }
         // Dotfiles: Personalize your container with your shell configs, aliases, and preferences
         // Uncomment and configure to use your dotfiles repository:
         // "dotfiles.repository": "https://github.com/YOUR_USERNAME/dotfiles",
@@ -33,8 +33,6 @@
       "extensions": [
         // Core tools
         "anthropic.claude-code",
-        "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers",
         "redhat.vscode-yaml",
         "eamodio.gitlens",
         // Python (base stack includes Python 3.12)
@@ -74,7 +72,7 @@
   "postAttachCommand": "",
   "waitFor": "postCreateCommand",
 
-  "forwardPorts": [{{APP_PORT}}, {{FRONTEND_PORT}}, {{POSTGRES_PORT}}, {{REDIS_PORT}}, {{KROKI_PORT}}],
+  "forwardPorts": [{{APP_PORT}}, {{FRONTEND_PORT}}, {{POSTGRES_PORT}}, {{REDIS_PORT}}],
 
   // GitHub Codespaces configuration
   // See: https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces
@@ -87,8 +85,7 @@
     "{{APP_PORT}}": { "label": "App", "onAutoForward": "notify" },
     "{{FRONTEND_PORT}}": { "label": "Frontend", "onAutoForward": "notify" },
     "{{POSTGRES_PORT}}": { "label": "PostgreSQL", "onAutoForward": "silent" },
-    "{{REDIS_PORT}}": { "label": "Redis", "onAutoForward": "silent" },
-    "{{KROKI_PORT}}": { "label": "Kroki Diagrams", "onAutoForward": "silent" }
+    "{{REDIS_PORT}}": { "label": "Redis", "onAutoForward": "silent" }
   },
   // Codespaces secrets: Configure in repo Settings > Secrets > Codespaces
   // ANTHROPIC_API_KEY, OPENAI_API_KEY, etc. will be available as env vars
@@ -103,8 +100,7 @@
     "TZ": "America/Los_Angeles",
     "NODE_OPTIONS": "--max-old-space-size=4096",
     "CLAUDE_CONFIG_DIR": "/home/node/.claude",
-    "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
-    "KROKI_URL": "http://kroki:8000"
+    "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
   },
 
   "remoteEnv": {

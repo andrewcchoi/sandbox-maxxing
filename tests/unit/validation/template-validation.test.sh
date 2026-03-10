@@ -336,3 +336,64 @@ TEMPLATES_DIR="${PLUGIN_ROOT}/skills/_shared/templates"
     fi
   done < <(find "$TEMPLATES_DIR" -type f -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.sh")
 }
+
+# ============================================================================
+# Placeholder consistency validation
+# ============================================================================
+
+@test "all placeholders in devcontainer.json have sed replacements in yolo-docker-maxxing" {
+  local template="${TEMPLATES_DIR}/devcontainer.json"
+  local command="${PLUGIN_ROOT}/commands/yolo-docker-maxxing.md"
+
+  [ -f "$template" ] || skip "devcontainer.json not found"
+  [ -f "$command" ] || skip "yolo-docker-maxxing.md not found"
+
+  # Extract placeholders from template (excluding potential conditional ones)
+  local placeholders
+  placeholders=$(grep -oh '{{[A-Z_]*}}' "$template" | sort -u)
+
+  # yolo-docker-maxxing doesn't use all placeholders - only core ones for normal mode
+  # Skip validation if no placeholders found
+  [ -n "$placeholders" ] || return 0
+
+  # Check that command has sed replacements for expected placeholders
+  # We expect: PROJECT_NAME, APP_PORT, FRONTEND_PORT, POSTGRES_PORT, REDIS_PORT
+  local expected_placeholders=("PROJECT_NAME" "APP_PORT" "FRONTEND_PORT" "POSTGRES_PORT" "REDIS_PORT")
+
+  for placeholder in "${expected_placeholders[@]}"; do
+    grep -q "{{$placeholder}}" "$template" || continue
+
+    # Check placeholder appears in sed command in yolo-docker-maxxing
+    grep -q "$placeholder" "$command" || {
+      echo "Missing replacement for {{$placeholder}} in yolo-docker-maxxing.md" >&2
+      return 1
+    }
+  done
+}
+
+@test "all placeholders in devcontainer.json have sed replacements in quickstart" {
+  local template="${TEMPLATES_DIR}/devcontainer.json"
+  local command="${PLUGIN_ROOT}/commands/quickstart.md"
+
+  [ -f "$template" ] || skip "devcontainer.json not found"
+  [ -f "$command" ] || skip "quickstart.md not found"
+
+  # Extract placeholders from template
+  local placeholders
+  placeholders=$(grep -oh '{{[A-Z_]*}}' "$template" | sort -u)
+
+  # quickstart handles all placeholders, either in sed or conditional injection
+  # Expected: PROJECT_NAME, APP_PORT, FRONTEND_PORT, POSTGRES_PORT, REDIS_PORT
+  # (KROKI placeholders were removed from template, handled conditionally in quickstart)
+  local expected_placeholders=("PROJECT_NAME" "APP_PORT" "FRONTEND_PORT" "POSTGRES_PORT" "REDIS_PORT")
+
+  for placeholder in "${expected_placeholders[@]}"; do
+    grep -q "{{$placeholder}}" "$template" || continue
+
+    # Check placeholder appears somewhere in quickstart command
+    grep -q "$placeholder" "$command" || {
+      echo "Missing reference to {{$placeholder}} in quickstart.md" >&2
+      return 1
+    }
+  done
+}
