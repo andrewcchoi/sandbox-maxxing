@@ -131,9 +131,11 @@ COPY --from=uv-source /usr/local/bin/uvx /usr/local/bin/
 
 # AWS CLI from official Amazon image (proxy-friendly)
 # Installs aws CLI for interacting with AWS services
+# NOTE: Do NOT copy /usr/local/bin/aws directly - it's a symlink that breaks when copied.
+# The aws CLI binary expects its bundled Python at a relative path from the symlink target.
 COPY --from=aws-cli-source /usr/local/aws-cli /usr/local/aws-cli
-COPY --from=aws-cli-source /usr/local/bin/aws /usr/local/bin/aws
-COPY --from=aws-cli-source /usr/local/bin/aws_completer /usr/local/bin/aws_completer
+RUN ln -sf /usr/local/aws-cli/v2/current/bin/aws /usr/local/bin/aws && \
+    ln -sf /usr/local/aws-cli/v2/current/bin/aws_completer /usr/local/bin/aws_completer
 
 # Database clients
 RUN apt-get update && apt-get install -y --no-install-recommends \
