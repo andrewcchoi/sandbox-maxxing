@@ -48,8 +48,9 @@ FROM composer:latest AS composer-source
 # Stage 7: Get GCC from official image (used when cpp-gcc partial is selected)
 FROM gcc:13-bookworm AS gcc-source
 
-# Stage 8: Get Azure CLI from official Microsoft image (used when azure-cli partial is selected)
-FROM mcr.microsoft.com/azure-cli:latest AS azure-cli-source
+# Stage 8: Azure CLI (removed - now installed via pip in azure-cli.dockerfile partial)
+# The mcr.microsoft.com/azure-cli:latest image changed structure, breaking multi-stage copy.
+# See azure-cli.dockerfile partial for details.
 
 # Stage 9: Get AWS CLI from official Amazon image (always installed for yolo)
 FROM amazon/aws-cli:latest AS aws-cli-source
