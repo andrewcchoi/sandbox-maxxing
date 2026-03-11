@@ -7,6 +7,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.9] - 2026-03-11
+
+### Fixed
+- **Hook permissions**: Fixed missing executable permissions on `session-end-hook.sh` and `sync-knowledge.sh`
+- **Broken link**: Fixed broken anchor link to SSL/proxy troubleshooting in README.md
+- **Diagram accuracy**: Updated `plugin-architecture.mmd` to show all 3 hook types (was showing 1)
+
+### Changed
+- **Documentation maintenance**: Removed stale v4.3.0 version reference from README.md
+- **Repository hygiene**: Comprehensive audit of documentation, scripts, and plugin components
+
 ## [4.13.8] - 2026-03-10
 
 ### Fixed
