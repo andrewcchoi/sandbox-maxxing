@@ -713,7 +713,7 @@ fi
 
 # Validate no unreplaced placeholders remain
 echo "  [3.3.1] Validating templates..."
-UNREPLACED=$(grep -oh '{{[A-Z_]*}}' .devcontainer/devcontainer.json docker-compose.yml 2>/dev/null | sort -u)
+UNREPLACED=$(grep -oh '{{[A-Z_]*}}' .devcontainer/devcontainer.json docker-compose.yml 2>/dev/null | sort -u || true)
 if [ -n "$UNREPLACED" ]; then
   echo "ERROR: Unreplaced placeholders found:"
   echo "$UNREPLACED" | sed 's/^/  /'
