@@ -1,47 +1,22 @@
 #!/usr/bin/env bats
 
-# Syntax validation tests for command scripts embedded in markdown
+# Syntax validation tests for command scripts
 
 load '../helpers/test_helper.bash'
 
-@test "yolo-docker-maxxing: bash script has valid syntax" {
-  # Extract bash script from markdown command file
-  local cmd_file="$BATS_TEST_DIRNAME/../../commands/yolo-docker-maxxing.md"
-  local script_file="$BATS_TEST_TMPDIR/yolo-script.sh"
-  local awk_script="$BATS_TEST_TMPDIR/extract.awk"
-
-  # Create awk script for extraction (avoids shell escaping issues)
-  cat > "$awk_script" << 'AWK_EOF'
-/^```bash$/,/^```$/ {
-  if (!/^```/) print
-}
-AWK_EOF
-
-  # Extract code block (between ```bash and ```)
-  awk -f "$awk_script" "$cmd_file" > "$script_file"
+@test "yolo-docker-maxxing: standalone script has valid syntax" {
+  local script_file="$BATS_TEST_DIRNAME/../../scripts/yolo-docker-maxxing.sh"
 
   # Validate bash syntax (does NOT execute, just checks syntax)
   run bash -n "$script_file"
   [ "$status" -eq 0 ]
 
-  # Verify script is not empty
+  # Verify script exists and is not empty
   [ -s "$script_file" ]
 }
 
 @test "yolo-docker-maxxing: heredocs are properly closed" {
-  local cmd_file="$BATS_TEST_DIRNAME/../../commands/yolo-docker-maxxing.md"
-  local script_file="$BATS_TEST_TMPDIR/yolo-script.sh"
-  local awk_script="$BATS_TEST_TMPDIR/extract.awk"
-
-  # Create awk script for extraction
-  cat > "$awk_script" << 'AWK_EOF'
-/^```bash$/,/^```$/ {
-  if (!/^```/) print
-}
-AWK_EOF
-
-  # Extract bash script
-  awk -f "$awk_script" "$cmd_file" > "$script_file"
+  local script_file="$BATS_TEST_DIRNAME/../../scripts/yolo-docker-maxxing.sh"
 
   # Count heredoc openers (<<) and closers (ENDOFFILE on its own line)
   local openers=$(grep -c "<<.*ENDOFFILE" "$script_file" || echo 0)
@@ -62,20 +37,7 @@ AWK_EOF
   # Set required environment
   export CLAUDE_PLUGIN_ROOT="$BATS_TEST_DIRNAME/../.."
 
-  # Extract and execute script
-  local cmd_file="$BATS_TEST_DIRNAME/../../commands/yolo-docker-maxxing.md"
-  local script_file="$test_dir/yolo-script.sh"
-  local awk_script="$test_dir/extract.awk"
-
-  # Create awk extraction script
-  cat > "$awk_script" << 'AWK_EOF'
-/^```bash$/,/^```$/ {
-  if (!/^```/) print
-}
-AWK_EOF
-
-  awk -f "$awk_script" "$cmd_file" > "$script_file"
-  chmod +x "$script_file"
+  local script_file="$BATS_TEST_DIRNAME/../../scripts/yolo-docker-maxxing.sh"
 
   # Execute (will succeed because CLAUDE_PLUGIN_ROOT points to valid plugin)
   run bash "$script_file"
@@ -155,31 +117,16 @@ echo done'
   [[ "$output" =~ "done" ]]
 }
 
-@test "yolo-docker-maxxing: actual command uses safe unquoted heredoc delimiters" {
-  # Verify that the actual command file uses ENDOFFILE, not 'EOF'
-  # This test would FAIL if someone reverts back to << 'EOF'
+@test "yolo-docker-maxxing: script uses safe quoted heredoc delimiters" {
+  # Verify that the standalone script uses safe heredoc patterns
+  # Using 'ENDOFFILE' (quoted) is safe because it's NOT embedded in bash -c
 
-  local cmd_file="$BATS_TEST_DIRNAME/../../commands/yolo-docker-maxxing.md"
-  local script_file="$BATS_TEST_TMPDIR/check-delimiters.sh"
-  local awk_script="$BATS_TEST_TMPDIR/extract.awk"
+  local script_file="$BATS_TEST_DIRNAME/../../scripts/yolo-docker-maxxing.sh"
 
-  # Extract bash script
-  cat > "$awk_script" << 'AWK_EOF'
-/^```bash$/,/^```$/ {
-  if (!/^```/) print
-}
-AWK_EOF
-
-  awk -f "$awk_script" "$cmd_file" > "$script_file"
-
-  # Verify NO quoted heredoc delimiters exist
-  run grep -c "<<.*'EOF'" "$script_file"
-  [ "$status" -ne 0 ] || [ "$output" -eq 0 ]
-
-  # Verify safe unquoted delimiters ARE used
+  # Verify heredoc delimiters ARE used (can be quoted or unquoted in standalone file)
   run grep -c "<<.*ENDOFFILE" "$script_file"
   [ "$status" -eq 0 ]
-  [ "$output" -ge 2 ]  # Should have at least 2 heredocs with ENDOFFILE
+  [ "$output" -ge 2 ]  # Should have at least 2 heredocs
 }
 
 @test "yolo-docker-maxxing: heredoc terminators are at column 0" {
@@ -187,17 +134,9 @@ AWK_EOF
   # If they're indented, heredocs break when executed
   # This test catches accidental indentation of ENDOFFILE lines
 
-  local cmd_file="$BATS_TEST_DIRNAME/../../commands/yolo-docker-maxxing.md"
-  local script_file="$BATS_TEST_TMPDIR/check-heredoc-indent.sh"
-  local awk_script="$BATS_TEST_TMPDIR/extract.awk"
+  local script_file="$BATS_TEST_DIRNAME/../../scripts/yolo-docker-maxxing.sh"
 
-  cat > "$awk_script" << 'AWK_EOF'
-/^```bash$/,/^```$/ { if (!/^```/) print }
-AWK_EOF
-
-  awk -f "$awk_script" "$cmd_file" > "$script_file"
-
-  # Count heredoc starters (<< ENDOFFILE)
+  # Count heredoc starters (<< ENDOFFILE or << 'ENDOFFILE')
   run grep -c "<<.*ENDOFFILE" "$script_file"
   local heredoc_count="$output"
 
@@ -208,3 +147,27 @@ AWK_EOF
   # Every heredoc opener should have a matching terminator at column 0
   [ "$terminators_at_col0" -eq "$heredoc_count" ]
 }
+
+@test "yolo-docker-maxxing: command file calls standalone script" {
+  # Verify the command file references the standalone script, not inline code
+
+  local cmd_file="$BATS_TEST_DIRNAME/../../commands/yolo-docker-maxxing.md"
+
+  # Should reference the standalone script
+  run grep -c "scripts/yolo-docker-maxxing.sh" "$cmd_file"
+  [ "$status" -eq 0 ]
+  [ "$output" -ge 1 ]
+
+  # Should NOT have a large bash code block (just examples)
+  local awk_script="$BATS_TEST_TMPDIR/extract.awk"
+  cat > "$awk_script" << 'AWK_EOF'
+/^```bash$/,/^```$/ { if (!/^```/) count++ }
+END { print count+0 }
+AWK_EOF
+
+  run awk -f "$awk_script" "$cmd_file"
+  # Should have 0 or very few lines (no embedded script)
+  [ "$output" -lt 10 ]
+}
+
+# Note: Dockerfile partial tests are in test_enhanced_partials.bats
