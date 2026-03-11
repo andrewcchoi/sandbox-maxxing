@@ -181,3 +181,30 @@ AWK_EOF
   [ "$status" -eq 0 ]
   [ "$output" -ge 2 ]  # Should have at least 2 heredocs with ENDOFFILE
 }
+
+@test "yolo-docker-maxxing: heredoc terminators are at column 0" {
+  # CRITICAL: Heredoc terminators MUST start at column 0
+  # If they're indented, heredocs break when executed
+  # This test catches accidental indentation of ENDOFFILE lines
+
+  local cmd_file="$BATS_TEST_DIRNAME/../../commands/yolo-docker-maxxing.md"
+  local script_file="$BATS_TEST_TMPDIR/check-heredoc-indent.sh"
+  local awk_script="$BATS_TEST_TMPDIR/extract.awk"
+
+  cat > "$awk_script" << 'AWK_EOF'
+/^```bash$/,/^```$/ { if (!/^```/) print }
+AWK_EOF
+
+  awk -f "$awk_script" "$cmd_file" > "$script_file"
+
+  # Count heredoc starters (<< ENDOFFILE)
+  run grep -c "<<.*ENDOFFILE" "$script_file"
+  local heredoc_count="$output"
+
+  # Count terminator lines at column 0 (just "ENDOFFILE" with nothing else)
+  run grep -c "^ENDOFFILE$" "$script_file"
+  local terminators_at_col0="$output"
+
+  # Every heredoc opener should have a matching terminator at column 0
+  [ "$terminators_at_col0" -eq "$heredoc_count" ]
+}
