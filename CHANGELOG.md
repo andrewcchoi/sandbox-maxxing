@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.8] - 2026-03-10
+
+### Fixed
+- **AWS CLI broken in container**: Fixed PyInstaller bundle path resolution error
+  - `libpython3.13.so.1.0` not found because symlinks were copied as files
+  - Now creates proper symlinks to `/usr/local/aws-cli/v2/current/bin/`
+- **Bicep CLI missing after build**: Added retry logic to `az bicep install`
+  - 3 retries with 10s delay for flaky network during Docker builds
+  - Verification step ensures installation succeeded
+- **Python .venv empty on fresh containers**: Removed premature `.venv` deletion
+  - `onCreateCommand` was deleting the pre-built venv before first use
+  - Cleanup now only runs in `updateContentCommand` (rebuild scenarios)
+
 ## [4.13.7] - 2026-03-10
 
 ### Fixed
