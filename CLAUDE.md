@@ -170,7 +170,7 @@ because they require root. These are pre-configured in the container image.
 
 6. **Git workaround** - If files named `HEAD`, `config`, `objects`, `refs` exist in working directory, use `git diff -- <files>` to separate paths from revisions.
 
-7. **Command execution pattern (CRITICAL)** - Do NOT pass command scripts directly to Bash tool as the `command` parameter. This causes `bash -c` wrapping which breaks heredoc syntax. **Correct pattern:** (1) Extract script to temp file using Write/awk, (2) Execute with `bash /tmp/file.sh`. This avoids quote escaping conflicts.
+7. **Command scripts use standalone files** - Commands with complex bash logic (heredocs, multi-line scripts) are stored as standalone `.sh` files in `scripts/` and called via `bash "${CLAUDE_PLUGIN_ROOT}/scripts/script-name.sh"`. This avoids `bash -c` heredoc parsing issues.
 
 ## Common Errors (from GitHub Issues)
 
