@@ -11,9 +11,9 @@ components:
   commands: 8
   skills: 3
   agents: 3
-  hooks: 1
+  hooks: 3
   shared_resources: 1
-last_updated: 2026-02-07
+last_updated: 2026-03-11
 purpose: Shows the component hierarchy of the sandboxxer plugin with relationships between commands, skills, agents, hooks, and shared resources
 ---
 -->
@@ -43,8 +43,10 @@ graph TB
             A3["interactive-<br/>troubleshooter<br/>Active diag"]
         end
 
-        subgraph Hooks["Hooks (1)"]
+        subgraph Hooks["Hooks (3)"]
             H1["PreToolUse<br/>Docker safety"]
+            H2["SessionStart<br/>Sync knowledge"]
+            H3["SessionEnd<br/>Cleanup"]
         end
 
         subgraph Shared["_shared/ Resources"]

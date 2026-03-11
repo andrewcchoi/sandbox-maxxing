@@ -1,6 +1,6 @@
 # Sandboxxer Plugin
 
-![Plugin version 4.13.8](https://img.shields.io/badge/version-4.13.8-blue)
+![Plugin version 4.13.9](https://img.shields.io/badge/version-4.13.9-blue)
 ![Claude Code official plugin](https://img.shields.io/badge/claude--code-plugin-purple)
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 ![Supported platforms: Linux, macOS, Windows WSL2](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows%20WSL2-lightgrey)
@@ -120,7 +120,7 @@ claude plugins list
 /sandboxxer:deploy-to-azure
 ```
 
-**Note:** v4.3.0 introduces project-type selection and interactive firewall customization. Use `/sandboxxer:yolo-docker-maxxing` (non-interactive YOLO docker maxxing) for the fastest path with sensible defaults.
+**Note:** `/sandboxxer:quickstart` provides project-type selection and interactive firewall customization. Use `/sandboxxer:yolo-docker-maxxing` (non-interactive YOLO docker maxxing) for the fastest path with sensible defaults.
 
 ## ⚡ Quick Start Features
 
@@ -171,7 +171,7 @@ If the installation script cannot be downloaded or the Anthropic servers are unr
 
 See [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#claude-code-installation) for details.
 
-> **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [TROUBLESHOOTING.md](docs/features/TROUBLESHOOTING.md#corporate-proxy--ssl-certificate-issues). For detailed Windows setup, see [Windows Guide](docs/windows/README.md).
+> **Windows Users:** For best performance, use WSL 2 with Docker Desktop and clone the repository to the WSL filesystem (`~/projects/`) rather than `/mnt/c/`. If you encounter line ending issues with shell scripts, the repository includes a `.gitattributes` file that enforces LF endings. For corporate environments with SSL/proxy, see [Network Issues](docs/features/troubleshooting/network.md). For detailed Windows setup, see [Windows Guide](docs/windows/README.md).
 
 > **Security Note:** Generated configurations include default development passwords (e.g., `POSTGRES_PASSWORD: devpassword`). Change all passwords before deploying to production or when working with sensitive data.
 
