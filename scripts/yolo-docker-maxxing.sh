@@ -204,12 +204,14 @@ fi
 echo "Processing templates..."
 if [ "$MODE" = "normal" ]; then
   # Replace PROJECT_NAME and all port placeholders
+  # Use explicit -e flags for Windows Git Bash compatibility (semicolon-separated
+  # multi-line sed commands fail silently on some Windows bash implementations)
   for f in .devcontainer/devcontainer.json docker-compose.yml; do
-    sed "s|{{PROJECT_NAME}}|$PROJECT_NAME|g; \
-         s|{{APP_PORT}}|$APP_PORT|g; \
-         s|{{FRONTEND_PORT}}|$FRONTEND_PORT|g; \
-         s|{{POSTGRES_PORT}}|$POSTGRES_PORT|g; \
-         s|{{REDIS_PORT}}|$REDIS_PORT|g" \
+    sed -e "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
+        -e "s|{{APP_PORT}}|$APP_PORT|g" \
+        -e "s|{{FRONTEND_PORT}}|$FRONTEND_PORT|g" \
+        -e "s|{{POSTGRES_PORT}}|$POSTGRES_PORT|g" \
+        -e "s|{{REDIS_PORT}}|$REDIS_PORT|g" \
       "$f" > "$f.tmp" || { echo "ERROR: sed template processing failed for $f"; exit 1; }
     [ -s "$f.tmp" ] || { echo "ERROR: sed produced empty output for $f"; exit 1; }
     mv "$f.tmp" "$f"
@@ -217,7 +219,7 @@ if [ "$MODE" = "normal" ]; then
 else
   # Portless mode: only replace PROJECT_NAME
   for f in .devcontainer/devcontainer.json docker-compose.yml; do
-    sed "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
+    sed -e "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
       "$f" > "$f.tmp" || { echo "ERROR: sed template processing failed for $f"; exit 1; }
     [ -s "$f.tmp" ] || { echo "ERROR: sed produced empty output for $f"; exit 1; }
     mv "$f.tmp" "$f"
