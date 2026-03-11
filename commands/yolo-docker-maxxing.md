@@ -42,6 +42,16 @@ allowed-tools: [Bash]
 - Execute the bash script in the current directory
 - Only ask questions if the script fails or returns errors
 
+### How to Execute (CRITICAL)
+
+**DO NOT pass the script directly to Bash tool as command parameter.** This causes bash -c wrapping which breaks heredoc syntax.
+
+**CORRECT pattern:**
+1. Extract the script block using: `awk '/^```bash$/,/^```$/ {if (!/^```/) print}' commands/yolo-docker-maxxing.md > /tmp/claude-1000/yolo.sh`
+2. Execute the file: `bash /tmp/claude-1000/yolo.sh`
+
+This avoids bash -c quote escaping issues with heredocs and ensures reliable execution.
+
 ## Determine Project Name
 
 **Note:** Claude performs argument substitution before execution. If the user provides a project name argument, Claude replaces the `basename $(pwd)` expression in the bash script with that value. The bash script itself does not process command-line arguments.
