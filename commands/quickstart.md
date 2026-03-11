@@ -729,12 +729,12 @@ if [ "$NEEDS_FIREWALL" = "Yes" ]; then
   echo "    Firewall enabled with categories: $DOMAIN_CATEGORIES"
 else
   # Create no-op firewall script
-  cat > .devcontainer/init-firewall.sh << 'EOF'
+  cat > .devcontainer/init-firewall.sh << ENDOFFILE
 #!/bin/bash
 # Firewall disabled - using Docker container isolation only
 echo "Firewall is disabled."
 exit 0
-EOF
+ENDOFFILE
   chmod +x .devcontainer/init-firewall.sh
   echo "    Firewall disabled"
 fi

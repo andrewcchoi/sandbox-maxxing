@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.7] - 2026-03-10
+
+### Fixed
+- **Command execution**: Fixed heredoc quoting conflicts in bash -c execution
+  - Changed `<< 'EOF'` to `<< ENDOFFILE` (unquoted) in yolo-docker-maxxing and quickstart commands
+  - Resolves "unexpected EOF while looking for matching `''" errors on Windows
+  - Added regression tests to prevent reversion to broken pattern
+
 ## [4.13.6] - 2026-03-10
 
 ### Fixed

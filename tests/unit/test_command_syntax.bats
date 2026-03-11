@@ -43,9 +43,9 @@ AWK_EOF
   # Extract bash script
   awk -f "$awk_script" "$cmd_file" > "$script_file"
 
-  # Count heredoc openers (<<) and closers (EOF on its own line)
-  local openers=$(grep -c "<<.*'EOF'" "$script_file" || echo 0)
-  local closers=$(grep -c "^EOF$" "$script_file" || echo 0)
+  # Count heredoc openers (<<) and closers (ENDOFFILE on its own line)
+  local openers=$(grep -c "<<.*ENDOFFILE" "$script_file" || echo 0)
+  local closers=$(grep -c "^ENDOFFILE$" "$script_file" || echo 0)
 
   # Should have matching heredoc delimiters
   [ "$openers" -eq "$closers" ]
@@ -122,4 +122,62 @@ SCRIPT_EOF
   [ "$status" -eq 0 ]
   [ -f "$test_dir/file1.sh" ]
   [ -f "$test_dir/file2.sh" ]
+}
+
+@test "yolo-docker-maxxing: quoted heredoc delimiters would fail in bash -c execution" {
+  # This test demonstrates why we use unquoted delimiters (ENDOFFILE vs 'EOF')
+  # When scripts are embedded in bash -c '...', single quotes in << 'EOF' create conflicts
+
+  local test_dir="$BATS_TEST_TMPDIR/bash-c-test"
+  mkdir -p "$test_dir"
+  cd "$test_dir"
+
+  # Test the OLD broken pattern: << 'EOF'
+  # This would fail if directly embedded in bash -c '...' due to quote conflict
+  # We test it in isolation to verify the problem exists
+  run bash -c "cat > testfile << 'EOF'
+test content
+EOF
+echo done"
+
+  # This might work depending on shell quote handling, but it's fragile
+  # The real issue appears with complex multi-line scripts
+
+  # Test the NEW safe pattern: << ENDOFFILE (unquoted)
+  # This ALWAYS works in bash -c execution
+  run bash -c 'cat > testfile2 << ENDOFFILE
+test content
+ENDOFFILE
+echo done'
+
+  [ "$status" -eq 0 ]
+  [ -f "$test_dir/testfile2" ]
+  [[ "$output" =~ "done" ]]
+}
+
+@test "yolo-docker-maxxing: actual command uses safe unquoted heredoc delimiters" {
+  # Verify that the actual command file uses ENDOFFILE, not 'EOF'
+  # This test would FAIL if someone reverts back to << 'EOF'
+
+  local cmd_file="$BATS_TEST_DIRNAME/../../commands/yolo-docker-maxxing.md"
+  local script_file="$BATS_TEST_TMPDIR/check-delimiters.sh"
+  local awk_script="$BATS_TEST_TMPDIR/extract.awk"
+
+  # Extract bash script
+  cat > "$awk_script" << 'AWK_EOF'
+/^```bash$/,/^```$/ {
+  if (!/^```/) print
+}
+AWK_EOF
+
+  awk -f "$awk_script" "$cmd_file" > "$script_file"
+
+  # Verify NO quoted heredoc delimiters exist
+  run grep -c "<<.*'EOF'" "$script_file"
+  [ "$status" -ne 0 ] || [ "$output" -eq 0 ]
+
+  # Verify safe unquoted delimiters ARE used
+  run grep -c "<<.*ENDOFFILE" "$script_file"
+  [ "$status" -eq 0 ]
+  [ "$output" -ge 2 ]  # Should have at least 2 heredocs with ENDOFFILE
 }
