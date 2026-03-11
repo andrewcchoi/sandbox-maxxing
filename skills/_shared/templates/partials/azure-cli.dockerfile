@@ -28,8 +28,12 @@ RUN curl --retry 5 --retry-delay 5 --retry-max-time 300 \
          --connect-timeout 30 --http1.1 \
          -fsSL https://aka.ms/install-azd.sh | bash
 
-# Install Bicep CLI
-RUN az bicep install
+# Install Bicep CLI with retry logic (network can be flaky during build)
+RUN for i in 1 2 3; do \
+      az bicep install && break || \
+      (echo "Retry $i: az bicep install failed, waiting..." && sleep 10); \
+    done && \
+    az bicep version || (echo "WARNING: Bicep CLI installation failed" && exit 1)
 
 # Add Azure CLI extensions for container deployments
 # Note: containerapp-compose was deprecated and merged into containerapp extension
