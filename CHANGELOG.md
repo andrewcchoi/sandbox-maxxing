@@ -11,8 +11,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - **AWS CLI broken in container**: Fixed PyInstaller bundle path resolution error
-  - `libpython3.13.so.1.0` not found because symlinks were copied as files
-  - Now creates proper symlinks to `/usr/local/aws-cli/v2/current/bin/`
+  - `libpython3.13.so.1.0` not found because symlinks confuse PyInstaller's path detection
+  - Now uses wrapper script that runs `aws` from its native directory
 - **Bicep CLI missing after build**: Added retry logic to `az bicep install`
   - 3 retries with 10s delay for flaky network during Docker builds
   - Verification step ensures installation succeeded
