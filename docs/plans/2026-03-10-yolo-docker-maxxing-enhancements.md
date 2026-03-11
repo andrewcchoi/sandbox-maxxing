@@ -642,8 +642,8 @@ Add new test:
   grep -q "COPY --from=go-source /usr/local/go" .devcontainer/Dockerfile
   grep -q "GOROOT=/usr/local/go" .devcontainer/Dockerfile
 
-  # Check for Azure CLI partial
-  grep -q "COPY --from=azure-cli-source" .devcontainer/Dockerfile
+  # Check for Azure CLI partial (uses pip install, not multi-stage copy)
+  grep -q "pip install.*azure-cli" .devcontainer/Dockerfile
   grep -q "Azure Developer CLI" .devcontainer/Dockerfile
 
   # Check for Terraform partial
