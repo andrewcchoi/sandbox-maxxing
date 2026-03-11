@@ -1,6 +1,6 @@
 {
   "name": "sandbox-maxxing-tests",
-  "version": "4.13.6",
+  "version": "4.13.7",
   "description": "Test suite for sandbox-maxxing Claude Code plugin",
   "private": true,
   "devDependencies": {
