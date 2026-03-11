@@ -204,21 +204,21 @@ else
 fi
 
 # Generate no-op firewall script (YOLO mode)
-cat > .devcontainer/init-firewall.sh << 'EOF'
+cat > .devcontainer/init-firewall.sh << ENDOFFILE
 #!/bin/bash
 # YOLO Mode - No Firewall
 echo "Firewall disabled (YOLO mode) - using Docker container isolation"
 exit 0
-EOF
+ENDOFFILE
 chmod +x .devcontainer/init-firewall.sh
 
 # Create or update .env
 if [ ! -f ".env" ]; then
   # Fresh .env — write template
-  cat > .env << 'EOF'
+  cat > .env << ENDOFFILE
 # YOLO Mode Configuration
 ENABLE_FIREWALL=false
-EOF
+ENDOFFILE
   echo "Created new .env"
 else
   # Existing .env — merge required values only
