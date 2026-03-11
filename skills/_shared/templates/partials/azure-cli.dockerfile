@@ -32,8 +32,8 @@ RUN curl --retry 5 --retry-delay 5 --retry-max-time 300 \
 RUN az bicep install
 
 # Add Azure CLI extensions for container deployments
-RUN az extension add --name containerapp --yes && \
-    az extension add --name containerapp-compose --yes
+# Note: containerapp-compose was deprecated and merged into containerapp extension
+RUN az extension add --name containerapp --yes
 
 USER node
 
