@@ -14,7 +14,7 @@ if [ -z "$VOLUMES" ]; then
 fi
 
 # Ensure host directories exist
-mkdir -p "$HOST_CLAUDE_DIR/plans" "$HOST_CLAUDE_DIR/state"
+mkdir -p "$HOST_CLAUDE_DIR/plans" "$HOST_CLAUDE_DIR/state" "$HOST_CLAUDE_DIR/projects"
 
 # Sync from each matching volume
 echo "$VOLUMES" | while IFS= read -r VOLUME_NAME; do
@@ -23,10 +23,10 @@ echo "$VOLUMES" | while IFS= read -r VOLUME_NAME; do
 
     # Check if volume has Claude-like structure (plans/ or state/ dir)
     HAS_CLAUDE_DATA=$(docker run --rm -v "${VOLUME_NAME}:/source:ro" alpine sh -c \
-      '[ -d /source/plans ] || [ -d /source/state ] && echo "yes" || echo "no"' 2>/dev/null || echo "no")
+      '[ -d /source/plans ] || [ -d /source/state ] || [ -d /source/projects ] && echo "yes" || echo "no"' 2>/dev/null || echo "no")
 
     if [ "$HAS_CLAUDE_DATA" = "no" ]; then
-        echo "  - Skipping (no plans/ or state/ directory)"
+        echo "  - Skipping (no plans/, state/, or projects/ directory)"
         continue
     fi
 
@@ -43,6 +43,9 @@ echo "$VOLUMES" | while IFS= read -r VOLUME_NAME; do
 
         # Sync projects.json
         [ -f /source/projects.json ] && cp /source/projects.json /dest/ 2>/dev/null || true
+
+        # Sync session transcripts incrementally (BusyBox cp -au: archive + update-only, idempotent)
+        [ -d /source/projects ] && cp -au /source/projects/. /dest/projects/ 2>/dev/null || true
       '
 
     echo "  - Synced knowledge files"

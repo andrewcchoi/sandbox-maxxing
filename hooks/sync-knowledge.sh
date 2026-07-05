@@ -29,6 +29,7 @@ fi
 mkdir -p -m 0700 "$HOST_CLAUDE_DIR"
 mkdir -p -m 0700 "$HOST_CLAUDE_DIR/plans"
 mkdir -p -m 0700 "$HOST_CLAUDE_DIR/state"
+mkdir -p -m 0700 "$HOST_CLAUDE_DIR/projects"
 
 # Track actual synced count
 SYNCED_COUNT=0
@@ -57,7 +58,7 @@ while IFS= read -r VOLUME_NAME; do
     # Use pinned Alpine version for security (3.19 is stable LTS)
     HAS_CLAUDE_DATA=$(docker run --rm --user "$(id -u):$(id -g)" \
       -v "${VOLUME_NAME}:/source:ro" alpine:3.19 sh -c \
-      '[ -d /source/plans ] || [ -d /source/state ] && echo "yes" || echo "no"' 2>&1) || {
+      '[ -d /source/plans ] || [ -d /source/state ] || [ -d /source/projects ] && echo "yes" || echo "no"' 2>&1) || {
         echo "  - Skipping (docker error)" >&2
         continue
     }
@@ -66,7 +67,7 @@ while IFS= read -r VOLUME_NAME; do
     HAS_CLAUDE_DATA=$(echo "$HAS_CLAUDE_DATA" | tail -n1)
 
     if [ "$HAS_CLAUDE_DATA" = "no" ]; then
-        echo "  - Skipping (no plans/ or state/ directory)"
+        echo "  - Skipping (no plans/, state/, or projects/ directory)"
         continue
     fi
 
@@ -85,6 +86,9 @@ while IFS= read -r VOLUME_NAME; do
 
         # Sync projects.json
         [ -f /source/projects.json ] && cp /source/projects.json /dest/ 2>/dev/null || true
+
+        # Sync session transcripts incrementally (BusyBox cp -au: archive + update-only, idempotent)
+        [ -d /source/projects ] && cp -au /source/projects/. /dest/projects/ 2>/dev/null || true
       '; then
         echo "  - Synced knowledge files"
         SYNCED_COUNT=$((SYNCED_COUNT + 1))

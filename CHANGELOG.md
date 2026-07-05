@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Hooks**: `sync-knowledge` SessionStart hook now also mirrors `projects/` (session transcripts) from Docker volumes onto the host, alongside the existing `plans/`, `state/`, and `projects.json` syncs.
+  - Uses `cp -au` (BusyBox archive + update-only) so subsequent runs only copy new/changed transcripts — the sync stays sub-second after the first pass.
+  - Extends the skip-gate: a volume is now considered claude-like if it contains any of `plans/`, `state/`, or `projects/`. Volumes missing all three still print `- Skipping (no plans/, state/, or projects/ directory)`.
+  - Enables host-scoped analytics (like the `/insights` slash command) to see the full history of DevContainer work, not just native host sessions.
+  - Applied consistently to the active hook (`hooks/sync-knowledge.sh`) and the two template variants (`.devcontainer/sync-knowledge.sh`, `skills/_shared/templates/sync-knowledge.sh`) that ship into new devcontainer projects.
+  - Complements the forward-looking bind-mount approach discussed in issue #366 — sync-knowledge is the retroactive fix for pre-existing and legacy Docker volumes.
+
 ### Changed
 - **Commands**: Major refactor of `/sandboxxer:quickstart` command (Issue #271)
   - Reduced from 1,467 lines to 759 lines (48% reduction)
