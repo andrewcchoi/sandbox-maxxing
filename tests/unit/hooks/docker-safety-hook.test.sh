@@ -276,3 +276,347 @@ HOOK_SCRIPT="${PLUGIN_ROOT}/hooks/docker-safety-hook.sh"
   # Should still work (truncates to 1MB)
   assert_success
 }
+
+# --- Regression: false positives fixed by token-based parsing ---
+
+@test "docker-safety-hook: allows docker run --rm (the eval false positive)" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run --rm img ffmpeg -version")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows docker run --rm with container rm arg" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run --rm -v /data:/data img rm -rf /data/tmp")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows docker exec running rm inside container" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker exec c rm /tmp/f")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows rm after docker in a separate command" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker logs x | tail -5; rm -f out.txt")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows rm after docker with &&" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker build -t img . && rm -rf build/")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows --stop-timeout is not stop" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run -d --stop-timeout 30 nginx")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows --restart policy is not restart" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run -d --restart unless-stopped nginx")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows host dir with trailing slash is not root mount" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run -v /home/me/out/:/out img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows named volume mount" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run --mount type=volume,src=data,dst=/data img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows --network none" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run --network none img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows compose up" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker compose -f a.yml up -d")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows mention of docker without docker binary" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "grep -rn dockerfile .")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+# --- Regression: gaps in the old regex that must now prompt ---
+
+@test "docker-safety-hook: prompts on global --context option before rm" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker --context foo rm x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on global -H option before kill" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker -H unix:///x kill y")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on --context= form before container rm" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker --context=foo container rm x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on container rm" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker container rm abc")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on image prune" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker image prune -af")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on volume rm" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker volume rm data")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on compose with options then down" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker compose -f a.yml -p proj down -v")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on legacy docker-compose down" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker-compose down")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on rm via command substitution" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker rm \$(docker ps -aq)")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on rm via xargs" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker ps -aq | xargs docker rm")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on rm via sh -c with quotes" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "sh -c 'docker rm x'")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on sudo docker kill" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "sudo docker kill c")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on full path binary" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "/usr/bin/docker rmi img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on --mount bind of host root" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run --mount type=bind,src=/,dst=/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on -v root mount with space and quotes" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run -v '/:/host' img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on --network host (space form)" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run --network host img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on --cap-add SYS_ADMIN (space form)" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker run --cap-add SYS_ADMIN img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on container run --privileged" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker container run --privileged img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on container stop" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker container stop c")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "stop/restart/pause"
+}
+
+@test "docker-safety-hook: prompts on compose restart" {
+  require_command jq
+
+  input=$(create_hook_input "Bash" "docker compose restart web")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "stop/restart/pause"
+}

@@ -7,6 +7,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.10] - 2026-11-08
+
+### Fixed
+- **docker-safety-hook false positives**: `docker run --rm ...` prompted as "Destructive Docker command" because `\brm\b` matched the `rm` in `--rm`. Any compound command with `rm`/`kill`/`stop` anywhere after the word docker (`docker logs x | tail; rm -f out`, `docker run --stop-timeout 30`, `docker run --restart ...`) prompted too. A long evaluation run hit ~40 spurious prompts, and hook asks are not skipped by `bypassPermissions`.
+  - Matching is now token-based: split into simple commands, strip quotes, skip docker global options and management groups, and classify only the actual subcommand.
+  - `-v $DIR/:/out` no longer counts as a host-root mount.
+
+### Security
+- **docker-safety-hook gaps closed**: these now prompt, where the old regex missed them: `docker --context foo rm x`, `docker -H unix:///x kill y`, `--mount type=bind,src=/,...`, `-v '/:/host'`, space-separated `--network host` / `--pid host` / `--cap-add SYS_ADMIN`, `docker-compose down`, `xargs docker rm`, `sh -c 'docker rm x'`.
+- 32 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh`.
+
 ## [4.13.9] - 2026-03-11
 
 ### Fixed
