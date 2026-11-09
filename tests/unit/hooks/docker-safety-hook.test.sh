@@ -853,3 +853,101 @@ jq_hook_input() { printf '%b' "$1" | jq -Rs '{tool_name:"Bash",tool_input:{comma
   assert_success
   assert_output_contains '"permissionDecision": "ask"'
 }
+
+# --- Hardening round 3: source expansion, socket case, -v= in bundles ---
+
+@test "docker-safety-hook: prompts on bundle with = before value (-itv=/:/h)" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -itv=/:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on docker socket in other case" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v /var/run/Docker.Sock:/s img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on relative path escaping to /" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v ../../../../../../../../../..:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on unknown variable source" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v $X:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on command substitution source" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v $(pwd)/x:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on --mount src from command substitution" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run --mount type=bind,src=$(pwd),dst=/w img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: allows $PWD source" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v $PWD:/work img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows ~ subdir source" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v ~/proj:/p img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows relative ./out source" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v ./out:/out img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}

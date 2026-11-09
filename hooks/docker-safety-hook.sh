@@ -40,6 +40,10 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null) || {
 # Exit early if no command
 [ -z "$COMMAND" ] && exit 0
 
+# Working directory the command will run in (for relative mount sources)
+HOOK_CWD=$(echo "$INPUT" | jq -r '.cwd // empty' 2>/dev/null) || HOOK_CWD=""
+[ -n "$HOOK_CWD" ] || HOOK_CWD="$PWD"
+
 # Fast path: nothing docker-related at all (ignoring quotes/backslashes,
 # so d\ocker and d"o"cker still get parsed)
 printf '%s' "$COMMAND" | tr -d "\\\\\"'" | grep -qi 'docker' || exit 0
@@ -105,25 +109,52 @@ is_sensitive_path() {
     return 1
 }
 
+# Turn a mount source into an absolute host path where we can know it:
+#   ~, $HOME, ${HOME}, $PWD, ${PWD} expand; ./x, ../x, x/y resolve against the
+#   command's cwd. Prints nothing for a named volume (no slash, no leading dot).
+# Returns 1 when the source can't be known statically (other $VARs, backticks,
+# or empty, which is what a split-off $(...) leaves behind), so it prompts.
+expand_src() {
+    local src="$1"
+    case "$src" in
+        "~"|"~/"*) src="$HOME${src#\~}" ;;
+        '${HOME}'*) src="$HOME${src#\$\{HOME\}}" ;;
+        '$HOME'*) src="$HOME${src#\$HOME}" ;;
+        '${PWD}'*) src="$HOOK_CWD${src#\$\{PWD\}}" ;;
+        '$PWD'*) src="$HOOK_CWD${src#\$PWD}" ;;
+    esac
+    case "$src" in ""|*'$'*|*'`'*) return 1 ;; esac
+    case "$src" in
+        /*) printf '%s\n' "$src" ;;
+        .*|*/*) printf '%s\n' "$HOOK_CWD/$src" ;;
+        *) ;;  # named volume
+    esac
+    return 0
+}
+
 # Check both the lexical form (//, /x/.., /.) and the symlink-resolved form.
+# Sources that can't be resolved statically count as sensitive.
 is_sensitive_src() {
-    local lex res
-    lex=$(norm_path "$1"); is_sensitive_path "$lex" && return 0
-    res=$(resolved_path "$1"); [ -n "$res" ] && is_sensitive_path "$res" && return 0
+    local path lex res
+    path=$(expand_src "$1") || return 0
+    [ -n "$path" ] || return 1
+    lex=$(norm_path "$path"); is_sensitive_path "$lex" && return 0
+    res=$(resolved_path "$path"); [ -n "$res" ] && is_sensitive_path "$res" && return 0
+    case "$(lc "${res:-$lex}")" in *docker.sock) return 0 ;; esac
     return 1
 }
 
 # Mount source (text before the first ':' of a -v/--volume value) that grants
 # host-level access, or anything mounting the docker socket.
 is_dangerous_volume() {
-    case "$1" in *docker.sock*) return 0 ;; esac
+    case "$(lc "$1")" in *docker.sock*) return 0 ;; esac
     is_sensitive_src "${1%%:*}"
 }
 
 # --mount value: type=bind,src=/,dst=/h  or anything mounting docker.sock
 is_dangerous_mount() {
-    local field val
-    case "$1" in *docker.sock*) return 0 ;; esac
+    local field
+    case "$(lc "$1")" in *docker.sock*) return 0 ;; esac
     local IFS=,
     for field in $1; do
         case "$(lc "$field")" in
@@ -161,7 +192,7 @@ has_privileged_flags() {
             # nothing follows, the value is the next token. Long options (--*)
             # never match because the second char must be a letter.
             -v?*|-[a-z]*v*)
-                local rest="${tok#-}"; rest="${rest#*v}"
+                local rest="${tok#-}"; rest="${rest#*v}"; rest="${rest#=}"
                 if [ -n "$rest" ]; then
                     is_dangerous_volume "$rest" && return 0
                 else

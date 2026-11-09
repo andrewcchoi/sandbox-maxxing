@@ -28,7 +28,12 @@ All notable changes to this project will be documented in this file.
   - root aliases (`/proc/<pid>/root`) and system dirs (`/etc`, `/root`, `/proc`, `/sys`, `/dev`, `/boot`, `/run`, `/var/run`, the `/home` parent) now prompt
   - path values keep their case (only names are lowercased)
   - no bash-4-only syntax, so it still runs on macOS bash 3.2
-- 53 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (77 total).
+- **docker-safety-hook, third hardening round** (from review):
+  - mount sources expand `~`, `$HOME` and `$PWD`, and relative paths resolve against the command's cwd
+  - sources that can't be resolved statically prompt: any other `$VAR`, `$(...)`, or backticks. So `-v $SP/x:/w` now asks, while `-v $PWD:/w` doesn't.
+  - the docker socket is matched case-insensitively and after symlink resolution
+  - `-itv=/:/h` is handled
+- 62 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (86 total).
 
 ## [4.13.9] - 2026-03-11
 
