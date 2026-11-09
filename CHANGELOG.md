@@ -39,7 +39,8 @@ All notable changes to this project will be documented in this file.
   - paths cut by a `$(...)` or a backtick in the middle
   - relative or variable sources after a `cd`, `export`, `VAR=` or similar earlier in the same command line, or as an inline prefix
 - **docker-safety-hook**: globs after a `${HOME}`/`${PWD}` prefix now prompt, and full-path `*/env`/`*/cd`, plus `unset`/`printf`/`read`/`local`/`let`/`mapfile`/`readarray`/`getopts`/`builtin`/`command`/`for`/`select`/`coproc`/`case`/`trap`/`alias`/`function`/`shopt`/`exec`, taint relative sources.
-- 78 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (102 total).
+- **docker-safety-hook**: the check for cwd and environment changes is now a pre-pass over the whole command line (plus `while`/`until`), so a `cd` written after a docker call inside a loop still counts. Docker's own arguments (`-e A=1`) no longer count.
+- 80 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (104 total).
 
 ## [4.13.9] - 2026-03-11
 

@@ -286,6 +286,24 @@ SEGMENTS=$(printf '%s\n' "$COMMAND" \
     | tr -d "\"'" \
     | sed -e 's/\$(/$\n/g' -e 's/`/$\n/g' -e 's/[;&|()]/\n/g')
 
+# Pass 1: taint. If anything anywhere on the command line could change cwd or
+# HOME/PWD, relative and variable mount sources are untrusted. This is
+# position-independent on purpose: inside a loop or function, a `cd` written
+# after the docker call still runs before it on the next iteration. Tokens
+# after a docker binary are its arguments (-e A=1), so scanning a segment
+# stops there; an inline prefix like `HOME=/ docker ...` still counts.
+while IFS= read -r seg; do
+    [ -z "${seg// }" ] && continue
+    read -ra toks <<< "$seg"
+    for ((k = 0; k < ${#toks[@]}; k++)); do
+        case "$(lc "${toks[k]}")" in
+            docker|*/docker|docker-compose|*/docker-compose) break ;;
+            cd|pushd|popd|export|set|unset|source|.|eval|env|declare|typeset|readonly|local|let|printf|read|mapfile|readarray|getopts|builtin|command|for|while|until|select|coproc|case|trap|alias|function|shopt|exec|*/env|*/cd|[a-z_]*=*) CTX_UNTRUSTED=1 ;;
+        esac
+    done
+done <<< "$SEGMENTS"
+
+# Pass 2: classify every docker invocation.
 while IFS= read -r seg; do
     [ -z "${seg// }" ] && continue
     read -ra toks <<< "$seg"
@@ -293,8 +311,6 @@ while IFS= read -r seg; do
         case "$(lc "${toks[k]}")" in
             docker|*/docker) classify 0 "${toks[@]:k+1}" ;;
             docker-compose|*/docker-compose) classify 1 "${toks[@]:k+1}" ;;
-            # cwd/env changers and inline VAR=... prefixes taint what follows
-            cd|pushd|popd|export|set|unset|source|.|eval|env|declare|typeset|readonly|local|let|printf|read|mapfile|readarray|getopts|builtin|command|for|select|coproc|case|trap|alias|function|shopt|exec|*/env|*/cd|[a-z_]*=*) CTX_UNTRUSTED=1 ;;
         esac
     done
 done <<< "$SEGMENTS"

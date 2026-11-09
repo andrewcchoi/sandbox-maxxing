@@ -1124,3 +1124,23 @@ jq_hook_input() { printf '%b' "$1" | jq -Rs '{tool_name:"Bash",tool_input:{comma
   assert_success
   assert_output_contains '"permissionDecision": "ask"'
 }
+
+@test "docker-safety-hook: prompts when cd follows docker inside a loop" {
+  require_command jq
+
+  input=$(jq_hook_input 'while :; do docker run -v ./x:/h img; cd /; done')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+}
+
+@test "docker-safety-hook: docker -e VAR= does not taint a later relative source" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -e A=1 img true && docker run -v ./o:/o img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
