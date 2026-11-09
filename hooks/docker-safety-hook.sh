@@ -44,6 +44,9 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null) || {
 # so d\ocker and d"o"cker still get parsed)
 printf '%s' "$COMMAND" | tr -d "\\\\\"'" | grep -qi 'docker' || exit 0
 
+# Lowercase without bash-4 ${var,,} (macOS ships bash 3.2).
+lc() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
+
 emit_ask() {
     jq -n --arg reason "$1" '{
       hookSpecificOutput: {
@@ -55,7 +58,7 @@ emit_ask() {
 }
 
 # docker global options that consume the next token as their value
-# (tokens are lowercased before matching, so -H arrives as -h)
+# (names are lowercased before matching, so -H arrives as -h)
 is_global_value_opt() {
     case "$1" in
         -c|--context|-h|--host|--config|-l|--log-level|--tlscacert|--tlscert|--tlskey) return 0 ;;
@@ -84,13 +87,37 @@ norm_path() {
     case "$1" in /*) realpath -m -s -- "$1" 2>/dev/null || printf '%s\n' "$1" ;; *) printf '%s\n' "$1" ;; esac
 }
 
-# Mount source (text before the first ':' of a -v/--volume value) that grants
-# host-level access: the host root or the docker socket.
-is_dangerous_volume() {
-    local src="${1%%:*}"
-    [ "$(norm_path "$src")" = "/" ] && return 0
-    case "$1" in *docker.sock*) return 0 ;; esac
+# Resolve symlinks too (e.g. a link pointing at /). Empty if unavailable.
+resolved_path() {
+    case "$1" in /*) realpath -m -- "$1" 2>/dev/null ;; esac
+}
+
+# A host path whose bind mount grants host-level access: the root itself or a
+# root alias (/proc/<pid>/root), or system dirs: /etc /root /proc /sys /dev
+# /boot /run /var/run, or the /home parent itself. Ordinary project dirs under
+# /home/<user>/... are fine.
+is_sensitive_path() {
+    case "$1" in
+        /|/home) return 0 ;;
+        /etc|/etc/*|/root|/root/*|/proc|/proc/*|/sys|/sys/*|/dev|/dev/*|/boot|/boot/*) return 0 ;;
+        /run|/run/*|/var/run|/var/run/*) return 0 ;;
+    esac
     return 1
+}
+
+# Check both the lexical form (//, /x/.., /.) and the symlink-resolved form.
+is_sensitive_src() {
+    local lex res
+    lex=$(norm_path "$1"); is_sensitive_path "$lex" && return 0
+    res=$(resolved_path "$1"); [ -n "$res" ] && is_sensitive_path "$res" && return 0
+    return 1
+}
+
+# Mount source (text before the first ':' of a -v/--volume value) that grants
+# host-level access, or anything mounting the docker socket.
+is_dangerous_volume() {
+    case "$1" in *docker.sock*) return 0 ;; esac
+    is_sensitive_src "${1%%:*}"
 }
 
 # --mount value: type=bind,src=/,dst=/h  or anything mounting docker.sock
@@ -99,10 +126,9 @@ is_dangerous_mount() {
     case "$1" in *docker.sock*) return 0 ;; esac
     local IFS=,
     for field in $1; do
-        case "$field" in
+        case "$(lc "$field")" in
             src=*|source=*)
-                val="${field#*=}"
-                [ "$(norm_path "$val")" = "/" ] && return 0 ;;
+                is_sensitive_src "${field#*=}" && return 0 ;;
         esac
     done
     return 1
@@ -112,27 +138,36 @@ is_dangerous_mount() {
 # Prints nothing; returns 0 if any dangerous flag is present.
 has_privileged_flags() {
     local -a t=("$@")
-    local n=${#t[@]} i tok next
+    local n=${#t[@]} i tok next lnext
     for ((i = 0; i < n; i++)); do
         tok="${t[i]}"
         next="${t[i+1]:-}"
-        case "$tok" in
+        lnext=$(lc "$next")
+        case "$(lc "$tok")" in
             --privileged=false|--privileged=0) ;;
             --privileged*) return 0 ;;
             --cap-add=all|--cap-add=sys_admin) return 0 ;;
-            --cap-add) case "$next" in all|sys_admin) return 0 ;; esac ;;
+            --cap-add) case "$lnext" in all|sys_admin) return 0 ;; esac ;;
             --security-opt=*unconfined*) return 0 ;;
-            --security-opt) case "$next" in *unconfined*) return 0 ;; esac ;;
+            --security-opt) case "$lnext" in *unconfined*) return 0 ;; esac ;;
             --net=host|--network=host|--pid=host|--ipc=host|--uts=host|--userns=host) return 0 ;;
-            --net|--network|--pid|--ipc|--uts|--userns) [ "$next" = "host" ] && return 0 ;;
+            --net|--network|--pid|--ipc|--uts|--userns) [ "$lnext" = "host" ] && return 0 ;;
             --device=/dev/*) return 0 ;;
             --device) case "$next" in /dev/*) return 0 ;; esac ;;
             -v=*|--volume=*) is_dangerous_volume "${tok#*=}" && return 0 ;;
             -v|--volume) is_dangerous_volume "$next" && return 0 ;;
-            # bundled short flags ending in v (-itv /:/h): value is the next token
-            -[a-z]*v) is_dangerous_volume "$next" && return 0 ;;
-            # attached short value (-v/:/h); excludes long options (--*)
-            -v?*) is_dangerous_volume "${tok#-v}" && return 0 ;;
+            # Short-flag bundle containing v (-v/:/h, -itv /:/h, -itv/:/h):
+            # getopt-style, everything after the first v is the value; if
+            # nothing follows, the value is the next token. Long options (--*)
+            # never match because the second char must be a letter.
+            -v?*|-[a-z]*v*)
+                local rest="${tok#-}"; rest="${rest#*v}"
+                if [ -n "$rest" ]; then
+                    is_dangerous_volume "$rest" && return 0
+                else
+                    is_dangerous_volume "$next" && return 0
+                fi
+                ;;
             --mount=*) is_dangerous_mount "${tok#*=}" && return 0 ;;
             --mount) is_dangerous_mount "$next" && return 0 ;;
         esac
@@ -149,31 +184,36 @@ DISRUPTIVE=0
 classify() {
     local compose="$1"; shift
     local -a t=("$@")
+    # Names (options, groups, subcommands) compare case-insensitively; values
+    # such as mount paths keep their case so symlinks and real paths resolve.
+    local -a l=()
+    local x
+    for x in ${t[@]+"${t[@]}"}; do l+=("$(lc "$x")"); done
     local n=${#t[@]} i=0 group="" sub=""
 
     if [ "$compose" = "0" ]; then
         # Skip docker global options
         while ((i < n)); do
-            case "${t[i]}" in
+            case "${l[i]}" in
                 -*=*) ((i++)) ;;
-                -*) if is_global_value_opt "${t[i]}"; then ((i += 2)); else ((i++)); fi ;;
+                -*) if is_global_value_opt "${l[i]}"; then ((i += 2)); else ((i++)); fi ;;
                 *) break ;;
             esac
         done
         ((i < n)) || return 0
-        if [ "${t[i]}" = "compose" ]; then
+        if [ "${l[i]}" = "compose" ]; then
             compose=1; ((i++))
-        elif is_mgmt_group "${t[i]}"; then
-            group="${t[i]}"; ((i++))
+        elif is_mgmt_group "${l[i]}"; then
+            group="${l[i]}"; ((i++))
         fi
     fi
 
     # Find the subcommand, skipping options of the group / compose
     while ((i < n)); do
-        case "${t[i]}" in
+        case "${l[i]}" in
             -*=*) ((i++)) ;;
-            -*) if [ "$compose" = "1" ] && is_compose_value_opt "${t[i]}"; then ((i += 2)); else ((i++)); fi ;;
-            *) sub="${t[i]}"; break ;;
+            -*) if [ "$compose" = "1" ] && is_compose_value_opt "${l[i]}"; then ((i += 2)); else ((i++)); fi ;;
+            *) sub="${l[i]}"; break ;;
         esac
     done
     [ -n "$sub" ] || return 0
@@ -193,20 +233,20 @@ classify() {
 
 # Join backslash-newline continuations and drop remaining backslash escapes
 # (so `d\ocker r\m` and multi-line commands parse like the shell sees them),
-# split into simple-command segments, strip quotes, lowercase.
+# split into simple-command segments, strip quotes. Case is preserved here;
+# names are lowercased where they are compared.
 SEGMENTS=$(printf '%s\n' "$COMMAND" \
     | sed -e ':a' -e 'N' -e '$!ba' -e 's/\\\n//g' \
     | tr -d '\\' \
-    | tr '[:upper:]' '[:lower:]' \
     | tr -d "\"'" \
     | sed -e 's/\$(/\n/g' -e 's/[;&|()`]/\n/g')
 
 while IFS= read -r seg; do
     [ -z "${seg// }" ] && continue
-    case "$seg" in *docker*) ;; *) continue ;; esac
+    case "$(lc "$seg")" in *docker*) ;; *) continue ;; esac
     read -ra toks <<< "$seg"
     for ((k = 0; k < ${#toks[@]}; k++)); do
-        case "${toks[k]}" in
+        case "$(lc "${toks[k]}")" in
             docker|*/docker) classify 0 "${toks[@]:k+1}" ;;
             docker-compose|*/docker-compose) classify 1 "${toks[@]:k+1}" ;;
         esac

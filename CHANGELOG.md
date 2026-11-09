@@ -22,7 +22,13 @@ All notable changes to this project will be documented in this file.
   - `--privileged=<anything but false/0>`
   - the `remove` alias (`docker image remove`)
   - backslash-newline continuations, backslash escapes, and quoted binary names (`d\\ocker`, `d"o"cker`)
-- 45 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (69 total).
+- **docker-safety-hook, second hardening round** (from review):
+  - short-flag bundles are parsed getopt-style (`-itv/:/h`)
+  - bind sources are checked in both written and symlink-resolved form
+  - root aliases (`/proc/<pid>/root`) and system dirs (`/etc`, `/root`, `/proc`, `/sys`, `/dev`, `/boot`, `/run`, `/var/run`, the `/home` parent) now prompt
+  - path values keep their case (only names are lowercased)
+  - no bash-4-only syntax, so it still runs on macOS bash 3.2
+- 53 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (77 total).
 
 ## [4.13.9] - 2026-03-11
 

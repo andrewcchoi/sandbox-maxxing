@@ -765,3 +765,91 @@ jq_hook_input() { printf '%b' "$1" | jq -Rs '{tool_name:"Bash",tool_input:{comma
   assert_success
   [ -z "$output" ]
 }
+
+# --- Hardening round 2: short-flag bundles, root aliases, sensitive host paths ---
+
+@test "docker-safety-hook: prompts on bundle with attached value (-itv/:/h)" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -itv/:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on /proc/self/root alias" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v /proc/self/root:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on --mount src=/proc/1/root" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run --mount type=bind,src=/proc/1/root,dst=/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on /etc bind mount" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v /etc:/e img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on /home parent bind mount" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v /home:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: allows project dir under /home read-only" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run --rm -v /home/me/proj:/repo:ro -v /tmp/claude-1000/x:/work img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows attached non-sensitive -v value" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v/srv/data:/d img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: prompts on symlink resolving to /" {
+  require_command jq
+
+  link="$BATS_TEST_TMPDIR/rootlink"; ln -sfn / "$link"
+  input=$(jq_hook_input "docker run -v $link:/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+}
