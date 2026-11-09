@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.10] - 2026-11-08
+
 ### Added
 - **Hooks**: `sync-knowledge` SessionStart hook now also mirrors `projects/` (session transcripts) from Docker volumes onto the host, alongside the existing `plans/`, `state/`, and `projects.json` syncs.
   - Uses `cp -au` (BusyBox archive + update-only) so subsequent runs only copy new/changed transcripts and original timestamps are preserved. The first pass over a large volume can take a while; later runs are incremental.
@@ -16,6 +18,45 @@ All notable changes to this project will be documented in this file.
   - Applied consistently to the active hook (`hooks/sync-knowledge.sh`) and the two template variants (`.devcontainer/sync-knowledge.sh`, `skills/_shared/templates/sync-knowledge.sh`) that ship into new devcontainer projects.
   - Adds `tests/unit/hooks/sync-knowledge.test.sh` covering the skip-gate, transcript copy, incremental update, and `0700` permissions.
   - Complements the forward-looking bind-mount approach discussed in issue #366 — sync-knowledge is the retroactive fix for pre-existing and legacy Docker volumes.
+
+### Fixed
+- **docker-safety-hook false positives**: `docker run --rm ...` prompted as "Destructive Docker command" because `\brm\b` matched the `rm` in `--rm`. Any compound command with `rm`/`kill`/`stop` anywhere after the word docker (`docker logs x | tail; rm -f out`, `docker run --stop-timeout 30`, `docker run --restart ...`) prompted too. A long evaluation run hit ~40 spurious prompts, and hook asks are not skipped by `bypassPermissions`.
+  - Matching is now token-based: split into simple commands, strip quotes, skip docker global options and management groups, and classify only the actual subcommand.
+  - `-v $DIR/:/out` no longer counts as a host-root mount.
+- **docker-safety-hook: fewer prompts on data, and fast again**
+  - Heredoc bodies are treated as data and skipped, so writing a file or a Python script that mentions `docker rm` no longer prompts. A heredoc that feeds a shell (`bash <<EOF`, `cat <<EOF | sh`, `ssh host <<EOF`) is still checked, and so is any `$(...)` or backtick line inside an unquoted heredoc.
+  - The quoted code passed to a non-shell interpreter (`python -c "..."`, `node -e`, `perl -e`, `ruby -e`, `php -r`) is skipped. `sh -c "..."` and `bash -c` strings are still checked.
+  - `run`/`create`/`exec` flags are read only up to the image, container or service name. `docker exec app pytest -v` and `docker run --rm img ls -lv` no longer count `-v` as a volume mount.
+  - Names are lowercased once per command instead of once per word. A 400-line heredoc that mentions docker took ~18 s to check; it now takes ~20 ms.
+  - Replaying the Bash commands from two real sessions: prompts went from 35 (v4.13.0) to 15 of 114 docker-related commands, and total hook time dropped from ~57 s (earlier in this PR) to ~3 s.
+
+### Security
+- **docker-safety-hook gaps closed**: these now prompt, where the old regex missed them: `docker --context foo rm x`, `docker -H unix:///x kill y`, `--mount type=bind,src=/,...`, `-v '/:/host'`, space-separated `--network host` / `--pid host` / `--cap-add SYS_ADMIN`, `docker-compose down`, `xargs docker rm`, `sh -c 'docker rm x'`.
+- **docker-safety-hook hardening** (from review): these are caught as well.
+  - attached and bundled `-v` values (`-v/:/h`, `-itv /:/h`)
+  - mount sources that aren't written in canonical form (`//`, `/x/..`, `source=/.`)
+  - `--privileged=<anything but false/0>`
+  - the `remove` alias (`docker image remove`)
+  - backslash-newline continuations, backslash escapes, and quoted binary names (`d\\ocker`, `d"o"cker`)
+- **docker-safety-hook, second hardening round** (from review):
+  - short-flag bundles are parsed getopt-style (`-itv/:/h`)
+  - bind sources are checked in both written and symlink-resolved form
+  - root aliases (`/proc/<pid>/root`) and system dirs (`/etc`, `/root`, `/proc`, `/sys`, `/dev`, `/boot`, `/run`, `/var/run`, the `/home` parent) now prompt
+  - path values keep their case (only names are lowercased)
+  - no bash-4-only syntax, so it still runs on macOS bash 3.2
+- **docker-safety-hook, third hardening round** (from review):
+  - mount sources expand `~`, `$HOME` and `$PWD`, and relative paths resolve against the command's cwd
+  - sources that can't be resolved statically prompt: any other `$VAR`, `$(...)`, or backticks. So `-v $SP/x:/w` now asks, while `-v $PWD:/w` doesn't.
+  - the docker socket is matched case-insensitively and after symlink resolution
+  - `-itv=/:/h` is handled
+- **docker-safety-hook, fourth hardening round** (from review): these sources now prompt.
+  - names that only start like a known variable (`$HOMEX`), and `~user`
+  - glob or brace characters
+  - paths cut by a `$(...)` or a backtick in the middle
+  - relative or variable sources after a `cd`, `export`, `VAR=` or similar earlier in the same command line, or as an inline prefix
+- **docker-safety-hook**: globs after a `${HOME}`/`${PWD}` prefix now prompt, and full-path `*/env`/`*/cd`, plus `unset`/`printf`/`read`/`local`/`let`/`mapfile`/`readarray`/`getopts`/`builtin`/`command`/`for`/`select`/`coproc`/`case`/`trap`/`alias`/`function`/`shopt`/`exec`, taint relative sources.
+- **docker-safety-hook**: the check for cwd and environment changes is now a pre-pass over the whole command line (plus `while`/`until`), so a `cd` written after a docker call inside a loop still counts. Docker's own arguments (`-e A=1`) no longer count.
+- 104 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (128 total).
 
 ## [4.13.9] - 2026-03-11
 
