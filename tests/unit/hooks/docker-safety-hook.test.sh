@@ -1144,3 +1144,265 @@ jq_hook_input() { printf '%b' "$1" | jq -Rs '{tool_name:"Bash",tool_input:{comma
   assert_success
   [ -z "$output" ]
 }
+
+# --- Data vs. shell: heredoc bodies, interpreter code, container command lines ---
+
+@test "docker-safety-hook: allows container command -v after image (run)" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run --rm img pytest -v")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows container command -v after container (exec)" {
+  require_command jq
+
+  input=$(jq_hook_input "docker exec app python -m pytest -x -v")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows container command -lv bundle after image" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run --rm img ls -lv")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows compose run service command -v" {
+  require_command jq
+
+  input=$(jq_hook_input "docker compose run --rm app pytest -v")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows sh -c string inside exec after container" {
+  require_command jq
+
+  input=$(jq_hook_input "docker exec -it app sh -c \"pytest -v\"")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows heredoc body that only mentions docker" {
+  require_command jq
+
+  input=$(jq_hook_input "python3 - <<'EOF'\ncases = [\"docker rm x\", \"docker run --privileged img\"]\nEOF")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows unquoted heredoc data without substitution" {
+  require_command jq
+
+  input=$(jq_hook_input "cat > README.md <<EOF\nrun docker compose down to stop\nEOF")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows quoted heredoc keeps \$( literal" {
+  require_command jq
+
+  input=$(jq_hook_input "cat > f <<'EOF'\n\$(docker rm x)\nEOF")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows python -c code with for loop and \$PWD mount" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run --rm -v \"\$PWD/src:/src:ro\" img python -c \"import x\nfor p in y: pass\"")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows node -e code mentioning docker rm" {
+  require_command jq
+
+  input=$(jq_hook_input "node -e \"console.log('docker rm x')\"")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: prompts on value flags before root mount" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run --rm -it -e A=1 -p 80:80 -v /:/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on -P boolean before root mount" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run -P -v /:/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on value flag before --privileged" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run --name x --privileged img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on heredoc fed to bash" {
+  require_command jq
+
+  input=$(jq_hook_input "bash <<EOF\ndocker rm x\nEOF")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on heredoc piped to sh" {
+  require_command jq
+
+  input=$(jq_hook_input "cat <<EOF | sh\ndocker rm x\nEOF")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on heredoc sent over ssh" {
+  require_command jq
+
+  input=$(jq_hook_input "ssh host <<EOF\ndocker rm x\nEOF")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on command after a heredoc ends" {
+  require_command jq
+
+  input=$(jq_hook_input "cat > f <<'EOF'\nhello\nEOF\ndocker rm x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on command substitution in unquoted heredoc" {
+  require_command jq
+
+  input=$(jq_hook_input "cat > f <<EOF\n\$(docker rm x)\nEOF")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on quoted << is not a heredoc" {
+  require_command jq
+
+  input=$(jq_hook_input "echo \"a <<EOF\"\ndocker rm x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on <<< here-string is not a heredoc" {
+  require_command jq
+
+  input=$(jq_hook_input "grep x <<< \"y\"\ndocker rm x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on <<- heredoc with tab-indented delimiter" {
+  require_command jq
+
+  input=$(jq_hook_input "cat <<-EOF\n\thi\n\tEOF\ndocker rm x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on two heredocs on one line" {
+  require_command jq
+
+  input=$(jq_hook_input "cat <<A <<B\na\nA\nb\nB\ndocker kill c")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on docker after python -c in next command" {
+  require_command jq
+
+  input=$(jq_hook_input "python3 -c \"print(1)\"; docker rm x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: large heredoc mentioning docker is fast" {
+  require_command jq
+
+  local body i
+  body='cat > README.md <<EOF'
+  for i in $(seq 1 400); do body="$body"$'\n'"Line $i: run docker compose up and check the logs"; done
+  body="$body"$'\n'EOF
+  input=$(jq -n --arg c "$body" '{tool_input:{command:$c}}')
+  local start=$SECONDS
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+  # Was ~18 s when every token forked; now well under a second.
+  [ $((SECONDS - start)) -lt 3 ]
+}

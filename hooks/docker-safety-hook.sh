@@ -4,6 +4,11 @@
 # Asks before destructive commands, privileged containers, and stop/restart/pause.
 #
 # Matching is token-based, not a loose regex over the whole command line:
+#   0. Text that is data, not shell, is dropped first: heredoc bodies (unless
+#      the heredoc feeds a shell such as `bash <<EOF` or `| sh`), and the
+#      quoted code passed to a non-shell interpreter (`python -c "..."`,
+#      `node -e '...'`). Writing a file or test fixture that merely mentions
+#      `docker rm` therefore never prompts.
 #   1. The command is split into simple-command segments on ; & | ( ) ` and
 #      newlines, so `docker logs x | tail; rm -f out` never ties the trailing
 #      `rm` to docker.
@@ -13,6 +18,9 @@
 #      (container, image, compose, ...) are stepped over, and only the
 #      resulting subcommand is classified. `docker run --rm img` is therefore
 #      a `run`, not an `rm`, and `docker exec c rm /tmp/f` is an `exec`.
+#   4. run/create/exec flags are read only up to the image / container /
+#      service name; what follows is the container's own command line, so
+#      `docker exec app pytest -v` is not a volume mount.
 #
 # Like any static check over command text, this can be routed around with
 # eval-built strings, aliases, or scripts. It is a guard against accidents,
@@ -48,8 +56,99 @@ HOOK_CWD=$(echo "$INPUT" | jq -r '.cwd // empty' 2>/dev/null) || HOOK_CWD=""
 # so d\ocker and d"o"cker still get parsed)
 printf '%s' "$COMMAND" | tr -d "\\\\\"'" | grep -qi 'docker' || exit 0
 
-# Lowercase without bash-4 ${var,,} (macOS ships bash 3.2).
-lc() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
+# Lowercase without bash-4 ${var,,} (macOS ships bash 3.2). Forks, so it is
+# only used on a handful of values; whole segments are lowercased in one pass.
+lc() { printf '%s' "$1" | LC_ALL=C tr '[:upper:]' '[:lower:]'; }
+
+# Drop heredoc bodies that are data. A body is kept when the line that opens
+# it runs a shell (bash <<EOF, cat <<EOF | sh, ssh host <<EOF), and, for an
+# unquoted delimiter, any body line containing $( or a backtick is kept
+# because the shell expands it. `<<` inside quotes and `<<<` are ignored.
+# POSIX awk only (macOS ships BWK awk).
+strip_heredocs() {
+    awk '
+    function runs_shell(l,   s, n, i, a, w) {
+        s = l; gsub(/[;&|()]/, " ", s); n = split(s, a, /[ \t]+/)
+        for (i = 1; i <= n; i++) {
+            w = a[i]; gsub(/["\047]/, "", w); sub(/^.*\//, "", w); w = tolower(w)
+            if (w ~ /^(sh|bash|zsh|dash|ksh|ash|ssh|eval|source|su)$/) return 1
+        }
+        return 0
+    }
+    # Queue the delimiters of every unquoted << on line l.
+    function scan(l,   n, i, c, q, rest, d, w, quoted, k) {
+        k = runs_shell(l); n = length(l); q = ""
+        for (i = 1; i <= n; i++) {
+            c = substr(l, i, 1)
+            if (q != "") { if (c == "\\" && q == "\"") i++; else if (c == q) q = ""; continue }
+            if (c == "\\") { i++; continue }
+            if (c == "\"" || c == "\047") { q = c; continue }
+            if (substr(l, i, 2) != "<<") continue
+            if (substr(l, i + 2, 1) == "<") { i += 2; continue }
+            rest = substr(l, i + 2); d = 0
+            if (substr(rest, 1, 1) == "-") { d = 1; rest = substr(rest, 2) }
+            sub(/^[ \t]*/, "", rest)
+            if (!match(rest, /^["\047\\]?[A-Za-z_][A-Za-z0-9_]*/)) continue
+            w = substr(rest, 1, RLENGTH); quoted = (w ~ /^["\047\\]/)
+            gsub(/["\047\\]/, "", w)
+            nq++; delim[nq] = w; dash[nq] = d; keep[nq] = k; quo[nq] = quoted
+            i += 1 + RLENGTH
+        }
+    }
+    BEGIN { nq = 0; qi = 1 }
+    {
+        if (qi <= nq) {
+            t = $0; if (dash[qi]) sub(/^\t+/, "", t)
+            if (t == delim[qi]) {
+                print; qi++
+                if (qi > nq) { nq = 0; qi = 1 }
+            } else if (keep[qi] || (!quo[qi] && ($0 ~ /\$\(/ || index($0, "`")))) {
+                print
+            }
+            next
+        }
+        print; scan($0)
+    }'
+}
+
+# Replace the quoted code argument of a non-shell interpreter
+# (python -c "...", node -e '...', perl -e, ruby -e, php -r) with "". Shell
+# `-c` strings (sh -c "docker rm x") are kept and still inspected.
+strip_interp_code() {
+    awk '
+    function isinterp(w) {
+        gsub(/["\047]/, "", w); sub(/^.*\//, "", w); w = tolower(w)
+        return w ~ /^(python[0-9.]*|pypy[0-9.]*|node|nodejs|deno|bun|perl|ruby|php|lua|rscript|osascript)$/
+    }
+    function flush() { if (word != "") { if (isinterp(word)) seen = 1; last = word; word = "" } }
+    { buf = buf $0 "\n" }
+    END {
+        n = length(buf); q = ""; seen = 0; last = ""; word = ""
+        for (i = 1; i <= n; i++) {
+            c = substr(buf, i, 1)
+            if (q != "") {
+                if (q == "\"" && c == "\\") { printf "%s", substr(buf, i, 2); word = word "xx"; i++; continue }
+                if (c == q) q = ""
+                printf "%s", c; word = word c; continue
+            }
+            if (c == "\\") { printf "%s", substr(buf, i, 2); word = word "xx"; i++; continue }
+            if ((c == "\"" || c == "\047") && word == "" && seen && last ~ /^(-c|-e|-E|-r|--eval|--command|-[lnpa]+e)$/) {
+                for (j = i + 1; j <= n; j++) {
+                    d = substr(buf, j, 1)
+                    if (c == "\"" && d == "\\") { j++; continue }
+                    if (d == c) break
+                }
+                printf "\"\""; word = "code"; i = j; continue
+            }
+            if (c == "\"" || c == "\047") { q = c; printf "%s", c; word = word c; continue }
+            if (c == " " || c == "\t") { flush(); printf "%s", c; continue }
+            if (c == ";" || c == "&" || c == "|" || c == "(" || c == ")" || c == "\n") {
+                flush(); seen = 0; last = ""; printf "%s", c; continue
+            }
+            printf "%s", c; word = word c
+        }
+    }'
+}
 
 emit_ask() {
     jq -n --arg reason "$1" '{
@@ -176,16 +275,46 @@ is_dangerous_mount() {
     return 1
 }
 
-# Privileged / host-namespace flags in the tokens after a run/create/exec.
-# Prints nothing; returns 0 if any dangerous flag is present.
+# Long run/create/exec (and compose run) flags that take no value. Any other
+# long flag without `=` is assumed to consume the next token, so an unknown
+# flag can only make the scan go further (toward a prompt), never stop early.
+is_bool_long() {
+    case "$1" in
+        --rm|--init|--privileged|--read-only|--interactive|--tty|--detach|--publish-all|--sig-proxy|--no-healthcheck|--oom-kill-disable|--disable-content-trust|--quiet|--help|--no-deps|--service-ports|--use-aliases|--build|--remove-orphans|--quiet-pull|--quiet-build|--no-tty) return 0 ;;
+    esac
+    return 1
+}
+
+# Short-flag cluster (original case: -P is boolean, -p takes a value).
+# Returns 0 when the cluster's value is the NEXT token (-v, -itv, -e), 1 when
+# it is all booleans (-it, -dP) or the value is attached (-p8080:80, -v/:/h).
+short_takes_next() {
+    local s="${1#-}" c
+    while [ -n "$s" ]; do
+        c="${s:0:1}"; s="${s:1}"
+        case "$c" in
+            d|i|t|P|q|T) ;;
+            *) [ -z "$s" ] && return 0; return 1 ;;
+        esac
+    done
+    return 1
+}
+
+# Privileged / host-namespace flags among the options of a run/create/exec,
+# starting at index $1 of the global toks/ltoks arrays. Stops at the first
+# positional (image, container or service): everything after it is the
+# container's own command line. Returns 0 if any dangerous flag is present.
 has_privileged_flags() {
-    local -a t=("$@")
-    local n=${#t[@]} i tok next lnext
-    for ((i = 0; i < n; i++)); do
-        tok="${t[i]}"
-        next="${t[i+1]:-}"
-        lnext=$(lc "$next")
-        case "$(lc "$tok")" in
+    local i="$1" n=${#toks[@]} tok ltok next lnext
+    while ((i < n)); do
+        tok="${toks[i]}"; ltok="${ltoks[i]}"
+        next="${toks[i+1]:-}"; lnext="${ltoks[i+1]:-}"
+        case "$tok" in
+            --) return 1 ;;
+            -?*) ;;
+            *) return 1 ;;
+        esac
+        case "$ltok" in
             --privileged=false|--privileged=0) ;;
             --privileged*) return 0 ;;
             --cap-add=all|--cap-add=sys_admin) return 0 ;;
@@ -213,6 +342,13 @@ has_privileged_flags() {
             --mount=*) is_dangerous_mount "${tok#*=}" && return 0 ;;
             --mount) is_dangerous_mount "$next" && return 0 ;;
         esac
+        # Step over this flag's value, if it takes the next token.
+        case "$ltok" in
+            --*=*) ;;
+            --*) is_bool_long "$ltok" || ((i++)) ;;
+            *) short_takes_next "$tok" && ((i++)) ;;
+        esac
+        ((i++))
     done
     return 1
 }
@@ -224,17 +360,15 @@ DISRUPTIVE=0
 # cwd or HOME/PWD that relative and variable mount sources resolve against.
 CTX_UNTRUSTED=0
 
-# Classify one docker invocation. Arguments: the tokens AFTER the docker
-# (or docker-compose) binary token. $COMPOSE=1 when the binary was docker-compose.
+# Classify one docker invocation in the current segment. $1=1 when the binary
+# was docker-compose; $2 is the index of the first token after the binary in
+# the global toks (original case) / ltoks (lowercased) arrays. Names
+# (options, groups, subcommands) are compared in ltoks; values such as mount
+# paths come from toks so symlinks and real paths resolve.
 classify() {
-    local compose="$1"; shift
-    local -a t=("$@")
-    # Names (options, groups, subcommands) compare case-insensitively; values
-    # such as mount paths keep their case so symlinks and real paths resolve.
-    local -a l=()
-    local x
-    for x in ${t[@]+"${t[@]}"}; do l+=("$(lc "$x")"); done
-    local n=${#t[@]} i=0 group="" sub=""
+    local compose="$1" i="$2"
+    local -a l=("${ltoks[@]}")
+    local n=${#toks[@]} group="" sub=""
 
     if [ "$compose" = "0" ]; then
         # Skip docker global options
@@ -269,7 +403,7 @@ classify() {
         run|create|exec)
             # `docker run`, `docker container run`, `docker compose run` ...
             if [ -z "$group" ] || [ "$group" = "container" ]; then
-                has_privileged_flags "${t[@]:i+1}" && PRIVILEGED=1
+                has_privileged_flags $((i + 1)) && PRIVILEGED=1
             fi
             ;;
     esac
@@ -280,11 +414,18 @@ classify() {
 # (so `d\ocker r\m` and multi-line commands parse like the shell sees them),
 # split into simple-command segments, strip quotes. Case is preserved here;
 # names are lowercased where they are compared.
-SEGMENTS=$(printf '%s\n' "$COMMAND" \
+SHELL_TEXT=$(printf '%s\n' "$COMMAND" | strip_heredocs | strip_interp_code)
+
+# Second fast path: docker was only mentioned in data (heredoc, python -c).
+printf '%s' "$SHELL_TEXT" | tr -d "\\\\\"'" | grep -qi 'docker' || exit 0
+
+SEGMENTS=$(printf '%s\n' "$SHELL_TEXT" \
     | sed -e ':a' -e 'N' -e '$!ba' -e 's/\\\n//g' \
     | tr -d '\\' \
     | tr -d "\"'" \
     | sed -e 's/\$(/$\n/g' -e 's/`/$\n/g' -e 's/[;&|()]/\n/g')
+# Lowercased once (one process) instead of per token; same line/token layout.
+SEGMENTS_LC=$(printf '%s\n' "$SEGMENTS" | LC_ALL=C tr '[:upper:]' '[:lower:]')
 
 # Pass 1: taint. If anything anywhere on the command line could change cwd or
 # HOME/PWD, relative and variable mount sources are untrusted. This is
@@ -296,24 +437,26 @@ while IFS= read -r seg; do
     [ -z "${seg// }" ] && continue
     read -ra toks <<< "$seg"
     for ((k = 0; k < ${#toks[@]}; k++)); do
-        case "$(lc "${toks[k]}")" in
+        case "${toks[k]}" in
             docker|*/docker|docker-compose|*/docker-compose) break ;;
             cd|pushd|popd|export|set|unset|source|.|eval|env|declare|typeset|readonly|local|let|printf|read|mapfile|readarray|getopts|builtin|command|for|while|until|select|coproc|case|trap|alias|function|shopt|exec|*/env|*/cd|[a-z_]*=*) CTX_UNTRUSTED=1 ;;
         esac
     done
-done <<< "$SEGMENTS"
+done <<< "$SEGMENTS_LC"
 
-# Pass 2: classify every docker invocation.
-while IFS= read -r seg; do
+# Pass 2: classify every docker invocation. toks keeps the original case,
+# ltoks the lowercased copy of the same segment.
+while IFS= read -r seg && IFS= read -r lseg <&3; do
     [ -z "${seg// }" ] && continue
     read -ra toks <<< "$seg"
+    read -ra ltoks <<< "$lseg"
     for ((k = 0; k < ${#toks[@]}; k++)); do
-        case "$(lc "${toks[k]}")" in
-            docker|*/docker) classify 0 "${toks[@]:k+1}" ;;
-            docker-compose|*/docker-compose) classify 1 "${toks[@]:k+1}" ;;
+        case "${ltoks[k]}" in
+            docker|*/docker) classify 0 $((k + 1)) ;;
+            docker-compose|*/docker-compose) classify 1 $((k + 1)) ;;
         esac
     done
-done <<< "$SEGMENTS"
+done <<< "$SEGMENTS" 3<<< "$SEGMENTS_LC"
 
 if [ "$DESTRUCTIVE" = "1" ]; then
     emit_ask "Destructive Docker command detected (prune/rm/rmi/kill/compose down). These commands can cause data loss. Allow?"
