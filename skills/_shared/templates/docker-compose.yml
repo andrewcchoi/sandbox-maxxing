@@ -6,6 +6,20 @@
 #
 # NOTE: Customize exposed ports with APP_PORT and FRONTEND_PORT env vars.
 # ============================================================================
+#
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║  ⚠️  SECURITY WARNING - DEVELOPMENT DEFAULTS                              ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║  This file contains DEFAULT DEVELOPMENT PASSWORDS for convenience.        ║
+# ║                                                                           ║
+# ║  ❌ DO NOT use in production without changing passwords                   ║
+# ║  ❌ DO NOT commit custom passwords to version control                     ║
+# ║  ✅ DO change POSTGRES_PASSWORD before deploying                          ║
+# ║  ✅ DO use environment variables or secret management in production       ║
+# ║                                                                           ║
+# ║  Default passwords used: devpassword                                      ║
+# ║  See: docs/features/SECRETS.md for secure credential management           ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
 
 services:
   # ===========================================================================
@@ -14,6 +28,7 @@ services:
   app:
     container_name: {{PROJECT_NAME}}-app
     restart: unless-stopped
+    user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"  # Default to node user; override for macOS/enterprise
     build:
       # Build context: current directory (.) contains Dockerfile at .devcontainer/Dockerfile
       # This allows the Dockerfile to access files in the project root if needed
@@ -32,7 +47,7 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_DB: $${POSTGRES_DB:-sandbox_dev}
       POSTGRES_USER: $${POSTGRES_USER:-sandbox_user}
-      POSTGRES_PASSWORD: $${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_PASSWORD: $${POSTGRES_PASSWORD:-devpassword}  # ⚠️ CHANGE FOR PRODUCTION
       # Redis connection string (ready to use in application code)
       REDIS_URL: redis://redis:6379/0
       REDIS_HOST: redis
@@ -46,7 +61,7 @@ services:
       - NET_ADMIN
       - NET_RAW
     volumes:
-      - .:/workspace:cached
+      - ..:/workspace:cached
       - py312-uv-venv:/workspace/.venv             # Issue #108: Named volume - isolates .venv from bind mount
       # NOTE: Host bind mounts require these paths to exist on the host system
       # Create them manually if needed: mkdir -p ~/.claude ~/.config/claude-env ~/.config/gh
@@ -83,7 +98,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-sandbox_dev}
       POSTGRES_USER: ${POSTGRES_USER:-sandbox_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}  # ⚠️ CHANGE FOR PRODUCTION
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:

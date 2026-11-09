@@ -1,6 +1,16 @@
 ---
 name: sandboxxer-linux-troubleshoot
 description: Use when user encounters problems with native Linux/WSL2 Claude Code setup - diagnose and fix bubblewrap, PATH, authentication, or WSL2-specific issues
+whenToUse: |
+  - Bubblewrap sandbox failures or permission errors
+  - Claude Code CLI not found or installation failures
+  - PATH environment configuration issues
+  - WSL2-specific problems (networking, file permissions, distro issues)
+  - Git or GitHub CLI authentication problems
+  - Claude API authentication failures
+  - System package installation errors (apt, yum, pacman)
+  - Sudo permission issues or credential timeout problems
+  - Native Linux performance issues or crashes
 ---
 
 # Native Linux/WSL2 Troubleshooting Assistant

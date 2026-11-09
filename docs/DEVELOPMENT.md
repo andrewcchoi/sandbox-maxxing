@@ -387,6 +387,74 @@ The devcontainer sets minimal environment variables:
 
 **No database variables** - these are only needed when running examples, set in `docs/examples/docker-compose.yml`.
 
+## Git Worktrees Support
+
+The DevContainer template supports git worktrees for isolated development branches. To enable worktree support, structure your folders with a project-specific parent:
+
+### Recommended Folder Structure
+
+```
+projects/
+  └── my-project/           ← Project folder (mounted at /workspace)
+      └── my-repo/          ← Repository (open this in VS Code)
+          ├── .devcontainer/
+          └── src/
+```
+
+### Creating Worktrees
+
+Inside the container:
+```bash
+# Create worktree as sibling to your repo
+git worktree add ../my-repo-feature feature-branch
+git worktree add ../my-repo-hotfix hotfix/123
+
+# Switch to worktree
+cd ../my-repo-feature
+```
+
+### Why This Structure?
+
+The devcontainer mounts the parent directory (`../..:/workspace`). This enables git worktree support:
+- The project opens at `/workspace/sandbox-maxxing/` (matching VS Code's `workspaceFolder` setting)
+- Worktrees are created as siblings: `/workspace/feature-branch-worktree/`, `/workspace/hotfix-worktree/`, etc.
+- Each worktree has its own working directory but shares the git object database
+- Standard git worktree commands work seamlessly from inside the container
+
+**Host structure:**
+```
+/mnt/d/_plugins/sandbox-maxxing/    ← Mounted to /workspace/
+├── sandbox-maxxing/                ← Project (opens at /workspace/sandbox-maxxing/)
+│   ├── .devcontainer/
+│   └── src/
+├── feature-branch-worktree/        ← Worktree at /workspace/feature-branch-worktree/
+└── hotfix-worktree/                ← Worktree at /workspace/hotfix-worktree/
+```
+
+**Security consideration:** Mounting the parent directory exposes sibling folders. Ensure no sensitive directories exist at the parent level.
+
+### Backwards Compatibility
+
+The template uses `${localWorkspaceFolderBasename}` to automatically resolve the correct working directory. Projects using single-folder mounts (`.:/workspace`) continue to work, but won't have worktree support without adapting to the parent mount pattern.
+
+## Naming Convention
+
+This plugin uses consistent naming across different contexts:
+
+| Context           | Name              | Example                                               |
+| ----------------- | ----------------- | ----------------------------------------------------- |
+| Plugin name       | sandboxxer        | Plugin installation and management                    |
+| Marketplace name  | sandbox-maxxing   | Marketplace listing name                              |
+| GitHub repository | sandbox-maxxing   | github.com/andrewcchoi/sandbox-maxxing                |
+| Slash commands    | /sandboxxer:*     | /sandboxxer:quickstart, /sandboxxer:yolo-docker-maxxing |
+| Skills            | sandboxxer-*      | Internal skill naming                                 |
+| User-facing title | Sandboxxer Plugin | In documentation headers                              |
+
+**Why different names?**
+- **sandboxxer**: Official plugin name used for installation and management
+- **sandbox-maxxing**: Repository and marketplace name (reflects Windows WSL 2 compatibility)
+- **Sandboxxer Plugin**: Full descriptive name for user-facing documentation
+
 ## Best Practices
 
 1. **Keep the devcontainer minimal** - Don't add services unless the plugin itself needs them

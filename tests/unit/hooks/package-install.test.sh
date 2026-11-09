@@ -3,6 +3,10 @@
 # Unit tests for package installation logic
 # Tests the package installation blocks from yolo-linux-maxxing.md
 
+# Calculate plugin root from test file location
+BATS_TEST_DIR="$(cd "$(dirname "${BATS_TEST_FILENAME}")" && pwd)"
+PLUGIN_ROOT="$(cd "$BATS_TEST_DIR/../../.." && pwd)"
+
 load '../../helpers/test_helper'
 
 @test "package-install: apt-get is available on test system" {

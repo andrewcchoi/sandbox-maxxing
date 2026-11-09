@@ -555,6 +555,119 @@ Legend: ✓ Protected, ~ Mitigated, ✗ Vulnerable
 - Skipping firewall verification
 - Assuming container isolation is sufficient
 
+## Troubleshooting
+
+### Firewall Blocking Legitimate Traffic
+
+**Symptoms:**
+- npm install fails with "ETIMEDOUT" or "ENOTFOUND"
+- git clone fails with "Connection timed out"
+- API calls to external services fail
+
+**Solutions:**
+1. Check current firewall mode in `devcontainer.json`:
+   ```bash
+   grep FIREWALL_MODE .devcontainer/devcontainer.json
+   ```
+
+2. Temporarily disable firewall for testing:
+   ```json
+   "FIREWALL_MODE": "disabled"
+   ```
+
+3. Add missing domains to allowlist:
+   ```json
+   "ALLOWED_DOMAINS": "github.com,npmjs.org,registry.npmjs.org,pypi.org,yourdomain.com"
+   ```
+
+4. Verify firewall rules:
+   ```bash
+   docker exec -it <container> iptables -L -n -v
+   ```
+
+### Container Has Excessive Capabilities
+
+**Symptoms:**
+- Security audit warnings about `CAP_SYS_ADMIN` or other dangerous capabilities
+- Container can perform privileged operations
+
+**Solutions:**
+1. Review `capAdd` in `devcontainer.json`:
+   ```json
+   "capAdd": ["SYS_PTRACE"]  // Only add what you need
+   ```
+
+2. Remove unnecessary capabilities:
+   ```json
+   "capAdd": []  // Start with none, add only as needed
+   ```
+
+3. Use `runArgs` for specific permissions instead:
+   ```json
+   "runArgs": ["--security-opt", "seccomp=unconfined"]  // More targeted
+   ```
+
+### Secrets Appearing in Container Logs
+
+**Symptoms:**
+- Passwords or tokens visible in Docker logs
+- Secrets in environment variables exposed via `docker inspect`
+
+**Solutions:**
+1. Use build secrets instead of ARG:
+   ```dockerfile
+   RUN --mount=type=secret,id=api_token \
+       curl -H "Authorization: $(cat /run/secrets/api_token)" ...
+   ```
+
+2. Use runtime secrets for sensitive data:
+   ```yaml
+   services:
+     app:
+       secrets:
+         - db_password
+   secrets:
+     db_password:
+       file: ./secrets/db_password.txt
+   ```
+
+3. Never log sensitive environment variables:
+   ```bash
+   # Bad - prints all env vars including secrets
+   env | grep API
+
+   # Good - only log what you need
+   echo "Config loaded successfully"
+   ```
+
+### Firewall Rules Not Applied
+
+**Symptoms:**
+- Container has network access despite strict firewall mode
+- `iptables -L` shows no firewall rules
+
+**Solutions:**
+1. Verify `init-firewall.sh` is executable:
+   ```bash
+   chmod +x .devcontainer/init-firewall.sh
+   ```
+
+2. Check if `onCreateCommand` runs firewall script:
+   ```json
+   "onCreateCommand": "bash .devcontainer/init-firewall.sh"
+   ```
+
+3. Verify firewall initialization in container:
+   ```bash
+   docker exec -it <container> bash -c 'iptables -L | grep DROP'
+   ```
+
+4. Check for conflicting network settings:
+   ```yaml
+   # Remove this if using custom firewall
+   network_mode: "bridge"  # May bypass firewall
+   ```
+
 ## Related Documentation
 
 - [Secrets Management Guide](SECRETS.md) - Detailed secret handling methods and examples

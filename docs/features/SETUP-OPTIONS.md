@@ -270,6 +270,150 @@ The plugin generates `docker-compose.yml` by default, but you can manually switc
 
 See the [docker-compose templates](../../skills/_shared/templates/) directory for all available variants.
 
+## Troubleshooting
+
+### Wrong Docker Compose Mode Selected
+
+**Symptoms:**
+- Slow file I/O on Windows/macOS
+- File changes not reflecting in container
+- Permission errors on Linux
+
+**Solutions:**
+
+**On Windows/macOS with slow I/O:**
+```bash
+# Switch to volume mode for better performance
+cp docker-compose.volume.yml docker-compose.yml
+docker compose down && docker compose up -d
+```
+
+**On Linux with volume mode:**
+```bash
+# Switch to bind mount for direct file editing
+cp docker-compose.bindmount.yml docker-compose.yml
+docker compose down && docker compose up -d
+```
+
+### Profile Selection Issues
+
+**Symptoms:**
+- All services start when you only need one profile
+- Wrong services running for your workload
+
+**Solutions:**
+
+**Start only backend services:**
+```bash
+docker compose --profile backend up -d
+```
+
+**Start only frontend:**
+```bash
+docker compose --profile frontend up -d
+```
+
+**Start everything:**
+```bash
+docker compose --profile backend --profile frontend up -d
+```
+
+**Fix profile configuration in `docker-compose-profiles.yml`:**
+```yaml
+services:
+  postgres:
+    profiles: ["backend"]  # Only starts with backend profile
+```
+
+### Firewall Mode Not Suitable for Project
+
+**Symptoms:**
+- Too restrictive: Can't access needed services
+- Too permissive: Security concerns for sensitive data
+
+**Solutions:**
+
+**Switch firewall mode in `devcontainer.json`:**
+
+```json
+// Strict mode (allowlist only)
+"FIREWALL_MODE": "strict",
+"ALLOWED_DOMAINS": "github.com,npmjs.org,yourdomain.com"
+
+// Domain allowlist (preset categories)
+"FIREWALL_MODE": "domain-allowlist",
+"FIREWALL_PRESET": "backend"
+
+// Disabled (no restrictions)
+"FIREWALL_MODE": "disabled"
+```
+
+**Rebuild container after changing:**
+```bash
+docker compose down
+docker compose build
+docker compose up -d
+```
+
+### Prebuilt Mode Not Finding Image
+
+**Symptoms:**
+- `docker compose up` fails with "image not found"
+- CI/CD pipeline can't pull image
+
+**Solutions:**
+
+1. **Build and push image first:**
+   ```bash
+   docker compose -f docker-compose.prebuilt.yml build
+   docker compose -f docker-compose.prebuilt.yml push
+   ```
+
+2. **Verify image tag in `docker-compose.prebuilt.yml`:**
+   ```yaml
+   services:
+     app:
+       image: your-registry/your-app:latest  # Must match pushed image
+   ```
+
+3. **Authenticate to registry:**
+   ```bash
+   docker login your-registry.com
+   ```
+
+### Port Conflicts
+
+**Symptoms:**
+- "port is already allocated" error
+- Services can't bind to ports
+
+**Solutions:**
+
+1. **Change ports in `docker-compose.yml`:**
+   ```yaml
+   services:
+     app:
+       ports:
+         - "8001:8000"  # Change 8000 to 8001
+   ```
+
+2. **Find what's using the port:**
+   ```bash
+   # Linux/macOS
+   lsof -i :8000
+
+   # Windows
+   netstat -ano | findstr :8000
+   ```
+
+3. **Use auto-assigned ports:**
+   ```yaml
+   services:
+     app:
+       ports:
+         - "8000"  # Docker assigns random host port
+   ```
+
 ## See Also
 
 - [Customization Guide](CUSTOMIZATION.md) - Modify templates and add services

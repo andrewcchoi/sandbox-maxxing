@@ -11,6 +11,8 @@ Create a customized VS Code DevContainer configuration with:
 - Optional network firewall with domain allowlist
 - All standard Claude Code sandbox features
 
+**New to sandboxing?** See the [Docker sandbox visual guide](../docs/diagrams/svg/sandbox-explained.svg) to understand how sandboxes protect your computer.
+
 **Quick paths:**
 - Use `/sandboxxer:yolo-docker-maxxing` for instant setup with no questions
 - Use `--yes` flag to accept all defaults from settings file
@@ -115,8 +117,8 @@ if [ "$SKIP_VALIDATION" = "false" ]; then
     echo "    ✓ Docker Compose available"
   fi
 
-  # Port availability check
-  for port in 8000 3000 5432 6379; do
+  # Port availability check (includes optional service ports)
+  for port in 8000 3000 5432 6379 8010 11434; do
     if port_in_use "$port"; then
       CONFLICTED+=("$port")
       PORT_CONFLICTS_FOUND=true
@@ -149,6 +151,8 @@ APP_PORT=8000
 FRONTEND_PORT=3000
 POSTGRES_PORT=5432
 REDIS_PORT=6379
+KROKI_PORT=8010
+OLLAMA_PORT=11434
 
 if [ "$PORT_CONFLICTS_FOUND" = "true" ]; then
   echo "  [1.2] Resolving port conflicts..."
@@ -159,6 +163,8 @@ if [ "$PORT_CONFLICTS_FOUND" = "true" ]; then
       3000) FRONTEND_PORT=$new_port; echo "    Frontend: 3000 → $new_port" ;;
       5432) POSTGRES_PORT=$new_port; echo "    PostgreSQL: 5432 → $new_port" ;;
       6379) REDIS_PORT=$new_port; echo "    Redis: 6379 → $new_port" ;;
+      8010) KROKI_PORT=$new_port; echo "    Kroki: 8010 → $new_port" ;;
+      11434) OLLAMA_PORT=$new_port; echo "    Ollama: 11434 → $new_port" ;;
     esac
   done
 else
@@ -480,6 +486,117 @@ if [ "$NEEDS_FIREWALL" = "Yes" ]; then
 fi
 ```
 
+### Question 5: Project Config Files
+
+Ask whether to generate additional project configuration files.
+
+Skip this question if: `AUTO_ACCEPT=true`
+
+```
+Generate project configuration files?
+
+Options:
+1. Yes - generate .dockerignore, .gitignore, .editorconfig (Recommended)
+   → Optimizes Docker builds, protects secrets, ensures consistent formatting
+
+2. .dockerignore only
+   → Only optimize Docker build context (skip .gitignore, .editorconfig)
+
+3. .gitignore only
+   → Only protect secrets and build artifacts (skip others)
+
+4. No - I'll manage these myself
+   → Skip all project config file generation
+```
+
+Store as `PROJECT_CONFIG_CHOICE`.
+
+```bash
+# Process project config choice
+GENERATE_DOCKERIGNORE=false
+GENERATE_GITIGNORE=false
+GENERATE_EDITORCONFIG=false
+
+case "$PROJECT_CONFIG_CHOICE" in
+  "Yes"*|"1")
+    GENERATE_DOCKERIGNORE=true
+    GENERATE_GITIGNORE=true
+    GENERATE_EDITORCONFIG=true
+    echo "Will generate: .dockerignore, .gitignore, .editorconfig"
+    ;;
+  ".dockerignore"*|"2")
+    GENERATE_DOCKERIGNORE=true
+    echo "Will generate: .dockerignore only"
+    ;;
+  ".gitignore"*|"3")
+    GENERATE_GITIGNORE=true
+    echo "Will generate: .gitignore only"
+    ;;
+  "No"*|"4")
+    echo "Skipping project config file generation"
+    ;;
+esac
+```
+
+### Question 6: Shared Services
+
+Optional development services that run alongside the DevContainer.
+
+Skip this question if: `AUTO_ACCEPT=true`
+
+```
+Would you like to enable any shared development services?
+
+Options:
+1. None (Recommended)
+   → Use base infrastructure only (PostgreSQL, Redis)
+
+2. Local AI (Ollama)
+   → Self-hosted LLM for code assistance (~4GB base)
+
+3. Diagram Rendering (Kroki)
+   → Self-hosted diagrams: Mermaid, PlantUML, GraphViz (~350MB)
+
+4. Both AI + Diagrams
+   → Full development toolset
+```
+
+Store as `SHARED_SERVICES_CHOICE`.
+
+```bash
+# Process shared services choice
+ENABLE_OLLAMA=false
+ENABLE_KROKI=false
+KROKI_PORT=8010
+
+case "$SHARED_SERVICES_CHOICE" in
+  "None"*|"1")
+    echo "No additional shared services"
+    ;;
+  "Local AI"*|"2")
+    ENABLE_OLLAMA=true
+    echo "Ollama enabled (docker compose --profile ai up)"
+    ;;
+  "Diagram"*|"3")
+    ENABLE_KROKI=true
+    echo "Kroki enabled (docker compose --profile diagrams up)"
+    ;;
+  "Both"*|"4")
+    ENABLE_OLLAMA=true
+    ENABLE_KROKI=true
+    echo "Ollama + Kroki enabled (docker compose --profile ai --profile diagrams up)"
+    ;;
+esac
+
+# Check Kroki port if enabled
+if [ "$ENABLE_KROKI" = "true" ]; then
+  if port_in_use "8010"; then
+    KROKI_PORT=$(find_available_port "8010")
+    echo "    Kroki port: 8010 → $KROKI_PORT"
+  fi
+fi
+```
+
 ---
 
 ## Phase 3: Generation
@@ -581,6 +698,29 @@ for f in .devcontainer/devcontainer.json docker-compose.yml; do
     "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 done
 
+# Add Kroki configuration if enabled
+if [ "$ENABLE_KROKI" = "true" ]; then
+  echo "  Injecting Kroki configuration..."
+  # Add KROKI_PORT to forwardPorts array (before closing bracket)
+  sed -i "s/\(\"forwardPorts\": \[.*\)\]/\1, $KROKI_PORT]/" .devcontainer/devcontainer.json
+
+  # Add KROKI to portsAttributes (after Redis entry, before closing brace)
+  sed -i "/\"$REDIS_PORT\".*Redis/a\\    \"$KROKI_PORT\": { \"label\": \"Kroki Diagrams\", \"onAutoForward\": \"silent\" }," .devcontainer/devcontainer.json
+
+  # Add KROKI_URL to containerEnv (after POWERLEVEL9K line)
+  sed -i "/POWERLEVEL9K_DISABLE_GITSTATUS/a\\    \"KROKI_URL\": \"http://kroki:8000\"," .devcontainer/devcontainer.json
+fi
+
+# Validate no unreplaced placeholders remain
+echo "  [3.3.1] Validating templates..."
+UNREPLACED=$(grep -oh '{{[A-Z_]*}}' .devcontainer/devcontainer.json docker-compose.yml 2>/dev/null | sort -u || true)
+if [ -n "$UNREPLACED" ]; then
+  echo "ERROR: Unreplaced placeholders found:"
+  echo "$UNREPLACED" | sed 's/^/  /'
+  exit 1
+fi
+echo "    ✓ All placeholders replaced"
+
 # 3.4 Generate firewall script
 echo "  [3.4] Configuring firewall..."
 if [ "$NEEDS_FIREWALL" = "Yes" ]; then
@@ -589,12 +729,12 @@ if [ "$NEEDS_FIREWALL" = "Yes" ]; then
   echo "    Firewall enabled with categories: $DOMAIN_CATEGORIES"
 else
   # Create no-op firewall script
-  cat > .devcontainer/init-firewall.sh << 'EOF'
+  cat > .devcontainer/init-firewall.sh << ENDOFFILE
 #!/bin/bash
 # Firewall disabled - using Docker container isolation only
 echo "Firewall is disabled."
 exit 0
-EOF
+ENDOFFILE
   chmod +x .devcontainer/init-firewall.sh
   echo "    Firewall disabled"
 fi
@@ -638,6 +778,42 @@ cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
 cp "$TEMPLATES/setup-frontend.sh" .devcontainer/
 cp "$TEMPLATES/data/allowable-domains.json" data/
 cp "$TEMPLATES/.env.example" ./.env.example
+
+# Copy .gitattributes if not exists
+if [ ! -f ".gitattributes" ]; then
+  cp "$TEMPLATES/.gitattributes" ./.gitattributes
+else
+  echo "    Skipped .gitattributes (already exists)"
+fi
+
+# Copy project config files based on user choice
+if [ "$GENERATE_DOCKERIGNORE" = "true" ]; then
+  if [ ! -f ".dockerignore" ]; then
+    cp "$TEMPLATES/.dockerignore" ./.dockerignore
+    echo "    Generated .dockerignore"
+  else
+    echo "    Skipped .dockerignore (already exists)"
+  fi
+fi
+
+if [ "$GENERATE_GITIGNORE" = "true" ]; then
+  if [ ! -f ".gitignore" ]; then
+    cp "$TEMPLATES/.gitignore" ./.gitignore
+    echo "    Generated .gitignore"
+  else
+    echo "    Skipped .gitignore (already exists)"
+  fi
+fi
+
+if [ "$GENERATE_EDITORCONFIG" = "true" ]; then
+  if [ ! -f ".editorconfig" ]; then
+    cp "$TEMPLATES/.editorconfig" ./.editorconfig
+    echo "    Generated .editorconfig"
+  else
+    echo "    Skipped .editorconfig (already exists)"
+  fi
+fi
+
 chmod +x .devcontainer/*.sh
 
 # Merge existing config if requested
@@ -714,11 +890,19 @@ echo ""
 echo "Security: $([ "$NEEDS_FIREWALL" = "Yes" ] && echo "Firewall enabled" || echo "Docker isolation only")"
 echo "Workspace: $([ "$WORKSPACE_MODE" = "volume" ] && echo "Volume mode" || echo "Bind mount")"
 echo ""
+if [ "$ENABLE_OLLAMA" = "true" ] || [ "$ENABLE_KROKI" = "true" ]; then
+  echo "Shared Services:"
+  [ "$ENABLE_OLLAMA" = "true" ] && echo "  + Ollama (Local AI) - localhost:$OLLAMA_PORT"
+  [ "$ENABLE_KROKI" = "true" ] && echo "  + Kroki (Diagrams) - localhost:$KROKI_PORT"
+  echo ""
+fi
 echo "Ports:"
 echo "  App:        localhost:$APP_PORT → container:8000"
 echo "  Frontend:   localhost:$FRONTEND_PORT → container:3000"
 echo "  PostgreSQL: localhost:$POSTGRES_PORT → container:5432"
 echo "  Redis:      localhost:$REDIS_PORT → container:6379"
+[ "$ENABLE_KROKI" = "true" ] && echo "  Kroki:      localhost:$KROKI_PORT → container:8000"
+[ "$ENABLE_OLLAMA" = "true" ] && echo "  Ollama:     localhost:$OLLAMA_PORT → container:11434"
 echo ""
 echo "Files created:"
 echo "  .devcontainer/Dockerfile"
@@ -727,12 +911,27 @@ echo "  .devcontainer/init-firewall.sh"
 echo "  .devcontainer/setup-claude-credentials.sh"
 echo "  docker-compose.yml"
 echo "  .env"
+[ ! -f ".gitattributes.backup" ] && echo "  .gitattributes" || echo "  .gitattributes (preserved existing)"
+[ "$GENERATE_DOCKERIGNORE" = "true" ] && { [ ! -f ".dockerignore.backup" ] && echo "  .dockerignore" || echo "  .dockerignore (preserved existing)"; }
+[ "$GENERATE_GITIGNORE" = "true" ] && { [ ! -f ".gitignore.backup" ] && echo "  .gitignore" || echo "  .gitignore (preserved existing)"; }
+[ "$GENERATE_EDITORCONFIG" = "true" ] && { [ ! -f ".editorconfig.backup" ] && echo "  .editorconfig" || echo "  .editorconfig (preserved existing)"; }
 echo ""
 echo "Next steps:"
 echo "1. Edit .env and add your API keys"
 echo "2. Open this folder in VS Code"
 echo "3. Click 'Reopen in Container' when prompted"
 echo "4. Wait for container build (~2-5 minutes first time)"
+if [ "$ENABLE_OLLAMA" = "true" ] || [ "$ENABLE_KROKI" = "true" ]; then
+  echo ""
+  echo "To start shared services:"
+  if [ "$ENABLE_OLLAMA" = "true" ] && [ "$ENABLE_KROKI" = "true" ]; then
+    echo "  docker compose --profile ai --profile diagrams up -d"
+  elif [ "$ENABLE_OLLAMA" = "true" ]; then
+    echo "  docker compose --profile ai up -d"
+  else
+    echo "  docker compose --profile diagrams up -d"
+  fi
+fi
 echo ""
 echo "=========================================="
 ```
@@ -757,3 +956,19 @@ Use Docker JSON array format instead of shell scripts for `initializeCommand` in
 ### Port conflicts
 
 Run with `--skip-validation` to skip port checks, or the command will auto-assign alternative ports.
+
+---
+
+## Related Commands
+
+- **`/sandboxxer:yolo-docker-maxxing`** - YOLO mode: instant setup with no questions
+- **`/sandboxxer:health`** - Verify environment after setup
+- **`/sandboxxer:troubleshoot`** - Fix issues during or after setup
+- **`/sandboxxer:audit`** - Security review of configuration
+- **`/sandboxxer:deploy-to-azure`** - Deploy to Azure Container Apps
+
+## Related Documentation
+
+- [Setup Options](../docs/features/SETUP-OPTIONS.md) - Detailed setup configuration guide
+- [Quickstart Flow Diagram](../docs/diagrams/svg/quickstart-flow.svg) - Visual workflow
+- [Settings Reference](../docs/features/SETTINGS.md) - Default settings and customization

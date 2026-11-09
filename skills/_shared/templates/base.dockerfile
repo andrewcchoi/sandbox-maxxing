@@ -5,7 +5,7 @@
 # Language-specific additions are inserted at the marker below
 #
 # BUILD ARGUMENTS:
-#   INSTALL_SHELL_EXTRAS=true  - git-delta, zsh plugins (default: true)
+#   INSTALL_SHELL_EXTRAS=true  - zsh plugins (default: true)
 #   INSTALL_DEV_TOOLS=true     - Language dev tools, linters (default: true)
 #   INSTALL_CA_CERT=false      - Corporate CA certificate (default: false)
 #   ENABLE_FIREWALL=false      - Install firewall packages and script (default: false)
@@ -24,8 +24,11 @@ ARG INSTALL_CA_CERT=false
 ARG ENABLE_FIREWALL=false
 
 # === MULTI-STAGE SOURCES ===
-# Stage 1: Get Python + uv from official Astral image
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS python-uv-source
+# Stage 1a: Get uv/uvx from Astral image
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS uv-source
+
+# Stage 1b: Get Python 3.12 with proper shared library
+FROM python:3.12-slim-bookworm AS python-source
 
 # Stage 2: Get Go from official image (used when go partial is selected)
 FROM golang:1.22-bookworm AS go-source
@@ -45,10 +48,20 @@ FROM composer:latest AS composer-source
 # Stage 7: Get GCC from official image (used when cpp-gcc partial is selected)
 FROM gcc:13-bookworm AS gcc-source
 
-# Stage 8: Get Azure CLI from official Microsoft image (used when azure-cli partial is selected)
-FROM mcr.microsoft.com/azure-cli:latest AS azure-cli-source
+# Stage 8: Azure CLI (removed - now installed via pip in azure-cli.dockerfile partial)
+# The mcr.microsoft.com/azure-cli:latest image changed structure, breaking multi-stage copy.
+# See azure-cli.dockerfile partial for details.
 
-# Stage 9: Main build
+# Stage 9: Get AWS CLI from official Amazon image (always installed for yolo)
+FROM amazon/aws-cli:latest AS aws-cli-source
+
+# Stage 11: Get Terraform from official HashiCorp image (used when terraform partial is selected)
+FROM hashicorp/terraform:latest AS terraform-source
+
+# Stage 12: Get Tailscale from official image (used when tailscale partial is selected)
+FROM tailscale/tailscale:latest AS tailscale-source
+
+# Stage 10: Main build
 FROM node:20-bookworm-slim
 
 # Re-declare ARGs after FROM (Docker requirement)
@@ -103,18 +116,28 @@ RUN if [ "$INSTALL_CA_CERT" = "true" ]; then \
     echo "Corporate CA certificate installation skipped (INSTALL_CA_CERT=false)"; \
   fi && rm -f /tmp/corporate-ca.crt
 
-# Copy Python 3.12 binaries and shared library
-COPY --from=python-uv-source /usr/local/bin/python3* /usr/local/bin/
-COPY --from=python-uv-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
-COPY --from=python-uv-source /usr/local/lib/libpython3.12.so* /usr/local/lib/
-COPY --from=python-uv-source /usr/local/bin/pip* /usr/local/bin/
+# Copy Python 3.12 from official image (includes shared library)
+COPY --from=python-source /usr/local/bin/python3* /usr/local/bin/
+COPY --from=python-source /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=python-source /usr/local/lib/libpython3.12.so* /usr/local/lib/
+COPY --from=python-source /usr/local/bin/pip* /usr/local/bin/
 RUN ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
     ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3 && \
     ldconfig
 
-# Copy uv and uvx binaries
-COPY --from=python-uv-source /usr/local/bin/uv /usr/local/bin/
-COPY --from=python-uv-source /usr/local/bin/uvx /usr/local/bin/
+# Copy uv and uvx from Astral image
+COPY --from=uv-source /usr/local/bin/uv /usr/local/bin/
+COPY --from=uv-source /usr/local/bin/uvx /usr/local/bin/
+
+# AWS CLI from official Amazon image (proxy-friendly)
+# Uses wrapper script instead of symlink to avoid PyInstaller path resolution warnings.
+# When invoked via symlink, PyInstaller looks for libpython in the symlink's directory,
+# fails, then falls back to bundled location. The wrapper runs aws from its native
+# directory so PyInstaller finds its bundled Python immediately.
+COPY --from=aws-cli-source /usr/local/aws-cli /usr/local/aws-cli
+RUN printf '#!/bin/sh\nexec /usr/local/aws-cli/v2/current/bin/aws "$@"\n' > /usr/local/bin/aws && \
+    chmod +x /usr/local/bin/aws && \
+    ln -sf /usr/local/aws-cli/v2/current/bin/aws_completer /usr/local/bin/aws_completer
 
 # Database clients
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -161,13 +184,13 @@ RUN mkdir -p /workspace /home/node/.claude && \
 
 WORKDIR /workspace
 
-# GIT delta (enhanced git diff) - conditional on INSTALL_SHELL_EXTRAS
-ARG GIT_DELTA_VERSION=0.18.2
+# bat (better cat/git diff viewer) - proxy-friendly from apt, conditional on INSTALL_SHELL_EXTRAS
 RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
-    ARCH=$(dpkg --print-architecture) && \
-    wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
-    dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
-    rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"; \
+    apt-get update && apt-get install -y --no-install-recommends bat && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /home/node/.local/bin && \
+    ln -sf /usr/bin/batcat /home/node/.local/bin/bat && \
+    chown -R node:node /home/node/.local; \
   fi
 
 # Domain allowlist - conditional based on ENABLE_FIREWALL

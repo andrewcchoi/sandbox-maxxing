@@ -173,7 +173,6 @@ skills/
 │   │   ├── init-volume.sh             # Volume initialization script
 │   │   ├── extensions.json            # VS Code extensions (minimal)
 │   │   ├── mcp.json                   # MCP config
-│   │   ├── variables.json             # Build/runtime vars
 │   │   ├── .env.template              # Environment template
 │   │   ├── README.md                  # Template docs (v4.3.1)
 │   │   ├── azure/                     # Azure deployment templates

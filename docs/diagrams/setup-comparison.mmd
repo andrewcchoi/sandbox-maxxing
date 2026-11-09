@@ -1,0 +1,95 @@
+<!--
+---
+title: Setup Command Comparison
+type: Decision Tree
+introduced: 4.13.3
+documents:
+  - docs/diagrams/README.md
+  - commands/quickstart.md
+  - commands/yolo-docker-maxxing.md
+  - commands/yolo-linux-maxxing.md
+components:
+  commands: 3
+  decision_points: 4
+  comparison_attributes: 5
+last_updated: 2026-02-10
+purpose: Decision tree helping users choose between /quickstart, /yolo-docker-maxxing, and /yolo-linux-maxxing
+---
+-->
+
+flowchart TD
+    Start([Choose Setup Command]) --> Q1{Do you have<br/>Docker installed?}
+
+    Q1 -->|No| Linux["/yolo-linux-maxxing<br/>Native Linux/WSL2/"]
+    Q1 -->|Yes| Q2{Need customization?}
+
+    Q2 -->|Yes<br/>Custom tools, firewall| Quickstart["/quickstart<br/>Interactive Setup/"]
+    Q2 -->|No<br/>Just want it working| Q3{Priority?}
+
+    Q3 -->|Speed & simplicity| YoloDocker["/yolo-docker-maxxing<br/>Zero Questions/"]
+    Q3 -->|Security| Quickstart
+
+    subgraph Commands["Command Details"]
+        direction TB
+
+        subgraph QS["📋 /quickstart"]
+            QS1[Interactive with up to 4 questions]
+            QS2[Profile selection: Minimal/Backend/Full Stack/Custom]
+            QS3[Optional firewall configuration]
+            QS4[Volume or bind mount choice]
+        end
+
+        subgraph YD["🚀 /yolo-docker-maxxing"]
+            YD1[Zero questions asked]
+            YD2[Python 3.12 + Node 20 base]
+            YD3[No firewall - Docker isolation only]
+            YD4[Auto port allocation]
+        end
+
+        subgraph YL["🐧 /yolo-linux-maxxing"]
+            YL1[No Docker required]
+            YL2[Bubblewrap sandboxing]
+            YL3[Optional flags: --with-tools, --with-shell]
+            YL4[Faster startup, simpler setup]
+        end
+    end
+
+    Quickstart --> QS
+    YoloDocker --> YD
+    Linux --> YL
+
+    subgraph Comparison["Feature Comparison"]
+        direction TB
+        Table["| Feature | /quickstart | /yolo-docker | /yolo-linux |
+|---------|-------------|--------------|-------------|
+| Questions | 0-4 | 0 | 0 |
+| Sandboxing | Docker container | Docker container | Bubblewrap |
+| Network isolation | Optional firewall | Docker only | ❌ None |
+| Resource limits | ✅ cgroups | ✅ cgroups | ❌ None |
+| Setup time | ~3 min | ~2 min | ~5 min |
+| Best for | Custom needs | Quick Docker | No Docker |"]
+    end
+
+    subgraph UseCases["Use Case Examples"]
+        UC1[Personal dev machine<br/>No Docker available<br/>→ /yolo-linux-maxxing]
+        UC2[Quick prototyping<br/>Default settings OK<br/>→ /yolo-docker-maxxing]
+        UC3[Production-like env<br/>Need specific tools<br/>→ /quickstart]
+        UC4[Security-sensitive work<br/>Need firewall<br/>→ /quickstart --firewall]
+    end
+
+    style Start fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Q1 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Q2 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Q3 fill:#FFE4B5,stroke:#333,stroke-width:2px
+
+    style Quickstart fill:#87CEEB,stroke:#333,stroke-width:2px
+    style YoloDocker fill:#90EE90,stroke:#333,stroke-width:2px
+    style Linux fill:#FFB366,stroke:#333,stroke-width:2px
+
+    style QS fill:#87CEEB,stroke:#333,stroke-width:1px
+    style YD fill:#90EE90,stroke:#333,stroke-width:1px
+    style YL fill:#FFB366,stroke:#333,stroke-width:1px
+
+    style Comparison fill:#f0f0f0,stroke:#999,stroke-width:1px
+    style UseCases fill:#DDA0DD,stroke:#333,stroke-width:1px
+    style Commands fill:#f0f0f0,stroke:#999,stroke-width:1px

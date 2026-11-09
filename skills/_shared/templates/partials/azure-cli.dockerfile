@@ -2,25 +2,19 @@
 # Azure CLI and Azure Developer CLI Partial
 # ============================================================================
 # Appended to base.dockerfile when user needs Azure deployment capabilities.
-# Uses official Microsoft Azure CLI Docker image for proxy-friendliness.
+# Installs az CLI via pip (the officially supported method).
 # Adds az CLI, azd CLI, and Bicep tools for deploying DevContainers to Azure.
+#
+# NOTE: Multi-stage copy from mcr.microsoft.com/azure-cli was removed because
+# Microsoft changed the image structure - /opt/az no longer exists in latest.
+# pip install is more reliable and is the officially documented method.
 # ============================================================================
 
 USER root
 
-# Copy Azure CLI from official Microsoft image (proxy-friendly)
-# This avoids downloading from aka.ms during build
-COPY --from=azure-cli-source /opt/az /opt/az
-COPY --from=azure-cli-source /usr/local/bin/az /usr/local/bin/az
-
-# Install Python dependencies needed for Azure CLI
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-pip \
-    python3-venv \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Create symlink for az command
-RUN ln -sf /opt/az/bin/az /usr/local/bin/az 2>/dev/null || true
+# Install Azure CLI via pip (officially supported installation method)
+# Uses the Python 3.12 already installed in the base image
+RUN pip install --no-cache-dir azure-cli
 
 # Install Azure Developer CLI (azd) with retry logic (use --http1.1 to avoid HTTP/2 stream errors)
 # NOTE: azd doesn't have an official Docker image yet, requires direct download
@@ -28,12 +22,16 @@ RUN curl --retry 5 --retry-delay 5 --retry-max-time 300 \
          --connect-timeout 30 --http1.1 \
          -fsSL https://aka.ms/install-azd.sh | bash
 
-# Install Bicep CLI
-RUN az bicep install
+# Install Bicep CLI with retry logic (network can be flaky during build)
+RUN for i in 1 2 3; do \
+      az bicep install && break || \
+      (echo "Retry $i: az bicep install failed, waiting..." && sleep 10); \
+    done && \
+    az bicep version || (echo "WARNING: Bicep CLI installation failed" && exit 1)
 
 # Add Azure CLI extensions for container deployments
-RUN az extension add --name containerapp --yes && \
-    az extension add --name containerapp-compose --yes
+# Note: containerapp-compose was deprecated and merged into containerapp extension
+RUN az extension add --name containerapp --yes
 
 USER node
 

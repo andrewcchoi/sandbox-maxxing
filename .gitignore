@@ -1,6 +1,27 @@
 # Infrastructure
 .internal/
 
+# Sandbox artifacts (empty shadow files created by Claude Code sandbox)
+# These conflict with git commands and should not be tracked
+HEAD
+config
+objects
+refs
+.bash_profile
+.bashrc
+.profile
+.zprofile
+.zshrc
+.gitconfig
+.ripgreprc
+.gitmodules
+.mcp.json
+.claude/agents
+.claude/commands
+.claude/skills
+.claude/plans/
+.claude/ultrathink-temp/
+
 # DevContainer SSH public key (unique per developer)
 .devcontainer/devcontainer-ssh.pub
 
@@ -8,14 +29,20 @@
 test-*
 !test-config.yml
 
+# Node.js
+node_modules/
+package-lock.json
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 .venv/
 
-# IDE
+# IDE (files and directories - sandbox may create as files)
+.vscode
 .vscode/
+.idea
 .idea/
 
 # OS
@@ -26,6 +53,5 @@ Thumbs.db
 .env
 .env.local
 .claude/settings.local.json
-.claude/settings.json
 .claude/state
 *.local.*

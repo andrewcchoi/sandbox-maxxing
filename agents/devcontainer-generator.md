@@ -1,6 +1,8 @@
 ---
 name: devcontainer-generator
+role: DevContainer Configuration Generator
 description: Generates DevContainer files by copying templates and customizing placeholders. Use this agent for manual devcontainer setup file generation.
+subagent_type: devcontainer-generator
 whenToUse: |
   Use this agent when the user explicitly asks to "generate devcontainer files", "create devcontainer setup from templates",
   "set up devcontainer configuration", "copy devcontainer templates", or when you need to manually create DevContainer

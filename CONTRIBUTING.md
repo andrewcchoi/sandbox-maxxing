@@ -40,7 +40,7 @@ This plugin uses itself for development (dogfooding approach), which ensures the
    claude plugins add .
    ```
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for comprehensive development guide.
+See [DEVELOPMENT.md](docs/DEVELOPMENT.md) for comprehensive development guide.
 
 ### Option 2: Local Setup (Without DevContainer)
 

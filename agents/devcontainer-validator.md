@@ -1,6 +1,8 @@
 ---
 name: devcontainer-validator
+role: DevContainer Validation Specialist
 description: Validates DevContainer setup - file locations, JSON/YAML syntax, and content structure
+subagent_type: devcontainer-validator
 whenToUse: |
   Use this agent when the user asks to "validate devcontainer", "check devcontainer files", "verify devcontainer setup",
   "validate my devcontainer configuration", or after generating DevContainer files to ensure they're correct.

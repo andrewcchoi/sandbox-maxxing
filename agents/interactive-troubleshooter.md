@@ -1,6 +1,8 @@
 ---
 name: interactive-troubleshooter
+role: Interactive Diagnostic Agent
 description: Automated diagnostic agent that runs checks, identifies issues, and provides targeted fixes for Docker sandbox problems
+subagent_type: interactive-troubleshooter
 whenToUse: |
   Use this agent when the user reports sandbox problems and needs active troubleshooting (not just documentation).
   The agent runs automated diagnostic commands and provides specific fixes based on actual system state.

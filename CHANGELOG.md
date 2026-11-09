@@ -2,15 +2,136 @@
 
 All notable changes to this project will be documented in this file.
 
+> **Note:** For versions prior to v4.0.0, see [CHANGELOG-ARCHIVE.md](docs/archive/CHANGELOG-ARCHIVE.md).
+> For migration guides between major versions, see [MIGRATION.md](docs/MIGRATION.md).
+
 ## [Unreleased]
 
 ### Added
 - **Hooks**: `sync-knowledge` SessionStart hook now also mirrors `projects/` (session transcripts) from Docker volumes onto the host, alongside the existing `plans/`, `state/`, and `projects.json` syncs.
-  - Uses `cp -au` (BusyBox archive + update-only) so subsequent runs only copy new/changed transcripts — the sync stays sub-second after the first pass.
+  - Uses `cp -au` (BusyBox archive + update-only) so subsequent runs only copy new/changed transcripts and original timestamps are preserved. The first pass over a large volume can take a while; later runs are incremental.
+  - `~/.claude/projects` is reset to `0700` after each copy, because `cp -a` would otherwise apply the container directory's mode (typically `755`) to it.
   - Extends the skip-gate: a volume is now considered claude-like if it contains any of `plans/`, `state/`, or `projects/`. Volumes missing all three still print `- Skipping (no plans/, state/, or projects/ directory)`.
   - Enables host-scoped analytics (like the `/insights` slash command) to see the full history of DevContainer work, not just native host sessions.
   - Applied consistently to the active hook (`hooks/sync-knowledge.sh`) and the two template variants (`.devcontainer/sync-knowledge.sh`, `skills/_shared/templates/sync-knowledge.sh`) that ship into new devcontainer projects.
+  - Adds `tests/unit/hooks/sync-knowledge.test.sh` covering the skip-gate, transcript copy, incremental update, and `0700` permissions.
   - Complements the forward-looking bind-mount approach discussed in issue #366 — sync-knowledge is the retroactive fix for pre-existing and legacy Docker volumes.
+
+## [4.13.9] - 2026-03-11
+
+### Fixed
+- **Hook permissions**: Fixed missing executable permissions on `session-end-hook.sh` and `sync-knowledge.sh`
+- **Broken link**: Fixed broken anchor link to SSL/proxy troubleshooting in README.md
+- **Diagram accuracy**: Updated `plugin-architecture.mmd` to show all 3 hook types (was showing 1)
+
+### Changed
+- **Documentation maintenance**: Removed stale v4.3.0 version reference from README.md
+- **Repository hygiene**: Comprehensive audit of documentation, scripts, and plugin components
+
+## [4.13.8] - 2026-03-10
+
+### Fixed
+- **AWS CLI broken in container**: Fixed PyInstaller bundle path resolution error
+  - `libpython3.13.so.1.0` not found because symlinks confuse PyInstaller's path detection
+  - Now uses wrapper script that runs `aws` from its native directory
+- **Bicep CLI missing after build**: Added retry logic to `az bicep install`
+  - 3 retries with 10s delay for flaky network during Docker builds
+  - Verification step ensures installation succeeded
+- **Python .venv empty on fresh containers**: Removed premature `.venv` deletion
+  - `onCreateCommand` was deleting the pre-built venv before first use
+  - Cleanup now only runs in `updateContentCommand` (rebuild scenarios)
+
+## [4.13.7] - 2026-03-10
+
+### Fixed
+- **Command execution**: Fixed heredoc quoting conflicts in bash -c execution
+  - Changed `<< 'EOF'` to `<< ENDOFFILE` (unquoted) in yolo-docker-maxxing and quickstart commands
+  - Resolves "unexpected EOF while looking for matching `''" errors on Windows
+  - Added regression tests to prevent reversion to broken pattern
+
+## [4.13.6] - 2026-03-10
+
+### Fixed
+- **yolo-docker-maxxing**: Fixed grep pattern quotes in placeholder validation
+  - Changed single quotes to double quotes for consistent shell quoting
+
+## [4.13.5] - 2026-02-18
+
+### Added
+- **yolo-docker-maxxing enhancements** (#324):
+  - Go 1.22 language support via official golang Docker image
+  - Azure CLI (az) and Azure Developer CLI (azd) for cloud deployments
+  - Terraform for Infrastructure as Code
+  - Tailscale for secure remote access
+  - Complete PDF/OCR toolkit (poppler, ghostscript, qpdf, tesseract, ocrmypdf, pdftk)
+  - Automatic AWS credentials mounting from host ~/.aws directory
+  - Three new Dockerfile partials: terraform, tailscale, pdf-tools
+
+### Changed
+- **Replaced git-delta with bat** (#324):
+  - Switched from GitHub-downloaded git-delta to apt-installed bat
+  - Improves proxy-friendliness (99% of tools now from Docker images or apt)
+  - bat provides similar syntax highlighting for git diffs
+- **Updated yolo-docker-maxxing** to concatenate 5 partials (go, azure-cli, terraform, tailscale, pdf-tools)
+- Enhanced success messages with complete tool listing and setup instructions
+- Updated command description to reflect expanded feature set
+
+### Fixed
+- Proxy-friendliness improved from ~95% to 99% (only fzf integration and Powerlevel10k from GitHub)
+- **Templates**: Fixed `fix-worktree-paths.sh` hardcoded path bug (#314)
+  - Changed `/workspace` hardcode to use `$WORKSPACE_DIR` variable for testability
+  - Added comprehensive test suite (7 tests) for git worktree path translation
+
+## [4.13.5] - 2026-02-18
+
+### Added
+- **Documentation**: New `CLAUDE.md` file (210 lines) for Claude Code session context
+  - Commands table with all 8 user-facing commands
+  - Template system documentation (copy + sed, tier markers explained)
+  - Design decisions: multi-stage Docker builds for proxy support, no sudo in container
+  - Common errors reference from 50+ closed GitHub issues
+  - Mandatory regression testing requirements
+  - Test suite evolution guidelines
+
+### Fixed
+- **Templates**: Git worktree support for Windows hosts (#314)
+  - New `fix-worktree-paths.sh` for runtime Windows path translation
+  - Automatically converts Windows paths in `.git` files to relative Unix paths
+  - Runs early in `postCreateCommand` before git operations
+  - Added Section 0 to `setup-claude-credentials.sh` (now 14 steps)
+
+## [4.13.4] - 2026-02-11
+
+### Fixed
+- **Docker Compose**: Added `user` directive to fix permission mismatch in standalone docker-compose usage (#306)
+  - Containers now run as `user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"` instead of defaulting to root
+  - Fixes Claude credentials copy failures from host to container
+  - Fixes permission errors on volume mounts
+  - Fixes terminal showing `root@` instead of `node@`
+
+### Added
+- **Configuration**: New environment variables `CONTAINER_UID` and `CONTAINER_GID` for container user override
+  - Default to 1000:1000 (standard `node` user on Linux)
+  - macOS users: set `CONTAINER_UID=501` and `CONTAINER_GID=20`
+
+## [4.13.3] - 2026-02-10
+
+### Added
+- **Commands**: Popup sudo authentication for `/sandboxxer:yolo-linux-maxxing`
+  - Opens a terminal window for password entry when running via Claude Code
+  - Eliminates need for manual pre-authentication (`sudo -v`)
+  - Supports WSL2 (Windows Terminal, cmd.exe) and native Linux (gnome-terminal, xterm, konsole)
+  - Graceful fallback to manual instructions when popup unavailable
+
+### Fixed
+- **Commands**: Implemented `--skip-validation` flag for `/sandboxxer:yolo-linux-maxxing`
+  - Flag was documented in argument-hint but never parsed
+  - Now correctly bypasses sudo check for CI/automation scenarios
+- **Commands**: Added Windows shell detection for `/sandboxxer:yolo-linux-maxxing`
+  - Detects Git Bash/MSYS/Cygwin and shows helpful error with WSL2 instructions
+  - Prevents confusing errors when running from wrong environment
+
+## [4.13.2] - 2026-02-09
 
 ### Changed
 - **Commands**: Major refactor of `/sandboxxer:quickstart` command (Issue #271)
@@ -38,6 +159,15 @@ All notable changes to this project will be documented in this file.
   - Updated `docs/diagrams/README.md` quickstart description
   - Updated `commands/README.md` quickstart documentation and usage examples
   - Fixed broken link to non-existent `docs/LOW_PRIORITY_FIXES_v2.2.1.md` (referenced in v2.2.0 changelog but file never created)
+
+## [4.13.1] - 2026-02-07
+
+### Fixed
+- **Docker Compose**: Fixed parent directory mount path in docker-compose template
+- **Hooks**: Corrected matcher field format in hooks.json configuration
+
+### Added
+- **Documentation**: Added hooks.json matcher format troubleshooting guide
 
 ## [4.13.0] - 2026-02-07
 
@@ -588,159 +718,4 @@ Update your usage:
 - User approval before execution (no surprises)
 - ~70% reduction in skill file sizes
 - Eliminated template duplication
-
-## [3.0.0] - 2025-12-19
-
-### Major Breaking Changes
-- **Plugin renamed**: `devcontainer-setup` → `sandboxxer`
-  - All slash commands updated: `/devcontainer-setup:*` → `/sandboxxer:*`
-  - Updated plugin.json and marketplace.json with new name
-  - Clarified purpose: Creates VS Code DevContainer configurations for sandboxed development
-  - Repository name remains "sandbox-maxxing" for backwards compatibility
-
-### Added
-- **Copy-first workflow**: Complete template structure redesign
-  - New `/templates/output-structures/` directory with complete file hierarchies
-  - Four mode-specific template directories: basic/, intermediate/, advanced/, yolo/
-  - Each mode includes: Dockerfile (multi-stage), devcontainer.json, docker-compose.yml, credentials script, firewall script (where applicable)
-  - Templates are copied directly, then customized with placeholders
-  - Ensures complete files with all features (multi-stage builds, credentials persistence, comprehensive tooling)
-
-### Changed
-- **Workflow methodology**: From "read-and-generate" to "copy-first"
-  - All four skill files updated with new copy-first workflow instructions
-  - Added plugin root discovery using find commands
-  - Added mandatory verification checkpoints for copied files
-  - Ensures Dockerfiles have 80+ lines with multi-stage builds
-- **File generation accuracy**: Fixed all four reported issues
-  - ✅ Missing files - Now copies complete template structures
-  - ✅ Wrong locations - Explicit file paths in copy commands
-  - ✅ Minimal/incorrect content - Complete templates with all features
-  - ✅ Wrong file types - Clear distinction between DevContainer and Claude Code configs
-- **Descriptions updated**: All command files and README
-  - Clarified "VS Code DevContainer setup" vs "sandbox setup"
-  - Updated command descriptions to reflect DevContainer focus
-  - Removed ambiguous references to "Claude Code sandbox"
-
-### Fixed
-- **Template reading issues**: Claude was not using template files at all
-  - Root cause: `${CLAUDE_PLUGIN_ROOT}` variable not being resolved
-  - Solution: Direct file copy operations via Bash instead of read-and-generate
-- **Dockerfile requirements**: Now enforced for ALL modes
-  - Basic mode: Multi-stage Dockerfile required (was previously optional)
-  - All modes: 80+ line Dockerfiles with comprehensive tooling
-- **Firewall configuration**: Clarified mode-specific firewall behavior
-  - Basic: NO firewall script (relies on container isolation only)
-  - Intermediate/Advanced/YOLO: Appropriate firewall scripts included
-
-## [2.2.1] - 2025-12-16
-
-### Fixed
-- Fixed shell script executable permissions (28 files)
-- Propagated Issue #29 fix (multi-stage Node.js) to templates and examples
-- Propagated Issue #30 fix (credentials mount) to templates and examples
-- Updated all language Dockerfiles (11 files) with Node.js + npm-based Claude Code install
-- Fixed deprecated Claude Code installation method in all Dockerfiles
-
-### Changed
-- Updated master templates to include multi-stage build pattern
-- Added `setup-claude-credentials.sh` to master templates
-- Added credentials mount pattern to docker-compose templates
-- Added credentials mount documentation to compose templates (4 files)
-
-## [2.2.0] - 2025-12-16
-
-### Added
-- **Documentation files** (5 new):
-  - `docs/SECURITY-MODEL.md` - Comprehensive security architecture and threat model
-  - `docs/TROUBLESHOOTING.md` - Complete troubleshooting guide for all common issues
-  - `skills/README.md` - Skills index with comparison table and usage guide
-  - `commands/README.md` - Commands index with syntax and examples
-  - `templates/README.md` - Template system documentation with master templates guide
-- **SECURITY.md** - Security policy with responsible disclosure process
-- **docs/CONSOLIDATION_RECOMMENDATIONS.md** - Future documentation improvement suggestions
-- **docs/LOW_PRIORITY_FIXES_v2.2.1.md** - Status report on all low priority issues *(Note: file was never created; documented here for historical accuracy)*
-- **Version footers** added to all key documentation files for traceability
-
-### Fixed
-- **Critical firewall documentation errors** in README.md:
-  - Basic mode: Corrected to "None (relies on container isolation)" from "strict firewall"
-  - Intermediate mode: Corrected to "Permissive (no restrictions)" from "100+ domains"
-  - Advanced mode: Improved description to "Strict (customizable allowlist)"
-- **Broken cross-references** (8+ occurrences):
-  - Fixed SECURITY-MODEL.md links in all example READMEs
-  - Fixed TROUBLESHOOTING.md reference in examples/README.md
-  - Fixed skills/README.md link in DEVELOPMENT.md
-- **Outdated references** (6 occurrences):
-  - Fixed `basic-streamlit` → `streamlit-sandbox-basic` in CONTRIBUTING.md and DEVELOPMENT.md
-  - Added missing demo-app-sandbox-intermediate to README.md structure
-  - Updated skill references to show correct directory structure
-- **Terminology inconsistencies** (4 occurrences):
-  - Fixed "tier" → "mode" in templates/legacy/README.md (3 occurrences)
-  - Standardized plugin naming: "sandboxxer" (plugin name), "sandbox-maxxing" (repository/marketplace), "sandbox" (shorthand)
-
-### Changed
-- **Documentation completeness**: Improved from 91% to 100%
-- **Documentation accuracy**: Improved from ~95% to 100%
-- All cross-references verified and working
-- Consistent version footers across documentation
-
-## [2.1.0] - 2025-12-16
-
-### Changed
-- Simplified command names: `/devcontainer:basic` (was `/devcontainer:quickstart-basic`)
-- Updated repo devcontainer to Intermediate mode with PostgreSQL, Redis, RabbitMQ
-- Fixed all "Pro" → "YOLO" terminology (~50 occurrences)
-- Fixed all "sandbox-maxxing" → "sandbox" naming (~35 occurrences)
-- Removed temporary files from root directory
-- Plugin version updated to 2.1.0
-
-### Fixed
-- Consistent four-mode terminology throughout documentation
-- Skill cross-reference corrections (devcontainer-setup-troubleshoot → sandboxxer-troubleshoot)
-- Command reference standardization
-- Archived completed plan documents
-
-## [2.0.0] - 2025-12-16
-
-### Changed
-- **Breaking**: Four-mode system replaces three-mode: Basic, Intermediate, Advanced, YOLO (was Basic/Advanced/Pro)
-- **Breaking**: Renamed skills from `sandbox-maxxing-*` to `sandbox-*`
-- **Breaking**: Command structure updated to mode-specific commands
-- Data-driven configuration with JSON files (sandbox-templates, official-images, allowable-domains)
-- Modular template system with section markers for composability
-- Master templates with mode-specific stripped versions
-- Auto-pull Docker images with user confirmation
-- Plugin version updated to 2.0.0
-
-### Added
-- `data/` directory with JSON reference files
-- `templates/master/` with comprehensive kitchen-sink templates
-- `templates/compose/` with mode-specific docker-compose templates
-- `templates/firewall/` with mode-specific firewall scripts
-- `templates/dockerfiles/` with 11 platform-specific Dockerfiles
-- New skills: devcontainer-setup-basic, devcontainer-setup-intermediate, devcontainer-setup-yolo
-- Four examples covering all modes
-
-### Removed
-- Old three-mode mode references
-- Monolithic templates (moved to templates/legacy/)
-
-## [1.0.0] - 2025-12-12
-
-### Added
-- Interactive setup wizard with three modes (Basic/Advanced/Pro)
-- Troubleshooting assistant for common sandbox issues
-- Security auditor for configuration hardening
-- Templates for Python, Node.js, and fullstack projects
-- Firewall configuration with strict/permissive modes
-- Comprehensive reference documentation
-- Manual test suite
-
-### Features
-- Auto-detection of project type
-- Docker Compose service configuration
-- DevContainer setup automation
-- Network isolation and security
-- Health checks for all services
 

@@ -8,6 +8,8 @@ The project currently uses manual testing procedures for sandbox setup commands.
 
 ## Test Coverage
 
+> **See also:** [TEST-COVERAGE-REPORT.md](TEST-COVERAGE-REPORT.md) - Detailed coverage analysis and recommendations
+
 Manual testing covers:
 - ✅ Interactive quickstart setup
 - ✅ Non-interactive YOLO docker maxxing setup
@@ -395,10 +397,10 @@ bash scripts/version-checker.sh
 ```
 === Version Consistency Check ===
 
-plugin.json:       4.13.0
-marketplace.json:  4.13.0
-README.md badge:   4.13.0
-CHANGELOG.md:      4.13.0
+plugin.json:       4.13.5
+marketplace.json:  4.13.5
+README.md badge:   4.13.5
+CHANGELOG.md:      4.13.5
 
 ✅ All critical version references are consistent
 ```
@@ -413,8 +415,8 @@ bash scripts/diagram-inventory.sh
 ```
 === Diagram Inventory Check ===
 
-Mermaid source files (.mmd): 12
-SVG output files (.svg):     12
+Mermaid source files (.mmd): 18
+SVG output files (.svg):     18
 
 Checking .mmd → .svg pairs...
 ✅ plugin-architecture.mmd → plugin-architecture.svg

@@ -59,10 +59,27 @@ run_check() {
 # Run all checks
 run_check "Version Consistency" "$SCRIPT_DIR/version-checker.sh" || true
 run_check "Diagram Inventory" "$SCRIPT_DIR/diagram-inventory.sh" || true
+# Note: bidirectional-validation.sh disabled due to sandbox restrictions on find commands
+# Run manually in non-sandboxed environments: bash scripts/bidirectional-validation.sh
+# run_check "Bidirectional Validation" "$SCRIPT_DIR/bidirectional-validation.sh" || true
 
-# Note: Link checker is available but not run by default due to complexity
-# Run manually with: bash scripts/link-checker.sh
-echo "ℹ️  Note: Link checking available via scripts/link-checker.sh (not run by default)"
+# Check line endings for polyglot hook wrapper
+echo "CHECK: Polyglot Hook Line Endings"
+if file hooks/run-hook.cmd | grep -q "CRLF"; then
+    echo "ERROR: hooks/run-hook.cmd has CRLF line endings"
+    echo "   Polyglot heredoc requires LF for bash to parse correctly"
+    echo "   CRLF causes 'unexpected end of file' errors on Linux/WSL"
+    echo "   To fix: sed -i 's/\\r$//' hooks/run-hook.cmd"
+    ((ERRORS++)) || true
+else
+    echo "hooks/run-hook.cmd has correct LF line endings"
+    ((CHECKS_PASSED++)) || true
+fi
+
+# Note: Additional validation scripts available for manual runs
+echo "ℹ️  Note: Additional validation available:"
+echo "   • Link checking: bash scripts/link-checker.sh"
+echo "   • Bidirectional validation: bash scripts/bidirectional-validation.sh (requires non-sandboxed environment)"
 echo ""
 
 # Summary

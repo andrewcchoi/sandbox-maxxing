@@ -534,8 +534,14 @@ The health check is designed to work seamlessly with other sandbox-maxxing comma
 3. **Troubleshooting**: Run with `--verbose` for detailed diagnostics
 4. **CI/CD**: Use in automated pipelines for environment validation
 
-## See Also
+## Related Commands
 
-- `/sandboxxer:troubleshoot` - Interactive troubleshooting guide
-- `/sandboxxer:linux-troubleshoot` - Linux-specific issues
-- `/sandboxxer:audit` - Security audit and best practices
+- **`/sandboxxer:troubleshoot`** - Interactive troubleshooting guide
+- **`/sandboxxer:linux-troubleshoot`** - Linux-specific issues
+- **`/sandboxxer:audit`** - Security audit and best practices
+- **`/sandboxxer:quickstart`** - Initial setup with health checks
+
+## Related Documentation
+
+- [Troubleshooting Guide](../docs/features/TROUBLESHOOTING.md) - Comprehensive troubleshooting reference
+- [Setup Options](../docs/features/SETUP-OPTIONS.md) - Configuration options
