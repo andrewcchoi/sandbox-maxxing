@@ -951,3 +951,124 @@ jq_hook_input() { printf '%b' "$1" | jq -Rs '{tool_name:"Bash",tool_input:{comma
   assert_success
   [ -z "$output" ]
 }
+
+# --- Hardening round 4: exact var names, ~user, cut substitutions, cd/env taint, globs ---
+
+@test "docker-safety-hook: prompts on $HOMEX (not $HOME)" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v $HOMEX/y:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on ~user expansion" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v ~root:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on substitution in the middle of a path" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v /tmp/$(echo ../..)/:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on backtick in the middle of a path" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v /tmp/`echo ..`:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on relative source after cd" {
+  require_command jq
+
+  input=$(jq_hook_input 'cd / && docker run -v .:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on ~ after inline HOME= prefix" {
+  require_command jq
+
+  input=$(jq_hook_input 'HOME=/ docker run -v ~:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on $HOME after export" {
+  require_command jq
+
+  input=$(jq_hook_input 'export HOME=/; docker run -v $HOME:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on glob in source" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v /e*c:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on brace expansion in source" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v /{etc,x}:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: allows relative source after unrelated command" {
+  require_command jq
+
+  input=$(jq_hook_input 'ls foo.txt && docker run -v ./out:/o img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows absolute source with -e VAR=" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -e A=1 -v /srv/d:/d img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}

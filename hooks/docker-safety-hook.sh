@@ -116,12 +116,21 @@ is_sensitive_path() {
 # or empty, which is what a split-off $(...) leaves behind), so it prompts.
 expand_src() {
     local src="$1"
+    # Glob/brace characters: the shell may rewrite the path, so ask.
+    case "$src" in *'*'*|*'?'*|*'['*|*'{'*) case "$src" in '${HOME}'|'${HOME}/'*|'${PWD}'|'${PWD}/'*) ;; *) return 1 ;; esac ;; esac
+    # Relative and variable sources are only trusted when nothing earlier in
+    # the command line (cd, export, VAR=...) could have changed cwd/HOME/PWD.
+    if [ "$CTX_UNTRUSTED" = "1" ]; then
+        case "$src" in /*) ;; *) case "$src" in *[/.~'$']*) return 1 ;; esac ;; esac
+    fi
+    # Expand only exact names: $HOME, $HOME/..., never $HOMEX or ~user.
     case "$src" in
         "~"|"~/"*) src="$HOME${src#\~}" ;;
-        '${HOME}'*) src="$HOME${src#\$\{HOME\}}" ;;
-        '$HOME'*) src="$HOME${src#\$HOME}" ;;
-        '${PWD}'*) src="$HOOK_CWD${src#\$\{PWD\}}" ;;
-        '$PWD'*) src="$HOOK_CWD${src#\$PWD}" ;;
+        "~"*) return 1 ;;
+        '${HOME}'|'${HOME}/'*) src="$HOME${src#\$\{HOME\}}" ;;
+        '$HOME'|'$HOME/'*) src="$HOME${src#\$HOME}" ;;
+        '${PWD}'|'${PWD}/'*) src="$HOOK_CWD${src#\$\{PWD\}}" ;;
+        '$PWD'|'$PWD/'*) src="$HOOK_CWD${src#\$PWD}" ;;
     esac
     case "$src" in ""|*'$'*|*'`'*) return 1 ;; esac
     case "$src" in
@@ -209,6 +218,9 @@ has_privileged_flags() {
 DESTRUCTIVE=0
 PRIVILEGED=0
 DISRUPTIVE=0
+# Set once an earlier segment (or an inline prefix) may have changed the
+# cwd or HOME/PWD that relative and variable mount sources resolve against.
+CTX_UNTRUSTED=0
 
 # Classify one docker invocation. Arguments: the tokens AFTER the docker
 # (or docker-compose) binary token. $COMPOSE=1 when the binary was docker-compose.
@@ -270,16 +282,17 @@ SEGMENTS=$(printf '%s\n' "$COMMAND" \
     | sed -e ':a' -e 'N' -e '$!ba' -e 's/\\\n//g' \
     | tr -d '\\' \
     | tr -d "\"'" \
-    | sed -e 's/\$(/\n/g' -e 's/[;&|()`]/\n/g')
+    | sed -e 's/\$(/$\n/g' -e 's/`/$\n/g' -e 's/[;&|()]/\n/g')
 
 while IFS= read -r seg; do
     [ -z "${seg// }" ] && continue
-    case "$(lc "$seg")" in *docker*) ;; *) continue ;; esac
     read -ra toks <<< "$seg"
     for ((k = 0; k < ${#toks[@]}; k++)); do
         case "$(lc "${toks[k]}")" in
             docker|*/docker) classify 0 "${toks[@]:k+1}" ;;
             docker-compose|*/docker-compose) classify 1 "${toks[@]:k+1}" ;;
+            # cwd/env changers and inline VAR=... prefixes taint what follows
+            cd|pushd|popd|export|set|source|.|eval|env|declare|typeset|readonly|[a-z_]*=*) CTX_UNTRUSTED=1 ;;
         esac
     done
 done <<< "$SEGMENTS"

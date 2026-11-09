@@ -33,7 +33,12 @@ All notable changes to this project will be documented in this file.
   - sources that can't be resolved statically prompt: any other `$VAR`, `$(...)`, or backticks. So `-v $SP/x:/w` now asks, while `-v $PWD:/w` doesn't.
   - the docker socket is matched case-insensitively and after symlink resolution
   - `-itv=/:/h` is handled
-- 62 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (86 total).
+- **docker-safety-hook, fourth hardening round** (from review): these sources now prompt.
+  - names that only start like a known variable (`$HOMEX`), and `~user`
+  - glob or brace characters
+  - paths cut by a `$(...)` or a backtick in the middle
+  - relative or variable sources after a `cd`, `export`, `VAR=` or similar earlier in the same command line, or as an inline prefix
+- 73 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (97 total).
 
 ## [4.13.9] - 2026-03-11
 
