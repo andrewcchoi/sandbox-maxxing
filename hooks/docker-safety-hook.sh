@@ -117,7 +117,9 @@ is_sensitive_path() {
 expand_src() {
     local src="$1"
     # Glob/brace characters: the shell may rewrite the path, so ask.
-    case "$src" in *'*'*|*'?'*|*'['*|*'{'*) case "$src" in '${HOME}'|'${HOME}/'*|'${PWD}'|'${PWD}/'*) ;; *) return 1 ;; esac ;; esac
+    # Only the braces of a leading ${HOME}/${PWD} are exempt; check the rest.
+    local rest="${src#\$\{HOME\}}"; rest="${rest#\$\{PWD\}}"
+    case "$rest" in *'*'*|*'?'*|*'['*|*'{'*) return 1 ;; esac
     # Relative and variable sources are only trusted when nothing earlier in
     # the command line (cd, export, VAR=...) could have changed cwd/HOME/PWD.
     if [ "$CTX_UNTRUSTED" = "1" ]; then
@@ -292,7 +294,7 @@ while IFS= read -r seg; do
             docker|*/docker) classify 0 "${toks[@]:k+1}" ;;
             docker-compose|*/docker-compose) classify 1 "${toks[@]:k+1}" ;;
             # cwd/env changers and inline VAR=... prefixes taint what follows
-            cd|pushd|popd|export|set|source|.|eval|env|declare|typeset|readonly|[a-z_]*=*) CTX_UNTRUSTED=1 ;;
+            cd|pushd|popd|export|set|source|.|eval|env|declare|typeset|readonly|*/env|*/cd|[a-z_]*=*) CTX_UNTRUSTED=1 ;;
         esac
     done
 done <<< "$SEGMENTS"

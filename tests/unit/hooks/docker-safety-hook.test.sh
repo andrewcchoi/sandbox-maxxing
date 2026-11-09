@@ -1072,3 +1072,35 @@ jq_hook_input() { printf '%b' "$1" | jq -Rs '{tool_name:"Bash",tool_input:{comma
   assert_success
   [ -z "$output" ]
 }
+
+# --- Hardening round 5 ---
+
+@test "docker-safety-hook: prompts on glob after ${HOME} prefix" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v ${HOME}/../../e*c:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+}
+
+@test "docker-safety-hook: allows plain ${HOME} subdir" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker run -v ${HOME}/proj:/p img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: prompts on relative source after /usr/bin/env cd" {
+  require_command jq
+
+  input=$(jq_hook_input '/usr/bin/env; docker run -v ./x:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+}

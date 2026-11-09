@@ -38,7 +38,8 @@ All notable changes to this project will be documented in this file.
   - glob or brace characters
   - paths cut by a `$(...)` or a backtick in the middle
   - relative or variable sources after a `cd`, `export`, `VAR=` or similar earlier in the same command line, or as an inline prefix
-- 73 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (97 total).
+- **docker-safety-hook**: globs after a `${HOME}`/`${PWD}` prefix now prompt, and full-path `*/env`/`*/cd` taint relative sources.
+- 76 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (100 total).
 
 ## [4.13.9] - 2026-03-11
 
