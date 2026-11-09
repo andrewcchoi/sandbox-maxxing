@@ -9,6 +9,16 @@ All notable changes to this project will be documented in this file.
 
 ## [4.13.10] - 2026-11-08
 
+### Added
+- **Hooks**: `sync-knowledge` SessionStart hook now also mirrors `projects/` (session transcripts) from Docker volumes onto the host, alongside the existing `plans/`, `state/`, and `projects.json` syncs.
+  - Uses `cp -au` (BusyBox archive + update-only) so subsequent runs only copy new/changed transcripts and original timestamps are preserved. The first pass over a large volume can take a while; later runs are incremental.
+  - `~/.claude/projects` is reset to `0700` after each copy, because `cp -a` would otherwise apply the container directory's mode (typically `755`) to it.
+  - Extends the skip-gate: a volume is now considered claude-like if it contains any of `plans/`, `state/`, or `projects/`. Volumes missing all three still print `- Skipping (no plans/, state/, or projects/ directory)`.
+  - Enables host-scoped analytics (like the `/insights` slash command) to see the full history of DevContainer work, not just native host sessions.
+  - Applied consistently to the active hook (`hooks/sync-knowledge.sh`) and the two template variants (`.devcontainer/sync-knowledge.sh`, `skills/_shared/templates/sync-knowledge.sh`) that ship into new devcontainer projects.
+  - Adds `tests/unit/hooks/sync-knowledge.test.sh` covering the skip-gate, transcript copy, incremental update, and `0700` permissions.
+  - Complements the forward-looking bind-mount approach discussed in issue #366 — sync-knowledge is the retroactive fix for pre-existing and legacy Docker volumes.
+
 ### Fixed
 - **docker-safety-hook false positives**: `docker run --rm ...` prompted as "Destructive Docker command" because `\brm\b` matched the `rm` in `--rm`. Any compound command with `rm`/`kill`/`stop` anywhere after the word docker (`docker logs x | tail; rm -f out`, `docker run --stop-timeout 30`, `docker run --restart ...`) prompted too. A long evaluation run hit ~40 spurious prompts, and hook asks are not skipped by `bypassPermissions`.
   - Matching is now token-based: split into simple commands, strip quotes, skip docker global options and management groups, and classify only the actual subcommand.
