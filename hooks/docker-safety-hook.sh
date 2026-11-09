@@ -294,7 +294,7 @@ while IFS= read -r seg; do
             docker|*/docker) classify 0 "${toks[@]:k+1}" ;;
             docker-compose|*/docker-compose) classify 1 "${toks[@]:k+1}" ;;
             # cwd/env changers and inline VAR=... prefixes taint what follows
-            cd|pushd|popd|export|set|source|.|eval|env|declare|typeset|readonly|*/env|*/cd|[a-z_]*=*) CTX_UNTRUSTED=1 ;;
+            cd|pushd|popd|export|set|unset|source|.|eval|env|declare|typeset|readonly|local|let|printf|read|mapfile|readarray|getopts|builtin|command|*/env|*/cd|[a-z_]*=*) CTX_UNTRUSTED=1 ;;
         esac
     done
 done <<< "$SEGMENTS"

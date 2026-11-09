@@ -1104,3 +1104,13 @@ jq_hook_input() { printf '%b' "$1" | jq -Rs '{tool_name:"Bash",tool_input:{comma
   assert_success
   assert_output_contains '"permissionDecision": "ask"'
 }
+
+@test "docker-safety-hook: prompts on $HOME source after printf -v HOME" {
+  require_command jq
+
+  input=$(jq_hook_input 'printf -v HOME /; docker run -v $HOME:/h img')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+}
