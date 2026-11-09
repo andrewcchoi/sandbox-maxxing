@@ -87,8 +87,11 @@ while IFS= read -r VOLUME_NAME; do
         # Sync projects.json
         [ -f /source/projects.json ] && cp /source/projects.json /dest/ 2>/dev/null || true
 
-        # Sync session transcripts incrementally (BusyBox cp -au: archive + update-only, idempotent)
+        # Sync session transcripts incrementally (BusyBox cp -au: archive + update-only, idempotent).
+        # -a preserves mtimes (analytics rely on them) but also copies the source dir mode onto
+        # /dest/projects, so restore 0700 afterwards to keep transcripts user-only on the host.
         [ -d /source/projects ] && cp -au /source/projects/. /dest/projects/ 2>/dev/null || true
+        chmod 700 /dest/projects 2>/dev/null || true
       '; then
         echo "  - Synced knowledge files"
         SYNCED_COUNT=$((SYNCED_COUNT + 1))
