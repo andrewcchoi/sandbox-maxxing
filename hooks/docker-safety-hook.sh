@@ -40,8 +40,9 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null) || {
 # Exit early if no command
 [ -z "$COMMAND" ] && exit 0
 
-# Fast path: nothing docker-related at all
-echo "$COMMAND" | grep -qi 'docker' || exit 0
+# Fast path: nothing docker-related at all (ignoring quotes/backslashes,
+# so d\ocker and d"o"cker still get parsed)
+printf '%s' "$COMMAND" | tr -d "\\\\\"'" | grep -qi 'docker' || exit 0
 
 emit_ask() {
     jq -n --arg reason "$1" '{
@@ -77,18 +78,34 @@ is_mgmt_group() {
     return 1
 }
 
+# Lexically normalize a path (collapse //, resolve . and ..) so `//`, `/.`,
+# `/x/..` all compare equal to `/`. Falls back to the raw value without realpath.
+norm_path() {
+    case "$1" in /*) realpath -m -s -- "$1" 2>/dev/null || printf '%s\n' "$1" ;; *) printf '%s\n' "$1" ;; esac
+}
+
 # Mount source (text before the first ':' of a -v/--volume value) that grants
 # host-level access: the host root or the docker socket.
 is_dangerous_volume() {
     local src="${1%%:*}"
-    [ "$src" = "/" ] && return 0
+    [ "$(norm_path "$src")" = "/" ] && return 0
     case "$1" in *docker.sock*) return 0 ;; esac
     return 1
 }
 
 # --mount value: type=bind,src=/,dst=/h  or anything mounting docker.sock
 is_dangerous_mount() {
-    echo "$1" | grep -qiE '(^|,)(src|source)=/(,|$)|docker\.sock'
+    local field val
+    case "$1" in *docker.sock*) return 0 ;; esac
+    local IFS=,
+    for field in $1; do
+        case "$field" in
+            src=*|source=*)
+                val="${field#*=}"
+                [ "$(norm_path "$val")" = "/" ] && return 0 ;;
+        esac
+    done
+    return 1
 }
 
 # Privileged / host-namespace flags in the tokens after a run/create/exec.
@@ -100,7 +117,8 @@ has_privileged_flags() {
         tok="${t[i]}"
         next="${t[i+1]:-}"
         case "$tok" in
-            --privileged|--privileged=true) return 0 ;;
+            --privileged=false|--privileged=0) ;;
+            --privileged*) return 0 ;;
             --cap-add=all|--cap-add=sys_admin) return 0 ;;
             --cap-add) case "$next" in all|sys_admin) return 0 ;; esac ;;
             --security-opt=*unconfined*) return 0 ;;
@@ -111,6 +129,10 @@ has_privileged_flags() {
             --device) case "$next" in /dev/*) return 0 ;; esac ;;
             -v=*|--volume=*) is_dangerous_volume "${tok#*=}" && return 0 ;;
             -v|--volume) is_dangerous_volume "$next" && return 0 ;;
+            # bundled short flags ending in v (-itv /:/h): value is the next token
+            -[a-z]*v) is_dangerous_volume "$next" && return 0 ;;
+            # attached short value (-v/:/h); excludes long options (--*)
+            -v?*) is_dangerous_volume "${tok#-v}" && return 0 ;;
             --mount=*) is_dangerous_mount "${tok#*=}" && return 0 ;;
             --mount) is_dangerous_mount "$next" && return 0 ;;
         esac
@@ -157,7 +179,7 @@ classify() {
     [ -n "$sub" ] || return 0
 
     case "$sub" in
-        rm|rmi|kill|prune|down) DESTRUCTIVE=1 ;;
+        rm|rmi|remove|kill|prune|down) DESTRUCTIVE=1 ;;
         stop|restart|pause) DISRUPTIVE=1 ;;
         run|create|exec)
             # `docker run`, `docker container run`, `docker compose run` ...
@@ -169,9 +191,12 @@ classify() {
     return 0
 }
 
-# Split into simple-command segments; strip quotes; lowercase for
-# case-insensitive matching.
+# Join backslash-newline continuations and drop remaining backslash escapes
+# (so `d\ocker r\m` and multi-line commands parse like the shell sees them),
+# split into simple-command segments, strip quotes, lowercase.
 SEGMENTS=$(printf '%s\n' "$COMMAND" \
+    | sed -e ':a' -e 'N' -e '$!ba' -e 's/\\\n//g' \
+    | tr -d '\\' \
     | tr '[:upper:]' '[:lower:]' \
     | tr -d "\"'" \
     | sed -e 's/\$(/\n/g' -e 's/[;&|()`]/\n/g')

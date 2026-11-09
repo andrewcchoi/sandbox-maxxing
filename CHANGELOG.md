@@ -16,7 +16,13 @@ All notable changes to this project will be documented in this file.
 
 ### Security
 - **docker-safety-hook gaps closed**: these now prompt, where the old regex missed them: `docker --context foo rm x`, `docker -H unix:///x kill y`, `--mount type=bind,src=/,...`, `-v '/:/host'`, space-separated `--network host` / `--pid host` / `--cap-add SYS_ADMIN`, `docker-compose down`, `xargs docker rm`, `sh -c 'docker rm x'`.
-- 32 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh`.
+- **docker-safety-hook hardening** (from review): these are caught as well.
+  - attached and bundled `-v` values (`-v/:/h`, `-itv /:/h`)
+  - mount sources that aren't written in canonical form (`//`, `/x/..`, `source=/.`)
+  - `--privileged=<anything but false/0>`
+  - the `remove` alias (`docker image remove`)
+  - backslash-newline continuations, backslash escapes, and quoted binary names (`d\\ocker`, `d"o"cker`)
+- 45 regression tests added in `tests/unit/hooks/docker-safety-hook.test.sh` (69 total).
 
 ## [4.13.9] - 2026-03-11
 

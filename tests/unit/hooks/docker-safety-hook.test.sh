@@ -620,3 +620,148 @@ HOOK_SCRIPT="${PLUGIN_ROOT}/hooks/docker-safety-hook.sh"
   assert_output_contains '"permissionDecision": "ask"'
   assert_output_contains "stop/restart/pause"
 }
+
+# --- Hardening: escapes, continuations, aliases, path normalization ---
+# Built with jq so backslashes/newlines/quotes are JSON-escaped correctly.
+jq_hook_input() { printf '%b' "$1" | jq -Rs '{tool_name:"Bash",tool_input:{command:.}}'; }
+
+@test "docker-safety-hook: prompts on attached -v value (-v/:/h)" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run -v/:/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on bundled short flags ending in v" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run -itv /:/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on non-canonical root mount (//)" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run -v //:/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on non-canonical root mount (/x/..)" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run -v /x/..:/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on --mount source=/. " {
+  require_command jq
+
+  input=$(jq_hook_input "docker run --mount type=bind,source=/.,dst=/h img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on --privileged=1" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run --privileged=1 img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Privileged"
+}
+
+@test "docker-safety-hook: prompts on image remove alias" {
+  require_command jq
+
+  input=$(jq_hook_input "docker image remove img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on container remove alias" {
+  require_command jq
+
+  input=$(jq_hook_input "docker container remove c")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on backslash-newline continuation" {
+  require_command jq
+
+  input=$(jq_hook_input 'docker \\\n  rm x')
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on backslash escapes (d\\ocker r\\m)" {
+  require_command jq
+
+  input=$(jq_hook_input "d\\ocker r\\m x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: prompts on quoted binary name (d\"o\"cker)" {
+  require_command jq
+
+  input=$(jq_hook_input "d\"o\"cker rm x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  assert_output_contains '"permissionDecision": "ask"'
+  assert_output_contains "Destructive"
+}
+
+@test "docker-safety-hook: allows --privileged=false" {
+  require_command jq
+
+  input=$(jq_hook_input "docker run --privileged=false img")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
+
+@test "docker-safety-hook: allows continuation that does not form rm (r\\<nl>m is rm, r<sp>m is not)" {
+  require_command jq
+
+  input=$(jq_hook_input "docker r m x")
+  run bash "$HOOK_SCRIPT" <<< "$input"
+
+  assert_success
+  [ -z "$output" ]
+}
