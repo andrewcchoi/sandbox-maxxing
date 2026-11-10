@@ -84,7 +84,7 @@ catalog_as_mcp_json() {
 
 @test "docs: no instructions to edit .devcontainer/mcp.json or use the servers key" {
   # Mentions are fine only to say Claude Code doesn't read it
-  run bash -c "grep -rnF '.devcontainer/mcp.json' '$ROOT/docs/features' '$ROOT/README.md' '$ROOT/commands' '$ROOT/skills' | grep -vF 'does **not** read'"
+  run bash -c "grep -rnF --include='*.md' '.devcontainer/mcp.json' '$ROOT/docs/features' '$ROOT/README.md' '$ROOT/commands' '$ROOT/skills' | grep -vF 'does **not** read'"
   [ "$status" -eq 1 ] || { echo "$output" >&2; return 1; }
   # Every JSON example in MCP.md uses mcpServers
   run grep -nE '^\s*"servers"\s*:' "$DOC"
@@ -94,4 +94,56 @@ catalog_as_mcp_json() {
 @test "scaffolders don't install MCP servers (MCP is opt-in)" {
   run grep -nE 'mcp\.json|mcp-servers\.json' "$ROOT/scripts/yolo-docker-maxxing.sh" "$ROOT/commands/quickstart.md"
   [ "$status" -eq 1 ] || { echo "$output" >&2; return 1; }
+}
+
+# ----------------------------------------------------------------------------
+# Setup step 6: checks the project's .mcp.json instead of copying host files
+# that Claude Code never reads (~/.claude/.mcp.json, ~/.claude/mcp/)
+# ----------------------------------------------------------------------------
+
+SETUP="$ROOT/skills/_shared/templates/setup-claude-credentials.sh"
+
+# Run the real step 6 block from the setup script in a project dir
+run_mcp_step() {
+  local proj="$1"
+  sed -n '/^# 6\. MCP Configuration/,/^# 7\. Environment Variables/p' "$SETUP" | sed '$d' > "$TEST_DIR/step6.sh"
+  printf '\necho "SUMMARY=$MCP_SUMMARY"\n' >> "$TEST_DIR/step6.sh"
+  run bash -c "cd '$proj' && set -euo pipefail && source '$TEST_DIR/step6.sh'" 2>&1
+}
+
+@test "setup: no longer copies host ~/.claude/.mcp.json or ~/.claude/mcp/" {
+  run grep -nE '"\.mcp\.json"|HOST_CLAUDE/mcp|CLAUDE_DIR/mcp' "$SETUP"
+  [ "$status" -eq 1 ] || { echo "$output" >&2; return 1; }
+}
+
+@test "setup step 6: valid .mcp.json reports its server count" {
+  mkdir -p "$TEST_DIR/p"; cp "$TEMPLATE" "$TEST_DIR/p/.mcp.json"
+  run_mcp_step "$TEST_DIR/p"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"✓ .mcp.json: 2 server(s)"* ]]
+  [[ "$output" == *"SUMMARY=2 in project .mcp.json"* ]]
+}
+
+@test "setup step 6: no .mcp.json is fine (opt-in)" {
+  mkdir -p "$TEST_DIR/p"
+  run_mcp_step "$TEST_DIR/p"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"No project .mcp.json"* ]]
+}
+
+@test "setup step 6: warns on VS Code 'servers' key and on .devcontainer/mcp.json" {
+  mkdir -p "$TEST_DIR/p/.devcontainer"
+  echo '{"servers":{"m":{"command":"npx"}}}' > "$TEST_DIR/p/.mcp.json"
+  echo '{}' > "$TEST_DIR/p/.devcontainer/mcp.json"
+  run_mcp_step "$TEST_DIR/p"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'Rename it to "mcpServers"'* ]]
+  [[ "$output" == *".devcontainer/mcp.json is not read by Claude Code"* ]]
+}
+
+@test "setup step 6: invalid JSON warns but doesn't fail setup" {
+  mkdir -p "$TEST_DIR/p"; echo '{ nope' > "$TEST_DIR/p/.mcp.json"
+  run_mcp_step "$TEST_DIR/p"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"not valid JSON"* ]]
 }
