@@ -45,4 +45,6 @@ if [ -z "$SCRIPT_NAME" ]; then
     exit 1
 fi
 shift
-"${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"
+# Run through bash instead of executing the file directly, so a hook still runs
+# when the plugin cache doesn't keep the execute bit (issue #365).
+exec bash "${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"

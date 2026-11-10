@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.11] - 2026-11-09
+
+### Fixed
+- **docker-safety-hook never ran on fresh installs (#365)**: `hooks/docker-safety-hook.sh` was stored without the execute bit, and `run-hook.cmd` executed hook scripts directly. Each `PreToolUse:Bash` call failed with `Permission denied` as a non-blocking error, so the docker safety checks were silently skipped.
+  - `run-hook.cmd` now runs hook scripts with `bash`, so a missing execute bit can no longer disable a hook.
+  - `docker-safety-hook.sh` and `langsmith-hook.sh` are marked executable in git.
+  - New tests: the wrapper runs a script without `+x`, and every script referenced in `hooks.json` exists and is `100755` in git.
+
 ## [4.13.10] - 2026-11-08
 
 ### Added
