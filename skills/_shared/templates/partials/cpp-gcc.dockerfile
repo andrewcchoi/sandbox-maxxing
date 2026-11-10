@@ -24,7 +24,7 @@ ENV CC=gcc
 RUN git clone https://github.com/microsoft/vcpkg.git /opt/vcpkg && \
     /opt/vcpkg/bootstrap-vcpkg.sh && \
     ln -s /opt/vcpkg/vcpkg /usr/local/bin/vcpkg && \
-    chown -R node:node /opt/vcpkg
+    chown -R node: /opt/vcpkg
 
 ENV VCPKG_ROOT=/opt/vcpkg
 

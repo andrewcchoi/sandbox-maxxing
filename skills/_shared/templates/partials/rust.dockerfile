@@ -17,7 +17,7 @@ ENV CARGO_HOME=/usr/local/cargo
 ENV PATH=/usr/local/cargo/bin:$PATH
 
 # Make cargo accessible to node user
-RUN chown -R node:node /usr/local/rustup /usr/local/cargo
+RUN chown -R node: /usr/local/rustup /usr/local/cargo
 
 USER node
 

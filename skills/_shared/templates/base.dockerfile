@@ -162,14 +162,39 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   fonts-liberation \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create node user if it doesn't exist (may already exist in base image)
-RUN if ! id -u node > /dev/null 2>&1; then \
-  groupadd --gid 1000 node && \
-  useradd --uid 1000 --gid node --shell /bin/bash --create-home node; \
-fi
+# >>> user-remap (#377) — extracted and built by tests/integration/test_user_remap_build.bats
+# Match the container user to the host user, so files in the bind-mounted workspace
+# get the right owner whether or not VS Code is used. CONTAINER_UID/CONTAINER_GID in
+# .env reach these ARGs through the compose build args. Defaults keep node at 1000:1000.
+# The base image already has node as 1000:1000, so it is remapped, not created.
+# Later chowns use `node:` (node's primary group), which stays correct when the host GID
+# already belongs to another group in the image (macOS GID 20 = Debian `dialout`).
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN set -eu; \
+  case "${USER_UID}:${USER_GID}" in \
+    *[!0-9:]*|:*|*:) echo "ERROR: USER_UID/USER_GID must be numeric, got '${USER_UID}:${USER_GID}'." >&2; exit 1 ;; \
+  esac; \
+  if [ "$USER_UID" -eq 0 ] || [ "$USER_GID" -eq 0 ]; then \
+    echo "ERROR: USER_UID/USER_GID cannot be 0 (root). Set CONTAINER_UID=1000 and CONTAINER_GID=1000 in .env and rebuild." >&2; exit 1; \
+  fi; \
+  if ! id -u node >/dev/null 2>&1; then \
+    groupadd --gid 1000 node && useradd --uid 1000 --gid node --shell /bin/bash --create-home node; \
+  fi; \
+  uid_owner=$(getent passwd "$USER_UID" | cut -d: -f1); \
+  if [ -n "$uid_owner" ] && [ "$uid_owner" != "node" ]; then \
+    echo "ERROR: UID $USER_UID is already used by '$uid_owner' in the image. Set CONTAINER_UID=1000 and CONTAINER_GID=1000 in .env and rebuild." >&2; exit 1; \
+  fi; \
+  if [ "$USER_GID" != "$(id -g node)" ]; then \
+    gid_owner=$(getent group "$USER_GID" | cut -d: -f1); \
+    if [ -n "$gid_owner" ]; then usermod -g "$gid_owner" node; else groupmod -g "$USER_GID" node; fi; \
+  fi; \
+  if [ "$USER_UID" != "$(id -u node)" ]; then usermod -u "$USER_UID" node; fi; \
+  chown -R node: /home/node
+# <<< user-remap
 
 RUN mkdir -p /usr/local/share/npm-global && \
-  chown -R node:node /usr/local/share
+  chown -R node: /usr/local/share
 
 # Persistent bash history
 RUN mkdir /commandhistory && \
@@ -180,7 +205,7 @@ ENV DEVCONTAINER=true
 
 # Create workspace and config directories
 RUN mkdir -p /workspace /home/node/.claude && \
-  chown -R node:node /workspace /home/node/.claude
+  chown -R node: /workspace /home/node/.claude
 
 WORKDIR /workspace
 
@@ -190,7 +215,7 @@ RUN if [ "$INSTALL_SHELL_EXTRAS" = "true" ]; then \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     mkdir -p /home/node/.local/bin && \
     ln -sf /usr/bin/batcat /home/node/.local/bin/bat && \
-    chown -R node:node /home/node/.local; \
+    chown -R node: /home/node/.local; \
   fi
 
 # Domain allowlist - conditional based on ENABLE_FIREWALL

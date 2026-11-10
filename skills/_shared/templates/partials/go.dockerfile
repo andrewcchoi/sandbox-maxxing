@@ -16,7 +16,7 @@ ENV GOPATH=/home/node/go
 ENV PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 # Create GOPATH directory
-RUN mkdir -p $GOPATH && chown -R node:node $GOPATH
+RUN mkdir -p $GOPATH && chown -R node: $GOPATH
 
 USER node
 

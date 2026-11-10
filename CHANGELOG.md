@@ -7,6 +7,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Container user now matches the host user outside VS Code (#377)**: generated containers always used UID/GID 1000. Compose templates read `CONTAINER_UID`/`CONTAINER_GID`, but nothing set them, and the image's `node` user was always `1000:1000`. On hosts where your UID isn't 1000 (macOS `501:20`, many enterprise Linux hosts), plain `docker compose up` wrote files with the wrong owner and git reported "dubious ownership". Setting the variables by hand made it worse: the process ran as a UID with no passwd entry ("I have no name!", broken `HOME`).
+  - `base.dockerfile` takes `USER_UID`/`USER_GID` build args (default `1000`) and remaps the existing `node` user to them before any `chown`. If the GID already exists in the image (macOS GID 20 is Debian's `dialout`), `node` uses that group. UID/GID `0`, a UID owned by another account, or a non-numeric value fails the build with a message saying to set `1000`.
+  - The four compose templates that build the image pass `USER_UID=${CONTAINER_UID:-1000}` / `USER_GID=${CONTAINER_GID:-1000}`, so the image and the `user:` line always agree. `docker-compose.prebuilt.yml` can't build, so prebuilt mode is unchanged (#378).
+  - `quickstart` and `yolo-docker-maxxing` write the host's `id -u`/`id -g` to `.env` with a new `write_host_ids` helper. Existing values are kept (new `set_env_if_missing` helper). Git Bash/MSYS/Cygwin and root keep the defaults.
+  - `chown -R node:node` in `base.dockerfile` and the language partials is now `chown -R node:`, so files get `node`'s actual primary group after a remap.
+  - No change on hosts where your UID is 1000. **Existing projects:** add `CONTAINER_UID`/`CONTAINER_GID` to `.env` and the two build args to `docker-compose.yml` (or regenerate), then rebuild. See `docs/features/troubleshooting/permissions.md`.
+  - Tests: `tests/unit/test_user_remap.bats` (template wiring and `.env` helpers) and `tests/integration/test_user_remap_build.bats`, which builds the remap step for `1000:1000`, `1234:1234`, `501:20`, `0`, `33` (`www-data`) and a non-numeric value (skipped without Docker).
+
 ## [4.13.11] - 2026-11-09
 
 ### Fixed

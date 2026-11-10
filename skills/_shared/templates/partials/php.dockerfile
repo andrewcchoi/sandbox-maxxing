@@ -40,6 +40,6 @@ ENV COMPOSER_HOME=/home/node/.composer
 
 # Create composer directory for user
 RUN mkdir -p /home/node/.composer && \
-    chown -R node:node /home/node/.composer
+    chown -R node: /home/node/.composer
 
 USER node

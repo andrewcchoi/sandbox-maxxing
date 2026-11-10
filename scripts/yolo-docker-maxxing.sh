@@ -200,6 +200,9 @@ if [ "$MODE" = "normal" ]; then
   merge_env_value "REDIS_PORT" "$REDIS_PORT" .env
 fi
 
+# Match the container user to the host user (#377). Keeps existing values.
+write_host_ids .env
+
 # Replace placeholders in templates
 echo "Processing templates..."
 if [ "$MODE" = "normal" ]; then
