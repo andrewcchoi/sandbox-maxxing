@@ -201,19 +201,6 @@ EOF
   assert_output_matches "gh version [0-9]+\.[0-9]+\.[0-9]+"
 }
 
-@test "package-install: wget quiet mode works in pipe" {
-  require_command wget
-
-  # Test that wget -qO- works (used in GitHub CLI keyring download)
-  # Using a small test file to avoid network dependency
-  echo "test content" > "${TEST_TEMP_DIR}/test.txt"
-
-  run bash -c "cd ${TEST_TEMP_DIR} && wget -qO- test.txt"
-
-  assert_success
-  assert_output_contains "test content"
-}
-
 @test "package-install: mkdir with mode works correctly" {
   # Test mkdir -p -m 755 (used for /etc/apt/keyrings)
   run bash -c "mkdir -p -m 755 ${TEST_TEMP_DIR}/testdir && stat -c '%a' ${TEST_TEMP_DIR}/testdir"

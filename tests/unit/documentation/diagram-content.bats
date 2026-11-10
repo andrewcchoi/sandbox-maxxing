@@ -11,7 +11,7 @@ setup() {
 
   while IFS= read -r mmd; do
     if ! grep -qE "graph|flowchart|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie" "$mmd"; then
-      ((invalid++))
+      invalid=$((invalid + 1))
     fi
   done < <(find "$DIAGRAMS_DIR" -maxdepth 1 -name "*.mmd" -type f)
 

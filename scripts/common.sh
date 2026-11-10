@@ -166,9 +166,11 @@ port_in_use() {
     return 2
   fi
 
-  # Try lsof first (most reliable)
+  # Try lsof first (most reliable). Only trust it when its output names the
+  # port: BusyBox `lsof` ignores -i, lists every open file and exits 0, which
+  # made every port look busy on Alpine/BusyBox systems.
   if command -v lsof >/dev/null 2>&1; then
-    lsof -i ":$port" >/dev/null 2>&1 && return 0
+    lsof -nP -i ":$port" 2>/dev/null | grep -qE ":${port}([^0-9]|$)" && return 0
   fi
 
   # Try ss (modern netstat replacement)
@@ -201,6 +203,7 @@ port_in_use() {
 # Returns: Prints available port number, exits 1 if none found
 # ============================================================================
 find_available_port() {
+  local start_port=$1
   local port=$1
   shift
   local exclude=("$@")
@@ -223,7 +226,8 @@ find_available_port() {
     port=$((port + 1))
   done
 
-  echo "ERROR: No available port found starting from $1" >&2
+  # $1 is gone after `shift`; under `set -u` it aborted with "unbound variable"
+  echo "ERROR: No available port found starting from $start_port" >&2
   return 1
 }
 

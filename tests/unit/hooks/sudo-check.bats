@@ -93,7 +93,7 @@ EOF
   assert_success
 }
 
-@test "sudo-check: timeout prevents hang (mocked)" {
+@test "sudo-check: never blocks on sudo -v; falls back to manual instructions (mocked)" {
   require_command sudo
   require_command timeout
 
@@ -126,9 +126,12 @@ EOF
   # Run with timeout to prevent actual hang
   run timeout 35 bash -c "source ${PLUGIN_ROOT}/tests/fixtures/sudo-check-function.sh && check_sudo_access"
 
-  # Should fail due to timeout
+  # The function no longer calls `sudo -v` (it opens a popup instead), so the
+  # mocked 100s `sudo -v` must never run: 124 would mean `timeout` had to kill it.
+  [ "$status" -ne 124 ]
   assert_failure
-  assert_output_contains "Could not validate sudo access"
+  assert_output_contains "Could not open authentication window"
+  assert_output_contains "sudo -v"
 }
 
 @test "sudo-check: function exists and is callable" {
