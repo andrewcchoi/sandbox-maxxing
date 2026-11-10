@@ -22,16 +22,34 @@ RUN curl --retry 5 --retry-delay 5 --retry-max-time 300 \
          --connect-timeout 30 --http1.1 \
          -fsSL https://aka.ms/install-azd.sh | bash
 
+# Bicep CLI is a .NET app and aborts at startup without ICU
+# ("Couldn't find a valid ICU package installed on the system").
+# The slim base image doesn't include it.
+RUN apt-get update && apt-get install -y --no-install-recommends libicu72 \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Install Bicep CLI with retry logic (network can be flaky during build)
+# `az bicep install` writes to the current user's ~/.azure/bin, which is root's
+# here. Move the binary onto PATH and tell az to use it, so the node user (and
+# any remapped UID) gets a working `az bicep` without downloading it again.
+# (The ENV is set after the install: with it on, `az bicep install` refuses to run.)
 RUN for i in 1 2 3; do \
       az bicep install && break || \
       (echo "Retry $i: az bicep install failed, waiting..." && sleep 10); \
     done && \
-    az bicep version || (echo "WARNING: Bicep CLI installation failed" && exit 1)
+    install -m 0755 /root/.azure/bin/bicep /usr/local/bin/bicep && \
+    rm -rf /root/.azure/bin && \
+    AZURE_BICEP_USE_BINARY_FROM_PATH=true az bicep version || (echo "WARNING: Bicep CLI installation failed" && exit 1)
+ENV AZURE_BICEP_USE_BINARY_FROM_PATH=true
 
 # Add Azure CLI extensions for container deployments
 # Note: containerapp-compose was deprecated and merged into containerapp extension
-RUN az extension add --name containerapp --yes
+# Install into a shared directory owned by node, not root's ~/.azure, so the
+# extension is visible to node and node can add or update extensions later.
+ENV AZURE_EXTENSION_DIR=/opt/az/cliextensions
+RUN mkdir -p "$AZURE_EXTENSION_DIR" && \
+    az extension add --name containerapp --yes && \
+    chown -R node: /opt/az
 
 USER node
 

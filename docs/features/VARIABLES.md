@@ -125,33 +125,39 @@ POSTGRES_DB=mydb
 
 ### Container User Configuration
 
-**Purpose:** Override the container user UID/GID to match host user for proper file ownership.
+**Purpose:** Make the container user (`node`) match the host user, so files in the bind-mounted workspace have the right owner with or without VS Code (#377).
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `CONTAINER_UID` | `1000` | User ID inside container |
-| `CONTAINER_GID` | `1000` | Group ID inside container |
+| `CONTAINER_UID` | `1000` | User ID of `node` inside the container |
+| `CONTAINER_GID` | `1000` | Primary group ID of `node` inside the container |
 
-**Usage in docker-compose.yml:**
+**Set automatically:** `/sandboxxer:quickstart` and `/sandboxxer:yolo-docker-maxxing` write your host's `id -u` / `id -g` to `.env`. They keep values that are already there, and leave the defaults when run from Git Bash/MSYS/Cygwin or as root.
+
+**How they are used in docker-compose.yml:** the same variables set the runtime user and the build args that remap `node` in the image, so the two always agree:
 ```yaml
 services:
   app:
     user: "${CONTAINER_UID:-1000}:${CONTAINER_GID:-1000}"
+    build:
+      args:
+        - USER_UID=${CONTAINER_UID:-1000}
+        - USER_GID=${CONTAINER_GID:-1000}
 ```
 
-**When to Override:**
+**Typical values:**
 
-| Platform | Host UID | Configuration |
-|----------|----------|---------------|
-| Linux (standard) | 1000 | Use defaults |
-| macOS | 501 | `CONTAINER_UID=501 CONTAINER_GID=20` |
-| Enterprise/LDAP | varies | Match your user's UID/GID |
+| Platform | Host UID:GID | Notes |
+|----------|--------------|-------|
+| Linux (standard) / WSL2 | `1000:1000` | Same as the defaults |
+| macOS | `501:20` | GID 20 already exists in the image (`dialout`); `node` uses that group |
+| Enterprise/LDAP | varies | Use the output of `id -u` / `id -g` |
 
-**Example .env file for macOS:**
-```bash
-CONTAINER_UID=501
-CONTAINER_GID=20
-```
+**Changing them requires a rebuild**, because the IDs are baked into the image: `docker compose up --build`, or "Dev Containers: Rebuild Container" in VS Code.
+
+**Limits:**
+- UID/GID `0` is rejected, and so is a UID that already belongs to another account in the image (for example `33`, `www-data`). The build fails with a message telling you to set `1000`.
+- `docker-compose.prebuilt.yml` pulls a published image instead of building, so it can't use these build args. It still relies on VS Code's `updateRemoteUserUID` (see #378).
 
 ### 4. VS Code Input Variables (User Prompts)
 

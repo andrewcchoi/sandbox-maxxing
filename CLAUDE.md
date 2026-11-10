@@ -175,7 +175,7 @@ because they require root. These are pre-configured in the container image.
 ## Common Errors (from GitHub Issues)
 
 ### Permission Errors
-- **UID mismatch (#306):** Add `user: "1000:1000"` to docker-compose.yml
+- **UID mismatch (#306, #377):** `.env` `CONTAINER_UID`/`CONTAINER_GID` (written by setup from `id -u`/`id -g`) feed both the compose `user:` line and the `USER_UID`/`USER_GID` build args that remap `node`. Changing them needs a rebuild. Chowns in templates use `node:` (primary group), never `node:node`
 - **uv .venv permissions (#108):** Anonymous volume `- /app/.venv` + chown before USER
 
 ### Platform Errors

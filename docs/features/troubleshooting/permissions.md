@@ -58,34 +58,35 @@ If you need different UID/GID, edit `devcontainer.json`:
 }
 ```
 
-## Container Running as Root (Standalone docker-compose)
+## Wrong File Owner, "dubious ownership", or "I have no name!"
 
 **Symptoms:**
 ```
-root@container:/workspace#
-# Terminal shows root@ instead of node@
-# Claude credentials copy fails with permission errors
+fatal: detected dubious ownership in repository at '/workspace'
+I have no name!@container:/workspace$
+# Files created in the container show up on the host owned by another user
 ```
 
-**Cause:** When using `docker compose up` directly (not via VS Code DevContainers), containers may default to root.
+**Cause:** The container user's UID/GID doesn't match your host user. This happens on hosts where your UID isn't 1000 (macOS uses 501:20; many enterprise Linux hosts use other values), especially with plain `docker compose up` outside VS Code.
 
-**Solution: Set Environment Variables**
+**Solution:** Since #377, setup writes your host IDs to `.env` and the image is built with them. For projects created before that, or to fix a mismatch:
 
-```bash
-# Linux (usually defaults work)
-docker compose up
+1. Check your host IDs: `id -u` and `id -g`
+2. Add them to `.env` in the project root:
+   ```bash
+   CONTAINER_UID=501
+   CONTAINER_GID=20
+   ```
+3. Make sure `docker-compose.yml` passes them as build args (regenerate the project, or add these lines under `app.build.args`):
+   ```yaml
+   - USER_UID=${CONTAINER_UID:-1000}
+   - USER_GID=${CONTAINER_GID:-1000}
+   ```
+4. Rebuild: `docker compose up --build`, or "Dev Containers: Rebuild Container" in VS Code
 
-# macOS (check with `id -u` and `id -g`)
-CONTAINER_UID=501 CONTAINER_GID=20 docker compose up
-```
+**Verify inside the container:** `id` shows your host UID/GID and the name `node`.
 
-Or add to `.env` file:
-```bash
-CONTAINER_UID=501
-CONTAINER_GID=20
-```
-
-**Note:** VS Code DevContainer users with `updateRemoteUserUID: true` are not affected.
+**If the build fails with "already used by '<name>'":** your host UID belongs to a system account in the image. Set `CONTAINER_UID=1000` and `CONTAINER_GID=1000` and fix ownership from the host instead (see above).
 
 ---
 
