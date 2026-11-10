@@ -34,6 +34,9 @@ services:
         - INSTALL_DEV_TOOLS=${INSTALL_DEV_TOOLS:-true}
         - INSTALL_CA_CERT=${INSTALL_CA_CERT:-false}
         - ENABLE_FIREWALL=${ENABLE_FIREWALL:-false}
+        # Bake the host UID/GID into the image so the service's `user:` line has a matching passwd entry (#377)
+        - USER_UID=${CONTAINER_UID:-1000}
+        - USER_GID=${CONTAINER_GID:-1000}
     environment:
       # Database connection strings (ready to use in application code)
       # NOTE: Use $${VAR} to prevent bash expansion during template processing

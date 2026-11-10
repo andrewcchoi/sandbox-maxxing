@@ -87,6 +87,67 @@ merge_env_value() {
 }
 
 # ============================================================================
+# Add-If-Missing for .env Files
+# ============================================================================
+# Appends key=value only when the key is not already in the file, so a value
+# the user set by hand is never overwritten (unlike merge_env_value).
+#
+# Usage: set_env_if_missing "KEY" "value" ".env"
+#
+# Returns: 0 if the key was added or already present
+# ============================================================================
+set_env_if_missing() {
+  local key="$1"
+  local value="$2"
+  local target_file="$3"
+
+  if grep -q "^${key}=" "$target_file" 2>/dev/null; then
+    return 0
+  fi
+  merge_env_value "$key" "$value" "$target_file"
+}
+
+# ============================================================================
+# Host UID/GID for the Container User (#377)
+# ============================================================================
+# Writes the host user's UID/GID to .env as CONTAINER_UID/CONTAINER_GID.
+# docker compose reads .env automatically and passes them as USER_UID/USER_GID
+# build args, so the container user matches the host user even without VS Code.
+#
+# Leaves the defaults (1000:1000) in place when:
+#   - the shell is Git Bash/MSYS/Cygwin (its IDs don't map to container IDs)
+#   - running as root (a root-owned container user is not wanted)
+# Existing CONTAINER_UID/CONTAINER_GID values are kept.
+#
+# Usage: write_host_ids ".env"
+# ============================================================================
+write_host_ids() {
+  local target_file="$1"
+  local host_uid host_gid
+
+  case "$(uname -s 2>/dev/null)" in
+    MINGW*|MSYS*|CYGWIN*)
+      echo "  Windows shell detected: container user stays 1000:1000"
+      return 0
+      ;;
+  esac
+
+  host_uid=$(id -u 2>/dev/null) || return 0
+  host_gid=$(id -g 2>/dev/null) || return 0
+
+  if [ "$host_uid" = "0" ]; then
+    echo "  Running as root: container user stays 1000:1000"
+    return 0
+  fi
+
+  set_env_if_missing "CONTAINER_UID" "$host_uid" "$target_file"
+  # GID 0 would make the container user's primary group root, so keep the default
+  if [ "$host_gid" != "0" ]; then
+    set_env_if_missing "CONTAINER_GID" "$host_gid" "$target_file"
+  fi
+}
+
+# ============================================================================
 # Port Availability Check
 # ============================================================================
 # Checks if a TCP port is in use on the local system

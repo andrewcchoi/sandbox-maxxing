@@ -771,6 +771,9 @@ ENABLE_FIREWALL=$( [ "$NEEDS_FIREWALL" = "Yes" ] && echo "true" || echo "false" 
 EOF
   echo "    Generated fresh .env"
 fi
+# Match the container user to the host user (#377). Keeps existing values.
+type write_host_ids >/dev/null 2>&1 || source "${CLAUDE_PLUGIN_ROOT}/scripts/common.sh"
+write_host_ids .env
 
 # 3.6 Copy supporting files
 echo "  [3.6] Copying supporting files..."
