@@ -27,6 +27,14 @@ teardown() {
   [ -n "${ORIGINAL_DIR:-}" ] && cd "${ORIGINAL_DIR}" 2>/dev/null || true
 }
 
+# Mock `sudo` so `sudo -n true` fails, as for a user without passwordless sudo.
+# Without this, tests depend on the machine: GitHub runners have passwordless
+# sudo, so check_sudo_access returns success before reaching the path under test.
+mock_sudo_needs_password() {
+  printf '#!/bin/bash\n# mock: password required for everything\nexit 1\n' > "${TEST_TEMP_DIR}/sudo"
+  chmod +x "${TEST_TEMP_DIR}/sudo"
+}
+
 @test "sudo-check: passwordless sudo is detected" {
   require_command sudo
 
@@ -42,22 +50,6 @@ teardown() {
   assert_output_contains "✓ Sudo access available (passwordless)"
 }
 
-@test "sudo-check: detects non-interactive stdin" {
-  require_command sudo
-
-  # Mock: Test with non-interactive stdin (pipe)
-  # Only proceed if we have passwordless sudo (to avoid hanging)
-  if ! sudo -n true 2>/dev/null; then
-    skip "Passwordless sudo not configured - cannot test non-interactive mode safely"
-  fi
-
-  # Run with piped stdin (non-interactive)
-  run bash -c 'source tests/fixtures/sudo-check-function.sh && echo "" | check_sudo_access'
-
-  assert_success
-  assert_output_contains "WARNING: Running in non-interactive mode"
-}
-
 @test "sudo-check: user not in sudoers group returns error" {
   require_command sudo
 
@@ -71,6 +63,7 @@ EOF
   chmod +x "${TEST_TEMP_DIR}/mock-groups.sh"
 
   # Override groups command in PATH
+  mock_sudo_needs_password
   export PATH="${TEST_TEMP_DIR}:${PATH}"
 
   # Create mock groups command
@@ -151,6 +144,7 @@ echo "users"
 EOF
   chmod +x "${TEST_TEMP_DIR}/groups"
 
+  mock_sudo_needs_password
   export PATH="${TEST_TEMP_DIR}:${PATH}"
 
   run bash -c "source ${PLUGIN_ROOT}/tests/fixtures/sudo-check-function.sh && check_sudo_access"
@@ -225,6 +219,7 @@ echo "users sudoers-fake"
 EOF
   chmod +x "${TEST_TEMP_DIR}/groups"
 
+  mock_sudo_needs_password
   export PATH="${TEST_TEMP_DIR}:${PATH}"
 
   run bash -c "source ${PLUGIN_ROOT}/tests/fixtures/sudo-check-function.sh && check_sudo_access"

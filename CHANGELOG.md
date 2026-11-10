@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
     - TODO-marker check no longer matches the "TODO Highlight" extension name.
     - `((x++))` under `set -e` (fails when x is 0) → `x=$((x + 1))`.
     - Removed obsolete tests: `DIAGRAM_STATUS.md` was deleted on purpose in 924e04b, and a `wget` test that fetched `http://test.txt` over the network.
-    - sudo-check test updated to the popup flow (never calls `sudo -v`, so it can't hang).
+    - sudo-check tests: updated to the popup flow (never calls `sudo -v`, so it can't hang); mock `sudo` so they don't depend on the machine (GitHub runners have passwordless sudo, which skipped past the paths under test); removed a test for a non-interactive warning that no longer exists.
   - `scripts/*.sh` are now executable in git (`./scripts/doc-health-check.sh` failed with Permission denied).
   - This repo's dev container now has `bats`, `file`, and `yq` (copied from `mikefarah/yq:4.44.3`), so the full suite runs inside it.
 
