@@ -102,38 +102,30 @@ Use `mode_defaults.<mode_name>` to get included categories
 4. Document any new categories in mode_defaults
 
 ### `mcp-servers.json`
-MCP (Model Context Protocol) servers catalog for configuring Claude Code integrations in DevContainers.
+Catalog of maintained MCP servers for Claude Code. **Nothing installs these automatically**
+(#386). Users opt in by adding entries to `.mcp.json` at their project root. See
+`docs/features/MCP.md`.
 
 **Structure:**
-- `metadata`: Documentation references and update date
-- `servers`: Object with MCP server configurations:
-  - Server details (command, args, env)
-  - Mode minimum requirement
-  - Category (core, database, web, etc.)
-  - Optional inputs for secrets/configuration
-- `mode_defaults`: Which servers are included per mode
-
-**Usage in skills:**
-```markdown
-Reference: `skills/_shared/templates/data/mcp-servers.json`
-
-# Get default servers for a mode
-Use `mode_defaults.<mode_name>.servers` array
-```
+- `metadata`: Format notes, references and update date
+- `servers`: Each entry is a Claude Code `.mcp.json` `mcpServers` entry:
+  - `type: "stdio"` with `command`/`args`/`env`, or `type: "http"` with `url`/`headers`
+  - Secrets as `${VAR}`, which Claude Code expands. VS Code's `${input:...}`/`${localEnv:...}` don't work
+  - Catalog-only fields, dropped when copying: `description`, `mode_minimum`, `category`, `requires`
+- `mode_defaults`: Suggested server sets per tier
 
 **Update procedure:**
-1. Check MCP documentation for new/updated servers
-2. Add new server entries with appropriate mode_minimum
-3. Update mode_defaults if server should be included by default
-4. Test server configurations in DevContainer
+1. Before adding a package, check it is published and not deprecated (`npm view <pkg> deprecated`)
+2. Add the entry with `mode_minimum` and, for API keys or remote hosts, `requires`
+3. `tests/unit/validation/template-validation.bats` checks the format and `mode_defaults` references
 
-**Mode-Specific Server Usage:**
+**Suggested sets:**
 
-| Mode             | Server Strategy    | Servers Included                                  |
-| ---------------- | ------------------ | ------------------------------------------------- |
-| **Basic**        | Essential only     | filesystem, memory                                |
-| **Advanced**     | Comprehensive      | All Advanced + postgres, docker, brave-search |
-| **YOLO**         | All available      | All servers                                       |
+| Tier | Servers |
+| --- | --- |
+| **Basic** | filesystem, memory |
+| **Advanced** | + fetch, github, brave-search, playwright |
+| **YOLO** | All servers |
 
 ### `vscode-extensions.json`
 VS Code extensions catalog organized by language and category.
