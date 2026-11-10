@@ -68,8 +68,8 @@ teardown() {
   grep -qF '"$WORKSPACE_DIR/.devcontainer/sync-knowledge.sh"' "$ROOT/skills/_shared/templates/setup-claude-credentials.sh"
 }
 
-@test "this repo's dev container installs hooks/sync-knowledge.sh directly" {
-  grep -qF '"$WORKSPACE_DIR/hooks/sync-knowledge.sh"' "$ROOT/.devcontainer/setup-claude-credentials.sh"
-  run grep -nF '.devcontainer/sync-knowledge.sh' "$ROOT/.devcontainer/setup-claude-credentials.sh"
-  [ "$status" -eq 1 ]
+@test "this repo's dev container stages hooks/sync-knowledge.sh for the template setup" {
+  # The repo runs the template setup script (#389), so it stages the hook where
+  # step 11 looks for it, the same way the scaffolders do.
+  grep -qF '"$REPO_ROOT/hooks/sync-knowledge.sh" "$REPO_ROOT/.devcontainer/sync-knowledge.sh"' "$ROOT/.devcontainer/post-create.sh"
 }

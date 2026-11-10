@@ -25,6 +25,10 @@ refs
 # DevContainer SSH public key (unique per developer)
 .devcontainer/devcontainer-ssh.pub
 
+# Staged from their single sources by .devcontainer/post-create.sh (#389)
+/.devcontainer/sync-knowledge.sh
+/.devcontainer/fix-worktree-paths.sh
+
 # Test directories
 test-*
 !test-config.yml

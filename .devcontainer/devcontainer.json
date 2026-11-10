@@ -32,7 +32,7 @@
       ]
     }
   },
-  "postCreateCommand": ".devcontainer/setup-claude-credentials.sh",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
   "postStartCommand": "git config --global --add safe.directory '*' && sudo /usr/local/bin/init-firewall.sh",
   "remoteEnv": {
     "PATH": "/usr/local/bin:${containerEnv:PATH}"
