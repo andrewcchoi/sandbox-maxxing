@@ -203,7 +203,6 @@ mkdir -p "$CLAUDE_DIR"
 mkdir -p "$CLAUDE_DIR/hooks"
 mkdir -p "$CLAUDE_DIR/state"
 mkdir -p "$CLAUDE_DIR/plugins"
-mkdir -p "$CLAUDE_DIR/mcp"
 
 echo "  ✓ Directories created"
 
@@ -213,7 +212,7 @@ echo "  ✓ Directories created"
 echo ""
 echo "[3/15] Copying core configuration files..."
 
-for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json" ".mcp.json"; do
+for config_file in ".credentials.json" "settings.json" "settings.local.json" "projects.json"; do
     if [ -f "$HOST_CLAUDE/$config_file" ]; then
         cp "$HOST_CLAUDE/$config_file" "$CLAUDE_DIR/"
         chmod 600 "$CLAUDE_DIR/$config_file" 2>/dev/null || true
@@ -254,17 +253,42 @@ else
 fi
 
 # ============================================================================
-# 6. MCP Configuration
+# 6. MCP Configuration (#386)
 # ============================================================================
+# MCP is opt-in. Claude Code reads project servers from .mcp.json at the project
+# root (reaches the container through the workspace mount) and user servers
+# from .claude.json in its config dir, which is not synced from the host.
 echo ""
-echo "[6/15] Syncing MCP configuration..."
+echo "[6/15] Checking MCP configuration..."
 
-# Note: .mcp.json is already copied in section 3 core configuration files
-if copy_directory "$HOST_CLAUDE/mcp" "$CLAUDE_DIR/mcp"; then
-    MCP_COUNT=$(count_files "$CLAUDE_DIR/mcp")
-    echo "  ✓ $MCP_COUNT MCP server(s) synced"
+# Lifecycle commands run in workspaceFolder, which is the project root in every
+# layout. $WORKSPACE_DIR defaults to /workspace, the parent folder in the
+# default (non-portless) layout.
+PROJECT_MCP="$PWD/.mcp.json"
+MCP_SUMMARY="none (opt-in, see docs/features/MCP.md)"
+if [ -f "$PROJECT_MCP" ]; then
+    if ! command -v jq &>/dev/null; then
+        echo "  ℹ .mcp.json found (jq not installed, not validated)"
+        MCP_SUMMARY="project .mcp.json (not validated)"
+    elif ! jq -e . "$PROJECT_MCP" >/dev/null 2>&1; then
+        echo "  ⚠ .mcp.json is not valid JSON; Claude Code will ignore it" >&2
+        MCP_SUMMARY="project .mcp.json (invalid JSON)"
+    elif jq -e 'has("mcpServers") | not' "$PROJECT_MCP" >/dev/null 2>&1; then
+        echo "  ⚠ .mcp.json has no \"mcpServers\" key; Claude Code will load no servers from it" >&2
+        if jq -e 'has("servers")' "$PROJECT_MCP" >/dev/null 2>&1; then
+            echo "    It uses VS Code's \"servers\" key. Rename it to \"mcpServers\"." >&2
+        fi
+        MCP_SUMMARY="project .mcp.json (no mcpServers key)"
+    else
+        MCP_SERVER_COUNT=$(jq '.mcpServers | length' "$PROJECT_MCP")
+        echo "  ✓ .mcp.json: $MCP_SERVER_COUNT server(s); Claude Code asks you to approve them on first use"
+        MCP_SUMMARY="$MCP_SERVER_COUNT in project .mcp.json"
+    fi
 else
-    echo "  ℹ No MCP servers found"
+    echo "  ℹ No project .mcp.json (MCP is opt-in, see docs/features/MCP.md)"
+fi
+if [ -f "$PWD/.devcontainer/mcp.json" ]; then
+    echo "  ⚠ .devcontainer/mcp.json is not read by Claude Code; move its servers to .mcp.json at the project root" >&2
 fi
 
 # ============================================================================
@@ -605,7 +629,7 @@ echo "  Config directory: $CLAUDE_DIR"
 echo "  Hooks: $(count_files "$CLAUDE_DIR/hooks") installed"
 echo "  State files: $(count_files "$CLAUDE_DIR/state") configured"
 echo "  Plugins: $(count_files "$CLAUDE_DIR/plugins") installed"
-echo "  MCP servers: $(count_files "$CLAUDE_DIR/mcp") configured"
+echo "  MCP servers: $MCP_SUMMARY"
 if [ -f "$GH_CONFIG_DIR/hosts.yml" ]; then
     echo "  GitHub CLI: ✓ Authenticated"
 else
