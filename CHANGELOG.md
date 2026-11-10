@@ -7,6 +7,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Test runner skipped most of the suite (#380)**: `npm run test:all` ran `bats tests/`, which only picks up `*.bats` files in that one directory. The 16 test files named `*.test.sh` (316 of 337 tests, including all 128 docker-safety-hook tests) never ran, locally or in CI, and `test:all` reported `1..0` and passed.
+  - Renamed `tests/**/*.test.sh` → `*.bats`. All npm test scripts and both CI jobs now use `bats -r`.
+  - New guard, `tests/unit/test_runner_coverage.bats`: fails if a file defines `@test` but isn't `.bats`, if npm or CI calls bats without `-r`, or if `bats -r --count tests/` is lower than the number of `@test` cases.
+  - Fixed the 34 tests that had drifted while not running. None were product bugs:
+    - Frontmatter extraction (`sed -n '/^---$/,/^---$/p'`) also read later `---` horizontal rules as YAML. New `extract_frontmatter` helper reads only the first block. yq-based tests skip (instead of failing) when yq is missing.
+    - devcontainer JSONC checks stripped `//` with sed, cutting `https://` URLs, and didn't fill `{{PLACEHOLDERS}}`. New `render_jsonc_template` helper does both properly.
+    - Data-file tests updated to the categorized layout, and now check content (hostnames, region codes, MCP server commands, extension IDs).
+    - Partials are fragments appended to `base.dockerfile`: the test now requires *no* `FROM`, and checks every `COPY --from=` names a stage defined in `base.dockerfile`.
+    - Placeholder check runs the real `scripts/yolo-docker-maxxing.sh` in both modes instead of grepping the command markdown.
+    - TODO-marker check no longer matches the "TODO Highlight" extension name.
+    - `((x++))` under `set -e` (fails when x is 0) → `x=$((x + 1))`.
+    - Removed obsolete tests: `DIAGRAM_STATUS.md` was deleted on purpose in 924e04b, and a `wget` test that fetched `http://test.txt` over the network.
+    - sudo-check tests: updated to the popup flow (never calls `sudo -v`, so it can't hang); mock `sudo` so they don't depend on the machine (GitHub runners have passwordless sudo, which skipped past the paths under test); removed a test for a non-interactive warning that no longer exists.
+  - `scripts/*.sh` are now executable in git (`./scripts/doc-health-check.sh` failed with Permission denied).
+  - This repo's dev container now has `bats`, `file`, and `yq` (copied from `mikefarah/yq:4.44.3`), so the full suite runs inside it.
+
 ## [4.13.12] - 2026-11-10
 
 ### Fixed

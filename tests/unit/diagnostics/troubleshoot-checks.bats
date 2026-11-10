@@ -134,7 +134,7 @@ TROUBLESHOOT_AGENT="${PLUGIN_ROOT}/agents/interactive-troubleshooter.md"
         echo "Referenced script not found: $script_ref" >&2
         return 1
       }
-    done < <(grep -o '[a-zA-Z0-9_-]*\.sh' "$doc" | sort -u)
+    done < <(grep -o '[a-zA-Z0-9_-]\+\.sh' "$doc" | sort -u)
   done
 }
 
@@ -246,7 +246,7 @@ TROUBLESHOOT_AGENT="${PLUGIN_ROOT}/agents/interactive-troubleshooter.md"
 
   for phase in "${phases[@]}"; do
     if grep -q "$phase" "$TROUBLESHOOT_AGENT"; then
-      ((found_phases++))
+      found_phases=$((found_phases + 1))
     fi
   done
 
@@ -270,7 +270,7 @@ TROUBLESHOOT_AGENT="${PLUGIN_ROOT}/agents/interactive-troubleshooter.md"
 
   for category in "${categories[@]}"; do
     if grep -qi "$category" "$TROUBLESHOOT_SKILL"; then
-      ((found_categories++))
+      found_categories=$((found_categories + 1))
     fi
   done
 

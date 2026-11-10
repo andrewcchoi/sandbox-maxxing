@@ -46,12 +46,3 @@ setup() {
 @test "doc-health-check.sh script exists" {
   [ -f "$PLUGIN_ROOT/scripts/doc-health-check.sh" ]
 }
-
-@test "DIAGRAM_STATUS.md dashboard exists" {
-  [ -f "$PLUGIN_ROOT/DIAGRAM_STATUS.md" ]
-}
-
-@test "DIAGRAM_STATUS.md contains all 12 diagrams" {
-  local diagram_count=$(grep -c "^### [0-9]\+\." "$PLUGIN_ROOT/DIAGRAM_STATUS.md" || true)
-  [ "$diagram_count" -eq 12 ]
-}

@@ -8,6 +8,10 @@ FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS uv-source
 # Stage 1b: Get Python 3.12 with proper shared library
 FROM python:3.12-slim-bookworm AS python-source
 
+# Stage 1c: Get yq (YAML processor, used by the frontmatter tests) from the
+# official image instead of downloading a binary (proxy-friendly)
+FROM mikefarah/yq:4.44.3 AS yq-source
+
 # Stage 2: Main build
 FROM node:20-bookworm-slim
 
@@ -23,6 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   openssh-client \
   # JSON processing and manual pages
   jq man-db uuid-runtime \
+  # Test runner for this repo (tests/**/*.bats) and `file` for line-ending tests
+  bats file \
   # Shell and CLI enhancements
   zsh fzf \
   # GitHub CLI
@@ -33,6 +39,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   # Timezone data
   tzdata \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# yq for the frontmatter validation tests
+COPY --from=yq-source /usr/bin/yq /usr/local/bin/yq
 
 # Copy Python 3.12 from official image (includes shared library)
 COPY --from=python-source /usr/local/bin/python3* /usr/local/bin/

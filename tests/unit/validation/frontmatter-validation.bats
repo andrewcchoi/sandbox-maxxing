@@ -39,12 +39,13 @@ load '../../helpers/test_helper'
 }
 
 @test "command files have valid allowed-tools array format" {
+  require_yq
   local commands_dir="${PLUGIN_ROOT}/commands"
 
   while IFS= read -r cmd_file; do
     # Extract frontmatter and check if allowed-tools exists
     local frontmatter
-    frontmatter=$(sed -n '/^---$/,/^---$/p' "$cmd_file" | sed '1d;$d')
+    frontmatter=$(extract_frontmatter "$cmd_file")
 
     if echo "$frontmatter" | grep -q "allowed-tools:"; then
       # Validate it's an array
@@ -104,12 +105,13 @@ load '../../helpers/test_helper'
 }
 
 @test "all agent files have required field: tools array" {
+  require_yq
   local agents_dir="${PLUGIN_ROOT}/agents"
 
   while IFS= read -r agent_file; do
     # Extract frontmatter
     local frontmatter
-    frontmatter=$(sed -n '/^---$/,/^---$/p' "$agent_file" | sed '1d;$d')
+    frontmatter=$(extract_frontmatter "$agent_file")
 
     # Check tools field exists
     local tools_value
@@ -123,12 +125,13 @@ load '../../helpers/test_helper'
 }
 
 @test "agent model values are valid" {
+  require_yq
   local agents_dir="${PLUGIN_ROOT}/agents"
   local valid_models="sonnet opus haiku"
 
   while IFS= read -r agent_file; do
     local frontmatter
-    frontmatter=$(sed -n '/^---$/,/^---$/p' "$agent_file" | sed '1d;$d')
+    frontmatter=$(extract_frontmatter "$agent_file")
 
     local model
     model=$(echo "$frontmatter" | yq eval '.model' - 2>/dev/null)
@@ -144,12 +147,13 @@ load '../../helpers/test_helper'
 }
 
 @test "agent color values are valid if specified" {
+  require_yq
   local agents_dir="${PLUGIN_ROOT}/agents"
   local valid_colors="blue green yellow red purple orange pink gray"
 
   while IFS= read -r agent_file; do
     local frontmatter
-    frontmatter=$(sed -n '/^---$/,/^---$/p' "$agent_file" | sed '1d;$d')
+    frontmatter=$(extract_frontmatter "$agent_file")
 
     local color
     color=$(echo "$frontmatter" | yq eval '.color' - 2>/dev/null)
@@ -207,6 +211,7 @@ load '../../helpers/test_helper'
 }
 
 @test "skill name matches directory name" {
+  require_yq
   local skills_dir="${PLUGIN_ROOT}/skills"
 
   while IFS= read -r skill_file; do
@@ -219,7 +224,7 @@ load '../../helpers/test_helper'
 
     # Extract skill name from frontmatter
     local frontmatter
-    frontmatter=$(sed -n '/^---$/,/^---$/p' "$skill_file" | sed '1d;$d')
+    frontmatter=$(extract_frontmatter "$skill_file")
 
     local skill_name
     skill_name=$(echo "$frontmatter" | yq eval '.name' - 2>/dev/null)
@@ -236,6 +241,7 @@ load '../../helpers/test_helper'
 # ============================================================================
 
 @test "all frontmatter blocks are valid YAML" {
+  require_yq
   local components=("commands" "agents")
 
   for component in "${components[@]}"; do
@@ -244,7 +250,7 @@ load '../../helpers/test_helper'
     while IFS= read -r file; do
       # Extract frontmatter
       local frontmatter
-      frontmatter=$(sed -n '/^---$/,/^---$/p' "$file" | sed '1d;$d')
+      frontmatter=$(extract_frontmatter "$file")
 
       # Validate YAML syntax
       if [ -n "$frontmatter" ]; then
@@ -260,7 +266,7 @@ load '../../helpers/test_helper'
   local skills_dir="${PLUGIN_ROOT}/skills"
   while IFS= read -r skill_file; do
     local frontmatter
-    frontmatter=$(sed -n '/^---$/,/^---$/p' "$skill_file" | sed '1d;$d')
+    frontmatter=$(extract_frontmatter "$skill_file")
 
     if [ -n "$frontmatter" ]; then
       echo "$frontmatter" | yq eval '.' - >/dev/null 2>&1 || {

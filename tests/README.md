@@ -43,47 +43,47 @@ bats --version
 ```bash
 npm test
 # or
-bats tests/unit/
+bats -r tests/unit/
 ```
 
 ### Run Hook Tests Only
 ```bash
 npm run test:hooks
 # or
-bats tests/unit/hooks/
+bats -r tests/unit/hooks/
 ```
 
 ### Run Validation Tests
 ```bash
 npm run test:validation
 # or
-bats tests/unit/validation/
+bats -r tests/unit/validation/
 ```
 
 ### Run Diagnostic Tests
 ```bash
 npm run test:diagnostics
 # or
-bats tests/unit/diagnostics/
+bats -r tests/unit/diagnostics/
 ```
 
 ### Run Documentation Tests
 ```bash
-bats tests/unit/documentation/
+bats -r tests/unit/documentation/
 ```
 
 ### Run Integration Tests
 ```bash
 npm run test:integration
 # or
-bats tests/integration/
+bats -r tests/integration/
 ```
 
 ### Run All Tests (Unit + Integration)
 ```bash
 npm run test:all
 # or
-bats tests/
+bats -r tests/
 ```
 
 ### Run Tests with CI Format (TAP)
@@ -93,17 +93,17 @@ npm run test:ci
 
 ### Run Specific Test File
 ```bash
-bats tests/unit/hooks/docker-safety-hook.test.sh
+bats tests/unit/hooks/docker-safety-hook.bats
 ```
 
 ### Verbose Output
 ```bash
-bats --verbose tests/unit/
+bats -r --verbose tests/unit/
 ```
 
 ### TAP Format (CI-friendly)
 ```bash
-bats --tap tests/unit/
+bats -r --tap tests/unit/
 ```
 
 ## Test Structure
@@ -112,30 +112,44 @@ bats --tap tests/unit/
 tests/
 ├── README.md                                      # This file
 ├── unit/                                          # Unit tests
+│   ├── test_runner_coverage.bats                  # Guard: every @test file is run (#380)
+│   ├── test_user_remap.bats                       # Host UID/GID wiring + .env helpers (#377)
+│   ├── test_command_syntax.bats                   # Command file syntax
+│   ├── test_enhanced_partials.bats                # Dockerfile partial contents
+│   ├── fix-worktree-paths.bats                    # Worktree path fixer
 │   ├── hooks/                                     # Hook tests
-│   │   ├── docker-safety-hook.test.sh             # Hook safety tests
-│   │   ├── sudo-check.test.sh                     # Sudo detection tests
-│   │   ├── package-install.test.sh                # Package install tests
-│   │   └── run-hook-wrapper.test.sh               # Hook wrapper tests
-│   ├── validation/                                # Validation tests (NEW)
-│   │   ├── manifest-validation.test.sh            # plugin.json, marketplace.json, hooks.json
-│   │   ├── frontmatter-validation.test.sh         # Command/agent/skill frontmatter
-│   │   └── template-validation.test.sh            # JSON, YAML, Dockerfile, shell
-│   ├── diagnostics/                               # Diagnostic tests (NEW)
-│   │   └── troubleshoot-checks.test.sh            # Troubleshoot command validation
+│   │   ├── docker-safety-hook.bats                # Hook safety tests
+│   │   ├── sudo-check.bats                        # Sudo detection tests
+│   │   ├── package-install.bats                   # Package install tests
+│   │   ├── run-hook-wrapper.bats                  # Hook wrapper tests
+│   │   └── sync-knowledge.bats                    # Volume → host knowledge sync
+│   ├── validation/                                # Validation tests
+│   │   ├── manifest-validation.bats               # plugin.json, marketplace.json, hooks.json
+│   │   ├── frontmatter-validation.bats            # Command/agent/skill frontmatter (needs yq)
+│   │   ├── template-validation.bats               # JSON(C), YAML, Dockerfile, shell, placeholders
+│   │   └── line-endings.bats                      # LF/CRLF rules
+│   ├── diagnostics/                               # Diagnostic tests
+│   │   └── troubleshoot-checks.bats               # Troubleshoot command validation
 │   ├── documentation/                             # Documentation tests
-│   │   ├── diagram-existence.test.sh              # File existence checks
-│   │   ├── diagram-content.test.sh                # Content validation
-│   │   └── version-consistency.test.sh            # Version synchronization
+│   │   ├── diagram-existence.bats                 # File existence checks
+│   │   ├── diagram-content.bats                   # Content validation
+│   │   └── version-consistency.bats               # Version synchronization
 │   └── scripts/                                   # Script tests
-│       └── common.test.sh                         # Common script utilities
+│       ├── common.bats                            # Common script utilities
+│       └── yolo-docker-maxxing.bats               # yolo setup script
 ├── integration/                                   # Integration tests
-│   └── health-check.test.sh                       # Health check scripts
+│   ├── health-check.bats                          # Health check scripts
+│   ├── test_yolo_docker_maxxing.bats              # yolo Dockerfile assembly
+│   └── test_user_remap_build.bats                 # Docker build of the UID remap step (needs Docker)
 ├── fixtures/                                      # Test fixtures and data
 │   └── sudo-check-function.sh                     # Extracted sudo check logic
 └── helpers/                                       # Test helper functions
     └── test_helper.bash                           # Common test utilities
 ```
+
+**Test files must end in `.bats`.** `bats -r` only runs `*.bats` files; a file named anything else is silently skipped (#380). `tests/unit/test_runner_coverage.bats` fails if that happens again.
+
+**Optional tools:** tests that need `yq` call `require_yq` and are skipped without it (CI installs it, and so does this repo's dev container). Docker build tests skip when Docker isn't available, or when `SKIP_DOCKER_TESTS=1`.
 
 ## Writing Tests
 
@@ -231,10 +245,10 @@ Tests run automatically in CI via `.github/workflows/docs-validation.yml`:
     sudo chmod +x /usr/local/bin/yq
 
 - name: Run Unit Tests
-  run: bats tests/unit/ --tap
+  run: bats -r tests/unit/ --tap
 
 - name: Run Integration Tests
-  run: bats tests/integration/ --tap
+  run: bats -r tests/integration/ --tap
 ```
 
 ## Troubleshooting
@@ -248,10 +262,8 @@ Install jq: `sudo apt-get install jq` (or `brew install jq` on macOS)
 ### Tests hang or timeout
 Check if you're running privileged operations without proper mocking.
 
-### Permission denied on test files
-```bash
-chmod +x tests/unit/**/*.test.sh
-```
+### A new test file doesn't run
+Make sure it ends in `.bats`. `bats -r` ignores other extensions.
 
 ## Resources
 
