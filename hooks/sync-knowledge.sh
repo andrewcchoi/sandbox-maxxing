@@ -16,8 +16,15 @@ fi
 
 HOST_CLAUDE_DIR="${HOME}/.claude"
 
-# Find all volumes with "claude" or "agent" in name
-VOLUMES=$(docker volume ls --format '{{.Name}}' | grep -iE '(claude|agent)' || true)
+# SANDBOXXER_SYNC_VOLUMES (space/newline separated) restricts the sync to those
+# volumes and skips the host-wide scan. session-end-hook.sh uses it to touch
+# only the current session's volume (#369). Unset: scan every volume with
+# "claude" or "agent" in its name (the SessionStart recovery pull).
+if [ -n "${SANDBOXXER_SYNC_VOLUMES:-}" ]; then
+    VOLUMES=$(printf '%s\n' "$SANDBOXXER_SYNC_VOLUMES" | tr -s ' \t' '\n')
+else
+    VOLUMES=$(docker volume ls --format '{{.Name}}' | grep -iE '(claude|agent)' || true)
+fi
 
 if [ -z "$VOLUMES" ]; then
     echo "[sync-knowledge] No claude/agent volumes found, skipping" >&2

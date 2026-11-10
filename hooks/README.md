@@ -34,21 +34,25 @@ Syncs knowledge files from Docker volumes to the host when a Claude session begi
 - Syncs `plans/`, `state/`, and `projects.json` to `~/.claude/`
 - Ensures knowledge persists across sessions
 - Logs sync activity to `~/.claude/state/hook.log`
+- Set `SANDBOXXER_SYNC_VOLUMES="vol1 vol2"` to sync only those volumes instead of scanning
 
 **Timeout:** 15 seconds
 
 #### SessionEnd Hook (`session-end-hook.sh`)
 
-Performs final sync and cleanup when a Claude session ends.
+Records a clean shutdown of the **current session** and flushes it to disk. It never scans or copies other sandboxes' volumes (#369); the host-wide recovery scan is the SessionStart hook's job.
 
 **Trigger:** When a session ends (SessionEnd event)
 
 **What it does:**
-- Runs final sync to capture any changes made during the session
-- Logs session completion for debugging
-- Provides extensibility point for future cleanup tasks
+- Reads `session_id` and `reason` from the hook input
+- **Local mode (default):** writes a manifest to `${CLAUDE_CONFIG_DIR:-~/.claude}/state/session-end/<session_id>.json` and runs `sync`. Inside a sandboxxer container this directory is the Claude data volume.
+- **Volume mode:** if `SANDBOXXER_SESSION_VOLUME` names a Docker volume (Claude on the host driving one sandbox volume), writes the manifest into that volume, runs `sync`, then copies only that volume to `~/.claude` via `SANDBOXXER_SYNC_VOLUMES=<volume> sync-knowledge.sh`
+- Logs to `~/.claude/state/hook.log`
 
-**Timeout:** 15 seconds
+**Manifest:** `{"session_id", "ended_at", "reason", "hook_version", "mode"}`. A session with no manifest ended dirty (crash, kill or timeout).
+
+**Timeout:** 15 seconds. Internal steps are capped at 2 + 4 + 8 seconds so the harness never kills the hook mid-write.
 
 ### 3. LangSmith Hook (OPTIONAL - NOT CONFIGURED)
 
