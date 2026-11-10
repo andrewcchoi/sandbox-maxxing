@@ -66,8 +66,8 @@ teardown() {
     # Create .git file with Windows path
     echo "gitdir: C:/Users/TestUser/repos/my-project/.git/worktrees/feature-branch" > "$WORKSPACE_DIR/.git"
 
-    # Create main repo structure (sibling)
-    mkdir -p "$TEST_DIR/workspace/my-project/.git/worktrees/feature-branch"
+    # Create main repo structure (sibling of the worktree, as ../my-project resolves)
+    mkdir -p "$TEST_DIR/my-project/.git/worktrees/feature-branch"
 
     # Run script
     cd "$WORKSPACE_DIR"
@@ -90,7 +90,7 @@ teardown() {
     echo "gitdir: D:/Projects/main-repo/.git/worktrees/hotfix" > "$WORKSPACE_DIR/.git"
 
     # Create main repo structure
-    mkdir -p "$TEST_DIR/workspace/main-repo/.git/worktrees/hotfix"
+    mkdir -p "$TEST_DIR/main-repo/.git/worktrees/hotfix"
 
     # Run script
     cd "$WORKSPACE_DIR"
@@ -128,7 +128,7 @@ teardown() {
     echo "gitdir: C:/Users/TestUser/repos/project/.git/worktrees/branch" > "$WORKSPACE_DIR/.git"
 
     # Create main repo structure
-    mkdir -p "$TEST_DIR/workspace/project/.git/worktrees/branch"
+    mkdir -p "$TEST_DIR/project/.git/worktrees/branch"
 
     # Run script first time
     cd "$WORKSPACE_DIR"
@@ -156,7 +156,7 @@ teardown() {
     echo "gitdir: C:/Users/Test User/My Repos/main-repo/.git/worktrees/feature-branch" > "$WORKSPACE_DIR/.git"
 
     # Create main repo structure
-    mkdir -p "$TEST_DIR/workspace/main-repo/.git/worktrees/feature-branch"
+    mkdir -p "$TEST_DIR/main-repo/.git/worktrees/feature-branch"
 
     # Run script
     cd "$WORKSPACE_DIR"
@@ -165,4 +165,43 @@ teardown() {
     # Should succeed
     [ "$status" -eq 0 ]
     grep -q "gitdir: ../main-repo/.git/worktrees/feature-branch" "$WORKSPACE_DIR/.git"
+}
+
+# ============================================================================
+# The sibling check and the rewritten gitdir must agree: the check used to
+# look inside the project ($WORKSPACE_DIR/<repo>) while ../<repo> resolves
+# next to it, so a real sibling layout failed and a nested one "succeeded"
+# with a broken gitdir.
+# ============================================================================
+@test "fix-worktree-paths: rewritten gitdir resolves from the project" {
+    echo "gitdir: C:/repos/main-repo/.git/worktrees/feat" > "$WORKSPACE_DIR/.git"
+    mkdir -p "$TEST_DIR/main-repo/.git/worktrees/feat"
+
+    WORKSPACE_DIR="$WORKSPACE_DIR" run "$TEST_DIR/fix-worktree-paths.sh"
+    [ "$status" -eq 0 ]
+    local gitdir
+    gitdir=$(sed -n 's/^gitdir: //p' "$WORKSPACE_DIR/.git")
+    [ -d "$WORKSPACE_DIR/$gitdir" ]
+}
+
+@test "fix-worktree-paths: main repo nested inside the project is not a sibling" {
+    echo "gitdir: C:/repos/main-repo/.git/worktrees/feat" > "$WORKSPACE_DIR/.git"
+    mkdir -p "$WORKSPACE_DIR/main-repo/.git/worktrees/feat"
+
+    WORKSPACE_DIR="$WORKSPACE_DIR" run "$TEST_DIR/fix-worktree-paths.sh"
+    [ "$status" -eq 1 ]
+    grep -q "^gitdir: C:/" "$WORKSPACE_DIR/.git"
+}
+
+@test "fix-worktree-paths: defaults WORKSPACE_DIR to the project, not /workspace" {
+    # Default layout: compose mounts ..:/workspace, so the project is
+    # /workspace/<name> and the script is /workspace/<name>/.devcontainer/.
+    mkdir -p "$TEST_DIR/parent/proj/.devcontainer" "$TEST_DIR/parent/main-repo/.git/worktrees/feat"
+    cp "$TEST_DIR/fix-worktree-paths.sh" "$TEST_DIR/parent/proj/.devcontainer/"
+    echo "gitdir: C:/repos/main-repo/.git/worktrees/feat" > "$TEST_DIR/parent/proj/.git"
+
+    cd "$TEST_DIR"
+    run env -u WORKSPACE_DIR bash "$TEST_DIR/parent/proj/.devcontainer/fix-worktree-paths.sh"
+    [ "$status" -eq 0 ]
+    grep -qx "gitdir: ../main-repo/.git/worktrees/feat" "$TEST_DIR/parent/proj/.git"
 }

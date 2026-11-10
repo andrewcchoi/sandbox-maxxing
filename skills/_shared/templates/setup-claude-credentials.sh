@@ -37,7 +37,11 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 # Configurable workspace directory - allows customization for different environments
-WORKSPACE_DIR="${WORKSPACE_DIR:-/workspace}"
+# Defaults to the project root (this script lives in <project>/.devcontainer/),
+# not /workspace, which is the parent folder in the default layout where
+# compose mounts ..:/workspace. Exported so fix-worktree-paths.sh agrees.
+WORKSPACE_DIR="${WORKSPACE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+export WORKSPACE_DIR
 
 # Validate WORKSPACE_DIR exists
 if [ ! -d "$WORKSPACE_DIR" ]; then
@@ -261,10 +265,7 @@ fi
 echo ""
 echo "[6/15] Checking MCP configuration..."
 
-# Lifecycle commands run in workspaceFolder, which is the project root in every
-# layout. $WORKSPACE_DIR defaults to /workspace, the parent folder in the
-# default (non-portless) layout.
-PROJECT_MCP="$PWD/.mcp.json"
+PROJECT_MCP="$WORKSPACE_DIR/.mcp.json"
 MCP_SUMMARY="none (opt-in, see docs/features/MCP.md)"
 if [ -f "$PROJECT_MCP" ]; then
     if ! command -v jq &>/dev/null; then
@@ -287,7 +288,7 @@ if [ -f "$PROJECT_MCP" ]; then
 else
     echo "  ℹ No project .mcp.json (MCP is opt-in, see docs/features/MCP.md)"
 fi
-if [ -f "$PWD/.devcontainer/mcp.json" ]; then
+if [ -f "$WORKSPACE_DIR/.devcontainer/mcp.json" ]; then
     echo "  ⚠ .devcontainer/mcp.json is not read by Claude Code; move its servers to .mcp.json at the project root" >&2
 fi
 
