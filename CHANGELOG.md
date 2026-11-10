@@ -15,6 +15,16 @@ All notable changes to this project will be documented in this file.
   - New `tests/unit/test_firewall_ssh_egress.bats` runs the real script against stubbed `iptables`/`ipset`/`dig`/`curl` and checks the resulting rule order and ipset contents.
 
 ### Fixed
+- **Setup wrote to the parent folder instead of the project (default layout)**: generated projects mount `..:/workspace`, so the project is at `/workspace/<name>`. Nothing set `WORKSPACE_DIR`, so `setup-claude-credentials.sh` and `fix-worktree-paths.sh` fell back to `/workspace`, the *parent* folder. As a result:
+  - The worktree path fix never ran.
+  - `devcontainer-ssh.pub` landed in the parent's `.devcontainer/`.
+  - Step 11 couldn't find `sync-knowledge.sh`.
+  - The SSH-key `.gitignore` entry went into the parent folder.
+  - Portless projects (project at `/workspace`) were unaffected.
+  - Both scripts now default `WORKSPACE_DIR` to the project root, derived from their own location in `<project>/.devcontainer/`. An explicit `WORKSPACE_DIR` still wins, and `setup-claude-credentials.sh` exports it so the two agree.
+  - `fix-worktree-paths.sh` looked for the main repo *inside* the project (`$WORKSPACE_DIR/<repo>`) but wrote `gitdir: ../<repo>/...`. It now checks the same sibling path it writes, so the Windows-worktree fix (#314) works in the standard sibling layout. Its tests had encoded the nested layout and were corrected.
+  - **Existing projects**: copy both scripts from `skills/_shared/templates/` into `.devcontainer/` and rebuild. Check the parent folder for a stray `.gitignore` or `.devcontainer/devcontainer-ssh.pub` written by earlier setups.
+  - New `tests/unit/test_workspace_dir_default.bats` and three new `fix-worktree-paths.bats` cases.
 - **MCP template and docs didn't match how Claude Code loads MCP servers (#386)**: `docs/features/MCP.md` told users to edit `.devcontainer/mcp.json`, which nothing reads, and the template used VS Code's `servers` key instead of Claude Code's `mcpServers`. Servers configured as documented never loaded.
   - MCP stays opt-in: nothing is installed. `MCP.md` now shows `.mcp.json` at the project root (or `claude mcp add --scope project`), credentials as `${VAR}` forwarded through `remoteEnv`, and firewall/proxy notes.
   - `skills/_shared/templates/mcp.json` is now a valid `.mcp.json` starter (`filesystem` scoped to the project root, `memory`).

@@ -15,14 +15,17 @@
 #
 # Assumptions:
 # - Standard git worktree layout (worktrees are siblings of main repo)
-# - Parent directory is mounted at /workspace (DevContainer default)
+# - The main repo is a sibling of the project, and the parent folder is mounted
+#   (default layout: ..:/workspace, project at /workspace/<name>)
 # - Script is idempotent and safe to run multiple times
 #
 # ============================================================================
 
 set -euo pipefail
 
-WORKSPACE_DIR="${WORKSPACE_DIR:-/workspace}"
+# Project root: this script lives in <project>/.devcontainer/. Not /workspace,
+# which is the parent folder in the default layout.
+WORKSPACE_DIR="${WORKSPACE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 GIT_FILE="$WORKSPACE_DIR/.git"
 
 # Only proceed if .git is a file (indicates worktree)
@@ -45,8 +48,9 @@ echo "Detected git worktree with Windows path: $GITDIR_PATH"
 MAIN_REPO=$(echo "$GITDIR_PATH" | sed -E 's|.*/([^/]+)/\.git/worktrees/.*|\1|')
 WORKTREE_NAME=$(basename "$GITDIR_PATH")
 
-# Verify main repo is accessible as sibling
-EXPECTED_PATH="$WORKSPACE_DIR/$MAIN_REPO/.git/worktrees/$WORKTREE_NAME"
+# Verify main repo is accessible as a sibling: the same path the rewritten
+# ../$MAIN_REPO gitdir resolves to
+EXPECTED_PATH="$(dirname "$WORKSPACE_DIR")/$MAIN_REPO/.git/worktrees/$WORKTREE_NAME"
 if [ -d "$EXPECTED_PATH" ]; then
     echo "gitdir: ../$MAIN_REPO/.git/worktrees/$WORKTREE_NAME" > "$GIT_FILE"
     echo "✓ Fixed worktree path: ../$MAIN_REPO/.git/worktrees/$WORKTREE_NAME"

@@ -29,7 +29,6 @@ services:
       - ssh-keys:/home/node/.ssh                        # Shared SSH keys across all projects
     environment:
       - FIREWALL_MODE=permissive
-      - WORKSPACE_DIR=/workspace/sandbox-maxxing
     command: sleep infinity
     healthcheck:
       # Check if PID 1 (sleep infinity) is running by testing /proc/1

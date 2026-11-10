@@ -19,5 +19,7 @@ cp "$REPO_ROOT/hooks/sync-knowledge.sh" "$REPO_ROOT/.devcontainer/sync-knowledge
 cp "$TEMPLATES/fix-worktree-paths.sh" "$REPO_ROOT/.devcontainer/fix-worktree-paths.sh"
 chmod +x "$REPO_ROOT/.devcontainer/sync-knowledge.sh" "$REPO_ROOT/.devcontainer/fix-worktree-paths.sh"
 
-export WORKSPACE_DIR="${WORKSPACE_DIR:-$REPO_ROOT}"
+# The template runs from skills/_shared/templates/, so its own default (the
+# parent of its directory) would be wrong here
+export WORKSPACE_DIR="$REPO_ROOT"
 exec bash "$TEMPLATES/setup-claude-credentials.sh"

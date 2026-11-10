@@ -108,7 +108,7 @@ run_mcp_step() {
   local proj="$1"
   sed -n '/^# 6\. MCP Configuration/,/^# 7\. Environment Variables/p' "$SETUP" | sed '$d' > "$TEST_DIR/step6.sh"
   printf '\necho "SUMMARY=$MCP_SUMMARY"\n' >> "$TEST_DIR/step6.sh"
-  run bash -c "cd '$proj' && set -euo pipefail && source '$TEST_DIR/step6.sh'" 2>&1
+  run bash -c "cd '$proj' && WORKSPACE_DIR='$proj' && set -euo pipefail && source '$TEST_DIR/step6.sh'" 2>&1
 }
 
 @test "setup: no longer copies host ~/.claude/.mcp.json or ~/.claude/mcp/" {

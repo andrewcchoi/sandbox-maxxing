@@ -54,7 +54,8 @@ teardown() {
   printf '#!/usr/bin/env bash\necho "ran template WORKSPACE_DIR=$WORKSPACE_DIR"\n' \
     > "$TEST_DIR/repo/skills/_shared/templates/setup-claude-credentials.sh"
 
-  run env -u WORKSPACE_DIR bash "$TEST_DIR/repo/.devcontainer/post-create.sh"
+  # A stale WORKSPACE_DIR (e.g. from compose) must not override the repo root
+  run env WORKSPACE_DIR=/workspace/stale bash "$TEST_DIR/repo/.devcontainer/post-create.sh"
   [ "$status" -eq 0 ]
   [[ "$output" == *"ran template WORKSPACE_DIR=$TEST_DIR/repo"* ]]
   cmp -s "$ROOT/hooks/sync-knowledge.sh" "$TEST_DIR/repo/.devcontainer/sync-knowledge.sh"
