@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Azure CLI partial: builds failed at Bicep, and Bicep/extensions were root-only (#383)**: Bicep v0.49.2 is a .NET app and aborted with "Couldn't find a valid ICU package", failing every `yolo-docker-maxxing` build (and quickstart with Azure). Bicep and the `containerapp` extension were also installed under `/root/.azure`, so the `node` user saw "Bicep CLI not found" and no extension.
+  - Installs `libicu72` before Bicep.
+  - Moves the Bicep binary to `/usr/local/bin/bicep` and sets `AZURE_BICEP_USE_BINARY_FROM_PATH=true` after the install (set earlier, `az bicep install` refuses to run).
+  - Installs extensions into `AZURE_EXTENSION_DIR=/opt/az/cliextensions`, owned by `node`, so `node` can use and add extensions.
+  - Tests in `tests/unit/test_enhanced_partials.bats`.
 - **Container user now matches the host user outside VS Code (#377)**: generated containers always used UID/GID 1000. Compose templates read `CONTAINER_UID`/`CONTAINER_GID`, but nothing set them, and the image's `node` user was always `1000:1000`. On hosts where your UID isn't 1000 (macOS `501:20`, many enterprise Linux hosts), plain `docker compose up` wrote files with the wrong owner and git reported "dubious ownership". Setting the variables by hand made it worse: the process ran as a UID with no passwd entry ("I have no name!", broken `HOME`).
   - `base.dockerfile` takes `USER_UID`/`USER_GID` build args (default `1000`) and remaps the existing `node` user to them before any `chown`. If the GID already exists in the image (macOS GID 20 is Debian's `dialout`), `node` uses that group. UID/GID `0`, a UID owned by another account, or a non-numeric value fails the build with a message saying to set `1000`.
   - The four compose templates that build the image pass `USER_UID=${CONTAINER_UID:-1000}` / `USER_GID=${CONTAINER_GID:-1000}`, so the image and the `user:` line always agree. `docker-compose.prebuilt.yml` can't build, so prebuilt mode is unchanged (#378).
