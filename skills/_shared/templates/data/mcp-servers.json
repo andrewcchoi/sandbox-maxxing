@@ -2,163 +2,122 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "MCP (Model Context Protocol) servers catalog for DevContainer configurations",
   "metadata": {
-    "last_updated": "2026-02-08",
-    "usage": "Skills reference this file to generate MCP server configurations per mode",
+    "last_updated": "2026-11-10",
+    "format": "Each entry under servers is a Claude Code .mcp.json mcpServers entry (type, command/args/env or url/headers) plus catalog-only fields (description, mode_minimum, category, requires) that must be dropped when copying. ${VAR} values are expanded by Claude Code from the environment it runs in.",
+    "usage": "Reference catalog for docs/features/MCP.md. Nothing installs these automatically; users opt in by adding entries to .mcp.json at the project root (#386).",
     "references": [
-      "https://docs.docker.com/ai/mcp-catalog-and-toolkit/hub-mcp/",
-      "https://code.visualstudio.com/docs/copilot/customization/mcp-servers"
+      "https://docs.claude.com/en/docs/claude-code/mcp",
+      "https://github.com/modelcontextprotocol/servers"
     ]
   },
   "servers": {
     "filesystem": {
-      "description": "Access to local filesystem",
+      "description": "Read/write files under the project root",
       "type": "stdio",
       "mode_minimum": "basic",
       "category": "core",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"],
-      "env": {}
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "."
+      ]
     },
     "memory": {
-      "description": "Conversation memory and context",
+      "description": "Knowledge-graph memory that persists across sessions",
       "type": "stdio",
       "mode_minimum": "basic",
       "category": "core",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "env": {}
-    },
-    "sqlite": {
-      "description": "SQLite database access",
-      "type": "stdio",
-      "mode_minimum": "basic",
-      "category": "database",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "/workspace/data.db"],
-      "env": {}
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
     },
     "fetch": {
-      "description": "Web content fetching",
+      "description": "Fetch web pages and convert them to markdown",
       "type": "stdio",
       "mode_minimum": "advanced",
       "category": "web",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-fetch"],
-      "env": {}
-    },
-    "postgres": {
-      "description": "PostgreSQL database queries",
-      "type": "stdio",
-      "mode_minimum": "advanced",
-      "category": "database",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres"],
-      "env": {
-        "POSTGRES_CONNECTION_STRING": "${input:postgresConnectionString}"
-      },
-      "inputs": {
-        "postgresConnectionString": {
-          "type": "promptString",
-          "description": "PostgreSQL connection string",
-          "default": "postgresql://user:password@localhost:5432/db"
-        }
-      }
+      "command": "uvx",
+      "args": [
+        "mcp-server-fetch"
+      ]
     },
     "github": {
-      "description": "GitHub API integration",
-      "type": "stdio",
+      "description": "GitHub's hosted MCP server (repos, issues, PRs)",
+      "type": "http",
       "mode_minimum": "advanced",
       "category": "version_control",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_TOKEN": "${input:githubToken}"
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
       },
-      "inputs": {
-        "githubToken": {
-          "type": "promptString",
-          "description": "GitHub personal access token",
-          "password": true
-        }
+      "requires": {
+        "env": [
+          "GITHUB_TOKEN"
+        ],
+        "domains": [
+          "api.githubcopilot.com"
+        ]
       }
-    },
-    "docker": {
-      "description": "Docker Hub search and management",
-      "type": "stdio",
-      "mode_minimum": "advanced",
-      "category": "container",
-      "command": "docker",
-      "args": ["run", "-i", "--rm", "mcp/docker"],
-      "env": {}
     },
     "brave-search": {
-      "description": "Brave Search API",
+      "description": "Web search via the Brave Search API",
       "type": "stdio",
       "mode_minimum": "advanced",
       "category": "web",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "args": [
+        "-y",
+        "@brave/brave-search-mcp-server"
+      ],
       "env": {
-        "BRAVE_API_KEY": "${input:braveApiKey}"
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
       },
-      "inputs": {
-        "braveApiKey": {
-          "type": "promptString",
-          "description": "Brave Search API key",
-          "password": true
-        }
+      "requires": {
+        "env": [
+          "BRAVE_API_KEY"
+        ],
+        "domains": [
+          "api.search.brave.com"
+        ]
       }
     },
-    "puppeteer": {
-      "description": "Browser automation",
+    "playwright": {
+      "description": "Browser automation (replaces the archived puppeteer server)",
       "type": "stdio",
       "mode_minimum": "advanced",
-      "category": "web",
+      "category": "browser",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
-      "env": {}
-    },
-    "slack": {
-      "description": "Slack workspace integration",
-      "type": "stdio",
-      "mode_minimum": "yolo",
-      "category": "communication",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-slack"],
-      "env": {
-        "SLACK_BOT_TOKEN": "${input:slackBotToken}",
-        "SLACK_TEAM_ID": "${input:slackTeamId}"
-      },
-      "inputs": {
-        "slackBotToken": {
-          "type": "promptString",
-          "description": "Slack bot token",
-          "password": true
-        },
-        "slackTeamId": {
-          "type": "promptString",
-          "description": "Slack team ID"
-        }
+      "args": [
+        "-y",
+        "@playwright/mcp",
+        "--headless"
+      ],
+      "requires": {
+        "notes": "Needs a browser in the image: npx playwright install --with-deps chromium"
       }
-    },
-    "google-drive": {
-      "description": "Google Drive access",
-      "type": "stdio",
-      "mode_minimum": "yolo",
-      "category": "storage",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-gdrive"],
-      "env": {}
     }
   },
   "mode_defaults": {
     "basic": {
       "description": "Essential MCP servers",
-      "servers": ["filesystem", "memory"]
+      "servers": [
+        "filesystem",
+        "memory"
+      ]
     },
     "advanced": {
       "description": "Comprehensive server set",
-      "servers": ["filesystem", "memory", "sqlite", "fetch", "github", "postgres", "docker", "brave-search"]
+      "servers": [
+        "filesystem",
+        "memory",
+        "fetch",
+        "github",
+        "brave-search",
+        "playwright"
+      ]
     },
     "yolo": {
       "description": "All available servers",

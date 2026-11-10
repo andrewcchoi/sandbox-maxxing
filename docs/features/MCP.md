@@ -1,254 +1,182 @@
 # MCP (Model Context Protocol) Configuration Guide
 
-MCP enables AI assistants to interact with external services through a standardized protocol.
+MCP lets Claude Code call tools from external servers (databases, web search, GitHub, a browser).
 
-## Quick Reference
+Sandboxxer does **not** install any MCP servers. Every server runs code fetched from npm or PyPI
+and gets access to your container, so you add only the ones you want.
 
-| Mode | MCP Servers | Use Case |
-|------|-------------|----------|
-| Minimal | filesystem, memory | Simple file access |
-| Domain Allowlist | + postgres, docker, brave-search | Full-stack projects |
-| Custom | + puppeteer, slack, google-drive | Maximum capabilities |
+## Where Claude Code reads MCP config
 
-## Configuration
+| Scope | File | Shared with | Inside the container |
+|---|---|---|---|
+| **Project** (recommended) | `.mcp.json` at the project root | Everyone who clones the repo | Yes, through the workspace bind mount |
+| User | `~/.claude.json` (`mcpServers`) | Only you | No. It isn't synced from the host, so add servers again inside the container with `claude mcp add --scope user` |
 
-MCP servers are configured in `.devcontainer/mcp.json`:
+Claude Code does **not** read `.devcontainer/mcp.json` or `.vscode/mcp.json`. The `.vscode/mcp.json`
+file uses a different format (top-level `servers` key) and is only read by VS Code's own MCP
+support.
+
+Claude Code asks you to approve project servers from `.mcp.json` the first time it sees them.
+Run `/mcp` in a session to see which servers connected.
+
+## Quick start
+
+Either run `claude mcp add` from the project root inside the container:
+
+```bash
+claude mcp add --scope project memory -- npx -y @modelcontextprotocol/server-memory
+claude mcp add --scope project filesystem -- npx -y @modelcontextprotocol/server-filesystem .
+```
+
+Or create `.mcp.json` at the project root yourself. This is the plugin's starter template
+(`skills/_shared/templates/mcp.json`):
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "filesystem": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    },
+    "memory": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
     }
   }
 }
 ```
 
-## Available Servers
+Restart Claude Code (not the container) after editing `.mcp.json`.
 
-### Core (All Configurations)
-- **filesystem** - Local file access
-- **memory** - Conversation memory
+## Server catalog
 
-### Development (Domain Allowlist, Custom)
-- **sqlite** - SQLite database access
-- **fetch** - Web content fetching
-- **github** - GitHub API integration (requires token)
-- **docker** - Docker Hub search and management
+`skills/_shared/templates/data/mcp-servers.json` lists servers that are known to be maintained.
+Each entry is a ready-to-paste `mcpServers` entry. Drop the catalog-only fields
+(`description`, `mode_minimum`, `category`, `requires`) when you copy it.
 
-### Advanced (Domain Allowlist, Custom)
-- **postgres** - PostgreSQL queries (requires connection string)
-- **brave-search** - Web search (requires API key)
-- **puppeteer** - Browser automation
+| Server | Runs | Needs |
+|---|---|---|
+| `filesystem` | `npx @modelcontextprotocol/server-filesystem .` | Nothing |
+| `memory` | `npx @modelcontextprotocol/server-memory` | Nothing |
+| `fetch` | `uvx mcp-server-fetch` | Nothing (`uvx` is in the image) |
+| `github` | GitHub's hosted server, `https://api.githubcopilot.com/mcp/` | `GITHUB_TOKEN` |
+| `brave-search` | `npx @brave/brave-search-mcp-server` | `BRAVE_API_KEY` |
+| `playwright` | `npx @playwright/mcp --headless` | A browser in the image (see below) |
 
-### Extended (Custom Only)
-- **slack** - Slack workspace integration
-- **google-drive** - Google Drive access
+The older `@modelcontextprotocol/server-{sqlite,fetch,postgres,github,puppeteer,brave-search,slack,gdrive}`
+npm packages were removed from the catalog in v4.13.12 (#386): they are archived, deprecated, or were
+never published to npm.
 
 ## Credentials
 
-Sensitive credentials use VS Code input variables:
+`.mcp.json` is meant to be committed, so never put secrets in it. Reference environment variables
+instead. Claude Code expands `${VAR}` and `${VAR:-default}` in `command`, `args`, `env`, `url` and
+`headers`:
 
 ```json
 {
-  "inputs": {
-    "githubToken": {
-      "type": "promptString",
-      "description": "GitHub personal access token",
-      "password": true
-    }
-  }
-}
-```
-
-## Practical Examples
-
-### Example 1: Adding GitHub MCP Server
-
-Add GitHub integration for repository access:
-
-**1. Update `.devcontainer/mcp.json`:**
-```json
-{
-  "servers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]
-    },
+  "mcpServers": {
     "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer ${GITHUB_TOKEN}" }
+    },
+    "brave-search": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
-      }
+      "args": ["-y", "@brave/brave-search-mcp-server"],
+      "env": { "BRAVE_API_KEY": "${BRAVE_API_KEY}" }
     }
   }
 }
 ```
 
-**2. Add token to `.env`:**
-```bash
-GITHUB_TOKEN=ghp_your_personal_access_token_here
+Forward the variables from the host through `remoteEnv` in `.devcontainer/devcontainer.json`
+(the template already forwards `GITHUB_TOKEN`), then rebuild:
+
+```jsonc
+"remoteEnv": {
+  "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
+  "BRAVE_API_KEY": "${localEnv:BRAVE_API_KEY}"
+}
 ```
 
-**3. Restart DevContainer to apply changes**
+`${localEnv:...}` works there because VS Code expands it. VS Code's `${input:...}` and
+`${localEnv:...}` syntax does **not** work in `.mcp.json`.
 
-### Example 2: PostgreSQL MCP Server
+## Practical examples
 
-Enable database queries through Claude:
+### Database access
 
-**1. Update `.devcontainer/mcp.json`:**
+Point a database MCP server at the compose service name (for example `postgres:5432`), with the
+connection string in an environment variable:
+
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "postgres": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres"],
-      "env": {
-        "POSTGRES_CONNECTION_STRING": "postgresql://user:password@postgres:5432/dbname"
-      }
+      "type": "stdio",
+      "command": "<server command>",
+      "args": ["${DATABASE_URL}"]
     }
   }
 }
 ```
 
-**2. For sensitive credentials, use VS Code inputs in `devcontainer.json`:**
-```json
-{
-  "inputs": {
-    "postgresPassword": {
-      "type": "promptString",
-      "description": "PostgreSQL password",
-      "password": true
-    }
-  },
-  "remoteEnv": {
-    "POSTGRES_CONNECTION_STRING": "postgresql://user:${input:postgresPassword}@postgres:5432/dbname"
-  }
-}
+Choose a maintained server from the
+[MCP server registry](https://github.com/modelcontextprotocol/servers). The reference
+`@modelcontextprotocol/server-postgres` package is archived.
+
+### Browser automation
+
+`@playwright/mcp` needs a browser. Add this to `.devcontainer/Dockerfile` (as the container user,
+after Node.js is installed) and rebuild:
+
+```dockerfile
+RUN npx -y playwright install --with-deps chromium
 ```
 
-### Example 3: Multiple MCP Servers for Full-Stack Project
-
-Complete configuration for a full-stack app:
+### A custom server
 
 ```json
 {
-  "servers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
-      }
-    },
-    "postgres": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres"],
-      "env": {
-        "POSTGRES_CONNECTION_STRING": "postgresql://user:password@postgres:5432/dbname"
-      }
-    },
-    "docker": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-docker"]
-    }
-  }
-}
-```
-
-### Example 4: Custom MCP Server
-
-Create your own MCP server for specialized functionality:
-
-**1. Create `custom-mcp-server.js`:**
-```javascript
-#!/usr/bin/env node
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-
-const server = new Server({
-  name: 'custom-api-server',
-  version: '1.0.0',
-}, {
-  capabilities: {
-    tools: {}
-  }
-});
-
-server.setRequestHandler('tools/list', async () => ({
-  tools: [{
-    name: 'fetch_data',
-    description: 'Fetch data from custom API',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        endpoint: { type: 'string' }
-      }
-    }
-  }]
-}));
-
-const transport = new StdioServerTransport();
-await server.connect(transport);
-```
-
-**2. Add to `.devcontainer/mcp.json`:**
-```json
-{
-  "servers": {
+  "mcpServers": {
     "custom-api": {
+      "type": "stdio",
       "command": "node",
-      "args": ["/workspace/.devcontainer/custom-mcp-server.js"]
+      "args": ["tools/custom-mcp-server.js"]
     }
   }
 }
 ```
+
+See the [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) for
+writing the server.
 
 ## Troubleshooting
 
-### MCP Server Not Loading
+### Server not loading
 
-**Symptoms:** Claude doesn't recognize MCP tools
+1. Check that the file is at the project root and named `.mcp.json`, with a top-level `mcpServers` key:
+   `jq '.mcpServers | keys' .mcp.json`
+2. Run `/mcp` in Claude Code. A server you declined at the approval prompt stays disabled until
+   you reset it with `claude mcp reset-project-choices`.
+3. Run the server's command by hand in the container terminal to see its errors.
+4. **Strict firewall:** `npx` needs `registry.npmjs.org` and `uvx` needs `pypi.org` and
+   `files.pythonhosted.org`. Both are allowlisted by default. Remote servers need their own host
+   allowlisted under `project_specific` (for example `api.githubcopilot.com`, `api.search.brave.com`).
+5. **Corporate proxy:** `npx` and `uvx` download packages when the server starts. If that fails
+   behind a proxy, install the package in the Dockerfile and point `command` at the installed binary.
 
-**Solutions:**
-1. Check `mcp.json` syntax with `jq . .devcontainer/mcp.json`
-2. Verify firewall allows npm package downloads
-3. Restart VS Code DevContainer
-4. Check VS Code output panel for MCP errors
+### Authentication failures
 
-### Authentication Failures
-
-**Symptoms:** "Authentication failed" or "Invalid token" errors
-
-**Solutions:**
-1. Verify token format (GitHub: `ghp_`, not `ghs_`)
-2. Check token permissions (repo, read:org for GitHub)
-3. Use `${localEnv:VAR}` for .env variables
-4. Use `${input:var}` for VS Code prompt inputs
-
-### Performance Issues
-
-**Symptoms:** Slow responses when using MCP tools
-
-**Solutions:**
-1. Limit concurrent MCP servers (use only what you need)
-2. Use caching for frequently accessed data
-3. Consider connection pooling for database servers
+1. Check that the variable is set in the shell that runs Claude Code: `printenv GITHUB_TOKEN`
+2. Restart Claude Code after changing environment variables. Values are expanded at startup.
 
 ## References
 
-- [Docker Hub MCP](https://docs.docker.com/ai/mcp-catalog-and-toolkit/hub-mcp/)
-- [VS Code MCP Servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
-- [MCP SDK Documentation](https://github.com/modelcontextprotocol/sdk)
-- [Available MCP Servers](https://github.com/modelcontextprotocol/servers)
-
+- [Claude Code MCP documentation](https://docs.claude.com/en/docs/claude-code/mcp)
+- [MCP servers repository](https://github.com/modelcontextprotocol/servers)
+- [GitHub MCP server](https://github.com/github/github-mcp-server)

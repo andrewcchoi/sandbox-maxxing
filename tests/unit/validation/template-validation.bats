@@ -288,16 +288,16 @@ TEMPLATES_DIR="${PLUGIN_ROOT}/skills/_shared/templates"
   assert_valid_json "$file"
 }
 
-@test "mcp.json: every server under .servers has a command" {
-  # NOTE: the template uses the `servers` key (VS Code mcp.json format), not
-  # Claude Code's `.mcp.json` `mcpServers` key. Setup doesn't copy this file
-  # anywhere today; see #386.
+@test "mcp.json: Claude Code .mcp.json format (mcpServers, each with a command or URL)" {
+  # Claude Code reads `mcpServers` from .mcp.json; `servers` is VS Code's format (#386).
   local file="${TEMPLATES_DIR}/mcp.json"
   [ -f "$file" ] || skip "mcp.json not found"
 
-  run jq -r '.servers | type' "$file"
+  run jq -r '.mcpServers | type' "$file"
   [ "$output" = "object" ]
-  run jq -r '[.servers | to_entries[] | select((.value.command // .value.url // "") == "") | .key] | join(",")' "$file"
+  run jq -r 'has("servers")' "$file"
+  [ "$output" = "false" ]
+  run jq -r '[.mcpServers | to_entries[] | select((.value.command // .value.url // "") == "") | .key] | join(",")' "$file"
   [ -z "$output" ] || { echo "Servers without command/url: $output" >&2; return 1; }
 }
 

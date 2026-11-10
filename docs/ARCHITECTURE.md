@@ -59,7 +59,7 @@ skills/
 │   │   ├── init-firewall.sh           # Strict iptables firewall (v4.3.2)
 │   │   ├── init-volume.sh             # Volume initialization script
 │   │   ├── extensions.json            # VS Code extensions (minimal)
-│   │   ├── mcp.json                   # MCP server configuration
+│   │   ├── mcp.json                   # Opt-in .mcp.json starter (not installed)
 │   │   ├── variables.json             # Build/runtime variables
 │   │   ├── .env.template              # Environment variables
 │   │   ├── README.md                  # Template documentation (v4.3.1)
@@ -109,7 +109,7 @@ All data files are in `skills/_shared/templates/data/`. See `skills/_shared/temp
 - `official-images.json` - Official Docker images (Python, Node, databases)
 - `allowable-domains.json` - Firewall domain whitelist by category
 - `ollama-models.json` - Ollama model catalog
-- `mcp-servers.json` - MCP server configurations
+- `mcp-servers.json` - Catalog of opt-in MCP servers (`.mcp.json` format)
 - `vscode-extensions.json` - VS Code extension catalog
 
 Skills reference these using: `skills/_shared/templates/data/<filename>`
