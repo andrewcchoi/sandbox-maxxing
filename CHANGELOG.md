@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **One source for `sync-knowledge.sh` (#368)**: `.devcontainer/sync-knowledge.sh` and `skills/_shared/templates/sync-knowledge.sh` had drifted from the hardened `hooks/sync-knowledge.sh`. The template copies lacked the `HOME` guard, volume-name validation, pinned `alpine:3.19`, `--user` isolation, `0700` dirs, a correct synced-count and per-volume error handling.
+  - Deleted both template copies. `yolo-docker-maxxing` and `quickstart` now copy `hooks/sync-knowledge.sh` into the project's `.devcontainer/` at scaffold time, so projects always get the hook's exact bytes.
+  - This also fixes setup step 11 ("Install Knowledge Sync Script"). Neither scaffolder copied the script before, so step 11 always printed "template not found" and never installed anything. It now installs the hardened script to the host's `~/.claude/scripts/` (only if none is there yet).
+  - This repo's own dev container installs `hooks/sync-knowledge.sh` directly.
+  - New `tests/unit/test_sync_knowledge_single_source.bats` (no Docker needed): fails if a second `sync-knowledge.sh` is added, and checks that yolo (both modes) scaffolds the hook's exact bytes as an executable file.
 - **Test runner skipped most of the suite (#380)**: `npm run test:all` ran `bats tests/`, which only picks up `*.bats` files in that one directory. The 16 test files named `*.test.sh` (316 of 337 tests, including all 128 docker-safety-hook tests) never ran, locally or in CI, and `test:all` reported `1..0` and passed.
   - Renamed `tests/**/*.test.sh` → `*.bats`. All npm test scripts and both CI jobs now use `bats -r`.
   - New guard, `tests/unit/test_runner_coverage.bats`: fails if a file defines `@test` but isn't `.bats`, if npm or CI calls bats without `-r`, or if `bats -r --count tests/` is lower than the number of `@test` cases.

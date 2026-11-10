@@ -453,10 +453,10 @@ if [ -d "$HOST_CLAUDE" ]; then
         echo "  ✓ sync-knowledge.sh already installed on host"
     else
         # Copy from template if it exists
-        if [ -f "$WORKSPACE_DIR/.devcontainer/sync-knowledge.sh" ]; then
+        if [ -f "$WORKSPACE_DIR/hooks/sync-knowledge.sh" ]; then
             if [ -w "$HOST_CLAUDE" ]; then
                 mkdir -p "$HOST_CLAUDE/scripts" 2>/dev/null || true
-                cp "$WORKSPACE_DIR/.devcontainer/sync-knowledge.sh" "$HOST_CLAUDE/scripts/" 2>/dev/null && \
+                cp "$WORKSPACE_DIR/hooks/sync-knowledge.sh" "$HOST_CLAUDE/scripts/" 2>/dev/null && \
                     chmod +x "$HOST_CLAUDE/scripts/sync-knowledge.sh" 2>/dev/null && \
                     echo "  ✓ Installed sync-knowledge.sh to host ~/.claude/scripts/" || \
                     echo "  ℹ Could not install sync script (host volume may be read-only)"
@@ -464,7 +464,7 @@ if [ -d "$HOST_CLAUDE" ]; then
                 echo "  ℹ Host .claude directory is read-only - install sync script manually"
             fi
         else
-            echo "  ℹ sync-knowledge.sh template not found in .devcontainer/"
+            echo "  ℹ hooks/sync-knowledge.sh not found in workspace"
         fi
     fi
 else
@@ -476,7 +476,7 @@ echo "  ────────────────────────
 echo "  To enable automatic knowledge sync on host Claude startup:"
 echo "  ──────────────────────────────────────────────────────────────"
 echo "  1. Copy sync script to host:"
-echo "     cp .devcontainer/sync-knowledge.sh ~/.claude/scripts/"
+echo "     cp hooks/sync-knowledge.sh ~/.claude/scripts/"
 echo "     chmod +x ~/.claude/scripts/sync-knowledge.sh"
 echo ""
 echo "  2. Add SessionStart hook to ~/.claude/settings.local.json:"

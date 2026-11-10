@@ -779,6 +779,8 @@ write_host_ids .env
 echo "  [3.6] Copying supporting files..."
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/
 cp "$TEMPLATES/setup-frontend.sh" .devcontainer/
+# Knowledge sync script: copied from the plugin's hook so there is one source (#368)
+cp "$PLUGIN_ROOT/hooks/sync-knowledge.sh" .devcontainer/sync-knowledge.sh
 cp "$TEMPLATES/data/allowable-domains.json" data/
 cp "$TEMPLATES/.env.example" ./.env.example
 
@@ -912,6 +914,7 @@ echo "  .devcontainer/Dockerfile"
 echo "  .devcontainer/devcontainer.json"
 echo "  .devcontainer/init-firewall.sh"
 echo "  .devcontainer/setup-claude-credentials.sh"
+echo "  .devcontainer/sync-knowledge.sh"
 echo "  docker-compose.yml"
 echo "  .env"
 [ ! -f ".gitattributes.backup" ] && echo "  .gitattributes" || echo "  .gitattributes (preserved existing)"
