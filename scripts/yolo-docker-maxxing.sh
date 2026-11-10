@@ -142,6 +142,9 @@ cp "$TEMPLATES/$DEVCONTAINER_TEMPLATE" .devcontainer/devcontainer.json || { echo
 cp "$TEMPLATES/$COMPOSE_TEMPLATE" ./docker-compose.yml || { echo "ERROR: Template copy failed"; exit 1; }
 cp "$TEMPLATES/setup-claude-credentials.sh" .devcontainer/ || { echo "ERROR: Template copy failed"; exit 1; }
 cp "$TEMPLATES/setup-frontend.sh" .devcontainer/ || { echo "ERROR: Template copy failed"; exit 1; }
+# Knowledge sync script: copied from the plugin's hook so there is one source (#368).
+# setup-claude-credentials.sh installs it to the host's ~/.claude/scripts/.
+cp "$PLUGIN_ROOT/hooks/sync-knowledge.sh" .devcontainer/sync-knowledge.sh || { echo "ERROR: Copy of hooks/sync-knowledge.sh failed"; exit 1; }
 
 # Copy project config files if they don't exist
 if [ ! -f ".gitattributes" ]; then
@@ -294,6 +297,7 @@ echo "  - .devcontainer/Dockerfile (base + 5 partials)"
 echo "  - .devcontainer/devcontainer.json"
 echo "  - .devcontainer/setup-claude-credentials.sh"
 echo "  - .devcontainer/setup-frontend.sh"
+echo "  - .devcontainer/sync-knowledge.sh"
 echo "  - .devcontainer/init-firewall.sh"
 echo "  - docker-compose.yml"
 echo "  - .env"

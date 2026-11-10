@@ -11,10 +11,8 @@ PLUGIN_ROOT="$(cd "$BATS_TEST_DIR/../../.." && pwd)"
 load '../../helpers/test_helper'
 
 HOOK_SCRIPT="${PLUGIN_ROOT}/hooks/sync-knowledge.sh"
-TEMPLATE_SCRIPTS=(
-  "${PLUGIN_ROOT}/.devcontainer/sync-knowledge.sh"
-  "${PLUGIN_ROOT}/skills/_shared/templates/sync-knowledge.sh"
-)
+# hooks/sync-knowledge.sh is the only copy in the repo (#368); scaffolding copies
+# it into projects. See tests/unit/test_sync_knowledge_single_source.bats.
 
 # Seed a volume as the current user so the hook (which runs as id -u) can read it.
 seed_volume() {
@@ -100,12 +98,8 @@ run_hook() {
   assert_output_contains '{"a":2}'
 }
 
-@test "sync-knowledge: template variants stay identical and include the 0700 reset" {
-  run diff "${TEMPLATE_SCRIPTS[0]}" "${TEMPLATE_SCRIPTS[1]}"
+@test "sync-knowledge: hook includes the 0700 reset and parses" {
+  grep -q 'chmod 700 /dest/projects' "$HOOK_SCRIPT"
+  run bash -n "$HOOK_SCRIPT"
   assert_success
-  for f in "$HOOK_SCRIPT" "${TEMPLATE_SCRIPTS[@]}"; do
-    grep -q 'chmod 700 /dest/projects' "$f"
-    run bash -n "$f"
-    assert_success
-  done
 }
