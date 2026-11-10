@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.13.12] - 2026-11-10
+
 ### Fixed
 - **Azure CLI partial: builds failed at Bicep, and Bicep/extensions were root-only (#383)**: Bicep v0.49.2 is a .NET app and aborted with "Couldn't find a valid ICU package", failing every `yolo-docker-maxxing` build (and quickstart with Azure). Bicep and the `containerapp` extension were also installed under `/root/.azure`, so the `node` user saw "Bicep CLI not found" and no extension.
   - Installs `libicu72` before Bicep.
