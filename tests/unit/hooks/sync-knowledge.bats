@@ -80,6 +80,16 @@ run_hook() {
   [ -f "$FAKE_HOME/.claude/plans/p.md" ]
 }
 
+@test "sync-knowledge: SANDBOXXER_SYNC_VOLUMES limits the sync to the named volume (#369)" {
+  run env PATH="${TEST_TEMP_DIR}/bin:${PATH}" HOME="$FAKE_HOME" \
+    SANDBOXXER_SYNC_VOLUMES="${VOL_PREFIX}-agent-legacy" bash "$HOOK_SCRIPT"
+  assert_success
+  assert_output_contains "Done syncing from 1 volume(s)"
+  [ -f "$FAKE_HOME/.claude/projects/-workspace/s2.jsonl" ]
+  [ ! -e "$FAKE_HOME/.claude/projects/-workspace/s1.jsonl" ]
+  [ ! -e "$FAKE_HOME/.claude/plans/p.md" ]
+}
+
 @test "sync-knowledge: host projects/ stays 0700 even though source dir is 755" {
   run_hook
   assert_success

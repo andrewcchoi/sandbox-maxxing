@@ -581,8 +581,8 @@ The Sandboxxer plugin includes several hooks for automating workflow tasks:
 
 **Available Hooks:**
 - **docker-safety-hook.sh** - Prevents destructive Docker commands
-- **session-end-hook.sh** - Cleanup tasks when sessions end
-- **sync-knowledge.sh** - Syncs knowledge files between Docker volumes and host
+- **session-end-hook.sh** - Writes a clean-shutdown manifest for the current session and flushes it; never touches other sandboxes' volumes (#369). Set `SANDBOXXER_SESSION_VOLUME` to target one Docker volume
+- **sync-knowledge.sh** - Syncs knowledge files between Docker volumes and host. `SANDBOXXER_SYNC_VOLUMES` limits it to named volumes
 
 These hooks are configured in `hooks/hooks.json` and execute automatically at appropriate lifecycle events.
 
