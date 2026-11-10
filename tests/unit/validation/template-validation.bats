@@ -146,6 +146,20 @@ TEMPLATES_DIR="${PLUGIN_ROOT}/skills/_shared/templates"
   grep -qi "^FROM " "$file"
 }
 
+# #364: without the locales package and a generated en_US.UTF-8, every shell
+# prints "setlocale: LC_ALL: cannot change locale" when the host forwards LC_ALL.
+@test "base.dockerfile and repo Dockerfile generate en_US.UTF-8 and set LANG/LC_ALL (#364)" {
+  local file
+  for file in "${TEMPLATES_DIR}/base.dockerfile" "${PLUGIN_ROOT}/.devcontainer/Dockerfile"; do
+    [ -f "$file" ]
+    run grep -cE '^[[:space:]]+locales \\$' "$file"
+    [ "$output" -ge 1 ] || { echo "$file: 'locales' not in apt-get install" >&2; return 1; }
+    grep -q 'locale-gen' "$file" || { echo "$file: no locale-gen" >&2; return 1; }
+    grep -qE '^ENV LANG=en_US\.UTF-8$' "$file" || { echo "$file: LANG not set" >&2; return 1; }
+    grep -qE '^ENV LC_ALL=en_US\.UTF-8$' "$file" || { echo "$file: LC_ALL not set" >&2; return 1; }
+  done
+}
+
 @test "Dockerfile partials are fragments: no FROM, and only build instructions" {
   local partials_dir="${TEMPLATES_DIR}/partials"
   [ -d "$partials_dir" ] || skip "partials directory not found"

@@ -48,7 +48,8 @@ ALLOWED_DOMAINS=(
   "codeload.githubusercontent.com"
   "avatars.githubusercontent.com"
   "camo.githubusercontent.com"
-  "gist.github.com"
+  # gist.github.com is left out on purpose (#379): one `gh gist create` pastes
+  # data out. Add it to project_specific if you need it.
   "gitlab.com"
   "www.gitlab.com"
   "registry.gitlab.com"
@@ -136,6 +137,16 @@ ALLOWED_DOMAINS=(
   # ===END_CATEGORY===
 )
 
+# CUSTOMIZE: Git hosts reachable over SSH (port 22). SSH goes ONLY to these
+# hosts' IPs, plus GitHub's published git ranges (#379). All other port-22
+# traffic is rejected, even to allowlisted domains. Add self-hosted git servers
+# here (they must also resolve, or be listed in ALLOWED_DOMAINS for HTTPS).
+GIT_SSH_HOSTS=(
+  "github.com"
+  "gitlab.com"
+  "bitbucket.org"
+)
+
 # Test domain for firewall verification (should NOT be accessible in strict mode)
 TEST_BLOCKED_DOMAIN="example.com"
 
@@ -163,6 +174,7 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 ipset destroy allowed-domains 2>/dev/null || true
+ipset destroy git-ssh-hosts 2>/dev/null || true
 
 # Selectively restore ONLY internal Docker DNS resolution
 if [ -n "$DOCKER_DNS_RULES" ]; then
@@ -184,10 +196,8 @@ iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 # Allow inbound DNS responses
 iptables -A INPUT -p udp --sport 53 -j ACCEPT
 
-# Allow outbound SSH
-iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
-# Allow inbound SSH responses
-iptables -A INPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
+# Outbound SSH is NOT opened here. It is limited to the git-ssh-hosts set
+# below (#379); a blanket port-22 rule let anything reach any host over SSH.
 
 # Allow localhost
 iptables -A INPUT -i lo -j ACCEPT
@@ -198,6 +208,29 @@ iptables -A OUTPUT -o lo -j ACCEPT
 # ----------------------------------------------------------------------------
 echo "Creating IP set for allowed domains..."
 ipset create allowed-domains hash:net
+echo "Creating IP set for git SSH hosts..."
+ipset create git-ssh-hosts hash:net
+
+# Resolve a domain's A records and add each valid IPv4 address to an ipset.
+# Usage: add_domain_to_ipset <set-name> <domain>
+add_domain_to_ipset() {
+    local set_name="$1" domain="$2" ips ip
+    ips=$(dig +noall +answer A "$domain" | awk '$4 == "A" {print $5}')
+
+    if [ -z "$ips" ]; then
+        echo "  WARNING: Failed to resolve $domain (skipping)"
+        return 0
+    fi
+
+    while read -r ip; do
+        if [[ ! "$ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            echo "  WARNING: Invalid IP from DNS for $domain: $ip (skipping)"
+            continue
+        fi
+        echo "    Adding $ip for $domain to $set_name"
+        ipset add -exist "$set_name" "$ip"
+    done < <(echo "$ips")
+}
 
 # ----------------------------------------------------------------------------
 # FETCH AND ADD GITHUB IP RANGES
@@ -224,6 +257,15 @@ while read -r cidr; do
     ipset add -exist allowed-domains "$cidr"
 done < <(echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | sort -u)
 
+# GitHub's git ranges are the only GitHub IPs that serve SSH
+while read -r cidr; do
+    if [[ ! "$cidr" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}$ ]]; then
+        echo "ERROR: Invalid CIDR range from GitHub meta: $cidr"
+        exit 1
+    fi
+    ipset add -exist git-ssh-hosts "$cidr"
+done < <(echo "$gh_ranges" | jq -r '.git[]' | sort -u)
+
 # ----------------------------------------------------------------------------
 # RESOLVE AND ADD ALLOWED DOMAINS
 # ----------------------------------------------------------------------------
@@ -234,21 +276,15 @@ for domain in "${ALLOWED_DOMAINS[@]}"; do
     [[ -z "$domain" ]] && continue
 
     echo "  Resolving $domain..."
-    ips=$(dig +noall +answer A "$domain" | awk '$4 == "A" {print $5}')
+    add_domain_to_ipset allowed-domains "$domain"
+done
 
-    if [ -z "$ips" ]; then
-        echo "  WARNING: Failed to resolve $domain (skipping)"
-        continue
-    fi
-
-    while read -r ip; do
-        if [[ ! "$ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-            echo "  WARNING: Invalid IP from DNS for $domain: $ip (skipping)"
-            continue
-        fi
-        echo "    Adding $ip for $domain"
-        ipset add -exist allowed-domains "$ip"
-    done < <(echo "$ips")
+echo "Resolving git SSH hosts..."
+for domain in "${GIT_SSH_HOSTS[@]}"; do
+    [[ "$domain" =~ ^#.*$ ]] && continue
+    [[ -z "$domain" ]] && continue
+    echo "  Resolving $domain..."
+    add_domain_to_ipset git-ssh-hosts "$domain"
 done
 
 # ----------------------------------------------------------------------------
@@ -281,6 +317,11 @@ iptables -P OUTPUT DROP
 # Allow established connections for already approved traffic
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# SSH only to git hosts (#379). The REJECT must come before the allowed-domains
+# rule, which accepts every port: without it, SSH to any allowlisted IP would pass.
+iptables -A OUTPUT -p tcp --dport 22 -m set --match-set git-ssh-hosts dst -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 22 -j REJECT --reject-with icmp-admin-prohibited
 
 # Allow only specific outbound traffic to allowed domains
 iptables -A OUTPUT -m set --match-set allowed-domains dst -j ACCEPT
@@ -321,6 +362,7 @@ echo "=========================================="
 echo "Mode: $FIREWALL_MODE (Domain allowlist configuration)"
 echo "Allowed domains: ${#ALLOWED_DOMAINS[@]}"
 echo "Host network: $HOST_NETWORK"
+echo "SSH (port 22) allowed only to: ${GIT_SSH_HOSTS[*]} + GitHub git ranges"
 echo ""
 echo "To allow additional domains:"
 echo "1. Edit ALLOWED_DOMAINS array in /usr/local/bin/init-firewall.sh"

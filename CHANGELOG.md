@@ -7,7 +7,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Security
+- **Strict firewall: SSH only to git hosts, and no `gist.github.com` (#379)**: `init-firewall.sh` accepted outbound port 22 to *any* host, so code in the container could send data anywhere over SSH, bypassing the domain allowlist. `gist.github.com` was also allowlisted, a one-command paste-out channel.
+  - Port 22 now goes only to a new `git-ssh-hosts` ipset: GitHub's published `git` ranges plus the resolved IPs of `GIT_SSH_HOSTS` (default `github.com`, `gitlab.com`, `bitbucket.org`). All other port-22 traffic is rejected before the allowlist rule, which accepts any port, so SSH to other allowlisted domains (PyPI, npm, ...) is blocked too. Add self-hosted git servers to `GIT_SSH_HOSTS`.
+  - Removed `gist.github.com` from the template and `data/allowable-domains.json`. Add it under `project_specific` if you need it.
+  - **Existing projects with the strict firewall**: copy the new `skills/_shared/templates/init-firewall.sh` over `.devcontainer/init-firewall.sh` (keep your `project_specific` domains) and rebuild, or regenerate `.devcontainer/`.
+  - New `tests/unit/test_firewall_ssh_egress.bats` runs the real script against stubbed `iptables`/`ipset`/`dig`/`curl` and checks the resulting rule order and ipset contents.
+
 ### Fixed
+- **"setlocale: LC_ALL: cannot change locale" in every shell (#364)**: hosts that set `LC_ALL=en_US.UTF-8` (common on WSL2) forward it into the container, but `node:20-bookworm-slim` ships no locales, so every bash/zsh start printed the warning. `base.dockerfile` and this repo's `.devcontainer/Dockerfile` now install `locales`, generate `en_US.UTF-8`, and set `LANG`/`LC_ALL`. Existing projects: rebuild after copying the new Dockerfile lines in, or regenerate `.devcontainer/`. Test in `tests/unit/validation/template-validation.bats`.
 - **One source for `sync-knowledge.sh` (#368)**: `.devcontainer/sync-knowledge.sh` and `skills/_shared/templates/sync-knowledge.sh` had drifted from the hardened `hooks/sync-knowledge.sh`. The template copies lacked the `HOME` guard, volume-name validation, pinned `alpine:3.19`, `--user` isolation, `0700` dirs, a correct synced-count and per-volume error handling.
   - Deleted both template copies. `yolo-docker-maxxing` and `quickstart` now copy `hooks/sync-knowledge.sh` into the project's `.devcontainer/` at scaffold time, so projects always get the hook's exact bytes.
   - This also fixes setup step 11 ("Install Knowledge Sync Script"). Neither scaffolder copied the script before, so step 11 always printed "template not found" and never installed anything. It now installs the hardened script to the host's `~/.claude/scripts/` (only if none is there yet).
