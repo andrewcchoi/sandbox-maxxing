@@ -171,6 +171,18 @@ assert_valid_yaml() {
 }
 
 # Assert YAML frontmatter contains a required field
+# Print only the YAML frontmatter of a markdown file: the lines between a
+# `---` on line 1 and the next `---`. Later `---` lines (markdown horizontal
+# rules) are not frontmatter. Prints nothing when line 1 isn't `---`.
+# Skip the current test when yq is missing (CI installs it).
+require_yq() {
+  command -v yq >/dev/null 2>&1 || skip "yq not installed (CI installs it; see tests/README.md)"
+}
+
+extract_frontmatter() {
+  awk 'NR == 1 { if ($0 != "---") exit; next } $0 == "---" { exit } { print }' "$1"
+}
+
 assert_frontmatter_has() {
   local file="$1"
   local field="$2"
@@ -181,13 +193,12 @@ assert_frontmatter_has() {
   fi
 
   if ! command -v yq >/dev/null 2>&1; then
-    echo "ERROR: yq is required for frontmatter validation" >&2
-    return 1
+    skip "yq not installed (CI installs it; see tests/README.md)"
   fi
 
   # Extract frontmatter (between --- delimiters) and check field
   local frontmatter
-  frontmatter=$(sed -n '/^---$/,/^---$/p' "$file" | sed '1d;$d')
+  frontmatter=$(extract_frontmatter "$file")
 
   if [ -z "$frontmatter" ]; then
     echo "ERROR: No frontmatter found in $file" >&2
@@ -295,3 +306,48 @@ fi
 if [ -f "/usr/lib/bats-assert/load.bash" ]; then
   load '/usr/lib/bats-assert/load.bash'
 fi
+
+# Print a template with {{PLACEHOLDERS}} filled the way setup does
+# ({{*_PORT}} -> 8000, anything else -> "placeholder"). Templates such as
+# `container_name: {{PROJECT_NAME}}-app` are only valid YAML after this.
+render_placeholders() {
+  sed -E 's/\{\{[A-Z_]+_PORT\}\}/8000/g; s/\{\{[A-Z_]+\}\}/placeholder/g' "$1"
+}
+
+# Print a JSONC template (devcontainer.json style) as plain JSON:
+# drops // and /* */ comments outside strings (URLs like https://... are kept),
+# drops trailing commas, and fills {{PLACEHOLDERS}} the way setup does
+# ({{*_PORT}} -> 8000, anything else -> "placeholder").
+# Requires python3; callers should `require_command python3`.
+render_jsonc_template() {
+  python3 -I - "$1" <<'PYEOF'
+import re, sys
+text = open(sys.argv[1], encoding="utf-8").read()
+out, i, n, in_str = [], 0, len(text), False
+while i < n:
+    c = text[i]
+    if in_str:
+        out.append(c)
+        if c == "\\" and i + 1 < n:
+            out.append(text[i + 1]); i += 2; continue
+        if c == '"':
+            in_str = False
+        i += 1; continue
+    if c == '"':
+        in_str = True; out.append(c); i += 1; continue
+    if text.startswith("//", i):
+        while i < n and text[i] != "\n":
+            i += 1
+        continue
+    if text.startswith("/*", i):
+        end = text.find("*/", i + 2)
+        i = n if end == -1 else end + 2
+        continue
+    out.append(c); i += 1
+s = "".join(out)
+s = re.sub(r",(\s*[}\]])", r"\1", s)
+s = re.sub(r"\{\{[A-Z_]+_PORT\}\}", "8000", s)
+s = re.sub(r"\{\{[A-Z_]+\}\}", "placeholder", s)
+sys.stdout.write(s)
+PYEOF
+}

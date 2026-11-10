@@ -261,6 +261,32 @@ EOF
   [ "$status" -eq 0 ] || [ "$status" -eq 1 ]
 }
 
+@test "common: port_in_use ignores a BusyBox-style lsof that lists everything" {
+  # BusyBox lsof ignores -i, prints every open file and exits 0
+  local bin="${BATS_TEST_TMPDIR}/fakebin"
+  mkdir -p "$bin"
+  printf '#!/bin/sh\necho "1\t/bin/busybox\t0\t/dev/null"\nexit 0\n' > "$bin/lsof"
+  chmod +x "$bin/lsof"
+  run bash -c "PATH='$bin':/usr/bin:/bin; source ${PLUGIN_ROOT}/scripts/common.sh; port_in_use 59999"
+  [ "$status" -eq 1 ]
+}
+
+@test "common: port_in_use trusts lsof output that names the port" {
+  local bin="${BATS_TEST_TMPDIR}/fakebin"
+  mkdir -p "$bin"
+  printf '#!/bin/sh\necho "node 123 user 20u IPv4 0t0 TCP *:59999 (LISTEN)"\nexit 0\n' > "$bin/lsof"
+  chmod +x "$bin/lsof"
+  run bash -c "PATH='$bin':/usr/bin:/bin; source ${PLUGIN_ROOT}/scripts/common.sh; port_in_use 59999"
+  [ "$status" -eq 0 ]
+}
+
+@test "common: find_available_port reports its start port under set -u when nothing is free" {
+  run bash -c "set -u; source ${PLUGIN_ROOT}/scripts/common.sh; port_in_use() { return 0; }; find_available_port 65530"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"No available port found starting from 65530"* ]]
+  [[ "$output" != *"unbound variable"* ]]
+}
+
 # ============================================================================
 # find_available_port() tests
 # ============================================================================

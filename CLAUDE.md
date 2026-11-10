@@ -51,7 +51,8 @@ which items to include during interactive selection, not plugin modes.
 ## Testing
 
 **Framework:** BATS (Bash Automated Testing System)
-- Tests in `tests/unit/` and `tests/integration/`
+- Tests in `tests/unit/` and `tests/integration/`. **Test files must end in `.bats`**: `bats -r` skips any other extension (#380), and `tests/unit/test_runner_coverage.bats` guards this
+- Optional tools: `require_yq` skips yq-based tests when yq is missing (CI and `.devcontainer/` install it); Docker build tests skip without Docker or with `SKIP_DOCKER_TESTS=1`
 - Helpers in `tests/helpers/` (source these in test files)
 - Fixtures in `tests/fixtures/`
 

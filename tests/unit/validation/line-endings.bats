@@ -15,7 +15,8 @@ load '../../helpers/test_helper'
 
 @test "all .cmd files have CRLF line endings" {
   local cmd_files
-  cmd_files=$(find "$PLUGIN_ROOT" -name "*.cmd" -type f 2>/dev/null)
+  # `|| true`: unreadable folders (e.g. local .claude/ state) make find exit non-zero
+  cmd_files=$(find "$PLUGIN_ROOT" -name "*.cmd" -type f -not -path "*/.git/*" 2>/dev/null || true)
 
   [ -n "$cmd_files" ] || skip "No .cmd files found"
 

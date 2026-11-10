@@ -56,7 +56,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
 
       - name: Run Unit Tests
-        run: bats tests/unit/ --tap
+        run: bats -r tests/unit/ --tap
 
       - name: Report Success
         if: success()
@@ -90,7 +90,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
 
       - name: Run Integration Tests
-        run: bats tests/integration/ --tap
+        run: bats -r tests/integration/ --tap
 
       - name: Report Success
         if: success()
