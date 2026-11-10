@@ -161,6 +161,7 @@ writing the server.
 
 1. Check that the file is at the project root and named `.mcp.json`, with a top-level `mcpServers` key:
    `jq '.mcpServers | keys' .mcp.json`
+   Container setup checks this too: step 6 of `setup-claude-credentials.sh` reports how many servers it found, or why it found none.
 2. Run `/mcp` in Claude Code. A server you declined at the approval prompt stays disabled until
    you reset it with `claude mcp reset-project-choices`.
 3. Run the server's command by hand in the container terminal to see its errors.
