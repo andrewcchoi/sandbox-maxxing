@@ -82,12 +82,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   openssh-client \
   # JSON processing and manual pages
   jq man-db uuid-runtime \
+  # Locale data (#364)
+  locales \
   # Shell and CLI enhancements
   zsh fzf \
   # GitHub CLI
   gh \
   build-essential \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Locale (#364): the host's LANG/LC_ALL (often en_US.UTF-8) is forwarded into the
+# container, and the slim base image ships no locales, so every shell printed
+# "setlocale: LC_ALL: cannot change locale". Generate the locale and set it.
+RUN sed -i '/^# *en_US.UTF-8 UTF-8/s/^# *//' /etc/locale.gen && locale-gen
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
 
 # Firewall packages (conditionally installed based on ENABLE_FIREWALL)
 RUN if [ "$ENABLE_FIREWALL" = "true" ]; then \

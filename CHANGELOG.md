@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **"setlocale: LC_ALL: cannot change locale" in every shell (#364)**: hosts that set `LC_ALL=en_US.UTF-8` (common on WSL2) forward it into the container, but `node:20-bookworm-slim` ships no locales, so every bash/zsh start printed the warning. `base.dockerfile` and this repo's `.devcontainer/Dockerfile` now install `locales`, generate `en_US.UTF-8`, and set `LANG`/`LC_ALL`. Existing projects: rebuild after copying the new Dockerfile lines in, or regenerate `.devcontainer/`. Test in `tests/unit/validation/template-validation.bats`.
 - **One source for `sync-knowledge.sh` (#368)**: `.devcontainer/sync-knowledge.sh` and `skills/_shared/templates/sync-knowledge.sh` had drifted from the hardened `hooks/sync-knowledge.sh`. The template copies lacked the `HOME` guard, volume-name validation, pinned `alpine:3.19`, `--user` isolation, `0700` dirs, a correct synced-count and per-volume error handling.
   - Deleted both template copies. `yolo-docker-maxxing` and `quickstart` now copy `hooks/sync-knowledge.sh` into the project's `.devcontainer/` at scaffold time, so projects always get the hook's exact bytes.
   - This also fixes setup step 11 ("Install Knowledge Sync Script"). Neither scaffolder copied the script before, so step 11 always printed "template not found" and never installed anything. It now installs the hardened script to the host's `~/.claude/scripts/` (only if none is there yet).
