@@ -172,3 +172,40 @@ EOF
   assert_output_contains "stdout output"
   assert_output_contains "stderr output"
 }
+
+@test "run-hook.cmd: runs target script that lacks the execute bit (#365)" {
+  # The plugin cache can install hooks without +x. The wrapper must not depend on it.
+  local temp_hooks="${TEST_TEMP_DIR}/hooks"
+  mkdir -p "$temp_hooks"
+  cp "$WRAPPER_SCRIPT" "$temp_hooks/"
+
+  local test_script="${temp_hooks}/.test-hook-noexec.sh"
+  cat > "$test_script" <<'SCRIPT'
+#!/usr/bin/env bash
+echo "NOEXEC_HOOK_RAN"
+SCRIPT
+  chmod 644 "$test_script"
+
+  cd "$temp_hooks"
+  run ./run-hook.cmd .test-hook-noexec.sh
+
+  assert_success
+  assert_output_contains "NOEXEC_HOOK_RAN"
+}
+
+@test "hooks.json: every referenced hook script exists and is executable in git (#365)" {
+  local hooks_json="${PLUGIN_ROOT}/hooks/hooks.json"
+  [ -f "$hooks_json" ] || skip "hooks.json not found"
+  git -C "$PLUGIN_ROOT" rev-parse --git-dir >/dev/null 2>&1 || skip "not a git checkout"
+
+  local scripts
+  scripts=$(grep -o 'run-hook.cmd\\" [A-Za-z0-9._-]*\.sh' "$hooks_json" | awk '{print $2}' | sort -u)
+  [ -n "$scripts" ]
+
+  local s mode
+  for s in $scripts; do
+    [ -f "${PLUGIN_ROOT}/hooks/${s}" ] || { echo "missing hooks/${s}" >&2; return 1; }
+    mode=$(git -C "$PLUGIN_ROOT" ls-files -s "hooks/${s}" | awk '{print $1}')
+    [ "$mode" = "100755" ] || { echo "hooks/${s} is ${mode:-untracked} in git, expected 100755" >&2; return 1; }
+  done
+}
