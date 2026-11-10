@@ -277,7 +277,7 @@ TEMPLATES_DIR="${PLUGIN_ROOT}/skills/_shared/templates"
 @test "mcp.json: every server under .servers has a command" {
   # NOTE: the template uses the `servers` key (VS Code mcp.json format), not
   # Claude Code's `.mcp.json` `mcpServers` key. Setup doesn't copy this file
-  # anywhere today; see the issue linked in the #380 PR.
+  # anywhere today; see #386.
   local file="${TEMPLATES_DIR}/mcp.json"
   [ -f "$file" ] || skip "mcp.json not found"
 
